@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} {% endblock title %}</title>
+    
+    <link rel="shortcut icon" href="{% static 'img/favicons/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'img/favicons/favicon-192x192.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'media/favicons/apple-touch-icon-180x180.png' %}">
+
+    <link rel="stylesheet" id="css-main" href="{% static 'css/dashmix.min.css' %} ">
+</head>
+<body>
+    <div id="page-container" class="enable-page-overlay side-scroll page-header-fixed page-header-dark side-trans-enabled sidebar-o">
+        {% include 'base/aside.html' %}
+        {% include 'base/menu.html' %}
+        {% include 'base/cabecera.html' %}
+<!-- Contenido Principal -->
+        <main id="main-container">
+            <!-- <div class="bg-body-light">
+                <div class="content content-full">
+                    <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+                        <h1 class="flex-grow-1 fs-3 fw-semibold my-2 my-sm-3">Main Title</h1>
+                        <nav class="flex-shrink-0 my-2 my-sm-0 ms-sm-3" aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">Pages</li>
+                                <li class="breadcrumb-item">Generic</li>
+                                <li class="breadcrumb-item active" aria-current="page">Blank</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="content">
+                <h2 class="content-heading">{% block titulo-pagina %} {% endblock titulo-pagina %}</h2>
+                {% block content %}
+                    
+                {% endblock content %}
+            </div>
+        </main>
+        {% include 'base/piePagina.html' %}
+    </div>
+
+    <script src="{% static 'js/dashmix.app.min.js' %}"></script>
+</body>
+</html>
