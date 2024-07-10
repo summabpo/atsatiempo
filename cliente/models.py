@@ -11,7 +11,7 @@ class Cli051Cliente(models.Model):
     telefono = models.CharField(max_length=20, blank=False)
 
     class Meta:
-        managed = False
+        
         db_table = 'cli_051_cliente'
 
         verbose_name = 'CLIENTE'

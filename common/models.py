@@ -6,7 +6,7 @@ class Cat001Estado(models.Model):
     sigla = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        #managed = False
         db_table = 'cat_001_estado'
 
         verbose_name = 'ESTADO'
@@ -18,7 +18,7 @@ class Cat004Ciudad(models.Model):
     departamento_id_003 = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        #managed = False
         db_table = 'cat_004_ciudad'
 
         verbose_name = 'CIUDAD'

@@ -12,7 +12,7 @@ class Can101Candidato(models.Model):
     sexo = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        #managed = False
         db_table = 'can_101_candidato'
 
         verbose_name = 'CANDIDATO'
@@ -29,7 +29,7 @@ class Can102Experiencia(models.Model):
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
 
     class Meta:
-        managed = False
+        #managed = False
         db_table = 'can_102_experiencia'
 
         verbose_name = 'EXPERIENCIA'
@@ -46,7 +46,7 @@ class Can103Educacion(models.Model):
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
 
     class Meta:
-        managed = False
+        #managed = False
         db_table = 'can_103_educacion'
 
         verbose_name = 'EDUCACION'
@@ -57,7 +57,7 @@ class Can104Skill(models.Model):
     nombre = models.TextField()
 
     class Meta:
-        managed = False
+        #managed = False
         db_table = 'can_104_skill'
 
         verbose_name = 'SKILL'
@@ -68,5 +68,5 @@ class Can105SkillCandidato(models.Model):
     skill_id_104 = models.ForeignKey(Can104Skill, models.DO_NOTHING, db_column='skill_id_104')
 
     class Meta:
-        managed = False
+        #managed = False
         db_table = 'can_105_skill_candidato'
