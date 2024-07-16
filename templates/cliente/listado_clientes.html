@@ -1,0 +1,66 @@
+{% extends 'base/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %} ATS Listado Clientes {% endblock title %}
+
+{% block titulo-pagina %}
+    Listado de Clientes
+{% endblock titulo-pagina %}
+
+
+{% block content %}
+
+<div class="block block-rounded">
+    <div class="block-header block-header-default">
+        <h3 class="block-title">
+            Listado <small>Clientes</small>
+        </h3>
+    </div>
+    <div class="block-content block-content-full overflow-x-auto">
+        <!-- DataTables init on table by adding .js-dataTable-full-pagination class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _js/pages/be_tables_datatables.js -->
+        <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 80px;">ID</th>
+                    <th class="text-center" style="width: 120px;">NIT</th>
+                    <th class="text-center" style="width: 40%;">RAZON SOCIAL</th>
+                    <th class="d-none d-sm-table-cell" style="width: 40%;">CORREO</th>
+                    <th class="d-none d-sm-table-cell" style="width: 40%;">CONTACTO</th>
+                    <th class="d-none d-sm-table-cell" style="width: 40%;">LOGO</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in clientes %}
+                <tr>
+                    <td class="text-center">{{ e.id }}</td>
+                    <td class="fw-semibold">{{ e.nit }}</td>
+                    <td class="d-none d-sm-table-cell">
+                        {{ e.razon_social }}
+                    </td>
+                    <td class="d-none d-sm-table-cell">
+                        {{ e.email }}
+                    </td>
+                    <td class="d-none d-sm-table-cell">
+                        <span class="text-muted">{{ e.contacto }}</span>
+                    </td>
+                    <td class="d-none d-sm-table-cell">
+                        
+                        {% if e.logo %}
+                        <span class="text-muted"><img src="{{ e.logo.url }}" alt="{{ e.logo }}"></span>
+                        {% else %}    
+                        <span class="text-muted"><img src="{% static 'img/avatars/avatar0.jpg' %}" alt="Sin Imagen"></span>
+                        {% endif %}
+                            
+                        
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock content %}

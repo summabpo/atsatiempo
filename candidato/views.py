@@ -5,3 +5,4 @@ from django.views.generic import (TemplateView,)
 class InicioView(TemplateView):
     """ vista que carga la pagina de inicio """
     template_name = 'candidato/index.html'
+

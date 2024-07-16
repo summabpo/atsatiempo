@@ -2,6 +2,12 @@ from django.db import models
 from common.models import Cat001Estado, Cat004Ciudad
 # Create your models here.
 class Can101Candidato(models.Model):
+
+    SEXO_CHOICES = (
+        ('1', 'FEMENINO'),
+        ('2', 'MASCULINO'),
+    )
+
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     email = models.EmailField(unique=True)
     primer_nombre = models.CharField(max_length=50, verbose_name="Primer Nombre", blank=True, null=False)
@@ -9,7 +15,10 @@ class Can101Candidato(models.Model):
     primer_apellido = models.CharField(max_length=50, verbose_name="Primer Apellido", blank=True, null=False)
     segundo_apellido = models.CharField(max_length=50, verbose_name="Segundo Apellido", blank=True, null=True)
     ciudad_id_004 = models.ForeignKey(Cat004Ciudad, models.DO_NOTHING, db_column='ciudad_id_004', blank=True, null=True)
-    sexo = models.TextField(blank=True, null=True)
+    sexo = models.CharField(max_length=1, blank=True, null=True, choices=SEXO_CHOICES)
+    fecha_nacimiento = models.DateField(null=True, blank=True)  # Nuevo campo de fecha
+    telefono = models.CharField(max_length=10, blank=True, null=True)
+
 
     def __str__(self):
         return self.primer_nombre + ' - ' + self.primer_apellido
@@ -21,12 +30,18 @@ class Can101Candidato(models.Model):
         verbose_name_plural = 'CANDIDATOS'
 
 class Can102Experiencia(models.Model):
+    
+    ACTIVO_CHOICES = (
+        ('1', 'SI'),
+        ('2', 'NO'),
+    )
+
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     entidad = models.CharField(max_length=100)
     sector = models.CharField(max_length=100)
-    fecha_inicial = models.DateTimeField()
-    fecha_final = models.DateTimeField(blank=True, null=True)
-    activo = models.IntegerField()
+    fecha_inicial = models.DateTimeField(blank=True, null=True)
+    fecha_final = models.DateTimeField(blank=True, null=False)
+    activo = models.CharField(max_length=1, choices=ACTIVO_CHOICES)
     logro = models.TextField(blank=True, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
 
@@ -67,12 +82,3 @@ class Can104Skill(models.Model):
         db_table = 'can_104_skill'
 
         verbose_name = 'SKILL'
-
-
-class Can105SkillCandidato(models.Model):
-    candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101')
-    skill_id_104 = models.ForeignKey(Can104Skill, models.DO_NOTHING, db_column='skill_id_104')
-
-    class Meta:
-        #managed = False
-        db_table = 'can_105_skill_candidato'
