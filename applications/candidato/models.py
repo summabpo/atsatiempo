@@ -1,5 +1,5 @@
 from django.db import models
-from common.models import Cat001Estado, Cat004Ciudad
+from applications.common.models import Cat001Estado, Cat004Ciudad
 # Create your models here.
 class Can101Candidato(models.Model):
 
@@ -62,7 +62,10 @@ class Can103Educacion(models.Model):
     fecha_final = models.DateTimeField(blank=True, null=True)
     grado_en = models.CharField(max_length=100, blank=True, null=True)
     titulo = models.CharField(max_length=100, blank=True, null=True)
+    carrera = models.CharField(max_length=100, blank=True, null=True)
+    fortaleza_adquiridas = models.TextField(blank=True, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
+    ciudad_id_004 = models.ForeignKey(Cat004Ciudad, models.DO_NOTHING, db_column='ciudad_id_004', blank=True, null=True)
 
     def __str__(self):
         return self.institucion

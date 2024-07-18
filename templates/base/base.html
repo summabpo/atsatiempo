@@ -10,16 +10,20 @@
     <link rel="icon" type="image/png" sizes="192x192" href="{% static 'img/favicons/favicon-192x192.png' %}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-    <link rel="stylesheet" href="{% static 'js/plugins/select2/css/select2.min.css' %}">
-
     <link rel="stylesheet" href="{% static 'js/plugins/datatables-bs5/css/dataTables.bootstrap5.min.css' %}">
     <link rel="stylesheet" href="{% static 'js/plugins/datatables-buttons-bs5/css/buttons.bootstrap5.min.css' %}">
     <link rel="stylesheet" href="{% static 'js/plugins/datatables-responsive-bs5/css/responsive.bootstrap5.min.css' %}">
 
+    <link rel="stylesheet" href="{% static 'js/plugins/select2/css/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'js/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css'  %}">
+    <link rel="stylesheet" href="{% static 'js/plugins/ion-rangeslider/css/ion.rangeSlider.css'  %}">
+    <link rel="stylesheet" href="{% static 'js/plugins/dropzone/min/dropzone.min.css'  %}">
+    <link rel="stylesheet" href="{% static 'js/plugins/flatpickr/flatpickr.min.css'  %}">
+
     <link rel="stylesheet" id="css-main" href="{% static 'css/dashmix.min.css' %} ">
 </head>
-<body>
-    <div id="page-container" class="enable-page-overlay side-scroll page-header-fixed page-header-dark side-trans-enabled sidebar-o">
+<body>                                                                                                                         <!-- ocultar sidebar sidebar-o -->
+    <div id="page-container" class="enable-page-overlay side-scroll page-header-fixed page-header-dark side-trans-enabled ">
         {% include 'base/aside.html' %}
         {% include 'base/menu.html' %}
         {% include 'base/cabecera.html' %}
@@ -81,5 +85,16 @@
     <script src="{% static 'js/plugins/datatables-buttons/buttons.html5.min.js' %}"></script>
 
     <script src="{% static 'js/pages/be_tables_datatables.min.js' %}"></script>
+
+    <script src="{% static 'js/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/select2/js/select2.full.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/ion-rangeslider/js/ion.rangeSlider.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/jquery.maskedinput/jquery.maskedinput.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/dropzone/min/dropzone.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/pwstrength-bootstrap/pwstrength-bootstrap.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/flatpickr/flatpickr.min.js'  %}"></script>
+
+    <script>Dashmix.helpersOnLoad(['js-flatpickr', 'jq-datepicker', 'jq-maxlength', 'jq-select2', 'jq-rangeslider', 'jq-masked-inputs', 'jq-pw-strength']);</script>
 </body>
 </html>

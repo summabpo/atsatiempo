@@ -3,7 +3,7 @@ import re, os
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field
-from common.models import Cat004Ciudad, Cat001Estado
+from applications.common.models import Cat004Ciudad, Cat001Estado
 from ..models import Cli051Cliente
 
 

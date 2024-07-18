@@ -1,5 +1,5 @@
 from django.db import models
-from common.models import Cat001Estado, Cat004Ciudad
+from applications.common.models import Cat001Estado, Cat004Ciudad
 # Create your models here.
 class Cli051Cliente(models.Model):
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
