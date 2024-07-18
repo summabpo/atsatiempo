@@ -1,7 +1,5 @@
 {% extends 'base/base.html' %}
 
-{% load crispy_forms_tags %}
-
 {% load static %}
 
 {% block title %} ATS Listado Clientes {% endblock title %}
@@ -49,9 +47,9 @@
                     <td class="d-none d-sm-table-cell">
                         
                         {% if e.logo %}
-                        <span class="text-muted"><img src="{{ e.logo.url }}" alt="{{ e.logo }}"></span>
+                        <span class="text-muted"><img src="{{ e.logo.url }}" height="30px" alt="{{ e.logo }}"></span>
                         {% else %}    
-                        <span class="text-muted"><img src="{% static 'img/avatars/avatar0.jpg' %}" alt="Sin Imagen"></span>
+                        <span class="text-muted"><img src="{% static 'img/avatars/avatar0.jpg' %}" height="30px" alt="Sin Imagen"></span>
                         {% endif %}
                             
                         
