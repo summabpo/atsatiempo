@@ -2,7 +2,7 @@ import re, os
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field
-from common.models import Cat001Estado, Cat004Ciudad
+from applications.common.models import Cat001Estado, Cat004Ciudad
 from ..models import Can101Candidato, Can102Experiencia, Can103Educacion, Can104Skill
 
 class CandidatoForm(forms.Form):
@@ -14,7 +14,7 @@ class CandidatoForm(forms.Form):
     segundo_apellido = forms.CharField(label='SEGUNDO APELLIDO', required=False, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Segundo Apellido'}))
     ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)
     sexo = forms.ChoiceField(label='GENERO', choices=[ ('', '---'), ('M', 'MASCULINO'), ('F', 'FEMENINO')], required=True)
-    fecha_nacimiento = forms.DateField(label='FECHA NACIMIENTO',  required=True)
+    fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     telefono = forms.CharField(label='TELEFONO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
 
     def __init__(self, *args, **kwargs):
@@ -33,7 +33,7 @@ class CandidatoForm(forms.Form):
                 Column('telefono', css_class='col-md-6'),
             ),
             Row(
-                Column('fecha_nacimiento', css_class='js-flatpickr col-md-4'),
+                Column('fecha_nacimiento', css_class='col-md-4'),
                 Column('sexo', css_class='col-md-4'),
                 Column('ciudad_id_004', css_class='col-md-4'),
                 

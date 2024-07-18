@@ -1,5 +1,5 @@
 from django.db import models
-from common.models import Cat001Estado, Cat004Ciudad
+from applications.common.models import Cat001Estado, Cat004Ciudad
 # Create your models here.
 class Can101Candidato(models.Model):
 
