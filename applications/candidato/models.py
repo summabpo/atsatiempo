@@ -18,6 +18,7 @@ class Can101Candidato(models.Model):
     sexo = models.CharField(max_length=1, blank=True, null=True, choices=SEXO_CHOICES)
     fecha_nacimiento = models.DateField(null=True, blank=True)  # Nuevo campo de fecha
     telefono = models.CharField(max_length=10, blank=True, null=True)
+    skills = models.ManyToManyField('Can104Skill', related_name='candidatos_skill')
 
 
     def __str__(self):

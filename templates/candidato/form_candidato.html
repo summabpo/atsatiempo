@@ -1,0 +1,43 @@
+{% extends 'base/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %} ATS Atiempo Inicio {% endblock title %}
+
+{% block titulo-pagina %}
+    CANDIDATO
+{% endblock titulo-pagina %}
+
+
+{% block content %}
+<div class="block block-rounded">
+    <div class="block-header block-header-default">
+        <a href="{% url 'candidatos:candidato_listar' %}" class="btn btn-primary me-1 mb-3">
+            <i class="fa fa-fw fa-circle-left me-1"></i> Volver
+        </a>
+    </div>
+    <div class="block-header block-header-default">
+        <h3 class="block-title">{{ accion }} Candidato</h3>
+    </div>
+    <div class="block-content">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h2 class="content-heading pt-0">Creación de Clientes</h2>
+            <div class="row push">
+                {% crispy form %}
+            </div>
+        </form> 
+    </div>
+</div>   
+
+
+{% if accion == 'Editar' %}
+
+{% endif %}
+
+
+
+
+{% endblock content %}

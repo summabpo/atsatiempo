@@ -15,22 +15,37 @@ class CandidatoForm(forms.Form):
     ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)
     sexo = forms.ChoiceField(label='GENERO', choices=[ ('', '---'), ('M', 'MASCULINO'), ('F', 'FEMENINO')], required=True)
     fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
-    telefono = forms.CharField(label='TELEFONO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
+    telefono = forms.CharField(label='TELEFONO'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
+
 
     def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance', None)
         super(CandidatoForm, self).__init__(*args, **kwargs)
+
+        if self.instance:
+            self.fields['estado_id_001'].initial = self.instance.estado_id_001
+            self.fields['email'].initial = self.instance.email
+            self.fields['primer_nombre'].initial = self.instance.primer_nombre
+            self.fields['segundo_nombre'].initial = self.instance.segundo_nombre
+            self.fields['primer_apellido'].initial = self.instance.primer_apellido
+            self.fields['segundo_apellido'].initial = self.instance.segundo_apellido
+            self.fields['ciudad_id_004'].initial = self.instance.ciudad_id_004
+            self.fields['sexo'].initial = self.instance.sexo
+            self.fields['fecha_nacimiento'].initial = self.instance.fecha_nacimiento
+            self.fields['telefono'].initial = self.instance.telefono
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
             Row(
-                Column('primer_nombre', css_class='col-md-3'),
-                Column('segundo_nombre', css_class='col-md-3'),
-                Column('primer_apellido', css_class='col-md-3'),
-                Column('segundo_apellido', css_class='col-md-3'),
+                Column('primer_nombre'),
+                Column('segundo_nombre'),
+                Column('primer_apellido'),
+                Column('segundo_apellido'),
             ),
             Row(
-                Column('email', css_class='col-md-6'),
-                Column('telefono', css_class='col-md-6'),
+                Column('email'),
+                Column('telefono'),
             ),
             Row(
                 Column('fecha_nacimiento', css_class='col-md-4'),
@@ -51,6 +66,7 @@ class CandidatoForm(forms.Form):
         primer_apellido = cleaned_data.get('primer_apellido')
         segundo_apellido = cleaned_data.get('segundo_apellido')
         email = cleaned_data.get('email')
+        telefono = cleaned_data.get('telefono')
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', primer_nombre):
             self.add_error('primer_nombre', "El campo solo puede contener letras.")
@@ -77,3 +93,27 @@ class CandidatoForm(forms.Form):
 
         if email and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
             self.add_error('email','El email no es válido.')
+
+        if not re.match(r'^\d{10}$', telefono):
+            self.add_error('telefono','El teléfono debe contener solo números y tener 10 dígitos.')
+        
+        return cleaned_data
+
+    def save(self):
+        if self.instance:
+            candidato = self.instance
+        else:
+            candidato = Can101Candidato()
+        
+        candidato.estado_id_001 = self.cleaned_data['estado_id_001']
+        candidato.email = self.cleaned_data['email']
+        candidato.primer_nombre = self.cleaned_data['primer_nombre']
+        candidato.segundo_nombre = self.cleaned_data['segundo_nombre']
+        candidato.primer_apellido = self.cleaned_data['primer_apellido']
+        candidato.segundo_apellido = self.cleaned_data['segundo_apellido']
+        candidato.telefono = self.cleaned_data['telefono']
+        candidato.ciudad_id_004 = self.cleaned_data['ciudad_id_004']
+        candidato.sexo = self.cleaned_data['sexo']
+        candidato.fecha_nacimiento = self.cleaned_data['fecha_nacimiento']
+        
+        candidato.save()

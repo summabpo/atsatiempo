@@ -1,0 +1,61 @@
+{% extends 'base/base.html' %}
+
+{% load static %}
+
+{% block title %} ATS Listado Candidatos {% endblock title %}
+
+{% block titulo-pagina %}
+    Listado de Candidatos
+{% endblock titulo-pagina %}
+
+
+{% block content %}
+
+<div class="block block-rounded">
+    <div class="block-header block-header-default">
+        <h3 class="block-title">
+            Listado <small>Candidatos</small>
+        </h3>
+    </div>
+    <div class="block-content block-content-full overflow-x-auto">
+        <a href="{% url 'candidatos:candidato_crear' %}" class="btn btn-success me-1 mb-3">
+            <i class="fa fa-fw fa-plus me-1"></i> Agregar Candidato
+        </a>
+        <!-- DataTables init on table by adding .js-dataTable-full-pagination class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _js/pages/be_tables_datatables.js -->
+        <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 80px;">ID</th>
+                    <th class="text-center" style="width: 120px;">PRIMER NOMBRE</th>
+                    <th class="text-center" style="width: 40%;">SEGUNDO NOMBRE</th>
+                    <th class="d-none d-sm-table-cell" style="width: 40%;">PRIMER APELLIDO</th>
+                    <th class="d-none d-sm-table-cell" style="width: 40%;">SEGUNDO APELLIDO</th>
+                    <th class="d-none d-sm-table-cell" style="width: 40%;">CORREO</th>
+                    <th class="d-none d-sm-table-cell" style="width: 40%;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in candidatos %}
+                <tr>
+                    <td class="text-center">{{ e.id }}</td>
+                    <td class="fw-semibold">{{ e.primer_nombre }}</td>
+                    <td class="d-none d-sm-table-cell"> {{ e.segundo_nombre }} </td>
+                    <td class="d-none d-sm-table-cell"> {{ e.primer_apellido }} </td>
+                    <td class="d-none d-sm-table-cell"> <span class="text-muted">{{ e.segundo_apellido }}</span> </td>
+                    <td class="d-none d-sm-table-cell"> {{ e.email }} </td>
+                    <td class="d-none d-sm-table-cell"> 
+                        <div class="btn-toolbar mb-2" role="toolbar" aria-label="Icons Alternate Toolbar with button groups">
+                            <div class="btn-group me-2 mb-2" role="group" aria-label="Icons Alternate File group">
+                                <a href="{% url 'candidatos:candidato_editar' e.id  %}" class="btn btn-alt-primary">
+                                    <i class="fa fa-fw fa-edit"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

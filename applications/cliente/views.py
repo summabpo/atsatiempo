@@ -20,7 +20,7 @@ def cliente_crear(request):
     else:
         form = ClienteForm()
     
-    return render(request, 'cliente/index.html', {'form': form})
+    return render(request, 'cliente/form_cliente.html', {'form': form})
 
 class ListadoClientes(ListView):
     template_name = 'cliente/listado_clientes.html'
