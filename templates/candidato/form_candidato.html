@@ -7,33 +7,104 @@
 {% block title %} ATS Atiempo Inicio {% endblock title %}
 
 {% block titulo-pagina %}
-    CANDIDATO
+CANDIDATO
 {% endblock titulo-pagina %}
 
 
 {% block content %}
+
 <div class="block block-rounded">
     <div class="block-header block-header-default">
+        <h3 class="block-title">{{ accion }} Candidato {{ candidato.primer_nombre }} {{ candidato.primer_apellido }}
+        </h3>
+    </div>
+    <div class="block-content">
         <a href="{% url 'candidatos:candidato_listar' %}" class="btn btn-primary me-1 mb-3">
             <i class="fa fa-fw fa-circle-left me-1"></i> Volver
         </a>
-    </div>
-    <div class="block-header block-header-default">
-        <h3 class="block-title">{{ accion }} Candidato</h3>
-    </div>
-    <div class="block-content">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <h2 class="content-heading pt-0">Creación de Clientes</h2>
+            <h2 class="content-heading pt-0">Creación de Candidato</h2>
             <div class="row push">
                 {% crispy form %}
             </div>
-        </form> 
+        </form>
     </div>
-</div>   
+</div>
 
 
 {% if accion == 'Editar' %}
+<div class="block block-rounded">
+    <div class="block-header block-header-default">
+        <h3 style="text-align: center;" class="block-title">Información Complementaria</h3>
+    </div>
+    <div class="block-content">
+        <div class="row items-push">
+            <div style="text-align: center;" class="col-md-12">
+                <div class="btn-group" role="group" aria-label="Horizontal Alternate Info">
+                    <button type="button" class="btn btn-alt-info" data-bs-toggle="modal" data-bs-target="#modal-academica">
+                        <i class="fa fa-fw fa-graduation-cap me-1"></i> Información Academica
+                    </button>
+                    <button type="button" class="btn btn-alt-info" data-bs-toggle="modal" data-bs-target="#modal-laboral">
+                        <i class="fa fa-fw fa-graduation-cap me-1"></i> Información Laboral
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-academica" tabindex="-1" role="dialog" aria-labelledby="modal-default-extra-large"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Información Acádemica</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pb-1">
+                <p>Potenti elit lectus augue eget iaculis vitae etiam, ullamcorper etiam bibendum ad feugiat magna
+                    accumsan dolor, nibh molestie cras hac ac ad massa, fusce ante convallis ante urna molestie
+                    vulputate bibendum tempus ante justo arcu erat accumsan adipiscing risus, libero condimentum
+                    venenatis sit nisl nisi ultricies sed, fames aliquet consectetur consequat nostra molestie neque
+                    nullam scelerisque neque commodo turpis quisque etiam egestas vulputate massa, curabitur tellus
+                    massa venenatis congue dolor enim integer luctus, nisi suscipit gravida fames quis vulputate nisi
+                    viverra luctus id leo dictum lorem, inceptos nibh orci.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-laboral" tabindex="-1" role="dialog" aria-labelledby="modal-default-extra-large"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Información Laboral</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pb-1">
+                <p>Potenti elit lectus augue eget iaculis vitae etiam, ullamcorper etiam bibendum ad feugiat magna
+                    accumsan dolor, nibh molestie cras hac ac ad massa, fusce ante convallis ante urna molestie
+                    vulputate bibendum tempus ante justo arcu erat accumsan adipiscing risus, libero condimentum
+                    venenatis sit nisl nisi ultricies sed, fames aliquet consectetur consequat nostra molestie neque
+                    nullam scelerisque neque commodo turpis quisque etiam egestas vulputate massa, curabitur tellus
+                    massa venenatis congue dolor enim integer luctus, nisi suscipit gravida fames quis vulputate nisi
+                    viverra luctus id leo dictum lorem, inceptos nibh orci.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 {% endif %}
 

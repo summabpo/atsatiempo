@@ -17,7 +17,6 @@ class CandidatoForm(forms.Form):
     fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     telefono = forms.CharField(label='TELEFONO'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
 
-
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
         super(CandidatoForm, self).__init__(*args, **kwargs)
@@ -115,5 +114,6 @@ class CandidatoForm(forms.Form):
         candidato.ciudad_id_004 = self.cleaned_data['ciudad_id_004']
         candidato.sexo = self.cleaned_data['sexo']
         candidato.fecha_nacimiento = self.cleaned_data['fecha_nacimiento']
-        
+
+
         candidato.save()
