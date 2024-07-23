@@ -10,5 +10,7 @@ urlpatterns = [
     path( url_principal+'editar/<int:pk>/', views.candidato_crear, name='candidato_editar'),
     path( url_principal+'experiencia/crear/<int:candidato_id>/', views.experiencia_crear, name='experiencia_crear'),
     path( url_principal+'experiencia/listar/<int:candidato_id>/', views.experiencia_listar, name='experiencia_listar'),
+    path( url_principal+'estudio/crear/<int:candidato_id>/', views.estudio_crear, name='estudio_crear'),
+    path( url_principal+'estudio/listar/<int:candidato_id>/', views.estudio_listar, name='estudio_listar'),
     
 ]

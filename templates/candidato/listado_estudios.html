@@ -2,10 +2,10 @@
 
 {% load static %}
 
-{% block title %} ATS Listado Experiencia {% endblock title %}
+{% block title %} ATS Listado Estudio {% endblock title %}
 
 {% block titulo-pagina %}
-    Listado de Experiencia de {{candidato.primer_nombre}} {{candidato.segundo_nombre}} {{candidato.primer_apellido}}
+    Listado de Estudios de {{candidato.primer_nombre}} {{candidato.segundo_nombre}} {{candidato.primer_apellido}}
 {% endblock titulo-pagina %}
 
 
@@ -13,36 +13,35 @@
 <div class="block block-rounded">
     <div class="block-header block-header-default">
         <h3 class="block-title">
-            Experiencia  <small>{{candidato.primer_nombre}} {{candidato.segundo_nombre}} {{candidato.primer_apellido}} {{candidato.id}}</small>
+            Estudio  <small>{{candidato.primer_nombre}} {{candidato.segundo_nombre}} {{candidato.primer_apellido}} </small>
         </h3>
     </div>
     <div class="block-content block-content-full overflow-x-auto">
-        <a href="{% url 'candidatos:experiencia_crear' candidato.id %}" class="btn btn-success me-1 mb-3">
-            <i class="fa fa-fw fa-plus me-1"></i> Agregar Experiencia
+        <a href="{% url 'candidatos:estudio_crear' candidato.id %}" class="btn btn-success me-1 mb-3">
+            <i class="fa fa-fw fa-plus me-1"></i> Agregar Estudio
         </a>
 
         <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
             <thead>
                 <tr>
                     <th class="text-center">ID</th>
-                    <th class="text-center">ENTIDAD</th>
-                    <th class="text-center">SECTOR</th>
-                    <th class="text-center">ACTIVO</th>
+                    <th class="text-center">INSTITUCION</th>
+                    <th class="text-center">GRADO EN</th>
                     <th class="text-center">F.INICIAL</th>
                     <th class="text-center">F.FINAL</th>
+                    <th class="text-center">ACTIVO</th>
                     
                     <th class="text-center"></th>
                 </tr>
             </thead>
             <tbody>
-                {% for exp in experiencias %}
+                {% for est in estudios %}
                 <tr>
-                    <td class="text-center">{{ exp.id }}</td>
-                    <td class="text-center">{{ exp.entidad }}</td>
-                    <td class="text-center">{{ exp.sector }}</td>
-                    <td class="text-center">{{ exp.activo }}</td>
-                    <td class="text-center">{{ exp.fecha_inicial }}</td>
-                    <td class="text-center">{{ exp.fecha_final }}</td>
+                    <td class="text-center">{{ est.id }}</td>
+                    <td class="text-center">{{ est.insitutcion }}</td>
+                    <td class="text-center">{{ est.grado_en }}</td>
+                    <td class="text-center">{{ est.fecha_inicial }}</td>
+                    <td class="text-center">{{ est.fecha_final }}</td>
                     <td class="text-center">
                         <div class="btn-toolbar mb-2" role="toolbar" aria-label="Icons Alternate Toolbar with button groups">
                             <div class="btn-group me-2 mb-2" role="group" aria-label="Icons Alternate File group">

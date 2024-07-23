@@ -49,7 +49,10 @@
                                 <a href="{% url 'candidatos:candidato_editar' e.id  %}" class="btn btn-alt-primary">
                                     <i class="fa fa-fw fa-edit"></i>
                                 </a>
-                                <a href="{% url 'candidatos:experiencia_listar' e.id  %}" class="btn btn-alt-primary">
+                                <a href="{% url 'candidatos:experiencia_listar' e.id  %}" class="btn btn-alt-primary" title="Experiencia Laboral">
+                                    <i class="fa fa-fw fa-business-time"></i>
+                                </a>
+                                <a href="{% url 'candidatos:estudio_listar' e.id  %}" class="btn btn-alt-primary">
                                     <i class="fa fa-fw fa-graduation-cap"></i>
                                 </a>
                             </div>

@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Can101Candidato, Can102Experiencia
+from .models import Can101Candidato, Can102Experiencia, Can103Educacion
 from .forms.CandidatoForms import CandidatoForm
 from .forms.ExperienciaForms import ExperienciaCandidatoForm
+from .forms.EstudioForms import EstudioCandidatoForm
 from django.views.generic import (TemplateView, ListView)
 
 # Create your views here.
@@ -53,14 +54,37 @@ def experiencia_crear(request, candidato_id):
     candidato = get_object_or_404(Can101Candidato, id=candidato_id)
 
     if request.method == 'POST': 
-        print('ingrese')
         form = ExperienciaCandidatoForm(request.POST)
         if form.is_valid():
             experiencia = form.save(candidato_id=candidato.id)
-            # experiencia.save()
             return redirect('candidatos:experiencia_listar', candidato_id=candidato.id)
-
     else:
         form = ExperienciaCandidatoForm(candidato_id=candidato.id)
     
-    return render(request, 'candidato/experiencia_crear.html', {'form': form, 'candidato': candidato})
+    return render(request, 'candidato/form_experiencia.html', {'form': form, 'candidato': candidato})
+
+def estudio_listar(request, candidato_id):
+    
+    candidato = get_object_or_404(Can101Candidato, pk=candidato_id)
+    estudios = Can103Educacion.objects.filter(candidato_id_101=candidato)
+    
+    context = {
+        'candidato': candidato,
+        'estudios': estudios,
+    }
+
+    return render(request, 'candidato/listado_estudios.html', context)
+
+def estudio_crear(request, candidato_id):
+    candidato = get_object_or_404(Can101Candidato, id=candidato_id)
+    
+    if request.method == 'POST':
+        form = EstudioCandidatoForm(request.POST)
+        if form.is_valid():
+            form.save(candidato_id=candidato.id)
+            return redirect('candidatos:estudios_listar', candidato_id=candidato.id)
+    
+    else:
+        form = EstudioCandidatoForm(candidato_id=candidato.id)
+    
+    return render(request, 'candidato/form_estudio.html', {'form': form, 'candidato': candidato})
