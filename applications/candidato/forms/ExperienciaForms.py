@@ -18,7 +18,7 @@ class ExperienciaCandidatoForm(forms.Form):
     
 
     def __init__(self, *args, **kwargs):
-        self.candidato_id = kwargs.pop('candidato_id', None)
+        
         super(ExperienciaCandidatoForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
@@ -64,7 +64,7 @@ class ExperienciaCandidatoForm(forms.Form):
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', sector):
             self.add_error('sector', "La entidad solo puede contener letras.")
         else:
-            self.cleaned_data['sector'] = entidad.upper()
+            self.cleaned_data['sector'] = sector.upper()
 
         fecha_actual = timezone.now().date()
 
