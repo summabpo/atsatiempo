@@ -1,0 +1,1184 @@
+[
+    {
+        "label": "re,",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "re.",
+        "description": "re.",
+        "detail": "re.",
+        "documentation": {}
+    },
+    {
+        "label": "forms",
+        "importPath": "django",
+        "description": "django",
+        "isExtraImport": true,
+        "detail": "django",
+        "documentation": {}
+    },
+    {
+        "label": "forms",
+        "importPath": "django",
+        "description": "django",
+        "isExtraImport": true,
+        "detail": "django",
+        "documentation": {}
+    },
+    {
+        "label": "FormHelper",
+        "importPath": "crispy_forms.helper",
+        "description": "crispy_forms.helper",
+        "isExtraImport": true,
+        "detail": "crispy_forms.helper",
+        "documentation": {}
+    },
+    {
+        "label": "FormHelper",
+        "importPath": "crispy_forms.helper",
+        "description": "crispy_forms.helper",
+        "isExtraImport": true,
+        "detail": "crispy_forms.helper",
+        "documentation": {}
+    },
+    {
+        "label": "Layout",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Submit",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Row",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Column",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Layout",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Submit",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Row",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Column",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Cat001Estado",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat004Ciudad",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat001Estado",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat004Ciudad",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat004Ciudad",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat001Estado",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat001Estado",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat004Ciudad",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "django.db.models.deletion",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "django.db.models.deletion",
+        "description": "django.db.models.deletion",
+        "detail": "django.db.models.deletion",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "admin",
+        "importPath": "django.contrib",
+        "description": "django.contrib",
+        "isExtraImport": true,
+        "detail": "django.contrib",
+        "documentation": {}
+    },
+    {
+        "label": "admin",
+        "importPath": "django.contrib",
+        "description": "django.contrib",
+        "isExtraImport": true,
+        "detail": "django.contrib",
+        "documentation": {}
+    },
+    {
+        "label": "admin",
+        "importPath": "django.contrib",
+        "description": "django.contrib",
+        "isExtraImport": true,
+        "detail": "django.contrib",
+        "documentation": {}
+    },
+    {
+        "label": "admin",
+        "importPath": "django.contrib",
+        "description": "django.contrib",
+        "isExtraImport": true,
+        "detail": "django.contrib",
+        "documentation": {}
+    },
+    {
+        "label": "admin",
+        "importPath": "django.contrib",
+        "description": "django.contrib",
+        "isExtraImport": true,
+        "detail": "django.contrib",
+        "documentation": {}
+    },
+    {
+        "label": "AppConfig",
+        "importPath": "django.apps",
+        "description": "django.apps",
+        "isExtraImport": true,
+        "detail": "django.apps",
+        "documentation": {}
+    },
+    {
+        "label": "AppConfig",
+        "importPath": "django.apps",
+        "description": "django.apps",
+        "isExtraImport": true,
+        "detail": "django.apps",
+        "documentation": {}
+    },
+    {
+        "label": "AppConfig",
+        "importPath": "django.apps",
+        "description": "django.apps",
+        "isExtraImport": true,
+        "detail": "django.apps",
+        "documentation": {}
+    },
+    {
+        "label": "AppConfig",
+        "importPath": "django.apps",
+        "description": "django.apps",
+        "isExtraImport": true,
+        "detail": "django.apps",
+        "documentation": {}
+    },
+    {
+        "label": "TestCase",
+        "importPath": "django.test",
+        "description": "django.test",
+        "isExtraImport": true,
+        "detail": "django.test",
+        "documentation": {}
+    },
+    {
+        "label": "TestCase",
+        "importPath": "django.test",
+        "description": "django.test",
+        "isExtraImport": true,
+        "detail": "django.test",
+        "documentation": {}
+    },
+    {
+        "label": "TestCase",
+        "importPath": "django.test",
+        "description": "django.test",
+        "isExtraImport": true,
+        "detail": "django.test",
+        "documentation": {}
+    },
+    {
+        "label": "path",
+        "importPath": "django.urls",
+        "description": "django.urls",
+        "isExtraImport": true,
+        "detail": "django.urls",
+        "documentation": {}
+    },
+    {
+        "label": "path",
+        "importPath": "django.urls",
+        "description": "django.urls",
+        "isExtraImport": true,
+        "detail": "django.urls",
+        "documentation": {}
+    },
+    {
+        "label": "path",
+        "importPath": "django.urls",
+        "description": "django.urls",
+        "isExtraImport": true,
+        "detail": "django.urls",
+        "documentation": {}
+    },
+    {
+        "label": "re_path",
+        "importPath": "django.urls",
+        "description": "django.urls",
+        "isExtraImport": true,
+        "detail": "django.urls",
+        "documentation": {}
+    },
+    {
+        "label": "include",
+        "importPath": "django.urls",
+        "description": "django.urls",
+        "isExtraImport": true,
+        "detail": "django.urls",
+        "documentation": {}
+    },
+    {
+        "label": "render",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "redirect",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "render",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "redirect",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "render",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "TemplateView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "ListView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "DetailView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "CreateView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "TemplateView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "UpdateView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "DeleteView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "get_asgi_application",
+        "importPath": "django.core.asgi",
+        "description": "django.core.asgi",
+        "isExtraImport": true,
+        "detail": "django.core.asgi",
+        "documentation": {}
+    },
+    {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "settings",
+        "importPath": "django.conf",
+        "description": "django.conf",
+        "isExtraImport": true,
+        "detail": "django.conf",
+        "documentation": {}
+    },
+    {
+        "label": "static",
+        "importPath": "django.conf.urls.static",
+        "description": "django.conf.urls.static",
+        "isExtraImport": true,
+        "detail": "django.conf.urls.static",
+        "documentation": {}
+    },
+    {
+        "label": "get_wsgi_application",
+        "importPath": "django.core.wsgi",
+        "description": "django.core.wsgi",
+        "isExtraImport": true,
+        "detail": "django.core.wsgi",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "CandidatoForm",
+        "kind": 6,
+        "importPath": "applications.candidato.forms.CandidatoForms",
+        "description": "applications.candidato.forms.CandidatoForms",
+        "peekOfCode": "class CandidatoForm(forms.Form):\n    estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)\n    email = forms.CharField(label='EMAIL', required=True , widget=forms.TextInput(attrs={'placeholder': 'Email'}))\n    primer_nombre = forms.CharField(label='PRIMER NOMBRE', required=True, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Primer Nombre'}))\n    segundo_nombre = forms.CharField(label='SEGUNDO NOMBRE', required=False, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Segundo Nombre'}))\n    primer_apellido = forms.CharField(label='PRIMER APELLIDO', required=True, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Primer Apellido'}))\n    segundo_apellido = forms.CharField(label='SEGUNDO APELLIDO', required=False, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Segundo Apellido'}))\n    ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)\n    sexo = forms.ChoiceField(label='GENERO', choices=[ ('', '---'), ('M', 'MASCULINO'), ('F', 'FEMENINO')], required=True)\n    fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)",
+        "detail": "applications.candidato.forms.CandidatoForms",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "applications.candidato.migrations.0001_initial",
+        "description": "applications.candidato.migrations.0001_initial",
+        "peekOfCode": "class Migration(migrations.Migration):\n    initial = True\n    dependencies = [\n        ('common', '__first__'),\n    ]\n    operations = [\n        migrations.CreateModel(\n            name='Can101Candidato',\n            fields=[\n                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),",
+        "detail": "applications.candidato.migrations.0001_initial",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "applications.candidato.migrations.0002_alter_can101candidato_primer_apellido_and_more",
+        "description": "applications.candidato.migrations.0002_alter_can101candidato_primer_apellido_and_more",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0001_initial'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='can101candidato',\n            name='primer_apellido',\n            field=models.CharField(blank=True, max_length=50, verbose_name='Primer Apellido'),\n        ),",
+        "detail": "applications.candidato.migrations.0002_alter_can101candidato_primer_apellido_and_more",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "applications.candidato.migrations.0003_can101candidato_fecha_nacimiento_and_more",
+        "description": "applications.candidato.migrations.0003_can101candidato_fecha_nacimiento_and_more",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0002_alter_can101candidato_primer_apellido_and_more'),\n        ('common', '0002_alter_cat001estado_nombre_alter_cat001estado_sigla_and_more'),\n    ]\n    operations = [\n        migrations.AddField(\n            model_name='can101candidato',\n            name='fecha_nacimiento',\n            field=models.DateField(blank=True, null=True),",
+        "detail": "applications.candidato.migrations.0003_can101candidato_fecha_nacimiento_and_more",
+        "documentation": {}
+    },
+    {
+        "label": "CandidatoConfig",
+        "kind": 6,
+        "importPath": "applications.candidato.apps",
+        "description": "applications.candidato.apps",
+        "peekOfCode": "class CandidatoConfig(AppConfig):\n    default_auto_field = 'django.db.models.BigAutoField'\n    name = 'applications.candidato'",
+        "detail": "applications.candidato.apps",
+        "documentation": {}
+    },
+    {
+        "label": "Can101Candidato",
+        "kind": 6,
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "peekOfCode": "class Can101Candidato(models.Model):\n    SEXO_CHOICES = (\n        ('1', 'FEMENINO'),\n        ('2', 'MASCULINO'),\n    )\n    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')\n    email = models.EmailField(unique=True)\n    primer_nombre = models.CharField(max_length=50, verbose_name=\"Primer Nombre\", blank=True, null=False)\n    segundo_nombre = models.CharField(max_length=50, verbose_name=\"Segunndo Nombre\", blank=True, null=True)\n    primer_apellido = models.CharField(max_length=50, verbose_name=\"Primer Apellido\", blank=True, null=False)",
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can102Experiencia",
+        "kind": 6,
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "peekOfCode": "class Can102Experiencia(models.Model):\n    ACTIVO_CHOICES = (\n        ('1', 'SI'),\n        ('2', 'NO'),\n    )\n    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')\n    entidad = models.CharField(max_length=100)\n    sector = models.CharField(max_length=100)\n    fecha_inicial = models.DateTimeField(blank=True, null=True)\n    fecha_final = models.DateTimeField(blank=True, null=False)",
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can103Educacion",
+        "kind": 6,
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "peekOfCode": "class Can103Educacion(models.Model):\n    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')\n    institucion = models.CharField(max_length=100)\n    fecha_inicial = models.DateTimeField()\n    fecha_final = models.DateTimeField(blank=True, null=True)\n    grado_en = models.CharField(max_length=100, blank=True, null=True)\n    titulo = models.CharField(max_length=100, blank=True, null=True)\n    carrera = models.CharField(max_length=100, blank=True, null=True)\n    fortaleza_adquiridas = models.TextField(blank=True, null=True)\n    candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)",
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can104Skill",
+        "kind": 6,
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "peekOfCode": "class Can104Skill(models.Model):\n    estado_id_004 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_004')\n    nombre = models.CharField(max_length=50)\n    class Meta:\n        #managed = False\n        db_table = 'can_104_skill'\n        verbose_name = 'SKILL'",
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "urlpatterns",
+        "kind": 5,
+        "importPath": "applications.candidato.urls",
+        "description": "applications.candidato.urls",
+        "peekOfCode": "urlpatterns = [\n    path('', views.InicioView.as_view(), name='inicio'),\n    path('crear_candidato', views.candidato_crear, name='candidato_crear'),\n]",
+        "detail": "applications.candidato.urls",
+        "documentation": {}
+    },
+    {
+        "label": "InicioView",
+        "kind": 6,
+        "importPath": "applications.candidato.views",
+        "description": "applications.candidato.views",
+        "peekOfCode": "class InicioView(TemplateView):\n    \"\"\" vista que carga la pagina de inicio \"\"\"\n    template_name = 'candidato/index.html'\ndef candidato_crear(request):\n    \"\"\" vista que carga la pagina de inicio \"\"\"\n    if request.method == 'POST':\n        form = CandidatoForm(request.POST)\n        if form.is_valid():\n            form.save()\n            return redirect('candidato_crear')",
+        "detail": "applications.candidato.views",
+        "documentation": {}
+    },
+    {
+        "label": "candidato_crear",
+        "kind": 2,
+        "importPath": "applications.candidato.views",
+        "description": "applications.candidato.views",
+        "peekOfCode": "def candidato_crear(request):\n    \"\"\" vista que carga la pagina de inicio \"\"\"\n    if request.method == 'POST':\n        form = CandidatoForm(request.POST)\n        if form.is_valid():\n            form.save()\n            return redirect('candidato_crear')\n    else:\n        form = CandidatoForm()\n    return render(request, 'candidato/index.html', {'form': form})",
+        "detail": "applications.candidato.views",
+        "documentation": {}
+    },
+    {
+        "label": "ClienteForm",
+        "kind": 6,
+        "importPath": "applications.cliente.forms.ClienteForms",
+        "description": "applications.cliente.forms.ClienteForms",
+        "peekOfCode": "class ClienteForm(forms.Form):\n    estado_id_001 = forms.ModelChoiceField(label='ESTADO'    , queryset=Cat001Estado.objects.all(), required=True)\n    nit           = forms.CharField(label='NIT' , required=True  ,widget=forms.TextInput(attrs={'placeholder': ' Nit'}))\n    razon_social  = forms.CharField(label='RAZON SOCIAL', required=True ,widget=forms.TextInput(attrs={'placeholder': 'Razón Social'}))\n    ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)\n    email         = forms.CharField(label='EMAIL'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Email'}))\n    contacto      = forms.CharField(label='CONTACTO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Contacto'}))\n    telefono      = forms.CharField(label='TELEFONO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))\n    perfil_empresarial = forms.CharField(label='PERFIL EMPRESARIAL', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Empresa'}))\n    logo = forms.ImageField(label='LOGO', required=False)",
+        "detail": "applications.cliente.forms.ClienteForms",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "applications.cliente.migrations.0001_initial",
+        "description": "applications.cliente.migrations.0001_initial",
+        "peekOfCode": "class Migration(migrations.Migration):\n    initial = True\n    dependencies = [\n        ('common', '0001_initial'),\n    ]\n    operations = [\n        migrations.CreateModel(\n            name='Cli051Cliente',\n            fields=[\n                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),",
+        "detail": "applications.cliente.migrations.0001_initial",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "applications.cliente.migrations.0002_alter_cli051cliente_contacto_and_more",
+        "description": "applications.cliente.migrations.0002_alter_cli051cliente_contacto_and_more",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('cliente', '0001_initial'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='cli051cliente',\n            name='contacto',\n            field=models.CharField(max_length=50),\n        ),",
+        "detail": "applications.cliente.migrations.0002_alter_cli051cliente_contacto_and_more",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "applications.cliente.migrations.0003_cli051cliente_logo_cli051cliente_perfil_empresarial",
+        "description": "applications.cliente.migrations.0003_cli051cliente_logo_cli051cliente_perfil_empresarial",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('cliente', '0002_alter_cli051cliente_contacto_and_more'),\n    ]\n    operations = [\n        migrations.AddField(\n            model_name='cli051cliente',\n            name='logo',\n            field=models.ImageField(blank=True, null=True, upload_to='clientes/logos/'),\n        ),",
+        "detail": "applications.cliente.migrations.0003_cli051cliente_logo_cli051cliente_perfil_empresarial",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "applications.cliente.migrations.0004_alter_cli051cliente_logo",
+        "description": "applications.cliente.migrations.0004_alter_cli051cliente_logo",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('cliente', '0003_cli051cliente_logo_cli051cliente_perfil_empresarial'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='cli051cliente',\n            name='logo',\n            field=models.ImageField(blank=True, null=True, upload_to='cliente'),\n        ),",
+        "detail": "applications.cliente.migrations.0004_alter_cli051cliente_logo",
+        "documentation": {}
+    },
+    {
+        "label": "ClienteConfig",
+        "kind": 6,
+        "importPath": "applications.cliente.apps",
+        "description": "applications.cliente.apps",
+        "peekOfCode": "class ClienteConfig(AppConfig):\n    default_auto_field = 'django.db.models.BigAutoField'\n    name = 'applications.cliente'",
+        "detail": "applications.cliente.apps",
+        "documentation": {}
+    },
+    {
+        "label": "Cli051Cliente",
+        "kind": 6,
+        "importPath": "applications.cliente.models",
+        "description": "applications.cliente.models",
+        "peekOfCode": "class Cli051Cliente(models.Model):\n    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')\n    nit = models.IntegerField(blank=False)\n    razon_social = models.CharField(max_length=100, blank=False)\n    ciudad_id_004 = models.ForeignKey(Cat004Ciudad, models.DO_NOTHING, db_column='ciudad_id_004')\n    email = models.EmailField(unique=True)\n    contacto = models.CharField(max_length=50, blank=False)\n    telefono = models.CharField(max_length=20, blank=False)\n    perfil_empresarial = models.TextField(blank=True)  # Nuevo campo de texto\n    logo = models.ImageField(upload_to='cliente', blank=True, null=True)  # Nuevo campo de imagen",
+        "detail": "applications.cliente.models",
+        "documentation": {}
+    },
+    {
+        "label": "urlpatterns",
+        "kind": 5,
+        "importPath": "applications.cliente.urls",
+        "description": "applications.cliente.urls",
+        "peekOfCode": "urlpatterns = [\n    path('crear_cliente', views.cliente_crear, name='cliente_crear'),\n    path('listar_cliente', views.ListadoClientes.as_view(), name='cliente_listar'),\n]",
+        "detail": "applications.cliente.urls",
+        "documentation": {}
+    },
+    {
+        "label": "ListadoClientes",
+        "kind": 6,
+        "importPath": "applications.cliente.views",
+        "description": "applications.cliente.views",
+        "peekOfCode": "class ListadoClientes(ListView):\n    template_name = 'cliente/listado_clientes.html'\n    model = Cli051Cliente\n    context_object_name = 'clientes'",
+        "detail": "applications.cliente.views",
+        "documentation": {}
+    },
+    {
+        "label": "cliente_crear",
+        "kind": 2,
+        "importPath": "applications.cliente.views",
+        "description": "applications.cliente.views",
+        "peekOfCode": "def cliente_crear(request):\n    if request.method == 'POST':\n        form = ClienteForm(request.POST, request.FILES)\n        if form.is_valid():\n            ClienteForm.logo = form.cleaned_data['logo']\n            form.save()\n            return redirect('cliente_crear')  # Cambia a la vista deseada después de guardar\n    else:\n        form = ClienteForm()\n    return render(request, 'cliente/index.html', {'form': form})",
+        "detail": "applications.cliente.views",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "applications.common.migrations.0001_initial",
+        "description": "applications.common.migrations.0001_initial",
+        "peekOfCode": "class Migration(migrations.Migration):\n    initial = True\n    dependencies = [\n    ]\n    operations = [\n        migrations.CreateModel(\n            name='Cat001Estado',\n            fields=[\n                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),\n                ('nombre', models.TextField()),",
+        "detail": "applications.common.migrations.0001_initial",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "applications.common.migrations.0002_alter_cat001estado_nombre_alter_cat001estado_sigla_and_more",
+        "description": "applications.common.migrations.0002_alter_cat001estado_nombre_alter_cat001estado_sigla_and_more",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('common', '0001_initial'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='cat001estado',\n            name='nombre',\n            field=models.CharField(max_length=30),\n        ),",
+        "detail": "applications.common.migrations.0002_alter_cat001estado_nombre_alter_cat001estado_sigla_and_more",
+        "documentation": {}
+    },
+    {
+        "label": "EstadoAdmin",
+        "kind": 6,
+        "importPath": "applications.common.admin",
+        "description": "applications.common.admin",
+        "peekOfCode": "class EstadoAdmin(admin.ModelAdmin):\n    list_display = ('id', 'nombre', 'sigla')\n    short_description = \"Estado\"\nadmin.site.register(Cat001Estado, EstadoAdmin)\nclass CiudadAdmin(admin.ModelAdmin):\n    list_display = ('id', 'nombre')\n    short_description = \"Estado\"\nadmin.site.register(Cat004Ciudad, CiudadAdmin)",
+        "detail": "applications.common.admin",
+        "documentation": {}
+    },
+    {
+        "label": "CiudadAdmin",
+        "kind": 6,
+        "importPath": "applications.common.admin",
+        "description": "applications.common.admin",
+        "peekOfCode": "class CiudadAdmin(admin.ModelAdmin):\n    list_display = ('id', 'nombre')\n    short_description = \"Estado\"\nadmin.site.register(Cat004Ciudad, CiudadAdmin)",
+        "detail": "applications.common.admin",
+        "documentation": {}
+    },
+    {
+        "label": "CandidatoConfig",
+        "kind": 6,
+        "importPath": "applications.common.apps",
+        "description": "applications.common.apps",
+        "peekOfCode": "class CandidatoConfig(AppConfig):\n    default_auto_field = 'django.db.models.BigAutoField'\n    name = 'applications.common'",
+        "detail": "applications.common.apps",
+        "documentation": {}
+    },
+    {
+        "label": "Cat001Estado",
+        "kind": 6,
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "peekOfCode": "class Cat001Estado(models.Model):\n    nombre = models.CharField(max_length=30)\n    sigla = models.CharField(max_length=100, blank=True, null=True)\n    def __str__(self):\n        return self.nombre\n    class Meta:\n        #managed = False\n        db_table = 'cat_001_estado'\n        verbose_name = 'ESTADO'\n        verbose_name_plural = 'ESTADOS'",
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat004Ciudad",
+        "kind": 6,
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "peekOfCode": "class Cat004Ciudad(models.Model):\n    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')\n    nombre = models.CharField(max_length=50)\n    departamento_id_003 = models.IntegerField(blank=True, null=True)\n    def __str__(self):\n            return self.nombre\n    class Meta:\n        #managed = False\n        db_table = 'cat_004_ciudad'\n        verbose_name = 'CIUDAD'",
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "PruebasPsiConfig",
+        "kind": 6,
+        "importPath": "applications.pruebas_psi.apps",
+        "description": "applications.pruebas_psi.apps",
+        "peekOfCode": "class PruebasPsiConfig(AppConfig):\n    default_auto_field = 'django.db.models.BigAutoField'\n    name = 'applications.pruebas_psi'",
+        "detail": "applications.pruebas_psi.apps",
+        "documentation": {}
+    },
+    {
+        "label": "application",
+        "kind": 5,
+        "importPath": "atsatiempo.asgi",
+        "description": "atsatiempo.asgi",
+        "peekOfCode": "application = get_asgi_application()",
+        "detail": "atsatiempo.asgi",
+        "documentation": {}
+    },
+    {
+        "label": "BASE_DIR",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "BASE_DIR = Path(__file__).resolve().parent.parent\n# Quick-start development settings - unsuitable for production\n# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/\n# SECURITY WARNING: keep the secret key used in production secret!\nSECRET_KEY = 'django-insecure-3r81jh!o!!!z+(c=fhy=x=jqsl%)6fyj9wds6j@n*$uf-%ih8-'\n# SECURITY WARNING: don't run with debug turned on in production!\nDEBUG = True\nALLOWED_HOSTS = []\n# Application definition\nINSTALLED_APPS = [",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "SECRET_KEY",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "SECRET_KEY = 'django-insecure-3r81jh!o!!!z+(c=fhy=x=jqsl%)6fyj9wds6j@n*$uf-%ih8-'\n# SECURITY WARNING: don't run with debug turned on in production!\nDEBUG = True\nALLOWED_HOSTS = []\n# Application definition\nINSTALLED_APPS = [\n    'django.contrib.admin',\n    'django.contrib.auth',\n    'django.contrib.contenttypes',\n    'django.contrib.sessions',",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "DEBUG",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "DEBUG = True\nALLOWED_HOSTS = []\n# Application definition\nINSTALLED_APPS = [\n    'django.contrib.admin',\n    'django.contrib.auth',\n    'django.contrib.contenttypes',\n    'django.contrib.sessions',\n    'django.contrib.messages',\n    'django.contrib.staticfiles',",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "ALLOWED_HOSTS",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "ALLOWED_HOSTS = []\n# Application definition\nINSTALLED_APPS = [\n    'django.contrib.admin',\n    'django.contrib.auth',\n    'django.contrib.contenttypes',\n    'django.contrib.sessions',\n    'django.contrib.messages',\n    'django.contrib.staticfiles',\n    'crispy_forms',",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "INSTALLED_APPS",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "INSTALLED_APPS = [\n    'django.contrib.admin',\n    'django.contrib.auth',\n    'django.contrib.contenttypes',\n    'django.contrib.sessions',\n    'django.contrib.messages',\n    'django.contrib.staticfiles',\n    'crispy_forms',\n    \"crispy_bootstrap5\",\n    #",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "CRISPY_ALLOWED_TEMPLATE_PACKS",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'\nCRISPY_TEMPLATE_PACK = 'bootstrap5'\nMIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "CRISPY_TEMPLATE_PACK",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "CRISPY_TEMPLATE_PACK = 'bootstrap5'\nMIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',\n]",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "MIDDLEWARE",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "MIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',\n]\nROOT_URLCONF = 'atsatiempo.urls'",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "ROOT_URLCONF",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "ROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {\n            'context_processors': [\n                'django.template.context_processors.debug',\n                'django.template.context_processors.request',",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "TEMPLATES",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "TEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {\n            'context_processors': [\n                'django.template.context_processors.debug',\n                'django.template.context_processors.request',\n                'django.contrib.auth.context_processors.auth',",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "WSGI_APPLICATION",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "WSGI_APPLICATION = 'atsatiempo.wsgi.application'\n# Database\n# https://docs.djangoproject.com/en/5.0/ref/settings/#databases\n# DATABASES = {\n#     'default': {\n#         'ENGINE': 'django.db.backends.sqlite3',\n#         'NAME': BASE_DIR / 'db.sqlite3',\n#     }\n# }\nDATABASES = {",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "DATABASES",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "DATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': 'db_ats',\n        'USER': 'postgres',\n        'PASSWORD': '4t13mp0*s4s*',  \n        'HOST': 'devatiempo.cqfpcv4ejul5.us-east-1.rds.amazonaws.com',\n        'PORT': '5432',\n    }\n}",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "AUTH_PASSWORD_VALIDATORS",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "AUTH_PASSWORD_VALIDATORS = [\n    {\n        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',\n    },\n    {\n        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',\n    },\n    {\n        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',\n    },",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "LANGUAGE_CODE",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "LANGUAGE_CODE = 'es-co'\nTIME_ZONE = 'America/Bogota'\nUSE_I18N = True\nUSE_L10N = True\nUSE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.0/howto/static-files/\nSTATIC_URL = '/static/'\nSTATICFILES_DIRS = [\n    os.path.join(BASE_DIR, 'static')",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "TIME_ZONE",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "TIME_ZONE = 'America/Bogota'\nUSE_I18N = True\nUSE_L10N = True\nUSE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.0/howto/static-files/\nSTATIC_URL = '/static/'\nSTATICFILES_DIRS = [\n    os.path.join(BASE_DIR, 'static')\n]",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "USE_I18N",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "USE_I18N = True\nUSE_L10N = True\nUSE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.0/howto/static-files/\nSTATIC_URL = '/static/'\nSTATICFILES_DIRS = [\n    os.path.join(BASE_DIR, 'static')\n]\nSTATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "USE_L10N",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "USE_L10N = True\nUSE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.0/howto/static-files/\nSTATIC_URL = '/static/'\nSTATICFILES_DIRS = [\n    os.path.join(BASE_DIR, 'static')\n]\nSTATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')\nMEDIA_URL = '/media/'",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "USE_TZ",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "USE_TZ = True\n# Static files (CSS, JavaScript, Images)\n# https://docs.djangoproject.com/en/5.0/howto/static-files/\nSTATIC_URL = '/static/'\nSTATICFILES_DIRS = [\n    os.path.join(BASE_DIR, 'static')\n]\nSTATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')\nMEDIA_URL = '/media/'\nMEDIA_ROOT = os.path.join(BASE_DIR, 'media')",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "STATIC_URL",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "STATIC_URL = '/static/'\nSTATICFILES_DIRS = [\n    os.path.join(BASE_DIR, 'static')\n]\nSTATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')\nMEDIA_URL = '/media/'\nMEDIA_ROOT = os.path.join(BASE_DIR, 'media')\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "STATICFILES_DIRS",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "STATICFILES_DIRS = [\n    os.path.join(BASE_DIR, 'static')\n]\nSTATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')\nMEDIA_URL = '/media/'\nMEDIA_ROOT = os.path.join(BASE_DIR, 'media')\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "STATIC_ROOT",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')\nMEDIA_URL = '/media/'\nMEDIA_ROOT = os.path.join(BASE_DIR, 'media')\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "MEDIA_URL",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "MEDIA_URL = '/media/'\nMEDIA_ROOT = os.path.join(BASE_DIR, 'media')\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "MEDIA_ROOT",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "MEDIA_ROOT = os.path.join(BASE_DIR, 'media')\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_AUTO_FIELD",
+        "kind": 5,
+        "importPath": "atsatiempo.settings",
+        "description": "atsatiempo.settings",
+        "peekOfCode": "DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'",
+        "detail": "atsatiempo.settings",
+        "documentation": {}
+    },
+    {
+        "label": "urlpatterns",
+        "kind": 5,
+        "importPath": "atsatiempo.urls",
+        "description": "atsatiempo.urls",
+        "peekOfCode": "urlpatterns = [\n    path('admin/', admin.site.urls),\n    re_path('', include(('applications.candidato.urls'))),\n    re_path('', include(('applications.cliente.urls'))),\n] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)",
+        "detail": "atsatiempo.urls",
+        "documentation": {}
+    },
+    {
+        "label": "application",
+        "kind": 5,
+        "importPath": "atsatiempo.wsgi",
+        "description": "atsatiempo.wsgi",
+        "peekOfCode": "application = get_wsgi_application()",
+        "detail": "atsatiempo.wsgi",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "manage",
+        "description": "manage",
+        "peekOfCode": "def main():\n    \"\"\"Run administrative tasks.\"\"\"\n    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'atsatiempo.settings')\n    try:\n        from django.core.management import execute_from_command_line\n    except ImportError as exc:\n        raise ImportError(\n            \"Couldn't import Django. Are you sure it's installed and \"\n            \"available on your PYTHONPATH environment variable? Did you \"\n            \"forget to activate a virtual environment?\"",
+        "detail": "manage",
+        "documentation": {}
+    }
+]
