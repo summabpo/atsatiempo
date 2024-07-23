@@ -18,6 +18,7 @@ class Can101Candidato(models.Model):
     sexo = models.CharField(max_length=1, blank=True, null=True, choices=SEXO_CHOICES)
     fecha_nacimiento = models.DateField(null=True, blank=True)  # Nuevo campo de fecha
     telefono = models.CharField(max_length=10, blank=True, null=True)
+    skills = models.ManyToManyField('Can104Skill', related_name='candidatos_skill')
 
 
     def __str__(self):
@@ -32,16 +33,16 @@ class Can101Candidato(models.Model):
 class Can102Experiencia(models.Model):
     
     ACTIVO_CHOICES = (
-        ('1', 'SI'),
-        ('2', 'NO'),
+        ('SI', 'SI'),
+        ('NO', 'NO'),
     )
 
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     entidad = models.CharField(max_length=100)
     sector = models.CharField(max_length=100)
-    fecha_inicial = models.DateTimeField(blank=True, null=True)
-    fecha_final = models.DateTimeField(blank=True, null=False)
-    activo = models.CharField(max_length=1, choices=ACTIVO_CHOICES)
+    fecha_inicial = models.DateField(blank=True, null=True)
+    fecha_final = models.DateField(blank=True, null=False)
+    activo = models.CharField(max_length=2, choices=ACTIVO_CHOICES)
     logro = models.TextField(blank=True, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
 
@@ -58,11 +59,11 @@ class Can102Experiencia(models.Model):
 class Can103Educacion(models.Model):
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     institucion = models.CharField(max_length=100)
-    fecha_inicial = models.DateTimeField()
-    fecha_final = models.DateTimeField(blank=True, null=True)
-    grado_en = models.CharField(max_length=100, blank=True, null=True)
-    titulo = models.CharField(max_length=100, blank=True, null=True)
-    carrera = models.CharField(max_length=100, blank=True, null=True)
+    fecha_inicial = models.DateField(blank=True, null=True)
+    fecha_final = models.DateField(blank=True, null=False)
+    grado_en = models.CharField(max_length=100, blank=True, null=False)
+    titulo = models.CharField(max_length=100, blank=True, null=False)
+    carrera = models.CharField(max_length=100, blank=True, null=False)
     fortaleza_adquiridas = models.TextField(blank=True, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
     ciudad_id_004 = models.ForeignKey(Cat004Ciudad, models.DO_NOTHING, db_column='ciudad_id_004', blank=True, null=True)

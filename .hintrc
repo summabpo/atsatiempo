@@ -3,6 +3,11 @@
     "development"
   ],
   "hints": {
-    "meta-viewport": "off"
+    "meta-viewport": "off",
+    "no-inline-styles": "off",
+    "axe/name-role-value": "off",
+    "axe/structure": "off",
+    "button-type": "off",
+    "axe/aria": "off"
   }
 }

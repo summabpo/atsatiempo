@@ -58,7 +58,7 @@ class ClienteForm(forms.Form):
             self.add_error('telefono','El teléfono debe contener solo números y tener 10 dígitos.')
 
         if len(perfil_empresarial.split()) < 60:
-            self.add_error('perfil_empresarial','La descripción debe contener al menos 60 apalbras')
+            self.add_error('perfil_empresarial','La descripción debe contener al menos 60 palabras')
 
         if email and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
             self.add_error('email','El email no es válido.')
@@ -82,6 +82,8 @@ class ClienteForm(forms.Form):
 
             if Cli051Cliente.objects.filter(logo=logo.name).exists():
                 self.add_error('logo','Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
+
+        return super().clean()
 
 
     def save(self):
