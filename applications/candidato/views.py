@@ -85,6 +85,6 @@ def estudio_crear(request, candidato_id):
             return redirect('candidatos:estudios_listar', candidato_id=candidato.id)
     
     else:
-        form = EstudioCandidatoForm(candidato_id=candidato.id)
+        form = EstudioCandidatoForm()
     
     return render(request, 'candidato/form_estudio.html', {'form': form, 'candidato': candidato})

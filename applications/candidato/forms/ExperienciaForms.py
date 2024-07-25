@@ -18,7 +18,7 @@ class ExperienciaCandidatoForm(forms.Form):
     
 
     def __init__(self, *args, **kwargs):
-        
+        self.candidato_id = kwargs.pop('candidato_id', None)
         super(ExperienciaCandidatoForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
@@ -82,8 +82,7 @@ class ExperienciaCandidatoForm(forms.Form):
 
             if fecha_inicial and fecha_inicial > fecha_final:
                 self.add_error({
-                    'fecha_inicial': "La fecha inicial no puede ser mayor a la fecha final.",
-                    'fecha_final': "La fecha final no puede ser menor a la fecha inicial."
+                    'fecha_inicial': "La fecha inicial no puede ser mayor a la fecha final."
                 })
 
         if activo == 'NO':  # '2' representa 'NO' en ACTIVO_CHOICES
