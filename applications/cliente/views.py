@@ -16,7 +16,7 @@ def cliente_crear(request):
         if form.is_valid():
             ClienteForm.logo = form.cleaned_data['logo']
             form.save()
-            return redirect('cliente_crear')  # Cambia a la vista deseada después de guardar
+            return redirect('clientes:cliente_listar')  # Cambia a la vista deseada después de guardar
     else:
         form = ClienteForm()
     
