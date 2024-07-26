@@ -24,7 +24,8 @@ class EstudioCandidatoForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.label_class = Layout(
+        
+        self.helper.layout = Layout(
             Row(
                 Column('estado_id_001'),
             ),
@@ -46,6 +47,9 @@ class EstudioCandidatoForm(forms.Form):
             ),
             Row(
                 Column('fortaleza_adquiridas'),
+            ),
+            Row(
+                Column('ciudad_id_004'),
             ),
             Submit('submit', 'Guardar')
         )
@@ -107,6 +111,10 @@ class EstudioCandidatoForm(forms.Form):
         return cleaned_data
 
     def save(self, candidato_id):
+
+        if not self.is_valid():
+            raise ValueError("El formulario no es válido")
+    
         estado_id_001 = self.cleaned_data['estado_id_001']
         institucion   = self.cleaned_data['institucion'] 
         fecha_inicial = self.cleaned_data['fecha_inicial']
@@ -117,7 +125,7 @@ class EstudioCandidatoForm(forms.Form):
         fortaleza_adquiridas = self.cleaned_data['fortaleza_adquiridas']
         ciudad_id_004 = self.cleaned_data['ciudad_id_004']
         candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
-
+        
         estudio = Can103Educacion(
             estado_id_001 = estado_id_001,
             institucion = institucion,

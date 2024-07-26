@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Can101Candidato, Can102Experiencia, Can103Educacion
-from .forms.CandidatoForms import CandidatoForm
-from .forms.ExperienciaForms import ExperienciaCandidatoForm
-from .forms.EstudioForms import EstudioCandidatoForm
+from ..models import Can101Candidato, Can102Experiencia, Can103Educacion
+from ..forms.CandidatoForms import CandidatoForm
+from ..forms.ExperienciaForms import ExperienciaCandidatoForm
+from ..forms.EstudioForms import EstudioCandidatoForm
 from django.views.generic import (TemplateView, ListView)
 
 # Create your views here.
@@ -77,14 +77,15 @@ def estudio_listar(request, candidato_id):
 
 def estudio_crear(request, candidato_id):
     candidato = get_object_or_404(Can101Candidato, id=candidato_id)
-    
+    print('ok')
     if request.method == 'POST':
         form = EstudioCandidatoForm(request.POST)
         if form.is_valid():
             form.save(candidato_id=candidato.id)
-            return redirect('candidatos:estudios_listar', candidato_id=candidato.id)
-    
+            return redirect('candidatos:estudio_listar', candidato_id=candidato.id)
+        else:
+            print(form.errors)
     else:
-        form = EstudioCandidatoForm()
-    
+        form = EstudioCandidatoForm(candidato_id=candidato.id)
+
     return render(request, 'candidato/form_estudio.html', {'form': form, 'candidato': candidato})
