@@ -3,7 +3,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from ..models import Can101Candidato, Can102Experiencia, Can103Educacion, Can104Skill
+from ..models import Can101Candidato
 
 class CandidatoForm(forms.Form):
     estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)

@@ -4,6 +4,7 @@ from ..forms.CandidatoForms import CandidatoForm
 from ..forms.ExperienciaForms import ExperienciaCandidatoForm
 from ..forms.EstudioForms import EstudioCandidatoForm
 from django.views.generic import (TemplateView, ListView)
+from django.contrib import messages
 
 # Create your views here.
 class InicioView(TemplateView):
@@ -57,7 +58,10 @@ def experiencia_crear(request, candidato_id):
         form = ExperienciaCandidatoForm(request.POST)
         if form.is_valid():
             experiencia = form.save(candidato_id=candidato.id)
+            messages.success(request, 'El Registro ha sido creado')
             return redirect('candidatos:experiencia_listar', candidato_id=candidato.id)
+        else:
+            messages.success(request, form.errors)
     else:
         form = ExperienciaCandidatoForm(candidato_id=candidato.id)
     
@@ -77,7 +81,7 @@ def estudio_listar(request, candidato_id):
 
 def estudio_crear(request, candidato_id):
     candidato = get_object_or_404(Can101Candidato, id=candidato_id)
-    print('ok')
+    
     if request.method == 'POST':
         form = EstudioCandidatoForm(request.POST)
         if form.is_valid():

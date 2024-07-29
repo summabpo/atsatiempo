@@ -20,7 +20,7 @@ def candidato_mostrar(request, pk=None):
         
         accion = 'Crear'
 
-    # Valida el formulario
+    # Valida el formulario candidato
     if request.method == 'POST':
         form = CandidatoForm(request.POST, instance=candidato)
         if form.is_valid():
@@ -28,9 +28,10 @@ def candidato_mostrar(request, pk=None):
             return redirect('candidatos:candidato_listar')
     else:
         form = CandidatoForm(instance=candidato)
+        
 
-    return render(request, 'candidato/form_candidato_2.html', {
-        'form': form, 
+    return render(request, 'candidato/form_candidato.html', {
+        'form': form,
         'candidato': candidato,
         'experiencias': experiencias, 
         'accion': accion, 
