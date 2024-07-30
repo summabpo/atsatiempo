@@ -35,7 +35,7 @@ CANDIDATO
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdown-default-success">
                         <a class="nav-main-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-laboral">Información Laboral</a>
-                        <a class="nav-main-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-academica"">Experiencia Académica</a>
+                        <a class="nav-main-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-academica">Información Académica</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="javascript:void(0)">Habilidades</a>
                     </div>
@@ -75,7 +75,7 @@ CANDIDATO
                 <button class="nav-link space-x-1" id="account-billing-tab" data-bs-toggle="tab"
                     data-bs-target="#account-billing" role="tab" aria-controls="account-billing" aria-selected="false">
                     <i class="fa fa-credit-card d-sm-none"></i>
-                    <span class="d-none d-sm-inline">Billing</span>
+                    <span class="d-none d-sm-inline">Habilidades</span>
                 </button>
             </li>
             {% endif %}
@@ -102,30 +102,37 @@ CANDIDATO
                         <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
                             <thead>
                                 <tr>
-                                    <th class="text-center">ENTIDAD</th>
-                                    <th class="text-center">SECTOR</th>
-                                    <th class="text-center">ACTIVO</th>
+                                    <th class="text-center">ID</th>
+                                    <th class="text-center">INSTITUCION</th>
+                                    <th class="text-center">GRADO EN</th>
                                     <th class="text-center">F.INICIAL</th>
                                     <th class="text-center">F.FINAL</th>
+                                    <th class="text-center">ACTIVO</th>
                                     
                                     <th class="text-center"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for exp in experiencias %}
+                                {% for est in estudios %}
                                 <tr>
-                                    <td class="text-center">{{ exp.entidad }}</td>
-                                    <td class="text-center">{{ exp.sector }}</td>
-                                    <td class="text-center">{{ exp.activo }}</td>
-                                    <td class="text-center">{{ exp.fecha_inicial }}</td>
-                                    <td class="text-center">{{ exp.fecha_final }}</td>
+                                    <td class="text-center">{{ est.id }}</td>
+                                    <td class="text-center">{{ est.institucion }}</td>
+                                    <td class="text-center">{{ est.grado_en }}</td>
+                                    <td class="text-center">{{ est.fecha_inicial }}</td>
+                                    <td class="text-center">{{ est.fecha_final }}</td>
+                                    <td class="text-center">{{ est.activo }}</td>
                                     <td class="text-center">
-                                        <a href="#" class="btn btn-alt-primary">
-                                            <i class="fa fa-fw fa-edit"></i>
-                                        </a>
+                                        <div class="btn-toolbar mb-2" role="toolbar" aria-label="Icons Alternate Toolbar with button groups">
+                                            <div class="btn-group me-2 mb-2" role="group" aria-label="Icons Alternate File group">
+                                                
+                                                <a href="#" class="btn btn-alt-primary">
+                                                    <i class="fa fa-fw fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
-                                {% endfor %}   
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -195,54 +202,7 @@ CANDIDATO
                         </p>
                     </div>
                     <div class="col-xl-6 order-xl-0">
-                        <form action="be_pages_generic_profile_v2_edit.html" method="POST" onsubmit="return false;">
-                            <div class="mb-4">
-                                <label class="form-label" for="dm-profile-edit-company-name">Company Name
-                                    (Optional)</label>
-                                <input type="text" class="form-control" id="dm-profile-edit-company-name"
-                                    name="dm-profile-edit-company-name">
-                            </div>
-                            <div class="row mb-4">
-                                <div class="col-6">
-                                    <label class="form-label" for="dm-profile-edit-firstname">Firstname</label>
-                                    <input type="text" class="form-control" id="dm-profile-edit-firstname"
-                                        name="dm-profile-edit-firstname">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label" for="dm-profile-edit-lastname">Lastname</label>
-                                    <input type="text" class="form-control" id="dm-profile-edit-lastname"
-                                        name="dm-profile-edit-lastname">
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label" for="dm-profile-edit-street-1">Street Address 1</label>
-                                <input type="text" class="form-control" id="dm-profile-edit-street-1"
-                                    name="dm-profile-edit-street-1">
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label" for="dm-profile-edit-street-2">Street Address 2</label>
-                                <input type="text" class="form-control" id="dm-profile-edit-street-2"
-                                    name="dm-profile-edit-street-2">
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label" for="dm-profile-edit-city">City</label>
-                                <input type="text" class="form-control" id="dm-profile-edit-city"
-                                    name="dm-profile-edit-city">
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label" for="dm-profile-edit-postal">Postal code</label>
-                                <input type="text" class="form-control" id="dm-profile-edit-postal"
-                                    name="dm-profile-edit-postal">
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label" for="dm-profile-edit-vat">VAT Number</label>
-                                <input type="text" class="form-control" id="dm-profile-edit-vat"
-                                    name="dm-profile-edit-vat" value="EA00000000" disabled>
-                            </div>
-                            <button type="submit" class="btn btn-alt-primary">
-                                <i class="fa fa-check-circle opacity-50 me-1"></i> Update Billing
-                            </button>
-                        </form>
+                        <h1>AQUI VOY</h1>
                     </div>
                 </div>
             </div>
@@ -253,114 +213,50 @@ CANDIDATO
 
 
 {% if accion == 'Editar' %}
-<div class="bg-body-light p-3 rounded push">
-    <div class="block-header block-header-default">
-        <h3 class="block-title">Información Candidato</h3>
-    </div>
-    <div class="d-lg-none">
-        <button type="button" class="btn w-100 btn-light d-flex justify-content-between align-items-center"
-            data-toggle="class-toggle" data-target="#horizontal-navigation-hover-justified" data-class="d-none">
-            Menu Candidato
-            <i class="fa fa-bars"></i>
-        </button>
-    </div>
-    
-    <div id="horizontal-navigation-hover-justified" class="d-none d-lg-block mt-2 mt-lg-0">
-        <ul style="text-align: center;" class="nav-main nav-main-horizontal nav-main-hover nav-main-horizontal-justify">
-            <li class="nav-main-item">
-                <a class="nav-main-link active" href="#" data-bs-toggle="modal" data-bs-target="#modal-academica">
-                    <i class="nav-main-link-icon fa fa-circle-check"></i>
-                    <span class="nav-main-link-name">Habilidades</span>
-                    <span class="nav-main-link-badge badge rounded-pill bg-success">1</span>
-                </a>
-            </li>
-            <li class="nav-main-item">
-                <a class="nav-main-link active" href="#" data-bs-toggle="modal" data-bs-target="#modal-academica">
-                    <i class="nav-main-link-icon fa fa-business-time"></i>
-                    <span class="nav-main-link-name">Laboral</span>
-                    <span class="nav-main-link-badge badge rounded-pill bg-success">1</span>
-                </a>
-            </li>
-            <li class="nav-main-item">
-                <a class="nav-main-link active" href="#" data-bs-toggle="modal" data-bs-target="#modal-laboral">
-                    <i class="nav-main-link-icon fa fa-graduation-cap"></i>
-                    <span class="nav-main-link-name">Académica</span>
-                    <span class="nav-main-link-badge badge rounded-pill bg-success">3</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
 
-<div class="modal fade" id="modal-academica" tabindex="-1" role="dialog" aria-labelledby="modal-default-extra-large"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
+<div class="modal fade" id="modal-academica" tabindex="-1" role="dialog" aria-labelledby="modal-default-extra-large" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div style="text-align: center;" class="modal-header">
-                <h5 class="modal-title">Información Laboral</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body pb-1">
-                <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
-                    <thead>
-                        <tr>
-                            <th class="text-center">ID</th>
-                            <th class="text-center">ENTIDAD</th>
-                            <th class="text-center">SECTOR</th>
-                            <th class="text-center">ACTIVO</th>
-                            <th class="text-center">F.INICIAL</th>
-                            <th class="text-center">F.FINAL</th>
-                            
-                            <th class="text-center"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for exp in experiencias %}
-                        <tr>
-                            <td class="text-center">{{ exp.id }}</td>
-                            <td class="text-center">{{ exp.entidad }}</td>
-                            <td class="text-center">{{ exp.sector }}</td>
-                            <td class="text-center">{{ exp.activo }}</td>
-                            <td class="text-center">{{ exp.fecha_inicial }}</td>
-                            <td class="text-center">{{ exp.fecha_final }}</td>
-                            <td class="text-center">
-                                <div class="btn-toolbar mb-2" role="toolbar" aria-label="Icons Alternate Toolbar with button groups">
-                                    <div class="btn-group me-2 mb-2" role="group" aria-label="Icons Alternate File group">
-                                        
-                                        <a href="#" class="btn btn-alt-primary">
-                                            <i class="fa fa-fw fa-edit"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}   
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-
-                <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">CERRAR</button>
-                <button type="button" class="btn btn-sm btn-primary">Done</button>
+            <div class="block block-rounded block-themed block-transparent mb-0">
+                <div class="block-header bg-primary-dark">
+                    <h3 class="block-title">Información Académica</h3>
+                    <div class="block-options">
+                        <button type="button" class="btn-block-option" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="fa fa-fw fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="block-content">
+                    {% crispy form_estudio %}
+                </div>
+                <div class="block-content block-content-full text-end bg-body">
+                    <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Done</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="modal-laboral" tabindex="-1" role="dialog" aria-labelledby="modal-default-extra-large"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
+<div class="modal fade" id="modal-laboral" tabindex="-1" role="dialog" aria-labelledby="modal-default-large" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div style="text-align: center;" class="modal-header">
-                <h5 class="modal-title">Información Acádemica</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body pb-1">
-                {% crispy form %}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Done</button>
+            <div class="block block-rounded block-themed block-transparent mb-0">
+                <div class="block-header bg-primary-dark">
+                    <h3 class="block-title">Información Laboral</h3>
+                    <div class="block-options">
+                        <button type="button" class="btn-block-option" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="fa fa-fw fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="block-content">
+                    {% crispy form_experiencia %}
+                </div>
+                <div class="block-content block-content-full text-end bg-body">
+                    <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Done</button>
+                </div>
             </div>
         </div>
     </div>
@@ -368,25 +264,6 @@ CANDIDATO
 
 {% endif %}
 
-
-<div class="block block-rounded">
-    <div class="block-header block-header-default">
-        <h3 class="block-title">{{ accion }} Candidato {{ candidato.primer_nombre }} {{ candidato.primer_apellido }}
-        </h3>
-    </div>
-    <div class="block-content">
-        <a href="{% url 'candidatos:candidato_listar' %}" class="btn btn-primary me-1 mb-3">
-            <i class="fa fa-fw fa-circle-left me-1"></i> Volver
-        </a>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <h2 class="content-heading pt-0">Creación de Candidato</h2>
-            <div class="row push">
-                {% crispy form %}
-            </div>
-        </form>
-    </div>
-</div>
 
 
 {% endblock content %}

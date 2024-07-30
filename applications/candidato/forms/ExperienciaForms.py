@@ -3,7 +3,7 @@ from django import forms
 from django.utils import timezone
 from datetime import datetime
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden
+from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden, Div, Submit
 from applications.common.models import Cat001Estado
 from applications.candidato.models import Can101Candidato, Can102Experiencia
 
@@ -23,27 +23,57 @@ class ExperienciaCandidatoForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        # self.helper.layout = Layout(
+        #     Row(
+        #         Column('estado_id_001'),
+        #     ),
+        #     Row(
+        #         Column('entidad'),
+        #     ),
+        #     Row(
+        #         Column('sector'),
+        #     ),
+        #     Row(
+        #         Column('activo'),
+        #     ),
+        #     Row(
+        #         Column('fecha_inicial'),
+        #         Column('fecha_final'),
+        #     ),
+        #     Row(
+        #         Column('logro'),
+        #     ),
+        #     Submit('submit', 'Guardar')
+        # )
+
+        self.helper.form_class = 'container'
         self.helper.layout = Layout(
-            Row(
-                Column('estado_id_001'),
+            Div(
+                Div('entidad', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('entidad'),
+            Div(
+                Div('sector', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('sector'),
+            Div(
+                Div('activo', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('activo'),
+            Div(
+                Div('fecha_inicial', css_class='col'),
+                Div('fecha_final', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('fecha_inicial'),
-                Column('fecha_final'),
+            Div(
+                Div('logro', css_class='col form-group'),
+                css_class='row'
             ),
-            Row(
-                Column('logro'),
+            Div(
+                Div('estado_id_001', css_class='col form-group'),
+                css_class='row'
             ),
-            Submit('submit', 'Guardar')
+            Submit('submit_experiencia', 'Guardar Experiencia', css_class='btn btn-primary mt-3'),
         )
     
     def clean(self):

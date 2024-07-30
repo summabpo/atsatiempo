@@ -3,7 +3,7 @@ from django import forms
 from django.utils import timezone
 from datetime import datetime
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden
+from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden, Div, Submit
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato, Can103Educacion
 
@@ -25,34 +25,72 @@ class EstudioCandidatoForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         
+        # self.helper.layout = Layout(
+        #     Row(
+        #         Column('estado_id_001'),
+        #     ),
+        #     Row(
+        #         Column('grado_en'),
+        #     ),
+        #     Row(
+        #         Column('institucion'),
+        #     ),
+        #     Row(
+        #         Column('fecha_inicial'),
+        #         Column('fecha_final'),
+        #     ),
+        #     Row(
+        #         Column('titulo'),
+        #     ),
+        #     Row(
+        #         Column('carrera'),
+        #     ),
+        #     Row(
+        #         Column('fortaleza_adquiridas'),
+        #     ),
+        #     Row(
+        #         Column('ciudad_id_004'),
+        #     ),
+        #     Submit('submit', 'Guardar')
+        # )
+
+        self.helper.form_class = 'container'
         self.helper.layout = Layout(
-            Row(
-                Column('estado_id_001'),
+            Div(
+                Div('institucion', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('grado_en'),
+            Div(
+                Div('grado_en', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('institucion'),
+            Div(
+                Div('fecha_inicial', css_class='col'),
+                Div('fecha_final', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('fecha_inicial'),
-                Column('fecha_final'),
+            Div(
+                Div('titulo', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('titulo'),
+            Div(
+                Div('carrera', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('carrera'),
+            Div(
+                Div('fortaleza_adquiridas', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('fortaleza_adquiridas'),
+            Div(
+                Div('ciudad_id_004', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('ciudad_id_004'),
+            Div(
+                Div('estado_id_001', css_class='col'),
+                css_class='row'
             ),
-            Submit('submit', 'Guardar')
-        )
+            Submit('submit_estudio', 'Guardar Estudio', css_class='btn btn-primary mt-3'),
+        )  
     
     def clean(self):
         cleaned_data =  super().clean()
