@@ -57,7 +57,7 @@ def experiencia_crear(request, candidato_id):
     if request.method == 'POST': 
         form = ExperienciaCandidatoForm(request.POST)
         if form.is_valid():
-            experiencia = form.save(candidato_id=candidato.id)
+            form.save(candidato_id=candidato.id)
             messages.success(request, 'El Registro ha sido creado')
             return redirect('candidatos:experiencia_listar', candidato_id=candidato.id)
         else:
