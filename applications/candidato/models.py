@@ -16,15 +16,14 @@ class Can101Candidato(models.Model):
     segundo_apellido = models.CharField(max_length=50, verbose_name="Segundo Apellido", blank=True, null=True)
     ciudad_id_004 = models.ForeignKey(Cat004Ciudad, models.DO_NOTHING, db_column='ciudad_id_004', blank=True, null=True)
     sexo = models.CharField(max_length=1, blank=True, null=True, choices=SEXO_CHOICES)
-    fecha_nacimiento = models.DateField(null=True, blank=True)  # Nuevo campo de fecha
+    fecha_nacimiento = models.DateField(null=True, blank=True) 
     telefono = models.CharField(max_length=10, blank=True, null=True)
-    skills = models.ManyToManyField('Can104Skill', related_name='candidatos_skill')
-
+    skills = models.ManyToManyField('Can104Skill', through='Can101CandidatoSkill', related_name='candidatos_skill')
 
     def __str__(self):
         return self.primer_nombre + ' - ' + self.primer_apellido
     class Meta:
-        #managed = False
+        managed = False
         db_table = 'can_101_candidato'
 
         verbose_name = 'CANDIDATO'
@@ -49,7 +48,7 @@ class Can102Experiencia(models.Model):
     def __str__(self):
         return self.entidad
     class Meta:
-        #managed = False
+        managed = True
         db_table = 'can_102_experiencia'
 
         verbose_name = 'EXPERIENCIA'
@@ -71,7 +70,7 @@ class Can103Educacion(models.Model):
     def __str__(self):
         return self.institucion
     class Meta:
-        #managed = False
+        managed = True
         db_table = 'can_103_educacion'
 
         verbose_name = 'EDUCACION'
@@ -80,8 +79,23 @@ class Can104Skill(models.Model):
     estado_id_004 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_004')
     nombre = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.nombre
     class Meta:
-        #managed = False
+        managed = True
         db_table = 'can_104_skill'
 
         verbose_name = 'SKILL'
+
+class Can101CandidatoSkill(models.Model):
+    candidato_id_101 = models.ForeignKey(Can101Candidato, on_delete=models.CASCADE, db_column='candidato_id_101')
+    skill_id_104 = models.ForeignKey(Can104Skill, on_delete=models.CASCADE, db_column='skill_id_104')
+    nivel= models.IntegerField(choices=[
+        (1, 'Básico'),
+        (2, 'Intermedio'),
+        (3, 'Superior')
+    ])
+
+    class Meta:
+        managed = True 
+        db_table = 'can_101_candidato_skills'

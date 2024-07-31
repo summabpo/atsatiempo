@@ -23,29 +23,6 @@ class ExperienciaCandidatoForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        # self.helper.layout = Layout(
-        #     Row(
-        #         Column('estado_id_001'),
-        #     ),
-        #     Row(
-        #         Column('entidad'),
-        #     ),
-        #     Row(
-        #         Column('sector'),
-        #     ),
-        #     Row(
-        #         Column('activo'),
-        #     ),
-        #     Row(
-        #         Column('fecha_inicial'),
-        #         Column('fecha_final'),
-        #     ),
-        #     Row(
-        #         Column('logro'),
-        #     ),
-        #     Submit('submit', 'Guardar')
-        # )
-
         self.helper.form_class = 'container'
         self.helper.layout = Layout(
             Div(

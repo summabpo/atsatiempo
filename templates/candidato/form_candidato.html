@@ -36,8 +36,9 @@ CANDIDATO
                     <div class="dropdown-menu" aria-labelledby="dropdown-default-success">
                         <a class="nav-main-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-laboral">Información Laboral</a>
                         <a class="nav-main-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-academica">Información Académica</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="javascript:void(0)">Habilidades</a>
+                        <a class="nav-main-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-habilidad">Habilidad</a>
+                        <!-- <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="javascript:void(0)">Habilidades</a> -->
                     </div>
                 </div>
             </div>
@@ -140,12 +141,7 @@ CANDIDATO
             </div>
             <div class="tab-pane" id="info-laboral" role="tabpanel" aria-labelledby="info-laboral-tab" tabindex="0">
                 <div class="row push p-sm-2 p-lg-4">
-                    <div class="col-md-2">
-                        <a href="{% url 'candidatos:experiencia_crear' candidato.id %}" class="btn btn-success">
-                            <i class="fa fa-fw fa-plus me-1"></i> Agregar
-                        </a>
-                    </div>
-                    <div class="col-md-10">
+                    <div class="col-md-12">
                         <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
                             <thead>
                                 <tr>
@@ -195,14 +191,39 @@ CANDIDATO
             <div class="tab-pane" id="account-billing" role="tabpanel" aria-labelledby="account-billing-tab"
                 tabindex="0">
                 <div class="row push p-sm-2 p-lg-4">
-                    <div class="offset-xl-1 col-xl-4 order-xl-1">
+                    <div class="col-md-8">
+                        <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">HABILIDAD</th>
+                                    <th class="text-center">NIVEL</th>
+                                    <th class="text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for hab in habilidades %}
+                                <tr>
+                                    <td class="text-center">{{ hab.skill_id_104 }}</td>
+                                    <td class="text-center">{{ hab.nivel }}</td>
+                                    <td class="text-center">
+                                        <div class="btn-toolbar mb-2" role="toolbar" aria-label="Icons Alternate Toolbar with button groups">
+                                            <div class="btn-group me-2 mb-2" role="group" aria-label="Icons Alternate File group">
+                                                <a href="#" class="btn btn-alt-primary">
+                                                    <i class="fa fa-fw fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}   
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
                         <p class="bg-body-light p-4 rounded-3 text-muted fs-sm">
                             Your billing information is never shown to other users and only used for creating your
                             invoices.
                         </p>
-                    </div>
-                    <div class="col-xl-6 order-xl-0">
-                        <h1>AQUI VOY</h1>
                     </div>
                 </div>
             </div>
@@ -252,6 +273,30 @@ CANDIDATO
                 </div>
                 <div class="block-content">
                     {% crispy form_experiencia %}
+                </div>
+                <div class="block-content block-content-full text-end bg-body">
+                    <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-habilidad" tabindex="-1" role="dialog" aria-labelledby="modal-default-large" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="block block-rounded block-themed block-transparent mb-0">
+                <div class="block-header bg-primary-dark">
+                    <h3 class="block-title">Información Habilidades</h3>
+                    <div class="block-options">
+                        <button type="button" class="btn-block-option" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="fa fa-fw fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="block-content">
+                    {% crispy form_habilidad %}
                 </div>
                 <div class="block-content block-content-full text-end bg-body">
                     <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">Close</button>

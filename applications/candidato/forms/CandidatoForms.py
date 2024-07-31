@@ -35,29 +35,6 @@ class CandidatoForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        # self.helper.layout = Layout(
-        #     Row(
-        #         Column('primer_nombre'),
-        #         Column('segundo_nombre'),
-        #         Column('primer_apellido'),
-        #         Column('segundo_apellido'),
-        #     ),
-        #     Row(
-        #         Column('email'),
-        #         Column('telefono'),
-        #     ),
-        #     Row(
-        #         Column('fecha_nacimiento', css_class='col-md-4'),
-        #         Column('sexo', css_class='col-md-4'),
-        #         Column('ciudad_id_004', css_class='col-md-4'),
-                
-        #     ),
-        #     Row(
-        #         Column('estado_id_001', css_class='col-md-12'),
-        #     ),
-        #     Submit('submit', 'Guardar')
-        # )
-
         self.helper.form_class = 'container'
         self.helper.layout = Layout(
             Div(
