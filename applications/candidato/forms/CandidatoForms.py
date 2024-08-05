@@ -1,9 +1,9 @@
 import re, os
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field
+from crispy_forms.layout import Layout, Layout, Div, Submit, HTML
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from ..models import Can101Candidato, Can102Experiencia, Can103Educacion, Can104Skill
+from ..models import Can101Candidato
 
 class CandidatoForm(forms.Form):
     estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)
@@ -35,27 +35,33 @@ class CandidatoForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.helper.form_class = 'container'
         self.helper.layout = Layout(
-            Row(
-                Column('primer_nombre'),
-                Column('segundo_nombre'),
-                Column('primer_apellido'),
-                Column('segundo_apellido'),
-            ),
-            Row(
-                Column('email'),
-                Column('telefono'),
-            ),
-            Row(
-                Column('fecha_nacimiento', css_class='col-md-4'),
-                Column('sexo', css_class='col-md-4'),
-                Column('ciudad_id_004', css_class='col-md-4'),
-                
-            ),
-            Row(
-                Column('estado_id_001', css_class='col-md-12'),
-            ),
-            Submit('submit', 'Guardar')
+            Div(
+                Div(
+                    Div('primer_nombre', css_class='col'),
+                    Div('segundo_nombre', css_class='col'),
+                    Div('primer_apellido', css_class='col'),
+                    Div('segundo_apellido', css_class='col'),
+                    css_class='row'
+                ),
+                Div(
+                    Div('email', css_class='col'),
+                    Div('telefono', css_class='col'),
+                    css_class='row'
+                ),
+                Div(
+                    Div('fecha_nacimiento', css_class='col'),
+                    Div('sexo', css_class='col'),
+                    Div('ciudad_id_004', css_class='col'),
+                    css_class='row'
+                ),
+                Div(
+                    Div('estado_id_001', css_class='col'),
+                    css_class='row'
+                ),
+                Submit('submit_candidato', 'Guardar Empleado', css_class='btn btn-primary mt-3'),
+            )
         )
 
     def clean(self):

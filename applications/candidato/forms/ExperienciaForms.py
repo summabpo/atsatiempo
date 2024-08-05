@@ -3,7 +3,7 @@ from django import forms
 from django.utils import timezone
 from datetime import datetime
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden
+from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden, Div, Submit
 from applications.common.models import Cat001Estado
 from applications.candidato.models import Can101Candidato, Can102Experiencia
 
@@ -18,32 +18,39 @@ class ExperienciaCandidatoForm(forms.Form):
     
 
     def __init__(self, *args, **kwargs):
-        
+        self.candidato_id = kwargs.pop('candidato_id', None)
         super(ExperienciaCandidatoForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.helper.form_class = 'container'
         self.helper.layout = Layout(
-            Row(
-                Column('estado_id_001'),
+            Div(
+                Div('entidad', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('entidad'),
+            Div(
+                Div('sector', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('sector'),
+            Div(
+                Div('activo', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('activo'),
+            Div(
+                Div('fecha_inicial', css_class='col'),
+                Div('fecha_final', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('fecha_inicial'),
-                Column('fecha_final'),
+            Div(
+                Div('logro', css_class='col form-group'),
+                css_class='row'
             ),
-            Row(
-                Column('logro'),
+            Div(
+                Div('estado_id_001', css_class='col form-group'),
+                css_class='row'
             ),
-            Submit('submit', 'Guardar')
+            Submit('submit_experiencia', 'Guardar Experiencia', css_class='btn btn-primary mt-3'),
         )
     
     def clean(self):
@@ -82,8 +89,7 @@ class ExperienciaCandidatoForm(forms.Form):
 
             if fecha_inicial and fecha_inicial > fecha_final:
                 self.add_error({
-                    'fecha_inicial': "La fecha inicial no puede ser mayor a la fecha final.",
-                    'fecha_final': "La fecha final no puede ser menor a la fecha inicial."
+                    'fecha_inicial': "La fecha inicial no puede ser mayor a la fecha final."
                 })
 
         if activo == 'NO':  # '2' representa 'NO' en ACTIVO_CHOICES

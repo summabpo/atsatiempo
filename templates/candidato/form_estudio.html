@@ -19,10 +19,9 @@ Bienvenido {{ candidato.primer_nombre }} {{ candidato.segundo_nombre }}
         </h3>
     </div>
     <div class="block-content">
-        
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <h2 class="content-heading pt-0">Creación de Estudio</h2>
+            <h2 class="content-heading pt-0">Creación de Experiencia</h2>
             <div class="row push">
                 {% crispy form %}
             </div>

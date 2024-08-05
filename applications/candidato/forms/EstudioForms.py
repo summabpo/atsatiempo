@@ -3,7 +3,7 @@ from django import forms
 from django.utils import timezone
 from datetime import datetime
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden
+from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden, Div, Submit
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato, Can103Educacion
 
@@ -24,31 +24,44 @@ class EstudioCandidatoForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.label_class = Layout(
-            Row(
-                Column('estado_id_001'),
+        
+        self.helper.form_class = 'container'
+        self.helper.layout = Layout(
+            Div(
+                Div('institucion', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('grado_en'),
+            Div(
+                Div('grado_en', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('institucion'),
+            Div(
+                Div('fecha_inicial', css_class='col'),
+                Div('fecha_final', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('fecha_inicial'),
-                Column('fecha_final'),
+            Div(
+                Div('titulo', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('titulo'),
+            Div(
+                Div('carrera', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('carrera'),
+            Div(
+                Div('fortaleza_adquiridas', css_class='col'),
+                css_class='row'
             ),
-            Row(
-                Column('fortaleza_adquiridas'),
+            Div(
+                Div('ciudad_id_004', css_class='col'),
+                css_class='row'
             ),
-            Submit('submit', 'Guardar')
-        )
+            Div(
+                Div('estado_id_001', css_class='col'),
+                css_class='row'
+            ),
+            Submit('submit_estudio', 'Guardar Estudio', css_class='btn btn-primary mt-3'),
+        )  
     
     def clean(self):
         cleaned_data =  super().clean()
@@ -107,6 +120,10 @@ class EstudioCandidatoForm(forms.Form):
         return cleaned_data
 
     def save(self, candidato_id):
+
+        if not self.is_valid():
+            raise ValueError("El formulario no es válido")
+    
         estado_id_001 = self.cleaned_data['estado_id_001']
         institucion   = self.cleaned_data['institucion'] 
         fecha_inicial = self.cleaned_data['fecha_inicial']
@@ -117,7 +134,7 @@ class EstudioCandidatoForm(forms.Form):
         fortaleza_adquiridas = self.cleaned_data['fortaleza_adquiridas']
         ciudad_id_004 = self.cleaned_data['ciudad_id_004']
         candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
-
+        
         estudio = Can103Educacion(
             estado_id_001 = estado_id_001,
             institucion = institucion,

@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="{% static 'js/plugins/flatpickr/flatpickr.min.css'  %}">
 
     <link rel="stylesheet" id="css-main" href="{% static 'css/dashmix.min.css' %} ">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>                                                                                                                         <!-- ocultar sidebar sidebar-o -->
     <div id="page-container" class="enable-page-overlay side-scroll page-header-fixed page-header-dark side-trans-enabled sidebar-o">
@@ -29,21 +31,6 @@
         {% include 'base/cabecera.html' %}
             <!-- Contenido Principal -->
         <main id="main-container">
-            <!-- <div class="bg-body-light">
-                <div class="content content-full">
-                    <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
-                        <h1 class="flex-grow-1 fs-3 fw-semibold my-2 my-sm-3">Main Title</h1>
-                        <nav class="flex-shrink-0 my-2 my-sm-0 ms-sm-3" aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item">Pages</li>
-                                <li class="breadcrumb-item">Generic</li>
-                                <li class="breadcrumb-item active" aria-current="page">Blank</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-            </div> -->
-
             <div class="content">
                 <h2 class="content-heading">{% block titulo-pagina %} {% endblock titulo-pagina %}</h2>
                 {% block content %}
@@ -77,8 +64,8 @@
     <script src="{% static 'js/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
     <script src="{% static 'js/plugins/datatables-responsive-bs5/js/responsive.bootstrap5.min.js' %}"></script>
     <script src="{% static 'js/plugins/datatables-buttons/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'js/plugins/js/plugins/datatables-buttons-bs5/js/buttons.bootstrap5.min.js' %}"></script>
-    <script src="{% static 'js/plugins/js/plugins/datatables-buttons-jszip/jszip.min.js' %}"></script>
+    <!-- <script src="{% static 'js/plugins/js/plugins/datatables-buttons-bs5/js/buttons.bootstrap5.min.js' %}"></script> -->
+    <!-- <script src="{% static 'js/plugins/js/plugins/datatables-buttons-jszip/jszip.min.js' %}"></script> -->
     <script src="{% static 'js/plugins/datatables-buttons-pdfmake/pdfmake.min.js' %}"></script>
     <script src="{% static 'js/plugins/datatables-buttons-pdfmake/vfs_fonts.js' %}"></script>
     <script src="{% static 'js/plugins/datatables-buttons/buttons.print.min.js' %}"></script>
@@ -96,5 +83,28 @@
     <script src="{% static 'js/plugins/flatpickr/flatpickr.min.js'  %}"></script>
 
     <script>Dashmix.helpersOnLoad(['js-flatpickr', 'jq-datepicker', 'jq-maxlength', 'jq-select2', 'jq-rangeslider', 'jq-masked-inputs', 'jq-pw-strength']);</script>
+
+    
+    {% block js %}{% endblock %} 
+    
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+            Swal.fire({
+                text: "{{ message }}",
+                icon: "{{message.tags}}",
+                showConfirmButton: true,
+                confirmButtonText: "Ok",
+                customClass: {
+                    confirmButton: "btn btn-primary"
+                },
+                willOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+            </script>
+        {% endfor %}
+    {% endif %}
 </body>
 </html>
