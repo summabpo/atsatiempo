@@ -83,10 +83,6 @@
     <script src="{% static 'js/plugins/flatpickr/flatpickr.min.js'  %}"></script>
 
     <script>Dashmix.helpersOnLoad(['js-flatpickr', 'jq-datepicker', 'jq-maxlength', 'jq-select2', 'jq-rangeslider', 'jq-masked-inputs', 'jq-pw-strength']);</script>
-
-    
-    {% block js %}{% endblock %} 
-    
     {% if messages %}
         {% for message in messages %}
             <script>
@@ -106,5 +102,7 @@
             </script>
         {% endfor %}
     {% endif %}
+
+    {% block extrajs %}{% endblock %} 
 </body>
 </html>

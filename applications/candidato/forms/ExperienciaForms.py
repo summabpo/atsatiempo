@@ -46,10 +46,10 @@ class ExperienciaCandidatoForm(forms.Form):
                 Div('logro', css_class='col form-group'),
                 css_class='row'
             ),
-            Div(
-                Div('estado_id_001', css_class='col form-group'),
-                css_class='row'
-            ),
+            # Div(
+            #     Div('estado_id_001', css_class='col form-group'),
+            #     css_class='row'
+            # ),
             Submit('submit_experiencia', 'Guardar Experiencia', css_class='btn btn-primary mt-3'),
         )
     
@@ -98,13 +98,13 @@ class ExperienciaCandidatoForm(forms.Form):
                     'fecha_final': "La fecha final es obligatoria si la experiencia no está activa."
                 })
 
-        if len(logro.split()) < 30:
+        if len(logro.split()) < 15:
             self.add_error('logro','La descripción debe contener al menos 30 palabras')
 
         return cleaned_data
 
     def save(self, candidato_id):
-        estado_id_001 = self.cleaned_data['estado_id_001']
+        # estado_id_001 = self.cleaned_data['estado_id_001']
         entidad       = self.cleaned_data['entidad']
         sector        = self.cleaned_data['sector']
         fecha_inicial = self.cleaned_data['fecha_inicial']
@@ -114,7 +114,7 @@ class ExperienciaCandidatoForm(forms.Form):
         candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
 
         experiencia = Can102Experiencia(
-            estado_id_001 = estado_id_001,
+            estado_id_001 = 1,
             entidad = entidad,
             sector = sector,
             fecha_inicial = fecha_inicial,
