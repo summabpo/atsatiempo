@@ -8,7 +8,7 @@ from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato, Can103Educacion
 
 class EstudioCandidatoForm(forms.Form):
-    estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)
+    estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=False)
     institucion = forms.CharField(label='INSTITUCION', required=True , widget=forms.TextInput(attrs={'placeholder': 'Institución'}))
     fecha_inicial = forms.DateField(label='FECHA DE INICIO', widget=forms.DateInput(attrs={'type': 'date'}), required=True)
     fecha_final = forms.DateField(label='FECHA TERMINACION', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
@@ -56,10 +56,10 @@ class EstudioCandidatoForm(forms.Form):
                 Div('ciudad_id_004', css_class='col'),
                 css_class='row'
             ),
-            Div(
-                Div('estado_id_001', css_class='col'),
-                css_class='row'
-            ),
+            # Div(
+            #     Div('estado_id_001', css_class='col'),
+            #     css_class='row'
+            # ),
             Submit('submit_estudio', 'Guardar Estudio', css_class='btn btn-primary mt-3'),
         )  
     
@@ -81,24 +81,22 @@ class EstudioCandidatoForm(forms.Form):
 
         fecha_actual = timezone.now().date()
 
-        if fecha_inicial:
-            if fecha_inicial > fecha_actual:
-                self.add_error({
-                    'fecha_inicial': "La fecha inicial no puede ser mayor a la fecha actual."
+        if fecha_actual > fecha_inicial:
+            if grado_en != '' or grado_en is not None:
+                if fecha_final is None or fecha_final == '':
+                    self.add_error({
+                    'fecha_final': "La fecha final no puede ir vacia si termino los estudios"
+                })
+            else:
+                if fecha_inicial > fecha_final:
+                    self.add_error({
+                        'fecha_inicial': "La fecha inicial es mayor que la final"
+                    })
+        else:
+            self.add_error({
+                    'fecha_inicial': "La fecha actual es menor que la fecha inicial"
                 })
 
-        if fecha_final:
-            if fecha_final > fecha_actual:
-                self.add_error({
-                    'fecha_final': "La fecha final no puede ser mayor a la fecha actual."
-                })
-
-            if fecha_inicial and fecha_inicial > fecha_final:
-                self.add_error({
-                    'fecha_inicial': "La fecha inicial no puede ser mayor a la fecha final.",
-                    'fecha_final': "La fecha final no puede ser menor a la fecha inicial."
-                })
-        
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', grado_en):
             self.add_error('grado_en', "La Instirución solo puede contener letras.")
         else:
@@ -124,7 +122,7 @@ class EstudioCandidatoForm(forms.Form):
         if not self.is_valid():
             raise ValueError("El formulario no es válido")
     
-        estado_id_001 = self.cleaned_data['estado_id_001']
+        estado_id_001 = Cat001Estado.objects.get(id=1)
         institucion   = self.cleaned_data['institucion'] 
         fecha_inicial = self.cleaned_data['fecha_inicial']
         fecha_final   = self.cleaned_data['fecha_final']

@@ -8,7 +8,7 @@ from applications.common.models import Cat001Estado
 from applications.candidato.models import Can101Candidato, Can102Experiencia
 
 class ExperienciaCandidatoForm(forms.Form):
-    estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)
+    estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=False)
     entidad = forms.CharField(label='ENTIDAD', required=True , widget=forms.TextInput(attrs={'placeholder': 'Entidad o Nombre Empresa'}))
     sector = forms.CharField(label='SECTOR', required=True , widget=forms.TextInput(attrs={'placeholder': 'Sector'}))
     fecha_inicial = forms.DateField(label='FECHA DE INICIO', widget=forms.DateInput(attrs={'type': 'date'}), required=True)
@@ -104,7 +104,7 @@ class ExperienciaCandidatoForm(forms.Form):
         return cleaned_data
 
     def save(self, candidato_id):
-        # estado_id_001 = self.cleaned_data['estado_id_001']
+        estado_id_001 = Cat001Estado.objects.get(id=1)
         entidad       = self.cleaned_data['entidad']
         sector        = self.cleaned_data['sector']
         fecha_inicial = self.cleaned_data['fecha_inicial']
@@ -114,7 +114,7 @@ class ExperienciaCandidatoForm(forms.Form):
         candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
 
         experiencia = Can102Experiencia(
-            estado_id_001 = 1,
+            estado_id_001 = estado_id_001,
             entidad = entidad,
             sector = sector,
             fecha_inicial = fecha_inicial,

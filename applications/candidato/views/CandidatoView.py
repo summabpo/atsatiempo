@@ -54,7 +54,7 @@ def candidato_mostrar(request, pk=None):
                 errores = ''
                 for field, errors in form_experiencia.errors.items():
                     errores += f'{field}: {", ".join(errors)}'
-                messages.error(request, f'El formulario tiene los siguientes errores lab: {errores}')
+                messages.error(request, f'El formulario tiene los siguientes errores : {errores}')
         else:
             form_experiencia = ExperienciaCandidatoForm(candidato_id=candidato.id)
 
@@ -62,7 +62,7 @@ def candidato_mostrar(request, pk=None):
             form_estudio = EstudioCandidatoForm(request.POST)
             if form_estudio.is_valid():
                 form_estudio.save(candidato_id=candidato.id)
-                messages.success(request, 'Experiencia Creada')
+                messages.success(request, 'Estudio Creada')
                 return redirect('candidatos:candidato_editar', pk=candidato.id)
             else:
                 errores = ''
@@ -85,7 +85,7 @@ def candidato_mostrar(request, pk=None):
                     errores += f'{field}: {", ".join(errors)}'
                 messages.error(request, f'El formulario tiene los siguientes errores aca : {errores}')
         else:
-            form_estudio = HabilidadCandidatoForm(candidato_id=candidato.id)
+            form_habilidad = HabilidadCandidatoForm(candidato_id=candidato.id)
             
     else:
         form = CandidatoForm(instance=candidato)
