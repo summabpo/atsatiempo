@@ -44,11 +44,11 @@ class Can102Experiencia(models.Model):
     activo = models.CharField(max_length=2, choices=ACTIVO_CHOICES)
     logro = models.TextField(blank=True, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
-
+    cargo = models.CharField(max_length=100)
     def __str__(self):
         return self.entidad
     class Meta:
-        #managed = False
+        managed = True
         db_table = 'can_102_experiencia'
 
         verbose_name = 'EXPERIENCIA'

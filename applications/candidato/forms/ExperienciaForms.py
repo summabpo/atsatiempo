@@ -15,7 +15,7 @@ class ExperienciaCandidatoForm(forms.Form):
     fecha_final = forms.DateField(label='FECHA TERMINACION', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     activo = forms.ChoiceField(label='ACTIVO', choices=[ ('', '---'), ('SI', 'SI'), ('NO', 'NO')], required=True)
     logro = forms.CharField(label='LOGROS', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Empresa'}))
-    
+    cargo = forms.CharField(label='CARGO',  required=True, widget=forms.TextInput(attrs={'placeholder': 'Cargo Desempeñado'}))
 
     def __init__(self, *args, **kwargs):
         self.candidato_id = kwargs.pop('candidato_id', None)
@@ -43,6 +43,10 @@ class ExperienciaCandidatoForm(forms.Form):
                 css_class='row'
             ),
             Div(
+                Div('cargo', css_class='col form-group'),
+                css_class='row'
+            ),
+            Div(
                 Div('logro', css_class='col form-group'),
                 css_class='row'
             ),
@@ -62,11 +66,15 @@ class ExperienciaCandidatoForm(forms.Form):
         fecha_final = cleaned_data.get('fecha_final')
         activo = cleaned_data.get('activo')
         logro = cleaned_data.get('logro')
+        cargo = cleaned_data.get('logro')
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', entidad):
             self.add_error('entidad', "La entidad solo puede contener letras.")
         else:
             self.cleaned_data['entidad'] = entidad.upper()
+
+        self.cleaned_data['cargo'] = entidad.upper()
+            
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', sector):
             self.add_error('sector', "La entidad solo puede contener letras.")
@@ -75,31 +83,17 @@ class ExperienciaCandidatoForm(forms.Form):
 
         fecha_actual = timezone.now().date()
 
-        if fecha_inicial:
-            if fecha_inicial > fecha_actual:
-                self.add_error({
-                    'fecha_inicial': "La fecha inicial no puede ser mayor a la fecha actual."
-                })
-
-        if fecha_final:
-            if fecha_final > fecha_actual:
-                self.add_error({
-                    'fecha_final': "La fecha final no puede ser mayor a la fecha actual."
-                })
-
-            if fecha_inicial and fecha_inicial > fecha_final:
-                self.add_error({
-                    'fecha_inicial': "La fecha inicial no puede ser mayor a la fecha final."
-                })
-
-        if activo == 'NO':  # '2' representa 'NO' en ACTIVO_CHOICES
-            if not fecha_final:
-                self.add_error({
-                    'fecha_final': "La fecha final es obligatoria si la experiencia no está activa."
-                })
-
+        if fecha_actual > fecha_inicial:
+            if activo == 'SI':
+                if fecha_final is None or fecha_final == '':
+                    self.add_error('fecha_final', "La fecha final no puede ir vacia si termino el trabajo")
+        else:
+            self.add_error('fecha_inicial', "La fecha actual es menor que la fecha inicial")
+        
         if len(logro.split()) < 15:
             self.add_error('logro','La descripción debe contener al menos 30 palabras')
+
+        
 
         return cleaned_data
 
@@ -111,6 +105,7 @@ class ExperienciaCandidatoForm(forms.Form):
         fecha_final   = self.cleaned_data['fecha_final']
         activo        = self.cleaned_data['activo']
         logro         = self.cleaned_data['logro']
+        cargo         = self.cleaned_data['cargo']
         candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
 
         experiencia = Can102Experiencia(
@@ -122,6 +117,7 @@ class ExperienciaCandidatoForm(forms.Form):
             activo = activo,
             logro = logro,
             candidato_id_101= candidato_id_101,
+            cargo = cargo,
         )
 
         experiencia.save()

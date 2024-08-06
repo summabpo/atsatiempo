@@ -84,18 +84,12 @@ class EstudioCandidatoForm(forms.Form):
         if fecha_actual > fecha_inicial:
             if grado_en != '' or grado_en is not None:
                 if fecha_final is None or fecha_final == '':
-                    self.add_error({
-                    'fecha_final': "La fecha final no puede ir vacia si termino los estudios"
-                })
+                    self.add_error('fecha_final', "La fecha final no puede ir vacia si termino los estudios")
             else:
                 if fecha_inicial > fecha_final:
-                    self.add_error({
-                        'fecha_inicial': "La fecha inicial es mayor que la final"
-                    })
+                    self.add_error('fecha_inicial', "La fecha inicial es mayor que la final")
         else:
-            self.add_error({
-                    'fecha_inicial': "La fecha actual es menor que la fecha inicial"
-                })
+            self.add_error('fecha_inicial', "La fecha actual es menor que la fecha inicial")
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', grado_en):
             self.add_error('grado_en', "La Instirución solo puede contener letras.")

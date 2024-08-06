@@ -62,7 +62,7 @@ def candidato_mostrar(request, pk=None):
             form_estudio = EstudioCandidatoForm(request.POST)
             if form_estudio.is_valid():
                 form_estudio.save(candidato_id=candidato.id)
-                messages.success(request, 'Estudio Creada')
+                messages.success(request, 'Estudio Creado')
                 return redirect('candidatos:candidato_editar', pk=candidato.id)
             else:
                 errores = ''
