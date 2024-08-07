@@ -13,4 +13,5 @@ urlpatterns = [
     path( url_principal+'experiencia/listar/<int:candidato_id>/', views.experiencia_listar, name='experiencia_listar'),
     path( url_principal+'estudio/crear/<int:candidato_id>/', views.estudio_crear, name='estudio_crear'),
     path( url_principal+'estudio/listar/<int:candidato_id>/', views.estudio_listar, name='estudio_listar'),
+    path( url_principal+'ajax/obtener_estudio/', CandidatoView.obtener_estudio_view, name='ajax_obtener_estudio'),
 ]
