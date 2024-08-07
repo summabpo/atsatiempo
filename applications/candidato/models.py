@@ -21,9 +21,9 @@ class Can101Candidato(models.Model):
     skills = models.ManyToManyField('Can104Skill', through='Can101CandidatoSkill', related_name='candidatos_skill')
 
     def __str__(self):
-        return self.primer_nombre + ' - ' + self.primer_apellido
+        return self.email
     class Meta:
-        managed = False
+        #managed = False
         db_table = 'can_101_candidato'
 
         verbose_name = 'CANDIDATO'
@@ -44,7 +44,7 @@ class Can102Experiencia(models.Model):
     activo = models.CharField(max_length=2, choices=ACTIVO_CHOICES)
     logro = models.TextField(blank=True, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
-
+    cargo = models.CharField(max_length=100)
     def __str__(self):
         return self.entidad
     class Meta:
@@ -70,7 +70,7 @@ class Can103Educacion(models.Model):
     def __str__(self):
         return self.institucion
     class Meta:
-        managed = True
+        #managed = False
         db_table = 'can_103_educacion'
 
         verbose_name = 'EDUCACION'
@@ -82,7 +82,7 @@ class Can104Skill(models.Model):
     def __str__(self):
         return self.nombre
     class Meta:
-        managed = True
+        #managed = False
         db_table = 'can_104_skill'
 
         verbose_name = 'SKILL'
@@ -97,5 +97,5 @@ class Can101CandidatoSkill(models.Model):
     ])
 
     class Meta:
-        managed = True 
+        # managed = False 
         db_table = 'can_101_candidato_skills'

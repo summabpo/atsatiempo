@@ -122,7 +122,6 @@ PERFIL CANDIDATO
                                 <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">ID</th>
                                             <th class="text-center">INSTITUCION</th>
                                             <th class="text-center">GRADO EN</th>
                                             <th class="text-center">F.INICIAL</th>
@@ -135,16 +134,40 @@ PERFIL CANDIDATO
                                     <tbody>
                                         {% for est in estudios %}
                                         <tr>
-                                            <td class="text-center">{{ est.id }}</td>
                                             <td class="text-center">{{ est.institucion }}</td>
                                             <td class="text-center">{{ est.grado_en }}</td>
-                                            <td class="text-center">{{ est.fecha_inicial }}</td>
-                                            <td class="text-center">{{ est.fecha_final }}</td>
-                                            <td class="text-center">{{ est.estado_id_001.nombre }}</td>
+                                            <td class="text-center">{{ est.fecha_inicia|date:"Y-m-d" }}</td>
+                                            <td class="text-center">{{ est.fecha_final|date:"Y-m-d" }}</td>
+                                            <td class="text-center">{{ est.estado_id_001.nombre.nombre }}</td>
                                             <td class="text-center">
-                                                
+                                                <button type="button" class="btn btn-sm btn-alt-primary edit-estudio"data-bs-toggle="modal" data-bs-target="#modal-edit-estudio"  data-estudio_id="{{ est.id }}">
+                                                    <i class="fa fa-fw fa-edit"></i> Editar
+                                                </button>
                                             </td>
                                         </tr>
+                                        
+                                        <div class="modal fade" id="modal-edit-estudio" tabindex="-1" role="dialog" aria-labelledby="modal-edit-estudio" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="block block-rounded block-themed block-transparent mb-0">
+                                                        <div class="block-header bg-primary-dark">
+                                                            <h3 class="block-title">Editar Información Académica</h3>
+                                                            <div class="block-options">
+                                                                <button type="button" class="btn-block-option" data-bs-dismiss="modal" aria-label="Close">
+                                                                    <i class="fa fa-fw fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-content" id="edit-estudio-form-container">
+                                                            <form id="estudio-form-edit" method="post" action="{% url 'candidatos:ajax_obtener_estudio' %}">
+                                                                {% crispy form_estudio %}
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         {% endfor %}
                                     </tbody>
                                 </table>
@@ -169,7 +192,9 @@ PERFIL CANDIDATO
                                     <tbody>
                                         <tr>
                                             <td class="text-center">
-                                                
+                                                <button type="button" class="btn btn-sm btn-alt-success edit-experiencia"data-bs-toggle="modal" data-bs-target="#modal-laboral"  data-estudio_id="{{ exp.id }}">
+                                                    <i class="fa fa-fw fa-plus"></i>  Crear
+                                                </button>
                                             </td>
                                             <td class="text-center"></td>
                                             <td class="text-center"></td>
@@ -182,10 +207,12 @@ PERFIL CANDIDATO
                                             <td class="text-center">{{ exp.entidad }}</td>
                                             <td class="text-center">{{ exp.sector }}</td>
                                             <td class="text-center">{{ exp.activo }}</td>
-                                            <td class="text-center">{{ exp.fecha_inicial }}</td>
-                                            <td class="text-center">{{ exp.fecha_final }}</td>
+                                            <td class="text-center">{{ exp.fecha_inicial|date:"Y-m-d" }}</td>
+                                            <td class="text-center">{{ exp.fecha_final|date:"Y-m-d" }}</td>
                                             <td class="text-center">
-                                                hola
+                                                <button type="button" class="btn btn-sm btn-alt-primary edit-experiencia"data-bs-toggle="modal" data-bs-target="#modal-edit-experiencia"  data-estudio_id="{{ exp.id }}">
+                                                    <i class="fa fa-fw fa-edit"></i> Editar
+                                                </button>
                                             </td>
                                         </tr>
                                         {% endfor %}   
@@ -324,3 +351,40 @@ PERFIL CANDIDATO
 
 {% endblock content %}
 
+
+{% block extrajs %}
+<script>
+    $('#modal-edit-estudio').on('show.bs.modal', function (event) {
+        console.log('llegamos');
+        var button = $(event.relatedTarget);
+        var recipient = button.data('estudio_id');
+        var modal = $(this);
+        
+        $.ajax({
+            url: '/candidato/ajax/obtener_estudio/',
+            type: 'GET',
+            data: {
+                'dato': recipient
+            },
+            
+            success: function(response) {
+                // console.log(response);
+                console.log(response.data.institucion);
+                modal.find('.block-title').text('Editar Experiencia ID #' + recipient)
+                modal.find('.block-content #id_institucion').val(response.data.institucion)
+                modal.find('.block-content #id_fecha_inicial').val(response.data.fecha_inicial)
+                modal.find('.block-content #id_fecha_final').val(response.data.fecha_final)
+                modal.find('.block-content #id_grado_en').val(response.data.grado_en)
+                modal.find('.block-content #id_titulo').val(response.data.titulo)
+                modal.find('.block-content #id_carrera').val(response.data.carrera)
+                modal.find('.block-content #id_fortaleza_adquiridas').text(response.data.fortaleza_adquiridas)
+                modal.find('.block-content #id_estado_id_001').val(response.data.estado_id_001)
+                modal.find('.block-content #id_ciudad_id_004').val(response.data.ciudad_id_004)
+            },
+            error: function(response) {
+                console.log(response.error);
+            }
+        })
+    })
+</script>    
+{% endblock extrajs %}
