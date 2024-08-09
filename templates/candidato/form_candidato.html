@@ -369,8 +369,16 @@ PERFIL CANDIDATO
                         </button>
                     </div>
                 </div>
-                <div class="block-content">
-                    {% crispy form_habilidad %}
+                <div style="text-align: center;" class="block-content">
+                    <!-- {% crispy form_habilidad %} -->
+
+                    <input class="textinput form-control" type="text" id="palabraInput" placeholder="Escribe una habilidad">
+                    <br>
+                    <button class="btn btn btn-alt-primary" onclick="agregarPalabra()">Agregar</button>
+                    <br>
+                    <div class="content" id="listado"></div>
+                    <br>
+                    <button id="botonGuardar" class="btn btn-lg btn-alt-success" onclick="guardar()">Guardar</button>
                 </div>
                 <br>
                 <!-- <div class="block-content block-content-full text-end bg-body">
@@ -456,5 +464,84 @@ PERFIL CANDIDATO
             }
         })
     })
-</script>    
+</script>  
+
+<script>
+    let listadoPalabras = [];
+
+    botonGuardar.style.display = 'None'
+
+    function agregarPalabra() {
+        const palabra = document.getElementById('palabraInput').value.trim();
+        if (palabra) {
+            listadoPalabras.push({ palabra: palabra, estado: 'pendiente' });
+            actualizarListado();
+            document.getElementById('palabraInput').value = '';
+        }
+    }
+
+    function actualizarListado() {
+        const listadoDiv = document.getElementById('listado');
+        listadoDiv.innerHTML = '';
+        listadoPalabras.forEach((item, index) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'row';
+            itemDiv.innerHTML = `
+                
+                    <div class="col-md-4"><span>${item.palabra}</span></div>
+                    <div style="text-align: center" class="col-md-4">                
+                        <select style="text-align: center" class="form-select js-select2 " onchange="cambiarEstado(${index}, this.value)">
+                            <option value="1" ${item.estado === '1' ? '1' : ''}>Básico</option>
+                            <option value="2" ${item.estado === '2' ? '2' : ''}>Intermedio</option>
+                            <option value="3" ${item.estado === '3' ? '3' : ''}>Superior</option>
+                        </select>
+                    </div>
+                    <div style="text-align: center" class="col-md-4">
+                        <button class="eliminar btn btn-sm btn-danger" onclick="eliminarPalabra(${index})">Eliminar</button>
+                    </div>
+                    <hr>
+                
+            `;
+            listadoDiv.appendChild(itemDiv);
+        });
+        actualizarVisibilidadBotonGuardar();
+    }
+
+    function cambiarEstado(index, nuevoEstado) {
+        listadoPalabras[index].estado = nuevoEstado;
+    }
+
+    function eliminarPalabra(index) {
+        listadoPalabras.splice(index, 1);
+        actualizarListado();
+    }
+
+    function actualizarVisibilidadBotonGuardar() {
+            const botonGuardar = document.getElementById('botonGuardar');
+            botonGuardar.style.display = listadoPalabras.length > 0 ? 'block' : 'none';
+        }
+
+    function guardar() {
+        // Aquí es donde normalmente harías la solicitud POST al servidor
+        console.log('Datos a enviar:', JSON.stringify(listadoPalabras));
+
+        
+        
+        fetch('/candidato/script/crear_habilidad/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(listadoPalabras)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Éxito:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+        
+    }
+</script>
 {% endblock extrajs %}

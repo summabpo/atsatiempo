@@ -29,6 +29,8 @@ class HabilidadCandidatoForm(forms.Form):
                 Div('nivel', css_class='col'),
                 css_class='row'
             ),
+            # Field('skill_id_104', css_class='mi-clase-personalizada'),
+            # Field('nivel', css_class='mi-clase-personalizada'),
             Submit('submit_habilidad', 'Guardar Habilidad', css_class='btn btn-primary mt-3'),
         )
 

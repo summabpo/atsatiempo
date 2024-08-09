@@ -255,3 +255,10 @@ def obtener_laboral_view(request):
         return redirect('candidatos:candidato_editar', pk=candidato.id)
     
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+# Crear Habilidades opcional
+def habilidades_crear(request, pk):
+    if request.method == 'POST':
+        datos = json.loads(request.body)
+        print(datos)
