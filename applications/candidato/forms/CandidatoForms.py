@@ -6,7 +6,7 @@ from applications.common.models import Cat001Estado, Cat004Ciudad
 from ..models import Can101Candidato
 
 class CandidatoForm(forms.Form):
-    estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)
+    # estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)
     email = forms.CharField(label='EMAIL', required=True , widget=forms.TextInput(attrs={'placeholder': 'Email'}))
     primer_nombre = forms.CharField(label='PRIMER NOMBRE', required=True, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Primer Nombre'}))
     segundo_nombre = forms.CharField(label='SEGUNDO NOMBRE', required=False, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Segundo Nombre'}))
@@ -22,7 +22,7 @@ class CandidatoForm(forms.Form):
         super(CandidatoForm, self).__init__(*args, **kwargs)
 
         if self.instance:
-            self.fields['estado_id_001'].initial = self.instance.estado_id_001
+            # self.fields['estado_id_001'].initial = self.instance.estado_id_001
             self.fields['email'].initial = self.instance.email
             self.fields['primer_nombre'].initial = self.instance.primer_nombre
             self.fields['segundo_nombre'].initial = self.instance.segundo_nombre
@@ -56,10 +56,10 @@ class CandidatoForm(forms.Form):
                     Div('ciudad_id_004', css_class='col'),
                     css_class='row'
                 ),
-                Div(
-                    Div('estado_id_001', css_class='col'),
-                    css_class='row'
-                ),
+                # Div(
+                #     Div('estado_id_001', css_class='col'),
+                #     css_class='row'
+                # ),
                 Submit('submit_candidato', 'Guardar Empleado', css_class='btn btn-primary mt-3'),
             )
         )
@@ -110,7 +110,7 @@ class CandidatoForm(forms.Form):
         else:
             candidato = Can101Candidato()
         
-        candidato.estado_id_001 = self.cleaned_data['estado_id_001']
+        candidato.estado_id_001 = Cat001Estado.objects.get(id=1)
         candidato.email = self.cleaned_data['email']
         candidato.primer_nombre = self.cleaned_data['primer_nombre']
         candidato.segundo_nombre = self.cleaned_data['segundo_nombre']
