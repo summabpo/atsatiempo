@@ -8,6 +8,7 @@ from applications.candidato.forms.EstudioForms import EstudioCandidatoForm
 from django.views.generic import (TemplateView, ListView)
 from django.contrib import messages
 from django.http import JsonResponse
+import json
 
 def candidato_mostrar(request, pk=None):
     # Valida si se pasa un parametro pk o ID del candidato
@@ -258,7 +259,15 @@ def obtener_laboral_view(request):
 
 
 # Crear Habilidades opcional
-def habilidades_crear(request, pk):
+def habilidades_crear(request):
     if request.method == 'POST':
-        datos = json.loads(request.body)
-        print(datos)
+        try:
+            data = json.loads(request.body)
+            for item in data:
+                Palabra.objects.create(
+                    palabra=item['palabra'],
+                    estado=item['estado']
+                )
+            return JsonResponse({"mensaje": "Palabras guardadas exitosamente"}, status=201)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)

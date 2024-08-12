@@ -467,6 +467,7 @@ PERFIL CANDIDATO
 </script>  
 
 <script>
+    const csrftoken = '{{ csrf_token }}';
     let listadoPalabras = [];
 
     botonGuardar.style.display = 'None'
@@ -531,6 +532,7 @@ PERFIL CANDIDATO
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken // Incluir el token CSRF
             },
             body: JSON.stringify(listadoPalabras)
         })
