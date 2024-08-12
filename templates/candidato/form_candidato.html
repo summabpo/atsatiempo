@@ -132,11 +132,23 @@ PERFIL CANDIDATO
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm btn-alt-success edit-experiencia"data-bs-toggle="modal" data-bs-target="#modal-academica" >
+                                                    <i class="fa fa-fw fa-plus"></i>  Crear
+                                                </button>
+                                            </td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center"></td>
+                                        </tr>
                                         {% for est in estudios %}
                                         <tr>
                                             <td class="text-center">{{ est.institucion }}</td>
                                             <td class="text-center">{{ est.grado_en }}</td>
-                                            <td class="text-center">{{ est.fecha_inicia|date:"Y-m-d" }}</td>
+                                            <td class="text-center">{{ est.fecha_inicial|date:"Y-m-d" }}</td>
                                             <td class="text-center">{{ est.fecha_final|date:"Y-m-d" }}</td>
                                             <td class="text-center">{{ est.estado_id_001.nombre.nombre }}</td>
                                             <td class="text-center">
@@ -159,7 +171,9 @@ PERFIL CANDIDATO
                                                             </div>
                                                         </div>
                                                         <div class="block-content" id="edit-estudio-form-container">
-                                                            <form id="estudio-form-edit" method="post" action="{% url 'candidatos:ajax_obtener_estudio' %}">
+                                                            <form id="estudio-form-edit-{{ est.id }}" method="post" action="{% url 'candidatos:ajax_obtener_estudio' %}">
+                                                                <input type="hidden" name="estudio_id" value="">
+                                                                <input type="hidden" name="id_candidato" value="{{ candidato.id }}">
                                                                 {% crispy form_estudio %}
                                                             </form>
                                                         </div>
@@ -210,11 +224,34 @@ PERFIL CANDIDATO
                                             <td class="text-center">{{ exp.fecha_inicial|date:"Y-m-d" }}</td>
                                             <td class="text-center">{{ exp.fecha_final|date:"Y-m-d" }}</td>
                                             <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-alt-primary edit-experiencia"data-bs-toggle="modal" data-bs-target="#modal-edit-experiencia"  data-estudio_id="{{ exp.id }}">
+                                                <button type="button" class="btn btn-sm btn-alt-primary edit-estudio"data-bs-toggle="modal" data-bs-target="#modal-edit-laboral"  data-laboral_id="{{ exp.id }}">
                                                     <i class="fa fa-fw fa-edit"></i> Editar
                                                 </button>
                                             </td>
                                         </tr>
+
+                                        <div class="modal fade" id="modal-edit-laboral" tabindex="-1" role="dialog" aria-labelledby="modal-edit-laboral" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="block block-rounded block-themed block-transparent mb-0">
+                                                        <div class="block-header bg-primary-dark">
+                                                            <h3 class="block-title">Editar Información Laboral</h3>
+                                                            <div class="block-options">
+                                                                <button type="button" class="btn-block-option" data-bs-dismiss="modal" aria-label="Close">
+                                                                    <i class="fa fa-fw fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-content" id="edit-laboral-form-container">
+                                                            <form id="laboral-form-edit" method="post" action="{% url 'candidatos:ajax_obtener_laboral' %}">
+                                                                <input type="hidden" name="id_candidato" value="{{ candidato.id }}">
+                                                                {% crispy form_experiencia %}
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                         {% endfor %}   
                                     </tbody>
                                 </table>
@@ -332,8 +369,16 @@ PERFIL CANDIDATO
                         </button>
                     </div>
                 </div>
-                <div class="block-content">
-                    {% crispy form_habilidad %}
+                <div style="text-align: center;" class="block-content">
+                    <!-- {% crispy form_habilidad %} -->
+
+                    <input class="textinput form-control" type="text" id="palabraInput" placeholder="Escribe una habilidad">
+                    <br>
+                    <button class="btn btn btn-alt-primary" onclick="agregarPalabra()">Agregar</button>
+                    <br>
+                    <div class="content" id="listado"></div>
+                    <br>
+                    <button id="botonGuardar" class="btn btn-lg btn-alt-success" onclick="guardar()">Guardar</button>
                 </div>
                 <br>
                 <!-- <div class="block-content block-content-full text-end bg-body">
@@ -355,7 +400,6 @@ PERFIL CANDIDATO
 {% block extrajs %}
 <script>
     $('#modal-edit-estudio').on('show.bs.modal', function (event) {
-        console.log('llegamos');
         var button = $(event.relatedTarget);
         var recipient = button.data('estudio_id');
         var modal = $(this);
@@ -368,9 +412,9 @@ PERFIL CANDIDATO
             },
             
             success: function(response) {
-                // console.log(response);
+                // console.log(response.data.id);
                 console.log(response.data.institucion);
-                modal.find('.block-title').text('Editar Experiencia ID #' + recipient)
+                modal.find('.block-title').text('Editar Laboral ID #' + response.data.id)
                 modal.find('.block-content #id_institucion').val(response.data.institucion)
                 modal.find('.block-content #id_fecha_inicial').val(response.data.fecha_inicial)
                 modal.find('.block-content #id_fecha_final').val(response.data.fecha_final)
@@ -386,5 +430,120 @@ PERFIL CANDIDATO
             }
         })
     })
-</script>    
+
+    // Edición laboral 
+    $('#modal-edit-laboral').on('show.bs.modal', function (event) {
+        console.log('llegamos laboral modal');
+
+        var button = $(event.relatedTarget);
+        var recipient = button.data('laboral_id');
+        var modal = $(this);
+
+        $.ajax({
+            url: '/candidato/ajax/obtener_laboral/',
+            type: 'GET',
+            data: {
+                'dato': recipient
+            },
+            
+            success: function(response) {
+                console.log(response.data.sector);
+                console.log(response.data.institucion);
+                modal.find('.block-title').text('Editar Experiencia ID #' + response.data.id)
+                modal.find('.block-content #id_entidad').val(response.data.entidad)
+                modal.find('.block-content #id_sector').val(response.data.sector)
+                modal.find('.block-content #id_activo').val(response.data.activo)
+                modal.find('.block-content #id_fecha_inicial').val(response.data.fecha_inicial)
+                modal.find('.block-content #id_fecha_final').val(response.data.fecha_final)
+                modal.find('.block-content #id_cargo').val(response.data.cargo)
+                modal.find('.block-content #id_logro').text(response.data.logro)
+                modal.find('.block-content #id_estado_id_001').val(response.data.estado_id_001)
+            },
+            error: function(response) {
+                console.log(response.error);
+            }
+        })
+    })
+</script>  
+
+<script>
+    const csrftoken = '{{ csrf_token }}';
+    let listadoPalabras = [];
+
+    botonGuardar.style.display = 'None'
+
+    function agregarPalabra() {
+        const palabra = document.getElementById('palabraInput').value.trim();
+        if (palabra) {
+            listadoPalabras.push({ palabra: palabra, estado: 'pendiente' });
+            actualizarListado();
+            document.getElementById('palabraInput').value = '';
+        }
+    }
+
+    function actualizarListado() {
+        const listadoDiv = document.getElementById('listado');
+        listadoDiv.innerHTML = '';
+        listadoPalabras.forEach((item, index) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'row';
+            itemDiv.innerHTML = `
+                
+                    <div class="col-md-4"><span>${item.palabra}</span></div>
+                    <div style="text-align: center" class="col-md-4">                
+                        <select style="text-align: center" class="form-select js-select2 " onchange="cambiarEstado(${index}, this.value)">
+                            <option value="1" ${item.estado === '1' ? '1' : ''}>Básico</option>
+                            <option value="2" ${item.estado === '2' ? '2' : ''}>Intermedio</option>
+                            <option value="3" ${item.estado === '3' ? '3' : ''}>Superior</option>
+                        </select>
+                    </div>
+                    <div style="text-align: center" class="col-md-4">
+                        <button class="eliminar btn btn-sm btn-danger" onclick="eliminarPalabra(${index})">Eliminar</button>
+                    </div>
+                    <hr>
+                
+            `;
+            listadoDiv.appendChild(itemDiv);
+        });
+        actualizarVisibilidadBotonGuardar();
+    }
+
+    function cambiarEstado(index, nuevoEstado) {
+        listadoPalabras[index].estado = nuevoEstado;
+    }
+
+    function eliminarPalabra(index) {
+        listadoPalabras.splice(index, 1);
+        actualizarListado();
+    }
+
+    function actualizarVisibilidadBotonGuardar() {
+            const botonGuardar = document.getElementById('botonGuardar');
+            botonGuardar.style.display = listadoPalabras.length > 0 ? 'block' : 'none';
+        }
+
+    function guardar() {
+        // Aquí es donde normalmente harías la solicitud POST al servidor
+        console.log('Datos a enviar:', JSON.stringify(listadoPalabras));
+
+        
+        
+        fetch('/candidato/script/crear_habilidad/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken // Incluir el token CSRF
+            },
+            body: JSON.stringify(listadoPalabras)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Éxito:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+        
+    }
+</script>
 {% endblock extrajs %}
