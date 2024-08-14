@@ -474,84 +474,103 @@ $(document).ready(function() {
 </script>  
 
 <script>
-    const csrftoken = '{{ csrf_token }}';
-    let listadoPalabras = [];
-
-    botonGuardar.style.display = 'None'
-
-    function agregarPalabra() {
-        const palabra = document.getElementById('palabraInput').value.trim();
-        if (palabra) {
-            listadoPalabras.push({ palabra: palabra, estado: 'pendiente' });
-            actualizarListado();
-            document.getElementById('palabraInput').value = '';
+    $(document).ready(function() {
+        const csrftoken = '{{ csrf_token }}';
+        let listadoPalabras = [];
+    
+        $('#botonGuardar').hide();
+    
+        function agregarPalabra() {
+            const palabra = $('#palabraInput').val().trim();
+            if (palabra) {
+                listadoPalabras.push({ palabra: palabra, estado: 'pendiente' });
+                actualizarListado();
+                $('#palabraInput').val('');
+            }
         }
-    }
-
-    function actualizarListado() {
-        const listadoDiv = document.getElementById('listado');
-        listadoDiv.innerHTML = '';
-        listadoPalabras.forEach((item, index) => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'row';
-            itemDiv.innerHTML = `
-                
+    
+        function actualizarListado() {
+            const $listado = $('#listado');
+            $listado.empty();
+            $.each(listadoPalabras, function(index, item) {
+                const $itemDiv = $('<div>').addClass('row').html(`
                     <div class="col-md-4"><span>${item.palabra}</span></div>
                     <div style="text-align: center" class="col-md-4">                
-                        <select style="text-align: center" class="form-select js-select2 " onchange="cambiarEstado(${index}, this.value)">
-                            <option value="" >------</option>
-                            <option value="1" ${item.estado === '1' ? '1' : ''}>Básico</option>
-                            <option value="2" ${item.estado === '2' ? '2' : ''}>Intermedio</option>
-                            <option value="3" ${item.estado === '3' ? '3' : ''}>Superior</option>
+                        <select style="text-align: center" class="form-select js-select2" data-index="${index}">
+                            <option value="">------</option>
+                            <option value="1" ${item.estado === '1' ? 'selected' : ''}>Básico</option>
+                            <option value="2" ${item.estado === '2' ? 'selected' : ''}>Intermedio</option>
+                            <option value="3" ${item.estado === '3' ? 'selected' : ''}>Superior</option>
                         </select>
                     </div>
                     <div style="text-align: center" class="col-md-4">
-                        <button class="eliminar btn btn-sm btn-danger" onclick="eliminarPalabra(${index})">Eliminar</button>
+                        <button class="eliminar btn btn-sm btn-danger" data-index="${index}">Eliminar</button>
                     </div>
                     <hr>
-                
-            `;
-            listadoDiv.appendChild(itemDiv);
-        });
-        actualizarVisibilidadBotonGuardar();
-    }
-
-    function cambiarEstado(index, nuevoEstado) {
-        listadoPalabras[index].estado = nuevoEstado;
-    }
-
-    function eliminarPalabra(index) {
-        listadoPalabras.splice(index, 1);
-        actualizarListado();
-    }
-
-    function actualizarVisibilidadBotonGuardar() {
-            const botonGuardar = document.getElementById('botonGuardar');
-            botonGuardar.style.display = listadoPalabras.length > 0 ? 'block' : 'none';
+                `);
+                $listado.append($itemDiv);
+            });
+            actualizarVisibilidadBotonGuardar();
         }
-
-    function guardar() {
-        // Aquí es donde normalmente harías la solicitud POST al servidor
-        console.log('Datos a enviar:', JSON.stringify(listadoPalabras));
-
-        
-        
-        fetch('/candidato/script/crear_habilidad/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken // Incluir el token CSRF
-            },
-            body: JSON.stringify(listadoPalabras)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Éxito:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
+    
+        function cambiarEstado(index, nuevoEstado) {
+            listadoPalabras[index].estado = nuevoEstado;
+        }
+    
+        function eliminarPalabra(index) {
+            listadoPalabras.splice(index, 1);
+            actualizarListado();
+        }
+    
+        function actualizarVisibilidadBotonGuardar() {
+            $('#botonGuardar').toggle(listadoPalabras.length > 0);
+        }
+    
+        function guardar() {
+            console.log('Datos a enviar:', JSON.stringify(listadoPalabras));
+    
+            $.ajax({
+                url: '/candidato/script/crear_habilidad/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(listadoPalabras),
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                success: function(data) {
+                    console.log('Éxito:', data);
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+    
+        // Event listeners
+        $('#palabraInput').keypress(function(e) {
+            if (e.which == 13) {
+                agregarPalabra();
+                return false;
+            }
         });
-        
-    }
+    
+        $('button').click(function() {
+            if ($(this).text() === 'Agregar') {
+                agregarPalabra();
+            } else if ($(this).text() === 'Guardar') {
+                guardar();
+            }
+        });
+    
+        $(document).on('change', '.js-select2', function() {
+            const index = $(this).data('index');
+            cambiarEstado(index, $(this).val());
+        });
+    
+        $(document).on('click', '.eliminar', function() {
+            const index = $(this).data('index');
+            eliminarPalabra(index);
+        });
+    });
 </script>
 {% endblock extrajs %}

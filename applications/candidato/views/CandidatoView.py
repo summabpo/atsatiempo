@@ -277,14 +277,18 @@ def obtener_laboral_view(request):
 
 #Crear Habilidades opcional
 def habilidades_crear(request):
+    if request.method == 'GET':
+        return JsonResponse({"mensaje": "Palabras guardadas exitosamente"}, status=201)
+    palabra = None
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             for item in data:
-                Palabra.objects.create(
+                palabra.objects.create(
                     palabra=item['palabra'],
                     estado=item['estado']
                 )
+                
             return JsonResponse({"mensaje": "Palabras guardadas exitosamente"}, status=201)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
