@@ -128,7 +128,7 @@ PERFIL CANDIDATO
                                         <tr>
                                             <th class="text-center"></th>
                                             <th class="text-center">INSTITUCION</th>
-                                            <th class="text-center">GRADO EN</th>
+                                            <th class="text-center">GRADUADO </th>
                                             <th class="text-center">F.INICIAL</th>
                                             <th class="text-center">F.FINAL</th>
                                         </tr>
@@ -142,7 +142,13 @@ PERFIL CANDIDATO
                                                 </button>
                                             </td>
                                             <td class="text-center">{{ est.institucion }}</td>
-                                            <td class="text-center">{{ est.grado_en }}</td>
+                                            <td class="text-center">
+                                                {% if est.grado_en == 'True' %}
+                                                    Si
+                                                {% else %}
+                                                    No
+                                                {% endif %}
+                                            </td>
                                             <td class="text-center">{{ est.fecha_inicial|date:"Y-m-d" }}</td>
                                             <td class="text-center">{{ est.fecha_final|date:"Y-m-d" }}</td>
                                         </tr>
@@ -260,7 +266,15 @@ PERFIL CANDIDATO
                                         {% for hab in habilidades %}
                                         <tr>
                                             <td class="text-center">{{ hab.skill_id_104 }}</td>
-                                            <td class="text-center">{{ hab.nivel }}</td>
+                                            <td class="text-center">
+                                                {% if hab.nivel == 1 %}
+                                                    Básico
+                                                {% elif hab.nivel == 2 %}
+                                                    Intermedio
+                                                {% elif hab.nivel == 1 %}
+                                                    Superior
+                                                {% endif %}
+                                            </td>
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-sm btn-alt-primary edit-estudio"data-bs-toggle="modal" data-bs-target="#modal-edit-habilidad"  data-laboral_id="{{ exp.id }}">
                                                     <i class="fa fa-fw fa-edit"></i> Editar
@@ -406,13 +420,12 @@ $(document).ready(function() {
             },
             
             success: function(response) {
-                // console.log(response.data.id);
-                console.log(response.data.institucion);
+
                 modal.find('.block-title').text('Editar Laboral ID #' + response.data.id)
                 modal.find('.block-content #id_institucion').val(response.data.institucion)
                 modal.find('.block-content #id_fecha_inicial').val(response.data.fecha_inicial)
                 modal.find('.block-content #id_fecha_final').val(response.data.fecha_final)
-                modal.find('.block-content #id_grado_en').val(response.data.grado_en)
+                modal.find('.block-content #id_grado_en').prop('checked', response.data.grado_en);
                 modal.find('.block-content #id_titulo').val(response.data.titulo)
                 modal.find('.block-content #id_carrera').val(response.data.carrera)
                 modal.find('.block-content #id_fortaleza_adquiridas').text(response.data.fortaleza_adquiridas)
@@ -446,7 +459,7 @@ $(document).ready(function() {
                 modal.find('.block-title').text('Editar Experiencia ID #' + response.data.id)
                 modal.find('.block-content #id_entidad').val(response.data.entidad)
                 modal.find('.block-content #id_sector').val(response.data.sector)
-                modal.find('.block-content #id_activo').val(response.data.activo)
+                modal.find('.block-content #id_activo').prop('checked', response.data.activo);
                 modal.find('.block-content #id_fecha_inicial').val(response.data.fecha_inicial)
                 modal.find('.block-content #id_fecha_final').val(response.data.fecha_final)
                 modal.find('.block-content #id_cargo').val(response.data.cargo)
@@ -486,6 +499,7 @@ $(document).ready(function() {
                     <div class="col-md-4"><span>${item.palabra}</span></div>
                     <div style="text-align: center" class="col-md-4">                
                         <select style="text-align: center" class="form-select js-select2 " onchange="cambiarEstado(${index}, this.value)">
+                            <option value="" >------</option>
                             <option value="1" ${item.estado === '1' ? '1' : ''}>Básico</option>
                             <option value="2" ${item.estado === '2' ? '2' : ''}>Intermedio</option>
                             <option value="3" ${item.estado === '3' ? '3' : ''}>Superior</option>

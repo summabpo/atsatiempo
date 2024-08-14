@@ -19,6 +19,13 @@ def candidato_mostrar(request, pk=None):
         habilidades = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato.id).order_by('-id')
 
         accion = 'Editar'
+        
+        # data = {
+        #     'email' : candidato.email,
+        #     'fecha_nacimiento' : str(candidato.fecha_nacimiento),
+            
+        # }
+        
 
     else:
         candidato = None
@@ -92,7 +99,8 @@ def candidato_mostrar(request, pk=None):
                 messages.error(request, f'El formulario tiene los siguientes errores aca : {errores}')
         else:
             form_habilidad = HabilidadCandidatoForm(candidato_id=candidato.id)
-            
+        
+        
     else:
         form = CandidatoForm(instance=candidato)
         form_experiencia = ExperienciaCandidatoForm(candidato_id=candidato.id)
@@ -127,7 +135,9 @@ def obtener_estudio_view(request):
         estado_id    = Cat001Estado.objects.get(nombre=solicitud_estudio.estado_id_001)
         candidato_id = Can101Candidato.objects.get(email=solicitud_estudio.candidato_id_101)
         ciudad_id    = Cat004Ciudad.objects.get(nombre=solicitud_estudio.ciudad_id_004)
-    
+
+        print(solicitud_estudio.grado_en)
+        
         response_data = {
             'data': {
                 'id': solicitud_estudio.id,
@@ -135,7 +145,7 @@ def obtener_estudio_view(request):
                 'institucion': solicitud_estudio.institucion,
                 'fecha_inicial': solicitud_estudio.fecha_inicial,
                 'fecha_final': solicitud_estudio.fecha_final,
-                'grado_en': solicitud_estudio.grado_en,
+                'grado_en':  True if solicitud_estudio.grado_en  == "True" else False  ,
                 'titulo': solicitud_estudio.titulo,
                 'carrera': solicitud_estudio.carrera,
                 'fortaleza_adquiridas': solicitud_estudio.fortaleza_adquiridas,
@@ -208,7 +218,7 @@ def obtener_laboral_view(request):
         estado_id    = Cat001Estado.objects.get(nombre=solicitud_laboral.estado_id_001)
         candidato_id = Can101Candidato.objects.get(email=solicitud_laboral.candidato_id_101)
 
-        print(solicitud_laboral.sector)
+        
         response_data = {
             'data': {
                 'id': solicitud_laboral.id,
@@ -217,7 +227,7 @@ def obtener_laboral_view(request):
                 'sector': solicitud_laboral.sector,
                 'fecha_inicial': solicitud_laboral.fecha_inicial,
                 'fecha_final': solicitud_laboral.fecha_final,
-                'activo': solicitud_laboral.activo,
+                'activo':  True if solicitud_laboral.activo  == "SI" else False ,
                 'logro': solicitud_laboral.logro,
                 'candidato_id_101': candidato_id.id,
                 'cargo': solicitud_laboral.cargo,

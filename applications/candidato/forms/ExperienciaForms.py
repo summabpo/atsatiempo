@@ -13,7 +13,13 @@ class ExperienciaCandidatoForm(forms.Form):
     sector = forms.CharField(label='SECTOR', required=True , widget=forms.TextInput(attrs={'placeholder': 'Sector'}))
     fecha_inicial = forms.DateField(label='FECHA DE INICIO', widget=forms.DateInput(attrs={'type': 'date'}), required=True)
     fecha_final = forms.DateField(label='FECHA TERMINACION', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
-    activo = forms.ChoiceField(label='ACTIVO', choices=[ ('', '---'), ('SI', 'SI'), ('NO', 'NO')], required=True)
+    
+    activo =  forms.BooleanField(
+        label='ACTIVO',
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+    )
+    
     logro = forms.CharField(label='LOGROS', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Empresa'}))
     cargo = forms.CharField(label='CARGO',  required=True, widget=forms.TextInput(attrs={'placeholder': 'Cargo Desempeñado'}))
 
@@ -103,7 +109,7 @@ class ExperienciaCandidatoForm(forms.Form):
         sector        = self.cleaned_data['sector']
         fecha_inicial = self.cleaned_data['fecha_inicial']
         fecha_final   = self.cleaned_data['fecha_final']
-        activo        = self.cleaned_data['activo']
+        activo        = 'SI' if self.cleaned_data['activo']   == True else 'NO'
         logro         = self.cleaned_data['logro']
         cargo         = self.cleaned_data['cargo']
         candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
