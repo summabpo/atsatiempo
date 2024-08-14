@@ -59,7 +59,7 @@ class Can103Educacion(models.Model):
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     institucion = models.CharField(max_length=100, blank=False, null=False)
     fecha_inicial = models.DateField(blank=False, null=False)
-    fecha_final = models.DateField(blank=True, null=True)
+    fecha_final = models.DateField(blank=False, null=True)
     grado_en = models.CharField(max_length=100, blank=True, null=True)
     titulo = models.CharField(max_length=100, blank=False, null=False)
     carrera = models.CharField(max_length=100, blank=True, null=True)

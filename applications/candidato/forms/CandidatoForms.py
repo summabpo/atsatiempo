@@ -30,7 +30,7 @@ class CandidatoForm(forms.Form):
             self.fields['segundo_apellido'].initial = self.instance.segundo_apellido
             self.fields['ciudad_id_004'].initial = self.instance.ciudad_id_004
             self.fields['sexo'].initial = self.instance.sexo
-            self.fields['fecha_nacimiento'].initial = self.instance.fecha_nacimiento
+            self.fields['fecha_nacimiento'].initial = self.instance.fecha_nacimiento.strftime('%d/%m/%Y')
             self.fields['telefono'].initial = self.instance.telefono
 
         self.helper = FormHelper()
