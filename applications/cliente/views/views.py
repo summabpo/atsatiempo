@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Cli051Cliente
-from .forms.ClienteForms import ClienteForm
+from ..models import Cli051Cliente
+from ..forms.ClienteForms import ClienteForm
 from django.views.generic import (
     ListView,
     DetailView,
