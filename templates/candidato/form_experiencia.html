@@ -1,0 +1,40 @@
+{% extends 'base/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %} ATS Atiempo Crear Experiencia {% endblock title %}
+
+{% block titulo-pagina %}
+Bienvenido {{ candidato.primer_nombre }} {{ candidato.segundo_nombre }}
+{% endblock titulo-pagina %}
+
+
+{% block content %}
+
+<div class="block block-rounded">
+    <div class="block-header block-header-default">
+        <h3 class="block-title">Crear Experiencia {{ candidato.id }}
+        </h3>
+    </div>
+    <div class="block-content">
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h2 class="content-heading pt-0">Creación de Experiencia</h2>
+            <div class="row push">
+                {% crispy form %}
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+<script>
+    console.log("Esta es la página de inicio"); 
+</script>
+    
+{% endblock js %}
