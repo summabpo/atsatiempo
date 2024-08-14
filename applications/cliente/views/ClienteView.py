@@ -106,12 +106,15 @@ def obtener_cliente_view(request):
         contacto = request.POST.get('contacto')
         telefono = request.POST.get('telefono')
         perfil_empresarial = request.POST.get('perfil_empresarial')
-        logo = request.POST.get('telefono')
-        ciudad_id_004 = request.POST.get('telefono')
+        logo = request.POST.get('logo')
+        ciudad_id_004 = request.POST.get('ciudad_id_004')
 
         cliente_id = global_id
 
         cliente_modificar = get_object_or_404(Cli051Cliente, pk=cliente_id)
+        
+        # Obtener la instancia del modelo Cat004Ciudad
+        ciudad = get_object_or_404(Cat004Ciudad, pk=ciudad_id_004)
 
         cliente_modificar.estado_id_001 = Cat001Estado.objects.get(id=1)
         cliente_modificar.nit = nit
@@ -121,4 +124,11 @@ def obtener_cliente_view(request):
         cliente_modificar.telefono = telefono
         cliente_modificar.perfil_empresarial = perfil_empresarial
         cliente_modificar.logo = logo
-        cliente_modificar.ciudad_id_004 = ciudad_id_004
+        cliente_modificar.ciudad_id_004 = ciudad
+
+        cliente_modificar.save()
+
+        messages.success(request, 'Se ha realizado la actualización del registro éxito.')
+        return redirect('clientes:cliente_listar')
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
