@@ -66,7 +66,7 @@ class ExperienciaCandidatoForm(forms.Form):
         fecha_final = cleaned_data.get('fecha_final')
         activo = cleaned_data.get('activo')
         logro = cleaned_data.get('logro')
-        cargo = cleaned_data.get('logro')
+        cargo = cleaned_data.get('cargo')
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', entidad):
             self.add_error('entidad', "La entidad solo puede contener letras.")
@@ -90,8 +90,8 @@ class ExperienciaCandidatoForm(forms.Form):
         else:
             self.add_error('fecha_inicial', "La fecha actual es menor que la fecha inicial")
         
-        if len(logro.split()) < 15:
-            self.add_error('logro','La descripción debe contener al menos 30 palabras')
+        if len(logro.split()) < 10:
+            self.add_error('logro','La descripción debe contener al menos 10 palabras')
 
         
 

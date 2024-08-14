@@ -28,6 +28,9 @@ def candidato_mostrar(request, pk=None):
         
         accion = 'Crear'
 
+    form_errors_laboral = False
+    form_errors_estudio = False
+
     if request.method == 'POST':
 
         if 'submit_candidato' in request.POST:
@@ -35,7 +38,7 @@ def candidato_mostrar(request, pk=None):
             
             if form.is_valid():
                 form.save()
-                messages.success(request, 'Experiencia Creada')
+                messages.success(request, 'Información Candidato Actualizada')
                 return redirect('candidatos:candidato_editar', pk=candidato.id)
             else:
                 errores = ''
@@ -52,10 +55,11 @@ def candidato_mostrar(request, pk=None):
                 messages.success(request, 'Experiencia Creada')
                 return redirect('candidatos:candidato_editar', pk=candidato.id)
             else:
-                errores = ''
-                for field, errors in form_experiencia.errors.items():
-                    errores += f'{field}: {", ".join(errors)}'
-                messages.error(request, f'El formulario tiene los siguientes errores : {errores}')
+                form_errors_laboral = True
+                # errores = ''
+                # for field, errors in form_experiencia.errors.items():
+                #     errores += f'{field}: {", ".join(errors)}'
+                # messages.error(request, f'El formulario tiene los siguientes errores : {errores}')
         else:
             form_experiencia = ExperienciaCandidatoForm(candidato_id=candidato.id)
 
@@ -66,10 +70,11 @@ def candidato_mostrar(request, pk=None):
                 messages.success(request, 'Estudio Creado')
                 return redirect('candidatos:candidato_editar', pk=candidato.id)
             else:
-                errores = ''
-                for field, errors in form_estudio.errors.items():
-                    errores += f'{field}: {", ".join(errors)}'
-                messages.error(request, f'El formulario tiene los siguientes errores aca : {errores}')
+                form_errors_estudio = True
+                # errores = ''
+                # for field, errors in form_estudio.errors.items():
+                #     errores += f'{field}: {", ".join(errors)}'
+                # messages.error(request, f'El formulario tiene los siguientes errores aca : {errores}')
         else:
             form_estudio = EstudioCandidatoForm(candidato_id=candidato.id)
             
@@ -103,7 +108,9 @@ def candidato_mostrar(request, pk=None):
         'experiencias': experiencias, 
         'habilidades':habilidades,
         'accion': accion, 
-        'estudios': estudios
+        'estudios': estudios,
+        'form_errors_laboral': form_errors_laboral,
+        'form_errors_estudio': form_errors_estudio
         })
 
 global_dato = None 
@@ -258,7 +265,7 @@ def obtener_laboral_view(request):
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 
-# Crear Habilidades opcional
+#Crear Habilidades opcional
 def habilidades_crear(request):
     if request.method == 'POST':
         try:

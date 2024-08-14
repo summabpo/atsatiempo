@@ -12,7 +12,13 @@ class EstudioCandidatoForm(forms.Form):
     institucion = forms.CharField(label='INSTITUCION', required=True , widget=forms.TextInput(attrs={'placeholder': 'Institución'}))
     fecha_inicial = forms.DateField(label='FECHA DE INICIO', widget=forms.DateInput(attrs={'type': 'date'}), required=True)
     fecha_final = forms.DateField(label='FECHA TERMINACION', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
-    grado_en = forms.CharField(label='GRADO EN', required=False , widget=forms.TextInput(attrs={'placeholder': 'Grado en'}))
+    # grado_en = forms.CharField(label='GRADO EN', required=False , widget=forms.TextInput(attrs={'placeholder': 'Grado en'}))
+    grado_en = forms.BooleanField(
+        label='¿GRADUADO?',
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        help_text='Marque si tiene un grado'
+    )
     titulo = forms.CharField(label='TITULO', required=True , widget=forms.TextInput(attrs={'placeholder': 'Titulo'}))
     carrera = forms.CharField(label='CARRERA', required=True , widget=forms.TextInput(attrs={'placeholder': 'Carrera'}))
     fortaleza_adquiridas = forms.CharField(label='LOGROS', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Fortalezas'}))
@@ -81,20 +87,19 @@ class EstudioCandidatoForm(forms.Form):
 
         fecha_actual = timezone.now().date()
 
+
         if fecha_actual > fecha_inicial:
-            if grado_en != '' or grado_en is not None:
+            if grado_en:
                 if fecha_final is None or fecha_final == '':
                     self.add_error('fecha_final', "La fecha final no puede ir vacia si termino los estudios")
-            else:
-                if fecha_inicial > fecha_final:
-                    self.add_error('fecha_inicial', "La fecha inicial es mayor que la final")
+            
         else:
-            self.add_error('fecha_inicial', "La fecha actual es menor que la fecha inicial")
+            self.add_error('fecha_inicial', "La fecha actual es mayot que la fecha inicial")
 
-        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', grado_en):
-            self.add_error('grado_en', "La Instirución solo puede contener letras.")
-        else:
-            self.cleaned_data['grado_en'] = grado_en.upper()
+        # if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', grado_en):
+        #     self.add_error('grado_en', "La Instirución solo puede contener letras.")
+        # else:
+        #     self.cleaned_data['grado_en'] = grado_en.upper()
         
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', titulo):
             self.add_error('titulo', "La Instirución solo puede contener letras.")
@@ -106,8 +111,8 @@ class EstudioCandidatoForm(forms.Form):
         else:
             self.cleaned_data['carrera'] = carrera.upper()
 
-        if len(fortaleza_adquiridas.split()) < 30:
-            self.add_error('fortaleza_adquiridas','La descripción debe contener al menos 30 palabras')
+        if len(fortaleza_adquiridas.split()) < 10:
+            self.add_error('fortaleza_adquiridas','La descripción debe contener al menos 10 palabras')
 
         return cleaned_data
 

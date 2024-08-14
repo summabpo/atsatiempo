@@ -27,7 +27,7 @@ PERFIL CANDIDATO
                 </h2>
             </div>
             <div class="space-x-1">
-                <div style="text-align: center;">CREAR</div>
+                <!-- <div style="text-align: center;">CREAR</div>
                 <hr>
                 <div class="btn-group" role="group" aria-label="Horizontal Alternate Info">
                     <button type="button" class="btn btn-alt-info" data-bs-toggle="modal" data-bs-target="#modal-laboral"> <i class="fa fa-fw fa-plus me-1"></i>Registro Laboral</button>
@@ -45,7 +45,7 @@ PERFIL CANDIDATO
                         <a class="nav-main-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-academica">Registro Académico</a>
                         <a class="nav-main-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-habilidad">Registro Habilidad</a>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -115,47 +115,36 @@ PERFIL CANDIDATO
                         </div>
                     </div>
                     {% if accion == 'Editar' %}
-                    <div class="tab-pane" id="informacion-academica" role="tabpanel" aria-labelledby="informacion-academica-tab"
-                        tabindex="0">
+                    <div class="tab-pane" id="informacion-academica" role="tabpanel" aria-labelledby="informacion-academica-tab" tabindex="0">
                         <div class="row push p-sm-2 p-lg-4">
+                            <div style="text-align: center;" class="col-md-12">
+                                <button type="button" class="btn btn-lg btn-alt-success edit-experiencia"data-bs-toggle="modal" data-bs-target="#modal-academica" >
+                                    <i class="fa fa-fw fa-plus"></i>  Crear Información Académica
+                                </button>
+                            </div>
                             <div class="col-md-12">
-                                <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
+                                <table id="tablaEstudio" class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
                                     <thead>
                                         <tr>
+                                            <th class="text-center"></th>
                                             <th class="text-center">INSTITUCION</th>
                                             <th class="text-center">GRADO EN</th>
                                             <th class="text-center">F.INICIAL</th>
                                             <th class="text-center">F.FINAL</th>
-                                            <th class="text-center">ACTIVO</th>
-                                            
-                                            <th class="text-center"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-alt-success edit-experiencia"data-bs-toggle="modal" data-bs-target="#modal-academica" >
-                                                    <i class="fa fa-fw fa-plus"></i>  Crear
-                                                </button>
-                                            </td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                        </tr>
                                         {% for est in estudios %}
                                         <tr>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm btn-alt-primary edit-estudio"data-bs-toggle="modal" data-bs-target="#modal-edit-estudio"  data-estudio_id="{{ est.id }}">
+                                                    <i class="fa fa-fw fa-edit"></i> 
+                                                </button>
+                                            </td>
                                             <td class="text-center">{{ est.institucion }}</td>
                                             <td class="text-center">{{ est.grado_en }}</td>
                                             <td class="text-center">{{ est.fecha_inicial|date:"Y-m-d" }}</td>
                                             <td class="text-center">{{ est.fecha_final|date:"Y-m-d" }}</td>
-                                            <td class="text-center">{{ est.estado_id_001.nombre.nombre }}</td>
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-alt-primary edit-estudio"data-bs-toggle="modal" data-bs-target="#modal-edit-estudio"  data-estudio_id="{{ est.id }}">
-                                                    <i class="fa fa-fw fa-edit"></i> Editar
-                                                </button>
-                                            </td>
                                         </tr>
                                         
                                         <div class="modal fade" id="modal-edit-estudio" tabindex="-1" role="dialog" aria-labelledby="modal-edit-estudio" aria-hidden="true">
@@ -190,6 +179,11 @@ PERFIL CANDIDATO
                     </div>
                     <div class="tab-pane" id="info-laboral" role="tabpanel" aria-labelledby="info-laboral-tab" tabindex="0">
                         <div class="row push p-sm-2 p-lg-4">
+                            <div style="text-align: center;" class="col-md-12">
+                                <button type="button" class="btn btn-lg btn-alt-success edit-experiencia"data-bs-toggle="modal" data-bs-target="#modal-laboral"  data-estudio_id="{{ exp.id }}">
+                                    <i class="fa fa-fw fa-plus"></i>  Crear Información Laboral
+                                </button>
+                            </div>
                             <div class="col-md-12">
                                 <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
                                     <thead>
@@ -204,18 +198,6 @@ PERFIL CANDIDATO
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-alt-success edit-experiencia"data-bs-toggle="modal" data-bs-target="#modal-laboral"  data-estudio_id="{{ exp.id }}">
-                                                    <i class="fa fa-fw fa-plus"></i>  Crear
-                                                </button>
-                                            </td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                        </tr>
                                         {% for exp in experiencias %}
                                         <tr>
                                             <td class="text-center">{{ exp.entidad }}</td>
@@ -258,10 +240,14 @@ PERFIL CANDIDATO
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane" id="account-billing" role="tabpanel" aria-labelledby="account-billing-tab"
-                        tabindex="0">
+                    <div class="tab-pane" id="account-billing" role="tabpanel" aria-labelledby="account-billing-tab" tabindex="0">
                         <div class="row push p-sm-2 p-lg-4">
-                            <div class="col-md-8">
+                            <div style="text-align: center;" class="col-md-12">
+                                <button type="button" class="btn btn-lg btn-alt-success edit-experiencia"data-bs-toggle="modal" data-bs-target="#modal-habilidad"  data-estudio_id="{{ exp.id }}">
+                                    <i class="fa fa-fw fa-plus"></i>  Crear Habilidades
+                                </button>
+                            </div>
+                            <div class="col-md-12">
                                 <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
                                     <thead>
                                         <tr>
@@ -276,24 +262,14 @@ PERFIL CANDIDATO
                                             <td class="text-center">{{ hab.skill_id_104 }}</td>
                                             <td class="text-center">{{ hab.nivel }}</td>
                                             <td class="text-center">
-                                                <div class="btn-toolbar mb-2" role="toolbar" aria-label="Icons Alternate Toolbar with button groups">
-                                                    <div class="btn-group me-2 mb-2" role="group" aria-label="Icons Alternate File group">
-                                                        <a href="#" class="btn btn-alt-primary">
-                                                            <i class="fa fa-fw fa-edit"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
+                                                <button type="button" class="btn btn-sm btn-alt-primary edit-estudio"data-bs-toggle="modal" data-bs-target="#modal-edit-habilidad"  data-laboral_id="{{ exp.id }}">
+                                                    <i class="fa fa-fw fa-edit"></i> Editar
+                                                </button>
                                             </td>
                                         </tr>
                                         {% endfor %}   
                                     </tbody>
                                 </table>
-                            </div>
-                            <div class="col-md-4">
-                                <p class="bg-body-light p-4 rounded-3 text-muted fs-sm">
-                                    Your billing information is never shown to other users and only used for creating your
-                                    invoices.
-                                </p>
                             </div>
                         </div>
                     </div>
@@ -307,7 +283,7 @@ PERFIL CANDIDATO
 
 {% if accion == 'Editar' %}
 
-<div class="modal fade" id="modal-academica" tabindex="-1" role="dialog" aria-labelledby="modal-default-extra-large" aria-hidden="true">
+<div class="modal fade {% if form_errors_estudio %} show{% endif %}" id="modal-academica" tabindex="-1" role="dialog" aria-labelledby="modal-default-extra-large" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="block block-rounded block-themed block-transparent mb-0">
@@ -332,7 +308,7 @@ PERFIL CANDIDATO
     </div>
 </div>
 
-<div class="modal fade" id="modal-laboral" tabindex="-1" role="dialog" aria-labelledby="modal-default-large" aria-hidden="true">
+<div class="modal fade {% if form_errors_laboral %} show{% endif %}" id="modal-laboral" tabindex="-1" role="dialog" aria-labelledby="modal-default-large" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="block block-rounded block-themed block-transparent mb-0">
@@ -398,6 +374,24 @@ PERFIL CANDIDATO
 
 
 {% block extrajs %}
+<script>
+$(document).ready(function() {
+
+    
+
+    {% if form_errors_estudio %}
+        $('#modal-academica').modal('show');
+    {% endif %}
+
+    {% if form_errors_laboral %}
+        $('#modal-laboral').modal('show');
+    {% endif %}
+
+    
+})
+</script>
+
+
 <script>
     $('#modal-edit-estudio').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);

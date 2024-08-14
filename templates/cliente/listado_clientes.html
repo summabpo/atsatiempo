@@ -98,7 +98,7 @@
                                     </div>
                                 </div>
                                 <div class="block-content" id="edit-laboral-form-container">
-                                    <form id="laboral-form-edit" method="post" action="{% url 'clientes:ajax_obtener_cliente' %}">
+                                    <form id="laboral-form-edit" method="post" action="{% url 'clientes:ajax_obtener_cliente' %}" enctype="multipart/form-data">
                                         {% crispy form %}
                                     </form>
                                 </div>
