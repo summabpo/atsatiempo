@@ -22,7 +22,7 @@ class CandidatoForm(forms.Form):
         super(CandidatoForm, self).__init__(*args, **kwargs)
 
         if self.instance:
-            # self.fields['estado_id_001'].initial = self.instance.estado_id_001
+            #self.fields['estado_id_001'].initial = self.instance.estado_id_001
             self.fields['email'].initial = self.instance.email
             self.fields['primer_nombre'].initial = self.instance.primer_nombre
             self.fields['segundo_nombre'].initial = self.instance.segundo_nombre
@@ -30,7 +30,7 @@ class CandidatoForm(forms.Form):
             self.fields['segundo_apellido'].initial = self.instance.segundo_apellido
             self.fields['ciudad_id_004'].initial = self.instance.ciudad_id_004
             self.fields['sexo'].initial = self.instance.sexo
-            self.fields['fecha_nacimiento'].initial = self.instance.fecha_nacimiento.strftime('%d/%m/%Y')
+            self.fields['fecha_nacimiento'].initial = str(self.instance.fecha_nacimiento)
             self.fields['telefono'].initial = self.instance.telefono
 
         self.helper = FormHelper()

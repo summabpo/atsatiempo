@@ -17,7 +17,6 @@ class EstudioCandidatoForm(forms.Form):
         label='¿GRADUADO?',
         required=False,
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        help_text='Marque si tiene un grado'
     )
     titulo = forms.CharField(label='TITULO', required=True , widget=forms.TextInput(attrs={'placeholder': 'Titulo'}))
     carrera = forms.CharField(label='CARRERA', required=True , widget=forms.TextInput(attrs={'placeholder': 'Carrera'}))
@@ -37,20 +36,15 @@ class EstudioCandidatoForm(forms.Form):
                 Div('institucion', css_class='col'),
                 css_class='row'
             ),
+            
             Div(
                 Div('grado_en', css_class='col'),
-                css_class='row'
-            ),
-            Div(
                 Div('fecha_inicial', css_class='col'),
                 Div('fecha_final', css_class='col'),
                 css_class='row'
             ),
             Div(
                 Div('titulo', css_class='col'),
-                css_class='row'
-            ),
-            Div(
                 Div('carrera', css_class='col'),
                 css_class='row'
             ),
