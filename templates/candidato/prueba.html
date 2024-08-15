@@ -1,0 +1,85 @@
+{% extends 'base/base.html' %}
+
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} ATS Atiempo Inicio {% endblock title %}
+
+{% block css %}
+    /* Ajustar el margen inferior del contenedor de búsqueda */
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 20px;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        margin-bottom: 10px;
+    }
+    .dataTables_wrapper .dataTables_filter label {
+        margin-bottom: 10px;
+    }
+{% endblock css %}
+
+{% block titulo-pagina %}
+PERFIL CANDIDATO
+{% endblock titulo-pagina %}
+
+{% block content %}
+
+<div class="col-md-6">
+    <button type="button" class="btn btn-lg btn-alt-success edit-experiencia" data-bs-toggle="modal" data-bs-target="#modal-block-normal">
+        <i class="fa fa-fw fa-plus"></i>  Crear Habilidades
+    </button>
+</div>
+
+
+<div class="modal" id="modal-block-normal" tabindex="-1" aria-labelledby="modal-block-normal" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="block block-rounded block-themed block-transparent mb-0">
+          <div class="block-header bg-primary-dark">
+            <h3 class="block-title">Modal Title</h3>
+            <div class="block-options">
+              <button type="button" class="btn-block-option" data-bs-dismiss="modal" aria-label="Close">
+                <i class="fa fa-fw fa-times"></i>
+              </button>
+            </div>
+          </div>
+            <div class="block-content">
+            
+            </div>
+          <div class="block-content block-content-full text-end bg-body">
+            <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+
+
+{% block extrajs %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Verificar si el modal estaba abierto antes de la recarga
+        if (localStorage.getItem('modal-open') === 'true') {
+            var modal = new bootstrap.Modal(document.getElementById('modal-block-normal'));
+            modal.show();
+        }
+
+        // Guardar el estado del modal cuando se abra
+        var myModalEl = document.getElementById('modal-block-normal');
+        myModalEl.addEventListener('show.bs.modal', function () {
+            localStorage.setItem('modal-open', 'true');
+        });
+
+        // Limpiar el estado cuando se cierre el modal
+        var closeButtons = document.querySelectorAll('.close-modal');
+        closeButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                localStorage.setItem('modal-open', 'false');
+            });
+        });
+    });
+</script>
+{% endblock extrajs %}
