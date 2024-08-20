@@ -525,52 +525,27 @@ $(document).ready(function() {
         function actualizarVisibilidadBotonGuardar() {
             $('#botonGuardar').toggle(listadoPalabras.length > 0);
         }
-    
-        function guardar() {
-            console.log('Datos a enviar:', JSON.stringify(listadoPalabras));
-    
-            $.ajax({
-                url: '/candidato/script/crear_habilidad/',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(listadoPalabras),
-                headers: {
-                    'X-CSRFToken': csrftoken
-                },
-                success: function(data) {
-                    console.log('Éxito:', data);
-                },
-                error: function(error) {
-                    console.error('Error:', error);
-                }
-            });
-        }
-    
-        // Event listeners
-        $('#palabraInput').keypress(function(e) {
-            if (e.which == 13) {
-                agregarPalabra();
-                return false;
-            }
-        });
-    
-        $('button').click(function() {
-            if ($(this).text() === 'Agregar') {
-                agregarPalabra();
-            } else if ($(this).text() === 'Guardar') {
-                guardar();
-            }
-        });
-    
-        $(document).on('change', '.js-select2', function() {
-            const index = $(this).data('index');
-            cambiarEstado(index, $(this).val());
-        });
-    
-        $(document).on('click', '.eliminar', function() {
-            const index = $(this).data('index');
-            eliminarPalabra(index);
-        });
-    });
+
+    function guardar() {
+        const empleadoId = {{ candidato.id }}; // Reemplaza con el ID del empleado real
+        const datosAEnviar = listadoPalabras.map(item => ({
+            palabra: item.palabra,
+            estado: item.estado,
+            empleado_id: empleadoId
+        }));
+
+         // Aquí es donde normalmente harías la solicitud POST al servidor
+        console.log('Datos a enviar:', JSON.stringify(datosAEnviar));
+        
+        fetch('/candidato/script/crear_habilidad/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken // Incluir el token CSRF
+            },
+            body: JSON.stringify(datosAEnviar)
+        })
+        
+    }
 </script>
 {% endblock extrajs %}
