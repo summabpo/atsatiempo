@@ -531,10 +531,15 @@ $(document).ready(function() {
         }
 
     function guardar() {
-        // Aquí es donde normalmente harías la solicitud POST al servidor
-        console.log('Datos a enviar:', JSON.stringify(listadoPalabras));
+        const empleadoId = {{ candidato.id }}; // Reemplaza con el ID del empleado real
+        const datosAEnviar = listadoPalabras.map(item => ({
+            palabra: item.palabra,
+            estado: item.estado,
+            empleado_id: empleadoId
+        }));
 
-        
+         // Aquí es donde normalmente harías la solicitud POST al servidor
+        console.log('Datos a enviar:', JSON.stringify(datosAEnviar));
         
         fetch('/candidato/script/crear_habilidad/', {
             method: 'POST',
@@ -542,15 +547,8 @@ $(document).ready(function() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken // Incluir el token CSRF
             },
-            body: JSON.stringify(listadoPalabras)
+            body: JSON.stringify(datosAEnviar)
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Éxito:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
         
     }
 </script>
