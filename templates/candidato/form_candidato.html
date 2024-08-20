@@ -6,9 +6,32 @@
 
 {% block title %} ATS Atiempo Inicio {% endblock title %}
 
+{% block css %}
+
+    /* Ajustar el margen inferior del contenedor de búsqueda */
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 20px; /* Ajusta según tus necesidades */
+    }
+    
+    /* Asegúrate de que no haya conflictos con otros estilos */
+    .dataTables_wrapper .dataTables_filter input {
+        margin-bottom: 10px; /* Ajusta según tus necesidades */
+    }
+
+    /* Si los estilos específicos de Dashmix están interfiriendo */
+    .dataTables_wrapper .dataTables_filter label {
+        margin-bottom: 10px; /* Ajusta según tus necesidades */
+    }
+            
+    
+{% endblock css %}
+
 {% block titulo-pagina %}
 PERFIL CANDIDATO
 {% endblock titulo-pagina %}
+
+
+
 
 {% block content %}
 
@@ -253,8 +276,8 @@ PERFIL CANDIDATO
                                     <i class="fa fa-fw fa-plus"></i>  Crear Habilidades
                                 </button>
                             </div>
-                            <div class="col-md-12">
-                                <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
+                            <div class="row push p-sm-2 p-lg-4">
+                                <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination" >
                                     <thead>
                                         <tr>
                                             <th class="text-center">HABILIDAD</th>
@@ -361,8 +384,15 @@ PERFIL CANDIDATO
                 </div>
                 <div style="text-align: center;" class="block-content">
                     <!-- {% crispy form_habilidad %} -->
+                    <div class="row mb-4">
+                        <label class="form-label col-12">Label in the Grid</label>
+                        <div class="col-4">
+                            <input type="text" class="form-control" placeholder="col-3">
+                        </div>
+                    </div>
 
                     <input class="textinput form-control" type="text" id="palabraInput" placeholder="Escribe una habilidad">
+                    <input class="textinput form-control" type="text" id="palabraInput2" placeholder="Escribe una habilidad">
                     <br>
                     <button class="btn btn btn-alt-primary" onclick="agregarPalabra()">Agregar</button>
                     <br>
@@ -388,6 +418,28 @@ PERFIL CANDIDATO
 
 
 {% block extrajs %}
+
+<script>
+    $(document).ready(function() {
+        $('#tabla-prieba').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+            {
+                text: ' <i class="fa fa-fw fa-plus"></i>  Crear Habilidades ',
+                className: 'btn btn-lg btn-alt-success edit-experiencia',
+                action: function ( e, dt, node, config ) {
+                    $('#modal-habilidad').modal('show'); // Abre el modal
+                }
+            },
+            ],
+            "pageLength": 5, 
+            responsive: true
+        });
+    });
+</script>
+
+
+
 <script>
 $(document).ready(function() {
 
@@ -496,11 +548,19 @@ $(document).ready(function() {
                 const $itemDiv = $('<div>').addClass('row').html(`
                     <div class="col-md-4"><span>${item.palabra}</span></div>
                     <div style="text-align: center" class="col-md-4">                
+<<<<<<< HEAD
                         <select style="text-align: center" class="form-select js-select2" data-index="${index}">
                             <option value="">------</option>
                             <option value="1" ${item.estado === '1' ? 'selected' : ''}>Básico</option>
                             <option value="2" ${item.estado === '2' ? 'selected' : ''}>Intermedio</option>
                             <option value="3" ${item.estado === '3' ? 'selected' : ''}>Superior</option>
+=======
+                        <select style="text-align: center" class="form-select js-select2 " onchange="cambiarEstado(${index}, this.value)">
+                            <option value="" > ------ </option>
+                            <option value="1" ${item.estado === '1' ? '1' : ''} >Básico</option>
+                            <option value="2" ${item.estado === '2' ? '2' : ''}>Intermedio</option>
+                            <option value="3" ${item.estado === '3' ? '3' : ''}>Superior</option>
+>>>>>>> origin/Manuel
                         </select>
                     </div>
                     <div style="text-align: center" class="col-md-4">
