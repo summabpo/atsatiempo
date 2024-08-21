@@ -17,7 +17,7 @@ level_Choices = [
 
 class PruebasForm(forms.Form):
     ability = forms.ChoiceField(choices=[], label='Habilidad')
-    level =  forms.ChoiceField(choices=level_Choices, label='Nivel' ,widget=forms.Select(attrs={'data-control': 'select2'}))
+    level =  forms.ChoiceField(choices=level_Choices, label='Nivel' ,widget=forms.Select(attrs={'data-control': 'js-select2'}))
     
     def __init__(self, *args, **kwargs):
         super(PruebasForm, self).__init__(*args, **kwargs)
@@ -29,6 +29,23 @@ class PruebasForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_id = 'form_habilidades'
+
+        self.fields['ability'].widget.attrs.update({
+            'aria-label': 'Select a Country',
+            'data-control': 'select2',
+            'data-placeholder': 'Select a Country...',
+            'data-dropdown-parent': '#kt_modal_add_customer',
+            'class': 'form-select form-select-solid fw-bold'
+        })
+
+        self.fields['level'].widget.attrs.update({
+            'aria-label': 'Select a Country',
+            'data-control': 'select2',
+            'data-placeholder': 'Selecione un nivel...',
+            'data-dropdown-parent': '#kt_modal_add_customer',
+            'class': 'form-select form-select-solid fw-bold'
+        })
+
         self.helper.layout = Layout(
             Row(
                 Column('ability', css_class='form-group mb-0'),
@@ -36,9 +53,6 @@ class PruebasForm(forms.Form):
                 Submit('submit', 'Filtrar', css_class='btn btn-light-info mb-0'),
                 css_class='row'
             ),
-            
-            
-            
         )
     
     

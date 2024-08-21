@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	
+    <head>
+		<title>{% block title %} {% endblock title %}</title>
+		<meta charset="utf-8" />
+		<meta name="description" content="Saul HTML Pro - Bootstrap 5 HTML Multipurpose Admin Dashboard Theme" />
+		<meta name="keywords" content="Saul, bootstrap, bootstrap 5, dmin themes, free admin themes, bootstrap admin, bootstrap dashboard" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:type" content="article" />
+		<meta property="og:title" content="ATS ATIEMPO" />
+		<meta property="og:url" content="https://keenthemes.com/products/saul-html-pro" />
+		<meta property="og:site_name" content="Saul HTML Pro by Keenthemes" />
+		<link rel="canonical" href="https://preview.keenthemes.com/saul-html-pro" />
+		<link rel="shortcut icon" href=" {% static 'test_static/media/logos/favicon.ico' %} " />
+        
+		<!--begin::Fonts(mandatory for all pages)-->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+		<!--end::Fonts-->
+		<!--begin::Vendor Stylesheets(used for this page only)-->
+		<link href="{% static 'test_static/plugins/custom/fullcalendar/fullcalendar.bundle.css' %} " rel="stylesheet" type="text/css" />
+		<link href="{% static 'test_static/plugins/custom/datatables/datatables.bundle.css' %} " rel="stylesheet" type="text/css" />
+		<!--end::Vendor Stylesheets-->
+		<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
+		<link href="{% static 'test_static/plugins/global/plugins.bundle.css' %} " rel="stylesheet" type="text/css" />
+		<link href="{% static 'test_static/css/style.bundle.css' %} " rel="stylesheet" type="text/css" />
+		<!--end::Global Stylesheets Bundle-->
+		<script>// Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }</script>
+        
+	</head>
+	
+    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
+		
+        <script>var defaultThemeMode = "light"; var themeMode; if ( document.documentElement ) { if ( document.documentElement.hasAttribute("data-bs-theme-mode")) { themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); } else { if ( localStorage.getItem("data-bs-theme") !== null ) { themeMode = localStorage.getItem("data-bs-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-bs-theme", themeMode); }</script>
+		
+        <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
+			
+            <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
+				
+                {% include 'base_test/cabecera.html' %}
+                
+                <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
+					
+                    {% include 'base_test/menu.html' %}
+                    
+                    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+                        
+                        <div class="d-flex flex-column flex-column-fluid">
+                            
+                            <div id="kt_app_toolbar" class="app-toolbar pt-5">
+                                
+                                <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+                                    
+                                    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+                                        
+                                        <div class="page-title d-flex flex-column gap-1 me-3 mb-2">
+                                            
+                                            <ul class="breadcrumb breadcrumb-separatorless fw-semibold mb-6">
+                                                
+                                                <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+                                                    <a href="./" class="text-gray-500 text-hover-primary">
+                                                        <i class="ki-duotone ki-home fs-3 text-gray-500 me-n1"></i>
+                                                    </a>
+                                                </li>
+                                                
+                                                <li class="breadcrumb-item">
+                                                    <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
+                                                </li>
+                                                
+                                                <li class="breadcrumb-item text-gray-700 fw-bold lh-1"><a href="./" class="text-gray-500 text-hover-primary">Inicio</a></li>
+                                                
+                                                <li class="breadcrumb-item">
+                                                    <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
+                                                </li>
+                                                
+                                                <li class="breadcrumb-item text-gray-700">Actual</li>
+                                            
+                                            </ul>
+                                            <h1 class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">
+                                            {% block titulo_pagina %}
+                                                
+                                            {% endblock titulo_pagina %}
+                                                </h1>
+                                        </div>
+                                        {% comment %} <a href="#" class="btn btn-sm btn-success ms-3 px-4 py-3" data-bs-toggle="modal" data-bs-target="#kt_modal_create_app">Create Project</a> {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="kt_app_content" class="app-content flex-column-fluid">
+                                <div id="kt_app_content_container" class="app-container container-fluid">
+                                    {% block content %}
+                                    
+                                    {% endblock content %}									
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="kt_app_footer" class="app-footer align-items-center justify-content-center justify-content-md-between flex-column flex-md-row py-3">
+                            
+                            <div class="text-gray-900 order-2 order-md-1">
+                                <span class="text-muted fw-semibold me-1">2023&copy;</span>
+                                <a href="https://atiempo.co" target="_blank" class="text-gray-800 text-hover-primary">Atiempo</a>
+                            </div>
+                            
+                            <ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
+                                <li class="menu-item">
+                                    <a href="#" target="_blank" class="menu-link px-2">Nosotros</a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="#" target="_blank" class="menu-link px-2">Soporte</a>
+                                </li>
+                            </ul>
+                        
+                        </div>
+                    
+                    </div>
+                    
+                </div>
+			
+            </div>
+		</div>
+		
+        
+		<!--begin::Global Javascript Bundle(mandatory for all pages)-->
+		<script src="{% static 'test_static/plugins/global/plugins.bundle.js' %} "></script>
+		<script src="{% static 'test_static/js/scripts.bundle.js' %} "></script>
+
+        <<script src="{% static 'test_static/plugins/custom/fullcalendar/fullcalendar.bundle.js' %} "></script>
+		<script src="https://cdn.amcharts.com/lib/5/index.js"></>
+		<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/geodata/continentsLow.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/geodata/usaLow.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZonesLow.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZoneAreasLow.js"></script>
+
+		<script src="{% static 'test_static/plugins/custom/datatables/datatables.bundle.js' %} "></script>
+        <script src="{% static 'test_static/js/custom/apps/customers/list/export.js' %}"></script>
+		<script src="{% static 'test_static/js/custom/apps/customers/list/list.js' %}"></script>
+		<script src="{% static 'test_static/js/custom/apps/customers/add.js' %}"></script>
+		
+        <script src="{% static 'test_static/js/widgets.bundle.js' %} "></script>
+		<script src="{% static 'test_static/js/custom/widgets.js' %} "></script>
+		<script src="{% static 'test_static/js/custom/apps/chat/chat.js' %} "></script>
+		<script src="{% static 'test_static/js/custom/utilities/modals/upgrade-plan.js' %} "></script>
+		<script src="{% static 'test_static/js/custom/utilities/modals/create-account.js' %} "></script>
+		<script src="{% static 'test_static/js/custom/utilities/modals/create-app.js' %} "></script>
+		<script src="{% static 'test_static/js/custom/utilities/modals/users-search.js' %} "></script>
+	
+        {% block extrajs %}{% endblock %}
+
+    </body>
+	
+</html>

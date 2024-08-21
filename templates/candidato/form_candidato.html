@@ -383,22 +383,8 @@ PERFIL CANDIDATO
                     </div>
                 </div>
                 <div style="text-align: center;" class="block-content">
-                    <!-- {% crispy form_habilidad %} -->
-                    <div class="row mb-4">
-                        <label class="form-label col-12">Label in the Grid</label>
-                        <div class="col-4">
-                            <input type="text" class="form-control" placeholder="col-3">
-                        </div>
-                    </div>
-
-                    <input class="textinput form-control" type="text" id="palabraInput" placeholder="Escribe una habilidad">
-                    <input class="textinput form-control" type="text" id="palabraInput2" placeholder="Escribe una habilidad">
-                    <br>
-                    <button class="btn btn btn-alt-primary" onclick="agregarPalabra()">Agregar</button>
-                    <br>
-                    <div class="content" id="listado"></div>
-                    <br>
-                    <button id="botonGuardar" class="btn btn-lg btn-alt-success" onclick="guardar()">Guardar</button>
+                    {% crispy form_habilidad %}
+                    
                 </div>
                 <br>
                 <!-- <div class="block-content block-content-full text-end bg-body">
@@ -418,7 +404,6 @@ PERFIL CANDIDATO
 
 
 {% block extrajs %}
-
 <script>
     $(document).ready(function() {
         $('#tabla-prieba').DataTable({
@@ -524,88 +509,4 @@ $(document).ready(function() {
         })
     })
 </script>  
-
-<script>
-    $(document).ready(function() {
-        const csrftoken = '{{ csrf_token }}';
-        let listadoPalabras = [];
-    
-        $('#botonGuardar').hide();
-    
-        function agregarPalabra() {
-            const palabra = $('#palabraInput').val().trim();
-            if (palabra) {
-                listadoPalabras.push({ palabra: palabra, estado: 'pendiente' });
-                actualizarListado();
-                $('#palabraInput').val('');
-            }
-        }
-    
-        function actualizarListado() {
-            const $listado = $('#listado');
-            $listado.empty();
-            $.each(listadoPalabras, function(index, item) {
-                const $itemDiv = $('<div>').addClass('row').html(`
-                    <div class="col-md-4"><span>${item.palabra}</span></div>
-                    <div style="text-align: center" class="col-md-4">                
-<<<<<<< HEAD
-                        <select style="text-align: center" class="form-select js-select2" data-index="${index}">
-                            <option value="">------</option>
-                            <option value="1" ${item.estado === '1' ? 'selected' : ''}>Básico</option>
-                            <option value="2" ${item.estado === '2' ? 'selected' : ''}>Intermedio</option>
-                            <option value="3" ${item.estado === '3' ? 'selected' : ''}>Superior</option>
-=======
-                        <select style="text-align: center" class="form-select js-select2 " onchange="cambiarEstado(${index}, this.value)">
-                            <option value="" > ------ </option>
-                            <option value="1" ${item.estado === '1' ? '1' : ''} >Básico</option>
-                            <option value="2" ${item.estado === '2' ? '2' : ''}>Intermedio</option>
-                            <option value="3" ${item.estado === '3' ? '3' : ''}>Superior</option>
->>>>>>> origin/Manuel
-                        </select>
-                    </div>
-                    <div style="text-align: center" class="col-md-4">
-                        <button class="eliminar btn btn-sm btn-danger" data-index="${index}">Eliminar</button>
-                    </div>
-                    <hr>
-                `);
-                $listado.append($itemDiv);
-            });
-            actualizarVisibilidadBotonGuardar();
-        }
-    
-        function cambiarEstado(index, nuevoEstado) {
-            listadoPalabras[index].estado = nuevoEstado;
-        }
-    
-        function eliminarPalabra(index) {
-            listadoPalabras.splice(index, 1);
-            actualizarListado();
-        }
-    
-        function actualizarVisibilidadBotonGuardar() {
-            $('#botonGuardar').toggle(listadoPalabras.length > 0);
-        }
-
-    function guardar() {
-        const empleadoId = {{ candidato.id }}; // Reemplaza con el ID del empleado real
-        const datosAEnviar = listadoPalabras.map(item => ({
-            palabra: item.palabra,
-            estado: item.estado,
-            empleado_id: empleadoId
-        }));
-
-         // Aquí es donde normalmente harías la solicitud POST al servidor
-        console.log('Datos a enviar:', JSON.stringify(datosAEnviar));
-        
-        fetch('/candidato/script/crear_habilidad/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken // Incluir el token CSRF
-            },
-            body: JSON.stringify(datosAEnviar)
-        })
-        
-    }
-</script>
 {% endblock extrajs %}

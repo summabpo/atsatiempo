@@ -18,20 +18,19 @@ class HabilidadCandidatoForm(forms.Form):
         
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.form_class = 'container'
+
+        self.fields['skill_id_104'].widget.attrs.update({
+            'data-placeholder': 'Select a Country...',
+            'class': 'select2-selection select2-selection--multiple'
+        })
 
         self.helper.layout = Layout(
-            Div(
-                Div('skill_id_104', css_class='col'),
+            Row(
+                Column('skill_id_104', css_class='form-group mb-0'),
+                Column('nivel', css_class='form-group mb-0 select2'),
+                Submit('submit_habilidad', 'Crear', css_class='btn btn-light-info mb-0'),
                 css_class='row'
             ),
-            Div(
-                Div('nivel', css_class='col'),
-                css_class='row'
-            ),
-            # Field('skill_id_104', css_class='mi-clase-personalizada'),
-            # Field('nivel', css_class='mi-clase-personalizada'),
-            Submit('submit_habilidad', 'Guardar Habilidad', css_class='btn btn-primary mt-3'),
         )
 
     def clean(self):

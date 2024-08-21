@@ -7,9 +7,10 @@ from django.views.generic import (TemplateView, ListView)
 from django.contrib import messages
 
 # Create your views here.
-class InicioView(TemplateView):
-    """ vista que carga la pagina de inicio """
-    template_name = 'candidato/index.html'
+# class InicioView(TemplateView):
+#     """ vista que carga la pagina de inicio """
+#     # template_name = 'candidato/index.html'
+#     template_name = 'base_test/habilidades.html'
 
 class ListadoCandidato(ListView):
     template_name = 'candidato/listado_candidatos.html'
