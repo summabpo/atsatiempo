@@ -5,7 +5,4 @@ from applications.candidato.forms.pruebasforms import PruebasForm
 def pruebas(request):
     form = PruebasForm()
     
-    return render(request, 'candidato/prueba.html'
-                  ,{
-                      'form':form
-                  })
+    return render(request, 'base_test/habilidades.html',{ 'form':form })

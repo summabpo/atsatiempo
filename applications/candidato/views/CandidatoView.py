@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from applications.candidato.models import Can101Candidato, Can102Experiencia, Can103Educacion, Can101CandidatoSkill
+from applications.candidato.models import Can101Candidato, Can102Experiencia, Can103Educacion, Can101CandidatoSkill, Can104Skill
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.forms.CandidatoForms import CandidatoForm
 from applications.candidato.forms.ExperienciaForms import ExperienciaCandidatoForm
@@ -277,14 +277,31 @@ def obtener_laboral_view(request):
 
 #Crear Habilidades opcional
 def habilidades_crear(request):
+
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+            print(data)
             for item in data:
-                Palabra.objects.create(
-                    palabra=item['palabra'],
-                    estado=item['estado']
+                # Intentar obtener el objeto existente
+                habilidad, creada = Can104Skill.objects.get_or_create(
+                    nombre=item['palabra'],
+                    estado_id_004= Cat001Estado.objects.get(id=1) 
                 )
-            return JsonResponse({"mensaje": "Palabras guardadas exitosamente"}, status=201)
+
+                if creada:
+                    print(f'La habilidad {habilidad.nombre} se ha creado con éxito')
+                else:
+                    print(f'La habilidad {habilidad.nombre} ya existe')
+
+                Can101CandidatoSkill.objects.get_or_create(
+                    candidato_id_101=Can101Candidato.objects.get(id=item['empleado_id']), 
+                    skill_id_104=habilidad,
+                    nivel=item['estado']
+                )
+
+            messages.success(request, 'Se ha ingresado las habilidades.')
+            return redirect('candidatos:candidato_editar', pk=item['empleado_id'])
+
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)

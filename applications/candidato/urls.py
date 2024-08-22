@@ -5,10 +5,10 @@ from .views import views, CandidatoView , pruebas
 url_principal = 'candidato/'
 
 urlpatterns = [
-    path('', views.InicioView.as_view(), name='inicio'),
+    path('', pruebas.pruebas, name='inicio'),
     path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),
     path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),
-    path( url_principal+'pruebas', pruebas.pruebas, name='pruebas'),
+    # path( url_principal+'pruebas', pruebas.pruebas, name='pruebas'),
     
     
     
