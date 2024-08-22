@@ -1,123 +1,160 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %} {% endblock title %}</title>
-    
-    <link rel="shortcut icon" href="{% static 'img/favicons/favicon.png' %}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'img/favicons/favicon-192x192.png' %}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-    <link rel="stylesheet" href="{% static 'js/plugins/datatables-bs5/css/dataTables.bootstrap5.min.css' %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/datatables-buttons-bs5/css/buttons.bootstrap5.min.css' %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/datatables-responsive-bs5/css/responsive.bootstrap5.min.css' %}">
-
-    <link rel="stylesheet" href="{% static 'js/plugins/select2/css/select2.min.css' %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css'  %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/ion-rangeslider/css/ion.rangeSlider.css'  %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/dropzone/min/dropzone.min.css'  %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/flatpickr/flatpickr.min.css'  %}">
-
-    <link rel="stylesheet" id="css-main" href="{% static 'css/dashmix.min.css' %} ">
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-
-    <style>
-        /* Ocultar asteriscos y estilos adicionales */
-        .asteriskField {
-            color: red !important;
-        }
-        {% block css %}
+<html lang="en">
+	
+    <head>
+		<title>{% block title %} {% endblock title %}</title>
+		<meta charset="utf-8" />
+		<meta name="description" content="Saul HTML Pro - Bootstrap 5 HTML Multipurpose Admin Dashboard Theme" />
+		<meta name="keywords" content="Saul, bootstrap, bootstrap 5, dmin themes, free admin themes, bootstrap admin, bootstrap dashboard" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:type" content="article" />
+		<meta property="og:title" content="ATS ATIEMPO" />
+		<meta property="og:url" content="https://keenthemes.com/products/saul-html-pro" />
+		<meta property="og:site_name" content="Saul HTML Pro by Keenthemes" />
+		<link rel="canonical" href="https://preview.keenthemes.com/saul-html-pro" />
+		<link rel="shortcut icon" href=" {% static 'media/logos/favicon.ico' %} " />
+        
+		<!--begin::Fonts(mandatory for all pages)-->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+		<!--end::Fonts-->
+		<!--begin::Vendor Stylesheets(used for this page only)-->
+		<link href="{% static 'plugins/custom/fullcalendar/fullcalendar.bundle.css' %} " rel="stylesheet" type="text/css" />
+		<link href="{% static 'plugins/custom/datatables/datatables.bundle.css' %} " rel="stylesheet" type="text/css" />
+		<!--end::Vendor Stylesheets-->
+		<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
+		<link href="{% static 'plugins/global/plugins.bundle.css' %} " rel="stylesheet" type="text/css" />
+		<link href="{% static 'css/style.bundle.css' %} " rel="stylesheet" type="text/css" />
+		<!--end::Global Stylesheets Bundle-->
+		<script>// Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }</script>
+	</head>
+	
+    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
+		
+        <script>var defaultThemeMode = "light"; var themeMode; if ( document.documentElement ) { if ( document.documentElement.hasAttribute("data-bs-theme-mode")) { themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); } else { if ( localStorage.getItem("data-bs-theme") !== null ) { themeMode = localStorage.getItem("data-bs-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-bs-theme", themeMode); }</script>
+		
+        <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
+			
+            <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
+				
+                {% include 'base/cabecera.html' %}
+                
+                <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
+					
+                    {% include 'base/menu.html' %}
                     
-        {% endblock css %}
-    </style>
-
-</head>
-<body>  
-    
-    <!-- ocultar sidebar sidebar-o -->
-    <div id="page-container" class="enable-page-overlay side-scroll page-header-fixed page-header-dark side-trans-enabled sidebar-o">
-        {% include 'base/aside.html' %}
-        {% include 'base/menu.html' %}
-        {% include 'base/cabecera.html' %}
-            <!-- Contenido Principal -->
-        <main id="main-container">
-            <div class="content">
-                <h2 class="content-heading">{% block titulo-pagina %} {% endblock titulo-pagina %}</h2>
-                {% block content %}
+                    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+                        
+                        <div class="d-flex flex-column flex-column-fluid">
+                            
+                            <div id="kt_app_toolbar" class="app-toolbar pt-5">
+                                
+                                <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+                                    
+                                    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+                                        
+                                        <div class="page-title d-flex flex-column gap-1 me-3 mb-2">
+                                            
+                                            <ul class="breadcrumb breadcrumb-separatorless fw-semibold mb-6">
+                                                
+                                                <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+                                                    <a href="./" class="text-gray-500 text-hover-primary">
+                                                        <i class="ki-duotone ki-home fs-3 text-gray-500 me-n1"></i>
+                                                    </a>
+                                                </li>
+                                                
+                                                <li class="breadcrumb-item">
+                                                    <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
+                                                </li>
+                                                
+                                                <li class="breadcrumb-item text-gray-700 fw-bold lh-1"><a href="./" class="text-gray-500 text-hover-primary">Inicio</a></li>
+                                                
+                                                <li class="breadcrumb-item">
+                                                    <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
+                                                </li>
+                                                
+                                                <li class="breadcrumb-item text-gray-700">Actual</li>
+                                            
+                                            </ul>
+                                            <h1 class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">
+                                            {% block titulo_pagina %}
+                                                
+                                            {% endblock titulo_pagina %}
+                                                </h1>
+                                        </div>
+                                        {% comment %} <a href="#" class="btn btn-sm btn-success ms-3 px-4 py-3" data-bs-toggle="modal" data-bs-target="#kt_modal_create_app">Create Project</a> {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="kt_app_content" class="app-content flex-column-fluid">
+                                <div id="kt_app_content_container" class="app-container container-fluid">
+                                    {% block content %}
+                                    
+                                    {% endblock content %}									
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="kt_app_footer" class="app-footer align-items-center justify-content-center justify-content-md-between flex-column flex-md-row py-3">
+                            
+                            <div class="text-gray-900 order-2 order-md-1">
+                                <span class="text-muted fw-semibold me-1">2023&copy;</span>
+                                <a href="https://atiempo.co" target="_blank" class="text-gray-800 text-hover-primary">Atiempo</a>
+                            </div>
+                            
+                            <ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
+                                <li class="menu-item">
+                                    <a href="#" target="_blank" class="menu-link px-2">Nosotros</a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="#" target="_blank" class="menu-link px-2">Soporte</a>
+                                </li>
+                            </ul>
+                        
+                        </div>
                     
-                {% endblock content %}
+                    </div>
+                    
+                </div>
+			
             </div>
-        </main>
-        {% include 'base/piePagina.html' %}
-    </div>
+		</div>
+		
+        
+		<!--begin::Global Javascript Bundle(mandatory for all pages)-->
+		<script src="{% static 'plugins/global/plugins.bundle.js' %} "></script>
+		<script src="{% static 'js/scripts.bundle.js' %} "></script>
 
-    <script src="{% static 'js/dashmix.app.min.js' %}"></script>
+        <<script src="{% static 'plugins/custom/fullcalendar/fullcalendar.bundle.js' %} "></script>
+		<script src="https://cdn.amcharts.com/lib/5/index.js"></>
+		<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/geodata/continentsLow.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/geodata/usaLow.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZonesLow.js"></script>
+		<script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZoneAreasLow.js"></script>
 
-    <!-- jQuery (required for Select2 + jQuery Validation plugins) -->
-    <script src="{% static 'js/lib/jquery.min.js' %}"></script>
+		<script src="{% static 'plugins/custom/datatables/datatables.bundle.js' %} "></script>
+        <script src="{% static 'js/custom/apps/customers/list/export.js' %}"></script>
+		<script src="{% static 'js/custom/apps/customers/list/list.js' %}"></script>
+		<script src="{% static 'js/custom/apps/customers/add.js' %}"></script>
+		
+        <script src="{% static 'js/widgets.bundle.js' %} "></script>
+		<script src="{% static 'js/custom/widgets.js' %} "></script>
+		<script src="{% static 'js/custom/apps/chat/chat.js' %} "></script>
+		<script src="{% static 'js/custom/utilities/modals/upgrade-plan.js' %} "></script>
+		<script src="{% static 'js/custom/utilities/modals/create-account.js' %} "></script>
+		<script src="{% static 'js/custom/utilities/modals/create-app.js' %} "></script>
+		<script src="{% static 'js/custom/utilities/modals/users-search.js' %} "></script>
+	
+        {% block extrajs %}{% endblock %}
 
-    <!-- Page JS Plugins -->
-    <script src="{% static 'js/plugins/select2/js/select2.full.min.js' %}"></script>
-    <script src="{% static 'js/plugins/jquery-validation/jquery.validate.min.js' %}"></script>
-    <script src="{% static 'js/plugins/jquery-validation/additional-methods.js' %}"></script>
-
-    <!-- Page JS Helpers (Select2 plugin) -->
-    <script>Dashmix.helpersOnLoad(['jq-select2']);</script>
-
-    <!-- Page JS Code -->
-    <script src="{% static 'js/pages/be_forms_validation.min.js' %}"></script>
-
-    <!-- Page JS Code -->
-    <!-- Page JS Plugins -->
-    <script src="{% static 'js/plugins/datatables/dataTables.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-bs5/js/dataTables.bootstrap5.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-responsive-bs5/js/responsive.bootstrap5.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-buttons/dataTables.buttons.min.js' %}"></script>
-    <!-- <script src="{% static 'js/plugins/js/plugins/datatables-buttons-bs5/js/buttons.bootstrap5.min.js' %}"></script> -->
-    <!-- <script src="{% static 'js/plugins/js/plugins/datatables-buttons-jszip/jszip.min.js' %}"></script> -->
-    <script src="{% static 'js/plugins/datatables-buttons-pdfmake/pdfmake.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-buttons-pdfmake/vfs_fonts.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-buttons/buttons.print.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-buttons/buttons.html5.min.js' %}"></script>
-
-    <script src="{% static 'js/pages/be_tables_datatables.min.js' %}"></script>
-
-    <script src="{% static 'js/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/select2/js/select2.full.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/ion-rangeslider/js/ion.rangeSlider.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/jquery.maskedinput/jquery.maskedinput.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/dropzone/min/dropzone.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/pwstrength-bootstrap/pwstrength-bootstrap.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/flatpickr/flatpickr.min.js'  %}"></script>
-
-    <script>Dashmix.helpersOnLoad(['js-flatpickr', 'jq-datepicker', 'jq-maxlength', 'jq-select2', 'jq-rangeslider', 'jq-masked-inputs', 'jq-pw-strength']);</script>
-    {% if messages %}
-        {% for message in messages %}
-            <script>
-            Swal.fire({
-                text: "{{ message }}",
-                icon: "{{message.tags}}",
-                showConfirmButton: true,
-                confirmButtonText: "Ok",
-                customClass: {
-                    confirmButton: "btn btn-primary"
-                },
-                willOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer);
-                    toast.addEventListener('mouseleave', Swal.resumeTimer);
-                }
-            });
-            </script>
-        {% endfor %}
-    {% endif %}
-
-    {% block extrajs %}{% endblock %} 
-</body>
+    </body>
+	
 </html>

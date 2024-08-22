@@ -20,8 +20,12 @@ class HabilidadCandidatoForm(forms.Form):
         self.helper.form_method = 'post'
 
         self.fields['skill_id_104'].widget.attrs.update({
-            'data-placeholder': 'Select a Country...',
-            'class': 'select2-selection select2-selection--multiple'
+            'class': 'js-select2 form-select',
+            'id': 'example-select2-multiple',
+            'name': 'example-select2-multiple',
+            'style': 'width: 100%;',
+            'data-placeholder': 'Choose many...',
+            'multiple': 'multiple'
         })
 
         self.helper.layout = Layout(

@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} {% endblock title %}</title>
+    
+    <link rel="shortcut icon" href="{% static 'img/favicons/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'img/favicons/favicon-192x192.png' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="{% static 'js/plugins/datatables-bs5/css/dataTables.bootstrap5.min.css' %}">
+    <link rel="stylesheet" href="{% static 'js/plugins/datatables-buttons-bs5/css/buttons.bootstrap5.min.css' %}">
+    <link rel="stylesheet" href="{% static 'js/plugins/datatables-responsive-bs5/css/responsive.bootstrap5.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'js/plugins/select2/css/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'js/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css'  %}">
+    <link rel="stylesheet" href="{% static 'js/plugins/ion-rangeslider/css/ion.rangeSlider.css'  %}">
+    <link rel="stylesheet" href="{% static 'js/plugins/dropzone/min/dropzone.min.css'  %}">
+    <link rel="stylesheet" href="{% static 'js/plugins/flatpickr/flatpickr.min.css'  %}">
+
+    <link rel="stylesheet" id="css-main" href="{% static 'css/dashmix.min.css' %} ">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+    <style>
+        /* Ocultar asteriscos y estilos adicionales */
+        .asteriskField {
+            color: red !important;
+        }
+        {% block css %}
+                    
+        {% endblock css %}
+    </style>
+
+</head>
+<body>  
+    
+    <!-- ocultar sidebar sidebar-o -->
+    <div id="page-container" class="enable-page-overlay side-scroll page-header-fixed page-header-dark side-trans-enabled sidebar-o">
+        {% include 'base/aside.html' %}
+        {% include 'base/menu.html' %}
+        {% include 'base/cabecera.html' %}
+            <!-- Contenido Principal -->
+        <main id="main-container">
+            <div class="content">
+                <h2 class="content-heading">{% block titulo-pagina %} {% endblock titulo-pagina %}</h2>
+                {% block content %}
+                    
+                {% endblock content %}
+            </div>
+        </main>
+        {% include 'base/piePagina.html' %}
+    </div>
+
+    <script src="{% static 'js/dashmix.app.min.js' %}"></script>
+
+    <!-- jQuery (required for Select2 + jQuery Validation plugins) -->
+    <script src="{% static 'js/lib/jquery.min.js' %}"></script>
+
+    <!-- Page JS Plugins -->
+    <script src="{% static 'js/plugins/select2/js/select2.full.min.js' %}"></script>
+    <script src="{% static 'js/plugins/jquery-validation/jquery.validate.min.js' %}"></script>
+    <script src="{% static 'js/plugins/jquery-validation/additional-methods.js' %}"></script>
+
+    <!-- Page JS Helpers (Select2 plugin) -->
+    <script>Dashmix.helpersOnLoad(['jq-select2']);</script>
+
+    <!-- Page JS Code -->
+    <script src="{% static 'js/pages/be_forms_validation.min.js' %}"></script>
+
+    <!-- Page JS Code -->
+    <!-- Page JS Plugins -->
+    <script src="{% static 'js/plugins/datatables/dataTables.min.js' %}"></script>
+    <script src="{% static 'js/plugins/datatables-bs5/js/dataTables.bootstrap5.min.js' %}"></script>
+    <script src="{% static 'js/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'js/plugins/datatables-responsive-bs5/js/responsive.bootstrap5.min.js' %}"></script>
+    <script src="{% static 'js/plugins/datatables-buttons/dataTables.buttons.min.js' %}"></script>
+    <!-- <script src="{% static 'js/plugins/js/plugins/datatables-buttons-bs5/js/buttons.bootstrap5.min.js' %}"></script> -->
+    <!-- <script src="{% static 'js/plugins/js/plugins/datatables-buttons-jszip/jszip.min.js' %}"></script> -->
+    <script src="{% static 'js/plugins/datatables-buttons-pdfmake/pdfmake.min.js' %}"></script>
+    <script src="{% static 'js/plugins/datatables-buttons-pdfmake/vfs_fonts.js' %}"></script>
+    <script src="{% static 'js/plugins/datatables-buttons/buttons.print.min.js' %}"></script>
+    <script src="{% static 'js/plugins/datatables-buttons/buttons.html5.min.js' %}"></script>
+
+    <script src="{% static 'js/pages/be_tables_datatables.min.js' %}"></script>
+
+    <script src="{% static 'js/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/select2/js/select2.full.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/ion-rangeslider/js/ion.rangeSlider.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/jquery.maskedinput/jquery.maskedinput.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/dropzone/min/dropzone.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/pwstrength-bootstrap/pwstrength-bootstrap.min.js'  %}"></script>
+    <script src="{% static 'js/plugins/flatpickr/flatpickr.min.js'  %}"></script>
+
+    <script>Dashmix.helpersOnLoad(['js-flatpickr', 'jq-datepicker', 'jq-maxlength', 'jq-select2', 'jq-rangeslider', 'jq-masked-inputs', 'jq-pw-strength']);</script>
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+            Swal.fire({
+                text: "{{ message }}",
+                icon: "{{message.tags}}",
+                showConfirmButton: true,
+                confirmButtonText: "Ok",
+                customClass: {
+                    confirmButton: "btn btn-primary"
+                },
+                willOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+            </script>
+        {% endfor %}
+    {% endif %}
+
+    {% block extrajs %}{% endblock %} 
+</body>
+</html>
