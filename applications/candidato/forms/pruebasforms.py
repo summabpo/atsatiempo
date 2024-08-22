@@ -16,43 +16,35 @@ level_Choices = [
 ]
 
 class PruebasForm(forms.Form):
-    ability = forms.ChoiceField(choices=[], label='Habilidad')
-    level =  forms.ChoiceField(choices=level_Choices, label='Nivel' ,widget=forms.Select(attrs={'data-control': 'js-select2'}))
+    ability = forms.ChoiceField(choices=[], label='Habilidad',widget=forms.Select(attrs={'data-control': 'select2' ,' data-dropdown-parent':'#kt_modal_1','data-tags':'true'}) )
+    level =  forms.ChoiceField(choices=level_Choices, label='Nivel',widget=forms.Select(attrs={ 'class': 'form-select form-select-solid fw-bold'}))
     
     def __init__(self, *args, **kwargs):
-        super(PruebasForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Actualizar choices dinámicamente
-        self.fields['ability'].choices = [('', '----------')] + [(item.estado_id_004, item.nombre) for item in Can104Skill.objects.all().order_by('nombre')]
-
-        
-
-        self.helper = FormHelper()
-        self.helper.form_id = 'form_habilidades'
+        self.fields['ability'].choices = [('', '----------')] + [(item.id, item.nombre) for item in Can104Skill.objects.all().order_by('nombre')]
 
         self.fields['ability'].widget.attrs.update({
-            'aria-label': 'Select a Country',
             'data-control': 'select2',
-            'data-placeholder': 'Select a Country...',
-            'data-dropdown-parent': '#kt_modal_add_customer',
-            'class': 'form-select form-select-solid fw-bold'
+            'data-tags':'true',
+            'data-dropdown-parent': '#kt_modal_1',
+            'class': 'form-select form-select-solid fw-bold',
+            
         })
-
-        self.fields['level'].widget.attrs.update({
-            'aria-label': 'Select a Country',
-            'data-control': 'select2',
-            'data-placeholder': 'Selecione un nivel...',
-            'data-dropdown-parent': '#kt_modal_add_customer',
-            'class': 'form-select form-select-solid fw-bold'
-        })
-
+        
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_habilidades'
         self.helper.layout = Layout(
-            Row(
-                Column('ability', css_class='form-group mb-0'),
-                Column('level', css_class='form-group mb-0'),
-                Submit('submit', 'Filtrar', css_class='btn btn-light-info mb-0'),
-                css_class='row'
-            ),
+            Div(
+                
+                Div('ability',css_class='me-4 mb-0'),
+                Div('level',css_class='me-4 mb-0'),
+                Submit('submit', 'Agregar', css_class='btn btn-lg btn-primary px-8'),
+                css_class='d-flex align-items-center'), 
+    
+
         )
     
     

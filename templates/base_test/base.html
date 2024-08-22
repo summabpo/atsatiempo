@@ -20,8 +20,7 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
 		<!--end::Fonts-->
 		<!--begin::Vendor Stylesheets(used for this page only)-->
-		<link href="{% static 'test_static/plugins/custom/fullcalendar/fullcalendar.bundle.css' %} " rel="stylesheet" type="text/css" />
-		<link href="{% static 'test_static/plugins/custom/datatables/datatables.bundle.css' %} " rel="stylesheet" type="text/css" />
+		<link href="{% static 'test_static/plugins/custom/datatables/datatables.bundle.css' %}" rel="stylesheet" type="text/css" />
 		<!--end::Vendor Stylesheets-->
 		<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
 		<link href="{% static 'test_static/plugins/global/plugins.bundle.css' %} " rel="stylesheet" type="text/css" />
@@ -124,35 +123,24 @@
 		</div>
 		
         
-		<!--begin::Global Javascript Bundle(mandatory for all pages)-->
-		<script src="{% static 'test_static/plugins/global/plugins.bundle.js' %} "></script>
-		<script src="{% static 'test_static/js/scripts.bundle.js' %} "></script>
-
-        <<script src="{% static 'test_static/plugins/custom/fullcalendar/fullcalendar.bundle.js' %} "></script>
-		<script src="https://cdn.amcharts.com/lib/5/index.js"></>
-		<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/map.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/geodata/continentsLow.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/geodata/usaLow.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZonesLow.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZoneAreasLow.js"></script>
-
-		<script src="{% static 'test_static/plugins/custom/datatables/datatables.bundle.js' %} "></script>
-        <script src="{% static 'test_static/js/custom/apps/customers/list/export.js' %}"></script>
-		<script src="{% static 'test_static/js/custom/apps/customers/list/list.js' %}"></script>
-		<script src="{% static 'test_static/js/custom/apps/customers/add.js' %}"></script>
 		
-        <script src="{% static 'test_static/js/widgets.bundle.js' %} "></script>
-		<script src="{% static 'test_static/js/custom/widgets.js' %} "></script>
-		<script src="{% static 'test_static/js/custom/apps/chat/chat.js' %} "></script>
-		<script src="{% static 'test_static/js/custom/utilities/modals/upgrade-plan.js' %} "></script>
-		<script src="{% static 'test_static/js/custom/utilities/modals/create-account.js' %} "></script>
-		<script src="{% static 'test_static/js/custom/utilities/modals/create-app.js' %} "></script>
-		<script src="{% static 'test_static/js/custom/utilities/modals/users-search.js' %} "></script>
+		<link href="{% static 'test_static/plugins/custom/fullcalendar/fullcalendar.bundle.css' %}" rel="stylesheet" type="text/css" />
+        <script src="{% static 'test_static/plugins/custom/fullcalendar/fullcalendar.bundle.js' %}  "></script>
+        <!--begin::Global Javascript Bundle(mandatory for all pages)-->
+        <script src="{% static 'test_static/plugins/global/plugins.bundle.js' %}"></script>
+        <script src="{% static 'test_static/js/scripts.bundle.js' %}"></script>
+		<!--end::Global Javascript Bundle-->
+		<!--begin::Vendors Javascript(used for this page only)-->
+        <script src="{% static 'test_static/plugins/custom/datatables/datatables.bundle.js' %}"></script>
+		<!--end::Vendors Javascript-->
+		<!--begin::Custom Javascript(used for this page only)-->
+        <script src="{% static 'test_static/js/widgets.bundle.js' %}"></script>
+        <script src="{% static 'test_static/js/custom/widgets.js' %}"></script>
+        <script src="{% static 'test_static/js/custom/apps/chat/chat.js' %}"></script>
+        <script src="{% static 'test_static/js/custom/utilities/modals/upgrade-plan.js' %}"></script>
+        <script src="{% static 'test_static/js/custom/utilities/modals/create-account.js' %}"></script>
+        <script src="{% static 'test_static/js/custom/utilities/modals/create-app.js' %}"></script>
+        <script src="{% static 'test_static/js/custom/utilities/modals/users-search.js' %}"></script>
 	
         {% block extrajs %}{% endblock %}
 

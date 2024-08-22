@@ -5,7 +5,8 @@ from .views import views, CandidatoView , pruebas
 url_principal = 'candidato/'
 
 urlpatterns = [
-    path('', pruebas.pruebas, name='inicio'),
+    path('prueba/<int:candidato_id>/', pruebas.pruebas, name='inicio'),
+    path('limpiar_lisskill', pruebas.limpiar_lisskill, name='limpiar_lisskill'),
     path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),
     path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),
     # path( url_principal+'pruebas', pruebas.pruebas, name='pruebas'),
