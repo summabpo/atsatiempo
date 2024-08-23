@@ -1,0 +1,99 @@
+{% load static %}
+<div id="kt_aside" class="aside card" data-kt-drawer="true" data-kt-drawer-name="aside"
+    data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true"
+    data-kt-drawer-width="{default:'200px', '300px': '250px'}" data-kt-drawer-direction="start"
+    data-kt-drawer-toggle="#kt_aside_mobile_toggle" data-kt-sticky="true" data-kt-sticky-name="aside-sticky"
+    data-kt-sticky-offset="{default: false, lg: '200px'}" data-kt-sticky-release-offset="{default: false, xl: '200px'}"
+    data-kt-sticky-width="{lg: '265px'}" data-kt-sticky-left="auto" data-kt-sticky-top="95px"
+    data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
+    <!--begin::Aside menu-->
+    <div class="aside-menu flex-column-fluid">
+        <div class="hover-scroll-overlay-y my-5 my-lg-6" id="kt_aside_menu_wrapper" data-kt-scroll="true"
+            data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
+            data-kt-scroll-dependencies="#kt_header, #kt_toolbar, #kt_aside_footer, #kt_footer"
+            data-kt-scroll-wrappers="#kt_aside, #kt_aside_menu" data-kt-scroll-offset="0px">
+
+            <div class="menu menu-rounded menu-column menu-active-bg menu-title-gray-700 menu-state-primary menu-arrow-gray-500 menu-sub-indention px-3"
+                id="#kt_aside_menu" data-kt-menu="true">
+
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion mb-1">
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-element-11 fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">CLIENTES</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link" href="{% url 'clientes:cliente_crear' %}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"> </span>
+                                </span>
+                                <span class="menu-title">Crear Cliente</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link" href="{% url 'clientes:cliente_listar' %}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"> </span>
+                                </span>
+                                <span class="menu-title">Listar Cliente</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion mb-1">
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-element-11 fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">CANDIDATOS</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link" href="{% url 'candidatos:candidato_crear' %}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"> </span>
+                                </span>
+                                <span class="menu-title">Crear Candidato</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link" href="{% url 'candidatos:candidato_listar' %}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"> </span>
+                                </span>
+                                <span class="menu-title">Listar Candidato</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="aside-footer flex-column-auto pt-5 pb-7 px-5" id="kt_aside_footer">
+        <a href="#" class="btn btn-custom btn-primary w-100" data-bs-toggle="tooltip"
+            data-bs-trigger="hover" data-bs-dismiss-="click" title="200+ in-house components and 3rd-party plugins">
+            <span class="btn-label"> Documentación y Manual</span>
+            <i class="ki-duotone ki-document btn-icon fs-2"><span class="path1"></span><span class="path2"></span></i>
+        </a>
+    </div>
+
+</div>
