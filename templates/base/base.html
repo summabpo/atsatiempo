@@ -85,9 +85,7 @@
 
 						<div class="content flex-row-fluid" id="kt_content">
 
-							{% block content %}
-                    
-                			{% endblock content %}
+							{% block content %} {% endblock content %}
 
 						</div>
 					</div>
@@ -102,9 +100,12 @@
         <script src="{% static 'plugins/global/plugins.bundle.js' %}"></script>
 		<script src="{% static 'js/scripts.bundle.js' %}"></script>
 		
-        <script src="{% static 'plugins/custom/fullcalendar/fullcalendar.bundle.js' %}"></script>
-		<script src="{% static 'plugins/custom/datatables/datatables.bundle.js' %}"></script>
+        <script src="{% static 'plugins/custom/datatables/datatables.bundle.js' %}"></script>
 		
+		<script src="{% static 'js/custom/apps/user-management/users/list/table.js' %}"></script>
+		<script src="{% static 'js/custom/apps/user-management/users/list/export-users.js' %}"></script>
+		<script src="{% static 'js/custom/apps/user-management/users/list/add.js' %}"></script>
+
         <script src="{% static 'js/widgets.bundle.js' %}"></script>
 		<script src="{% static 'js/custom/widgets.js' %}"></script>
 		<script src="{% static 'js/custom/apps/chat/chat.js' %}"></script>
