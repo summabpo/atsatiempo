@@ -53,11 +53,8 @@
                             <label class="form-label fs-6 fw-semibold">Role:</label>
                             <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Select option" data-allow-clear="true" data-kt-user-table-filter="role" data-hide-search="true">
                                 <option></option>
-                                <option value="Administrator">Administrator</option>
-                                <option value="Analyst">Analyst</option>
-                                <option value="Developer">Developer</option>
-                                <option value="Support">Support</option>
-                                <option value="Trial">Trial</option>
+                                <option value="BOGOTA">BOGOTA</option>
+                                
                             </select>
                         </div>
                         <!--end::Input group-->
@@ -134,11 +131,8 @@
                                     <!--begin::Input-->
                                     <select name="role" data-control="select2" data-placeholder="Select a role" data-hide-search="true" class="form-select form-select-solid fw-bold">
                                         <option></option>
-                                        <option value="Administrator">Administrator</option>
-                                        <option value="Analyst">Analyst</option>
-                                        <option value="Developer">Developer</option>
-                                        <option value="Support">Support</option>
-                                        <option value="Trial">Trial</option>
+                                        <option value="BOGOTA">BOGOTA</option>
+                                        
                                     </select>
                                     <!--end::Input-->
                                 </div>
@@ -409,15 +403,16 @@
                             <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_table_users .form-check-input" value="1" />
                         </div>
                     </th>
-                    <th class="min-w-125px">User</th>
-                    <th class="min-w-125px">Role</th>
-                    <th class="min-w-125px">Last login</th>
-                    <th class="min-w-125px">Two-step</th>
-                    <th class="min-w-125px">Joined Date</th>
+                    <th class="min-w-125px">Cliente</th>
+                    <th class="min-w-125px">Nit</th>
+                    <th class="min-w-125px">Email</th>
+                    <th class="min-w-125px">Teléfono</th>
+                    <th class="min-w-125px">Ciudad</th>
                     <th class="text-end min-w-100px">Actions</th>
                 </tr>
             </thead>
             <tbody class="text-gray-600 fw-semibold">
+                {% for e in clientes %}
                 <tr>
                     <td>
                         <div class="form-check form-check-sm form-check-custom form-check-solid">
@@ -429,24 +424,28 @@
                         <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                             <a href="apps/user-management/users/view.html">
                                 <div class="symbol-label">
-                                    <img src="assets/media/avatars/300-6.jpg" alt="Emma Smith" class="w-100" />
+                                    {% if e.logo %}
+                                    <img src="{{ e.logo.url }}" alt="Emma Smith" class="w-100" />
+                                    {% else %}  
+                                    <img src="{% static 'media/avatars/blank.png' %}" alt="Emma Smith" class="w-100" />
+                                    {% endif %}
                                 </div>
                             </a>
                         </div>
                         <!--end::Avatar-->
                         <!--begin::User details-->
                         <div class="d-flex flex-column">
-                            <a href="apps/user-management/users/view.html" class="text-gray-800 text-hover-primary mb-1">Emma Smith</a>
-                            <span>smith@kpmg.com</span>
+                            <a href="apps/user-management/users/view.html" class="text-gray-800 text-hover-primary mb-1">{{ e.razon_social }}</a>
+                            <span>{{ e.contacto }}</span>
                         </div>
                         <!--begin::User details-->
                     </td>
-                    <td>Administrator</td>
+                    <td>{{ e.nit }}</td>
                     <td>
-                        <div class="badge badge-light fw-bold">Yesterday</div>
+                        {{ e.email }}
                     </td>
-                    <td></td>
-                    <td>10 Mar 2024, 2:40 pm</td>
+                    <td>{{ e.telefono }}</td>
+                    <td>{{ e.ciudad_id_004.nombre }}</td>
                     <td class="text-end">
                         <a href="#" class="btn btn-light btn-active-light-primary btn-flex btn-center btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions 
                         <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
@@ -466,6 +465,7 @@
                         <!--end::Menu-->
                     </td>
                 </tr>
+                {% endfor %}
             </tbody>
         </table>
         <!--end::Table-->
