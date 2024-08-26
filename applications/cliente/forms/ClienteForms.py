@@ -23,11 +23,54 @@ class ClienteForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.enctype = 'multipart/form-data'
+
+
+        self.fields['nit'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Nombre'
+        })
+
+        self.fields['razon_social'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+        self.fields['ciudad_id_004'].widget.attrs.update({
+            'class': 'form-select form-select-sm form-select-solid',
+            'data-control': 'select2',
+            'data-placeholder': 'Select an option'
+        })
+
+        self.fields['email'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+        self.fields['contacto'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+        self.fields['telefono'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+        self.fields['perfil_empresarial'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+        self.fields['logo'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
         self.helper.layout = Layout(
             # Field('estado_id_001', css_class='form-control, js-select2'),
             Field('nit'),
             Field('razon_social'),
-            Field('ciudad_id_004', css_class='form-control, js-select2'),
+            Field('ciudad_id_004'),
             Field('email'),
             Field('contacto'),
             Field('telefono'),
