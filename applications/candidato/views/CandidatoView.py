@@ -45,7 +45,7 @@ def candidato_mostrar(request, pk=None):
             
             if form.is_valid():
                 form.save()
-                messages.success(request, 'Información Candidato Actualizada')
+                messages.success(request, 'Información Personal Actualizada')
                 return redirect('candidatos:candidato_editar', pk=candidato.id)
             else:
                 errores = ''
