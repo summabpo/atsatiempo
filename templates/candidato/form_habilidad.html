@@ -4,9 +4,11 @@
 
 {% load static %}
 
-{% block title %} ATS Atiempo | Información Laboral {% endblock title %}
+{% block title %} ATS Atiempo | Información Habilidades {% endblock title %}
 
-{% block titulo_pagina %} Información Laboral {% endblock titulo_pagina %}
+{% block titulo_pagina %}
+Información Habilidades
+{% endblock titulo_pagina %}
 
 {% block css %}
 
@@ -30,9 +32,8 @@
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
     </li>
 
-    <li class="breadcrumb-item text-white opacity-75">Información Laboral </li>
+    <li class="breadcrumb-item text-white opacity-75">Información Habilidades </li>
 {% endblock navegacion %}
-
 
 {% block content %}
 
@@ -113,8 +114,12 @@
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                 </i>Exportar</button> -->
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_user">
-                                <i class="ki-duotone ki-plus fs-2"></i>Crear Crear Información Laboral</button>   
+                                <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_user">
+                                <i class="ki-duotone ki-plus fs-2"></i>Crear Habilidad</button>    -->
+                                <button class="btn btn-light-facebook"  data-bs-placement="top" title="Agregar Visitante" data-bs-toggle="modal" data-bs-target="#kt_modal_1">
+                                    Registrar Habilidad
+                                </button>
+                                
                             </div>
                             <div class="d-flex justify-content-end align-items-center d-none" data-kt-user-table-toolbar="selected">
                                 <div class="fw-bold me-5">
@@ -129,7 +134,7 @@
                                         <!--begin::Modal header-->
                                         <div class="modal-header" id="kt_modal_add_user_header">
                                             <!--begin::Modal title-->
-                                            <h2 class="fw-bold">Crear Cliente</h2>
+                                            <h2 class="fw-bold">Crear Habilidad</h2>
                                             <!--end::Modal title-->
                                             <!--begin::Close-->
                                             <div class="btn btn-icon btn-sm btn-active-icon-primary" data-kt-users-modal-action="close">
@@ -314,7 +319,63 @@
                                     </div>
                                     <!--end::Modal content-->
                                 </div>
-                                <!--end::Modal dialog-->
+                            </div>
+
+                            <div class="modal fade" tabindex="-1" id="kt_modal_1">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Agregar Habilidades </h5>
+                            
+                                            <!--begin::Close-->
+                                            <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                                                <i class="fa fa-fw fa-times"></i>
+                                            </div>
+                                            <!--end::Close-->
+                                        </div>
+                            
+                                        <div class="modal-body">
+                                            {% crispy form %}
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr class="fw-bold fs-6 text-gray-800">
+                                                            <th> </th>
+                                                            <th> </th>
+                                                            <th> </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for item in listskill %}
+                                                            <tr>
+                                                                <td class="d-flex justify-content-center align-items-center">{{ item.ability }}</td>
+                                                                <td class="text-center">
+                                                                    {% if item.level == '1' %}
+                                                                        <span class="badge badge-warning d-flex justify-content-center align-items-center">Básico</span>
+                                                                    {% elif item.level == '2' %}
+                                                                        <span class="badge badge-primary d-flex justify-content-center align-items-center">Intermedio</span>
+                                                                    {% else %}
+                                                                        <span class="badge badge-success d-flex justify-content-center align-items-center">Superior</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <a href="#" class="btn btn-danger d-flex justify-content-center align-items-center" style="width: 3rem; height: 3rem;">
+                                                                        <i class="fa fa-fw fa-times"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -328,29 +389,29 @@
                                             <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_table_users .form-check-input" value="1" />
                                         </div>
                                     </th>
-                                    <th style="text-align: center;" class="min-w-125px">Entidad</th>
-                                    <th style="text-align: center;" class="min-w-125px">Sector</th>
-                                    <th style="text-align: center;" class="min-w-125px">Fecha Inicial</th>
-                                    <th style="text-align: center;" class="min-w-125px">Fecha Final</th>
-                                    <th style="text-align: center;" class="min-w-125px">Activo</th>
-                                    <th style="text-align: center;" class="min-w-125px">Cargo</th>
+                                    <th style="text-align: center;" class="min-w-125px">Habilidad</th>
+                                    <th style="text-align: center;" class="min-w-125px">Nivel</th>
                                     <th style="text-align: center;" class="text-end min-w-100px">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-semibold">
-                                {% for e in experiencias %}
+                                {% for e in habi %}
                                     <tr>
                                         <td>
                                             <div class="form-check form-check-sm form-check-custom form-check-solid">
                                                 <input class="form-check-input" type="checkbox" value="1" />
                                             </div>
                                         </td>
-                                        <td style="text-align: center;">{{ e.entidad }}</td>
-                                        <td style="text-align: center;">{{ e.sector }}</td>
-                                        <td style="text-align: center;">{{ e.fecha_inicial }}</td>
-                                        <td style="text-align: center;">{{ e.fecha_final }}</td>
-                                        <td style="text-align: center;">{{ e.activo }}</td>
-                                        <td style="text-align: center;">{{ e.cargo }}</td>
+                                        <td style="text-align: center;">{{ e.skill_id_104.nombre }}</td>
+                                        <td style="text-align: center;">
+                                            {% if e.nivel == 1 %}
+                                                Básico
+                                            {% elif e.nivel == 2 %}
+                                                Intermedio
+                                            {% elif e.nivel == 1 %}
+                                                Superior
+                                            {% endif %}
+                                        </td>
                                         <td class="text-end">
                                             <a href="#" class="btn btn-light btn-active-light-primary btn-flex btn-center btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Acciones 
                                             <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
@@ -379,12 +440,51 @@
         </div>
     </div>
 </div>
-
 {% endblock content %}
 
-{% block js %}
+
+{% block extrajs %}
+
 <script>
-    console.log("Esta es la página de inicio"); 
+    document.addEventListener('DOMContentLoaded', function () {
+        // Verificar si el modal estaba abierto antes de la recarga
+        if (localStorage.getItem('modal-open') === 'true') {
+            var modal = new bootstrap.Modal(document.getElementById('kt_modal_1'));
+            modal.show();
+        }
+
+        // Guardar el estado del modal cuando se abra
+        var myModalEl = document.getElementById('kt_modal_1');
+        myModalEl.addEventListener('show.bs.modal', function () {
+            localStorage.setItem('modal-open', 'true');
+        });
+
+        // Limpiar el estado y la sesión cuando se cierre el modal
+        var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+        closeButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                localStorage.removeItem('modal-open');
+                
+                // Enviar solicitud para limpiar la variable de sesión
+                fetch('{% url "candidatos:limpiar_lisskill" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        // Recargar la página si la solicitud fue exitosa
+                        window.location.reload();
+                    } else {
+                        console.error('Error al limpiar la sesión');
+                    }
+                }).catch(error => {
+                    console.error('Error de red:', error);
+                });
+            });
+        });
+    });
 </script>
-    
-{% endblock js %}
+
+{% endblock extrajs %}

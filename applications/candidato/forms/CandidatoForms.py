@@ -1,7 +1,7 @@
 import re, os
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Layout, Div, Submit, HTML
+from crispy_forms.layout import Layout, Layout, Div, Submit, HTML, Row, Column
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from ..models import Can101Candidato
 
@@ -39,7 +39,7 @@ class CandidatoForm(forms.Form):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    Div('primer_nombre', css_class='col'),
+                    Div('primer_nombre', css_class='col form-control-solid mb-3 mb-lg-0'),
                     Div('segundo_nombre', css_class='col'),
                     Div('primer_apellido', css_class='col'),
                     Div('segundo_apellido', css_class='col'),

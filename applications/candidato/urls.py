@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import views, CandidatoView , pruebas
+from .views import views, CandidatoView , LaboralView, EstudioView, HabilidadView
 
 
 url_principal = 'candidato/'
@@ -8,6 +8,10 @@ urlpatterns = [
     path('', views.InicioView.as_view(), name='inicio'),
     path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),
     path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),
+    path( url_principal+'candidato/laboral/<int:pk>/', LaboralView.laboral_mostrar, name='candidato_laboral'),
+    path( url_principal+'candidato/academica/<int:pk>/', EstudioView.estudio_mostrar, name='candidato_academica'),
+    path( url_principal+'candidato/habilidades/<int:pk>/', HabilidadView.habilidad_obtener, name='candidato_habilidad'),
+    path('limpiar_lisskill', HabilidadView.limpiar_lisskill, name='limpiar_lisskill'),
     # path( url_principal+'pruebas', pruebas.pruebas, name='pruebas'),
     
     

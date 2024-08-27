@@ -27,7 +27,7 @@ class ClienteForm(forms.Form):
 
         self.fields['nit'].widget.attrs.update({
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
-            'data-placeholder': 'Ingrese Nombre'
+            'data-placeholder': 'Ingrese Nit'
         })
 
         self.fields['razon_social'].widget.attrs.update({
