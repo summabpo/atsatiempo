@@ -43,7 +43,7 @@ def candidato_mostrar(request, pk=None):
         form = CandidatoForm(instance=candidato)
         
 
-    return render(request, 'candidato/form_candidato.html', {
+    return render(request, 'candidato/form_candidato_edit.html', {
         'form': form,
         'candidato': candidato,
         'accion': accion, 

@@ -16,7 +16,7 @@ def estudio_mostrar(request, pk=None):
         if form.is_valid():
             form.save(candidato_id=candidato.id)
             messages.success(request, 'El registro de experiencia academica ha sido creado')
-            return redirect('candidatos:candidato_laboral', pk=candidato.id)
+            return redirect('candidatos:candidato_academica', pk=candidato.id)
         else:
             messages.error(request, form.errors)
     else:

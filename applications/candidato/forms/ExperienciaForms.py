@@ -20,8 +20,22 @@ class ExperienciaCandidatoForm(forms.Form):
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
     )
     
-    logro = forms.CharField(label='LOGROS', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Empresa'}))
+    
     cargo = forms.CharField(label='CARGO',  required=True, widget=forms.TextInput(attrs={'placeholder': 'Cargo Desempeñado'}))
+    
+    logro = forms.CharField(
+        label='LOGROS',
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Descripción de la Empresa',
+                'rows': 5,  
+                'cols': 40,  
+                'class': 'fixed-size-textarea'
+            }
+        )
+    )
+    
 
     def __init__(self, *args, **kwargs):
         self.candidato_id = kwargs.pop('candidato_id', None)
@@ -29,7 +43,9 @@ class ExperienciaCandidatoForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.helper.form_id = 'form_experienciacandidato'
         self.helper.form_class = 'container'
+        
         self.helper.layout = Layout(
             Div(
                 Div('entidad', css_class='col'),
@@ -56,11 +72,6 @@ class ExperienciaCandidatoForm(forms.Form):
                 Div('logro', css_class='col form-group'),
                 css_class='row'
             ),
-            # Div(
-            #     Div('estado_id_001', css_class='col form-group'),
-            #     css_class='row'
-            # ),
-            Submit('submit_experiencia', 'Guardar Experiencia', css_class='btn btn-primary mt-3'),
         )
     
     def clean(self):

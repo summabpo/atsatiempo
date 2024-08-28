@@ -8,16 +8,7 @@ from django.contrib import messages
 
 def laboral_mostrar(request, pk=None):
     candidato = get_object_or_404(Can101Candidato, pk=pk)
-
-    # Mostrar experiencias
     experiencias = Can102Experiencia.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')
-    
-    # #Mostrar estudios
-    # estudios = Can103Educacion.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')
-
-    #Mostrar Skills
-
-    # Formulario Experiencias
     if request.method == 'POST': 
         form = ExperienciaCandidatoForm(request.POST)
         if form.is_valid():

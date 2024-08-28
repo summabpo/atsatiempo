@@ -29,8 +29,18 @@ class EstudioCandidatoForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        
+        self.helper.form_id = 'form_estudiocandidato'
         self.helper.form_class = 'container'
+        
+        self.fields['ciudad_id_004'].widget.attrs.update({
+            'data-control': 'select2',
+            'data-tags':'true',
+            'data-dropdown-parent': '#kt_modal_stacked_2',
+            'data-hide-search': 'true' ,
+            'class': 'form-select',
+            
+        })
+        
         self.helper.layout = Layout(
             Div(
                 Div('institucion', css_class='col'),
@@ -46,21 +56,18 @@ class EstudioCandidatoForm(forms.Form):
             Div(
                 Div('titulo', css_class='col'),
                 Div('carrera', css_class='col'),
+                Div('ciudad_id_004', css_class='col'),
                 css_class='row'
             ),
             Div(
                 Div('fortaleza_adquiridas', css_class='col'),
                 css_class='row'
             ),
-            Div(
-                Div('ciudad_id_004', css_class='col'),
-                css_class='row'
-            ),
+            
             # Div(
             #     Div('estado_id_001', css_class='col'),
             #     css_class='row'
             # ),
-            Submit('submit_estudio', 'Guardar Estudio', css_class='btn btn-primary mt-3'),
         )  
     
     def clean(self):

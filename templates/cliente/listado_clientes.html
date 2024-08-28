@@ -384,15 +384,13 @@
                     <td class="d-flex align-items-center">
                         
                         <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                            <a href="#">
-                                <div class="symbol-label">
-                                    {% if e.logo %}
+                            <div class="symbol-label">
+                                {% if e.logo %}
                                     <img src="{{ e.logo.url }}" alt="Emma Smith" class="w-100" />
-                                    {% else %}  
+                                {% else %}  
                                     <img src="{% static 'media/avatars/blank.png' %}" alt="Emma Smith" class="w-100" />
-                                    {% endif %}
-                                </div>
-                            </a>
+                                {% endif %}
+                            </div>
                         </div>
                         
                         <div class="d-flex flex-column">
