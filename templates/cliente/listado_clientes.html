@@ -425,7 +425,7 @@
                     
                     </td>
                 </tr>
-                <div class="modal fade" id="modal-edit-cliente" tabindex="-1" role="dialog" aria-labelledby="modal-edit-cliente" aria-hidden="true">
+                <!-- <div class="modal fade" id="modal-edit-cliente" tabindex="-1" role="dialog" aria-labelledby="modal-edit-cliente" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="block block-rounded block-themed block-transparent mb-0">
@@ -445,8 +445,55 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 {% endfor %}
+                <div class="modal fade" id="modal-edit-cliente" tabindex="-1" aria-hidden="true">
+                    <!--begin::Modal dialog-->
+                    <div class="modal-dialog modal-dialog-centered mw-650px">
+                        <!--begin::Modal content-->
+                        <div class="modal-content">
+                            <!--begin::Modal header-->
+                            <div class="modal-header" id="kt_modal_add_user_header">
+                                <!--begin::Modal title-->
+                                <h2 class="fw-bold">Editar Cliente</h2>
+                                <!--end::Modal title-->
+                                <!--begin::Close-->
+                                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                                    <i class="ki-duotone ki-cross fs-1">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </div>
+                                <!--end::Close-->
+                            </div>
+                            <!--end::Modal header-->
+                            <!--begin::Modal body-->
+                            <div class="block-content" id="edit-laboral-form-container">
+                                <form class="modal-body px-5 my-7" id="laboral-form-edit" method="post" action="{% url 'clientes:ajax_obtener_cliente' %}" enctype="multipart/form-data">
+                                    <!--begin::Form-->
+                                    <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_user_header" data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
+                                        
+                                    {% crispy form %}   
+                                    </div>
+                                    
+                                    <div class="text-center pt-10">
+                                        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Descartar</button>
+                                        <button type="submit" form="form_cliente" class="btn btn-primary" id="kt_button_crear_cliente">
+                                            <span class="indicator-label">Guardar</span>
+                                            <span class="indicator-progress">Por favor espere... 
+                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                        </button>
+                                    </div>
+                                </form> 
+                            </div>        
+                                <!--end::Form-->
+                            </div>
+                            <!--end::Modal body-->
+                        </div>
+                        <!--end::Modal content-->
+                    </div>
+                    <!--end::Modal dialog-->
+                </div>
             </tbody>
         </table>
     </div>
@@ -465,7 +512,7 @@ $(document).ready(function() {
 
     // Si hay errores en el formulario, aseguramos que el modal se mantenga abierto
     {% if form_errors %}
-        $('#modal-crear-cliente').modal('show');
+        $('#kt_modal_add_user').modal('show');
     {% endif %}
 })
 
@@ -515,6 +562,28 @@ button.addEventListener("click", function() {
     }, 3000);
 });
 
+
+document.addEventListener('DOMContentLoaded', function () {
+    // // Verificar si el modal estaba abierto antes de la recarga
+    // if (localStorage.getItem('modal-open') === 'true') {
+    //     var modal = new bootstrap.Modal(document.getElementById('kt_modal_add_user'));
+    //     modal.show();
+    // }
+
+    // // Guardar el estado del modal cuando se abra
+    // var myModalEl = document.getElementById('kt_modal_add_user');
+    // myModalEl.addEventListener('show.bs.modal', function () {
+    //     localStorage.setItem('modal-open', 'true');
+    // });
+
+    // Limpiar el estado cuando se cierre el modal
+    var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+    closeButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            localStorage.removeItem('modal-open');
+        });
+    });
+});
 </script>
 
 

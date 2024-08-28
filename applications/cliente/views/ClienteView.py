@@ -41,6 +41,7 @@ def mostrar_clientes(request):
             return redirect('clientes:cliente_listar')  # Cambia a la vista deseada después de guardar
         else:
             form_errors = True
+            form = ClienteForm(request.POST, request.FILES)
     else:
         form = ClienteForm()
 

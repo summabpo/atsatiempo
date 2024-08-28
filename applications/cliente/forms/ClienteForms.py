@@ -36,10 +36,13 @@ class ClienteForm(forms.Form):
             'data-placeholder': 'Ingrese Razón Social'
         })
 
+        
         self.fields['ciudad_id_004'].widget.attrs.update({
-            'class': 'form-select form-select-sm form-select-solid',
             'data-control': 'select2',
-            'data-placeholder': 'Select an option'
+            'data-tags':'true',
+            'data-dropdown-parent': '#modal-edit-cliente',
+            'class': 'form-select form-select-solid fw-bold',
+            
         })
 
         self.fields['email'].widget.attrs.update({
