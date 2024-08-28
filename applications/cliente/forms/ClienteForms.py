@@ -2,7 +2,7 @@
 import re, os
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field
+from crispy_forms.layout import Layout, Submit, Row, Column, Field , Div
 from applications.common.models import Cat004Ciudad, Cat001Estado
 from ..models import Cli051Cliente
 
@@ -20,11 +20,16 @@ class ClienteForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ClienteForm, self).__init__(*args, **kwargs)
+        
+        
+        
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.enctype = 'multipart/form-data'
         self.helper.form_id = 'form_cliente'
 
+        
+        
 
         self.fields['nit'].widget.attrs.update({
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
@@ -40,7 +45,7 @@ class ClienteForm(forms.Form):
         self.fields['ciudad_id_004'].widget.attrs.update({
             'data-control': 'select2',
             'data-tags':'true',
-            'data-dropdown-parent': '#modal-edit-cliente',
+            'data-dropdown-parent': '#kt_modal_edit_client,#kt_modal_add_user',
             'class': 'form-select form-select-solid fw-bold',
             
         })
@@ -70,17 +75,36 @@ class ClienteForm(forms.Form):
             'data-placeholder': 'Ingrese Razón Social'
         })
 
+
         self.helper.layout = Layout(
-            # Field('estado_id_001', css_class='form-control, js-select2'),
-            Field('nit'),
-            Field('razon_social'),
-            Field('ciudad_id_004'),
-            Field('email'),
-            Field('contacto'),
-            Field('telefono'),
-            Field('perfil_empresarial'),
-            Field('logo'),
+            Div(
+                Div(
+                    Div('nit', css_class='col form-control-solid mb-3 mb-lg-0'),
+                    Div('razon_social', css_class='col'),
+                    css_class='row'
+                ),
+                Div(
+                    Div('ciudad_id_004', css_class='col'),
+                    Div('email', css_class='col'),
+                    css_class='row'
+                ),
+                Div(
+                    Div('contacto', css_class='col'),
+                    Div('telefono', css_class='col'),
+                    css_class='row'
+                ),
+                Div(
+                    Div('logo', css_class='col'),
+                    css_class='row'
+                ),
+                Div(
+                    Div('perfil_empresarial', css_class='col'),
+                    
+                    css_class='row'
+                ),
+            )
         )
+        
     
     def clean(self):
         cleaned_data = super().clean()
