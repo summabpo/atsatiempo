@@ -41,11 +41,6 @@ def mostrar_clientes(request):
             return redirect('clientes:cliente_listar')  # Cambia a la vista deseada después de guardar
         else:
             form_errors = True
-            # errores = ''
-            # for field, errors in form.errors.items():
-            #     errores += f'{field}: {", ".join(errors)}'
-            # messages.error(request, f'El formulario tiene los siguientes errores: {errores}')
-
     else:
         form = ClienteForm()
 

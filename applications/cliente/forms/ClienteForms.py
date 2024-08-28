@@ -23,6 +23,7 @@ class ClienteForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.enctype = 'multipart/form-data'
+        self.helper.form_id = 'form_cliente'
 
 
         self.fields['nit'].widget.attrs.update({
@@ -76,7 +77,6 @@ class ClienteForm(forms.Form):
             Field('telefono'),
             Field('perfil_empresarial'),
             Field('logo'),
-            Submit('submit', 'Guardar', css_class='btn-primary')
         )
     
     def clean(self):
