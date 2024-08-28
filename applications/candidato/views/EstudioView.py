@@ -2,9 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from applications.candidato.models import Can101Candidato, Can103Educacion
 from applications.candidato.forms.CandidatoForms import CandidatoForm
 from applications.candidato.forms.ExperienciaForms import ExperienciaCandidatoForm
-from applications.candidato.forms.EstudioForms import EstudioCandidatoForm
+from applications.candidato.forms.EstudioForms import EstudioCandidatoForm 
 from django.views.generic import (TemplateView, ListView)
 from django.contrib import messages
+from django.http import JsonResponse
+from applications.common.models import Cat001Estado, Cat004Ciudad
+
+global_id = None 
+
 
 def estudio_mostrar(request, pk=None):
     candidato = get_object_or_404(Can101Candidato, pk=pk)
@@ -30,3 +35,77 @@ def estudio_mostrar(request, pk=None):
     }
 
     return render(request, 'candidato/form_estudio.html', context)
+
+
+
+
+def estudio_api(request):
+    global global_id
+
+    if request.method == 'GET':
+        id_educa = request.GET.get('dato')
+        solicitud_candidato_academia= get_object_or_404(Can103Educacion , pk=id_educa)
+
+        global_id = solicitud_candidato_academia.id
+
+        estado_id = Cat001Estado.objects.get(nombre=solicitud_candidato_academia.estado_id_001)
+        ciudad_id = Cat004Ciudad.objects.get(nombre=solicitud_candidato_academia.ciudad_id_004)
+
+        response_data = {
+            'data': {
+                'id': solicitud_candidato_academia.id ,
+                'estado_id_001': estado_id.id,
+                'institucion': solicitud_candidato_academia.institucion,
+                'fecha_inicial': solicitud_candidato_academia.fecha_inicial,
+                'fecha_final': solicitud_candidato_academia.fecha_final,
+                'grado_en': solicitud_candidato_academia.grado_en,
+                'titulo': solicitud_candidato_academia.titulo,
+                'carrera': solicitud_candidato_academia.carrera,
+                'fortaleza_adquiridas': solicitud_candidato_academia.fortaleza_adquiridas,
+                'ciudad_id_004': ciudad_id.id,
+            }
+        }       
+        return JsonResponse(response_data)
+
+    if request.method == 'POST':
+        nit = None
+        razon_social = None
+        email = None
+        contacto = None
+        telefono = None
+        perfil_empresarial = None
+        logo = None
+        ciudad_id_004 = None
+
+        nit = request.POST.get('nit')
+        razon_social = request.POST.get('razon_social')
+        email = request.POST.get('email')
+        contacto = request.POST.get('contacto')
+        telefono = request.POST.get('telefono')
+        perfil_empresarial = request.POST.get('perfil_empresarial')
+        logo = request.POST.get('logo')
+        ciudad_id_004 = request.POST.get('ciudad_id_004')
+
+        cliente_id = global_id
+
+        cliente_modificar = get_object_or_404(Cli051Cliente, pk=cliente_id)
+        
+        # Obtener la instancia del modelo Cat004Ciudad
+        ciudad = get_object_or_404(Cat004Ciudad, pk=ciudad_id_004)
+
+        cliente_modificar.estado_id_001 = Cat001Estado.objects.get(id=1)
+        cliente_modificar.nit = nit
+        cliente_modificar.razon_social = razon_social
+        cliente_modificar.email = email
+        cliente_modificar.contacto = contacto
+        cliente_modificar.telefono = telefono
+        cliente_modificar.perfil_empresarial = perfil_empresarial
+        cliente_modificar.logo = logo
+        cliente_modificar.ciudad_id_004 = ciudad
+
+        cliente_modificar.save()
+
+        messages.success(request, 'Se ha realizado la actualización del registro éxito.')
+        return redirect('clientes:cliente_listar')
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

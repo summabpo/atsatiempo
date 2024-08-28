@@ -15,7 +15,18 @@ class ClienteForm(forms.Form):
     email         = forms.CharField(label='EMAIL'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Email'}))
     contacto      = forms.CharField(label='CONTACTO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Contacto'}))
     telefono      = forms.CharField(label='TELEFONO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
-    perfil_empresarial = forms.CharField(label='PERFIL EMPRESARIAL', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Empresa'}))
+    perfil_empresarial = forms.CharField(
+        label='PERFIL EMPRESARIAL',
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Descripción de la Empresa',
+                'rows': 5,  
+                'cols': 40,  
+                'class': 'fixed-size-textarea'
+            }
+        )
+    )
     logo = forms.ImageField(label='LOGO', required=False)
 
     def __init__(self, *args, **kwargs):

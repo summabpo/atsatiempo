@@ -28,7 +28,7 @@ class ExperienciaCandidatoForm(forms.Form):
         required=True,
         widget=forms.Textarea(
             attrs={
-                'placeholder': 'Descripción de la Empresa',
+                'placeholder': 'Tus logros empresariales',
                 'rows': 5,  
                 'cols': 40,  
                 'class': 'fixed-size-textarea'

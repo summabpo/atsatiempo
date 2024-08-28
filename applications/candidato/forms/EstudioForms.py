@@ -35,7 +35,7 @@ class EstudioCandidatoForm(forms.Form):
         self.fields['ciudad_id_004'].widget.attrs.update({
             'data-control': 'select2',
             'data-tags':'true',
-            'data-dropdown-parent': '#kt_modal_stacked_2',
+            'data-dropdown-parent': '#kt_modal_stacked_2,#modal2',
             'data-hide-search': 'true' ,
             'class': 'form-select',
             

@@ -80,10 +80,7 @@ def obtener_cliente_view(request):
                 'logo': solicitud_cliente.logo.url if solicitud_cliente.logo else None,
                 
             }
-        }
-
-        print(response_data)
-        
+        }       
         return JsonResponse(response_data)
 
     if request.method == 'POST':
