@@ -65,7 +65,6 @@ def habilidad_obtener(request, pk=None):
         { 
             'form': form,
             'habi': habi,
-            'listskill': listskill,
             'candidato': candidato,
         })
     
@@ -75,7 +74,6 @@ def habilidad_obtener(request, pk=None):
 @csrf_exempt
 def limpiar_lisskill(request):
     if request.method == 'POST':
-        print('llege yo ')
         request.session.pop('listskill', None)
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)

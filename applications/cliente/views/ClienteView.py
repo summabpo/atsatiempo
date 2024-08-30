@@ -100,7 +100,7 @@ def obtener_cliente_view(request):
         ciudad_id_004 = request.POST.get('ciudad_id_004')
 
         cliente_id = global_id
-
+        
         cliente_modificar = get_object_or_404(Cli051Cliente, pk=cliente_id)
         
         # Obtener la instancia del modelo Cat004Ciudad
