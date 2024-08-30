@@ -10,10 +10,13 @@ urlpatterns = [
     path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),
     
     path( url_principal+'academica/<int:pk>/', EstudioView.estudio_mostrar, name='candidato_academica'),
-    path( url_principal+'academica/api/', EstudioView.estudio_api),
+    path( url_principal+'academica/api/', EstudioView.estudio_api,name='estudio_api'),
     
     
-    path( url_principal+'candidato/laboral/<int:pk>/', LaboralView.laboral_mostrar, name='candidato_laboral'),
+    path( url_principal+'laboral/<int:pk>/', LaboralView.laboral_mostrar, name='candidato_laboral'),
+    path( url_principal+'laboral/api/', LaboralView.laboral_api, name='laboral_api'),
+    
+    
     path( url_principal+'candidato/habilidades/<int:pk>/', HabilidadView.habilidad_obtener, name='candidato_habilidad'),
     path('limpiar_lisskill', HabilidadView.limpiar_lisskill, name='limpiar_lisskill'),
     # path( url_principal+'pruebas', pruebas.pruebas, name='pruebas'),

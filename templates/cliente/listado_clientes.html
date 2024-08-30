@@ -209,14 +209,9 @@
 {% block extrajs %}
 <script>
 $(document).ready(function() {
-    $('#tablaCliente').DataTable({
-        "destroy": true,  // Permite la reinicialización
-        "order": [[1, "desc"]]  // Ordena de forma descendente
-    });
-
     // Si hay errores en el formulario, aseguramos que el modal se mantenga abierto
     {% if form_errors %}
-        $('#kt_modal_add_user').modal('show');
+        $('#modal1').modal('show');
     {% endif %}
 })
 
@@ -233,9 +228,6 @@ $('#modal2').on('show.bs.modal', function (event) {
         },
 
         success: function(response) {
-
-            console.log(response.data.nit);
-            console.log(response.data.id);
             modal.find('.modal-title').text('Editar Laboral ID #' + response.data.id)
             modal.find('.modal-body #id_nit').val(response.data.nit)
             modal.find('.modal-body #id_razon_social').val(response.data.razon_social)

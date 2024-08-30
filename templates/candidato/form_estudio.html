@@ -98,8 +98,14 @@ Información Académica
                                             <td style="text-align: center;">{{ e.institucion }}</td>
                                             <td style="text-align: center;">{{ e.fecha_inicial }}</td>
                                             <td style="text-align: center;">{{ e.fecha_final }}</td>
-                                            <td style="text-align: center;">{{ e.grado_en }}</td>
-                                            <td style="text-align: center;">{{ e.titulo }} - {{ e.id }}</td>
+                                            <td style="text-align: center;">
+                                                {% if e.grado_en  %}
+                                                    <i class="fa-solid fa-user-graduate fs-4 text-success"></i>
+                                                {% else %}
+                                                    <i class="fa-solid fa-user fs-4 text-danger "></i>
+                                                {% endif %}
+                                            </td>
+                                            <td style="text-align: center;">{{ e.titulo }}</td>
                                             <td style="text-align: center;">{{ e.ciudad_id_004.nombre }}</td>
                                             <td class="align-items-center">
 
@@ -181,7 +187,7 @@ Información Académica
             </div>
     
             <div class="modal-body">
-                <form id="form_edit_academi" method="post" action="{% url 'clientes:ajax_obtener_cliente' %}">
+                <form id="form_edit_academi" method="post" action="{% url 'candidatos:estudio_api' %}">
                     {% crispy form %}
                 </form>
             </div>
@@ -209,7 +215,7 @@ Información Académica
     
         // Si hay errores en el formulario, aseguramos que el modal se mantenga abierto
         {% if form_errors %}
-            $('#kt_modal_add_user').modal('show');
+            $('#modal1').modal('show');
         {% endif %}
     })
     
@@ -238,7 +244,7 @@ Información Académica
                 modal.find('.modal-body #id_fortaleza_adquiridas').text(response.data.fortaleza_adquiridas);
 
                 // Manejar el checkbox
-                if (response.data.grado_en === 'True') {
+                if (response.data.grado_en) {
                     modal.find('.modal-body #id_grado_en').prop('checked', true);
                 } else {
                     modal.find('.modal-body #id_grado_en').prop('checked', false);
@@ -263,33 +269,9 @@ Información Académica
     
     
 
-    </script>
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Verificar si el modal estaba abierto antes de la recarga
-        if (localStorage.getItem('modal-open') === 'true') {
-            var modal = new bootstrap.Modal(document.getElementById('modal1'));
-            modal.show();
-        }
-  
-        // Guardar el estado del modal cuando se abra
-        var myModalEl = document.getElementById('modal1');
-        myModalEl.addEventListener('show.bs.modal', function () {
-            localStorage.setItem('modal-open', 'true');
-        });
-  
-        // Limpiar el estado cuando se cierre el modal
-        var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
-        closeButtons.forEach(function (button) {
-            button.addEventListener('click', function () {
-                localStorage.removeItem('modal-open');
-            });
-        });
-
-    });
 </script>
+
+
 
 
 <script>

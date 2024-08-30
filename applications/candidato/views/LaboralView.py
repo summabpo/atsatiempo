@@ -4,9 +4,15 @@ from applications.candidato.forms.CandidatoForms import CandidatoForm
 from applications.candidato.forms.ExperienciaForms import ExperienciaCandidatoForm
 from applications.candidato.forms.EstudioForms import EstudioCandidatoForm
 from django.views.generic import (TemplateView, ListView)
+from django.http import JsonResponse
+from applications.common.models import Cat001Estado, Cat004Ciudad
 from django.contrib import messages
+from datetime import datetime
+
+global_id = None 
 
 def laboral_mostrar(request, pk=None):
+    form_errors = False
     candidato = get_object_or_404(Can101Candidato, pk=pk)
     experiencias = Can102Experiencia.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')
     if request.method == 'POST': 
@@ -16,16 +22,80 @@ def laboral_mostrar(request, pk=None):
             messages.success(request, 'El registro de experiencia laboral ha sido creado')
             return redirect('candidatos:candidato_laboral', pk=candidato.id)
         else:
+            form_errors = True
             messages.error(request, form.errors)
     else:
         form = ExperienciaCandidatoForm(candidato_id=candidato.id)
     
-
     #Listado de objetos a enviar al template
     context = {
         'form': form,
         'candidato': candidato,
         'experiencias': experiencias,
+        'form_errors': form_errors,
     }
 
     return render(request, 'candidato/form_experiencia.html', context)
+
+
+
+
+def laboral_api(request):
+    global global_id
+
+    if request.method == 'GET':
+        id_educa = request.GET.get('dato')
+        solicitud_candidato_labor= get_object_or_404(Can102Experiencia , pk=id_educa)
+
+        global_id = solicitud_candidato_labor.id
+
+        estado_id = Cat001Estado.objects.get(nombre=solicitud_candidato_labor.estado_id_001)
+
+        response_data = {
+            'data': {
+                'id': solicitud_candidato_labor.id ,
+                'estado_id_001': estado_id.id,
+                'entidad': solicitud_candidato_labor.entidad,
+                'sector': solicitud_candidato_labor.sector,
+                'fecha_inicial': solicitud_candidato_labor.fecha_inicial,
+                'fecha_final': solicitud_candidato_labor.fecha_final,
+                'activo': solicitud_candidato_labor.activo,
+                'logro': solicitud_candidato_labor.logro,
+                'cargo': solicitud_candidato_labor.cargo,
+            }
+        }       
+        return JsonResponse(response_data)
+
+    if request.method == 'POST':
+        
+        entidad = request.POST.get('entidad')
+        sector = request.POST.get('sector')
+        fecha_inicial = request.POST.get('fecha_inicial')
+        fecha_final = request.POST.get('fecha_final')
+        cargo = request.POST.get('cargo')
+        logro = request.POST.get('logro')
+        activo = request.POST.get('activo') == 'on'
+        
+        
+
+        expe_modificar = get_object_or_404(Can102Experiencia, pk= global_id )
+        
+        # Obtener la instancia del modelo Cat004Ciudad
+
+        expe_modificar.entidad = entidad
+        expe_modificar.activo = activo
+        expe_modificar.sector = sector
+        expe_modificar.cargo = cargo
+        expe_modificar.logro = logro
+        
+        if fecha_inicial:
+            expe_modificar.fecha_inicial = datetime.strptime(fecha_inicial, '%Y-%m-%d').date()
+        if fecha_final:
+            expe_modificar.fecha_final = datetime.strptime(fecha_final, '%Y-%m-%d').date()
+
+        expe_modificar.save()
+        
+        messages.success(request, 'Se ha realizado la actualización del registro éxito.')
+        return redirect('candidatos:candidato_laboral' , pk = expe_modificar.candidato_id_101.id)
+        
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

@@ -7,11 +7,13 @@ from django.views.generic import (TemplateView, ListView)
 from django.contrib import messages
 from django.http import JsonResponse
 from applications.common.models import Cat001Estado, Cat004Ciudad
+from datetime import datetime
 
 global_id = None 
 
 
 def estudio_mostrar(request, pk=None):
+    form_errors = False
     candidato = get_object_or_404(Can101Candidato, pk=pk)
     estudios = Can103Educacion.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')
 
@@ -23,6 +25,7 @@ def estudio_mostrar(request, pk=None):
             messages.success(request, 'El registro de experiencia academica ha sido creado')
             return redirect('candidatos:candidato_academica', pk=candidato.id)
         else:
+            form_errors = True
             messages.error(request, form.errors)
     else:
         form = EstudioCandidatoForm(candidato_id=candidato.id)
@@ -32,6 +35,8 @@ def estudio_mostrar(request, pk=None):
         'form': form,
         'candidato': candidato,
         'estudios': estudios,
+        'form_errors': form_errors,
+        
     }
 
     return render(request, 'candidato/form_estudio.html', context)
@@ -68,44 +73,37 @@ def estudio_api(request):
         return JsonResponse(response_data)
 
     if request.method == 'POST':
-        nit = None
-        razon_social = None
-        email = None
-        contacto = None
-        telefono = None
-        perfil_empresarial = None
-        logo = None
-        ciudad_id_004 = None
 
-        nit = request.POST.get('nit')
-        razon_social = request.POST.get('razon_social')
-        email = request.POST.get('email')
-        contacto = request.POST.get('contacto')
-        telefono = request.POST.get('telefono')
-        perfil_empresarial = request.POST.get('perfil_empresarial')
-        logo = request.POST.get('logo')
+        institucion = request.POST.get('institucion')
+        fecha_inicial = request.POST.get('fecha_inicial')
+        fecha_final = request.POST.get('fecha_final')
+        grado_en = request.POST.get('grado_en') == 'on'
+        titulo = request.POST.get('titulo')
+        carrera = request.POST.get('carrera')
+        fortaleza_adquiridas = request.POST.get('fortaleza_adquiridas')
         ciudad_id_004 = request.POST.get('ciudad_id_004')
 
-        cliente_id = global_id
-
-        cliente_modificar = get_object_or_404(Cli051Cliente, pk=cliente_id)
+        academia_modificar = get_object_or_404(Can103Educacion, pk= global_id )
         
         # Obtener la instancia del modelo Cat004Ciudad
         ciudad = get_object_or_404(Cat004Ciudad, pk=ciudad_id_004)
 
-        cliente_modificar.estado_id_001 = Cat001Estado.objects.get(id=1)
-        cliente_modificar.nit = nit
-        cliente_modificar.razon_social = razon_social
-        cliente_modificar.email = email
-        cliente_modificar.contacto = contacto
-        cliente_modificar.telefono = telefono
-        cliente_modificar.perfil_empresarial = perfil_empresarial
-        cliente_modificar.logo = logo
-        cliente_modificar.ciudad_id_004 = ciudad
+        academia_modificar.institucion = institucion
+        academia_modificar.grado_en = grado_en
+        academia_modificar.titulo = titulo
+        academia_modificar.carrera = carrera
+        academia_modificar.fortaleza_adquiridas = fortaleza_adquiridas
+        academia_modificar.ciudad_id_004 = ciudad
 
-        cliente_modificar.save()
-
+        
+        if fecha_inicial:
+            academia_modificar.fecha_inicial = datetime.strptime(fecha_inicial, '%Y-%m-%d').date()
+        if fecha_final:
+            academia_modificar.fecha_final = datetime.strptime(fecha_final, '%Y-%m-%d').date()
+            
+        academia_modificar.save()
+        
         messages.success(request, 'Se ha realizado la actualización del registro éxito.')
-        return redirect('clientes:cliente_listar')
-
+        return redirect('candidatos:candidato_academica' , pk = academia_modificar.candidato_id_101.id)
+        
     return JsonResponse({'error': 'Método no permitido'}, status=405)

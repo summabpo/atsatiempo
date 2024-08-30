@@ -23,10 +23,7 @@ def cliente_crear(request):
     return render(request, 'cliente/form_cliente.html', {'form': form})
 
 
-class ListadoClientes(ListView):
-    template_name = 'cliente/listado_clientes.html'
-    model = Cli051Cliente
-    context_object_name = 'clientes'
+
 
 def mostrar_clientes(request):
     clientes = Cli051Cliente.objects.filter(estado_id_001=1).order_by('-id')
