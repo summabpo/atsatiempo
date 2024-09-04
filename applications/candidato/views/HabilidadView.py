@@ -12,59 +12,33 @@ def habilidad_obtener(request, pk=None):
     data = Cat001Estado.objects.get(id=1)
     habilidades = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato.id).order_by('-id')
 
-    # Recuperar listskill de la sesión si existe
-    listskill = request.session.get('listskill', [])
-    habi = None
-    
     if request.method == 'POST':
         form = HabilidadCandidatoForm(request.POST)
+
         if form.is_valid():
             level = form.cleaned_data['level']
             ability = form.cleaned_data['ability']
             
-            post_data = request.POST.dict()  # Para datos de formulario (application/x-www-form-urlencoded)
-            print('Datos POST recibidos:', post_data)
+            print(level)
 
-            skill = Can104Skill.objects.filter(id=ability)
-            if skill.exists():
-                candidato_skill = Can101CandidatoSkill.objects.create(
-                    candidato_id_101=candidato, 
-                    skill_id_104=skill.first(), 
-                    nivel=level,
-                )
-            else:
-                skill = Can104Skill.objects.create(
-                    estado_id_004=data,
-                    nombre=ability,
-                )
-                candidato_skill = Can101CandidatoSkill.objects.create(
-                    candidato_id_101=candidato, 
-                    skill_id_104=skill, 
-                    nivel=level,
-                )
+            # Convertir el nombre a minúsculas
+            ability = ability.lower()
             
-            #Guardar la instancia de Can101CandidatoSkill en la lista
-            listskill.append({
-                'id': candidato_skill.id,
-                'ability': candidato_skill.skill_id_104.nombre,
-                'level': candidato_skill.nivel,
-            })
+            # Intentar obtener el objeto
+            skill, created = Can104Skill.objects.get_or_create(
+                nombre = ability,
+                defaults={'estado_id_004': data}
+            )
 
-            #Guardar la lista en la sesión
-            request.session['listskill'] = listskill
-
-            #Limpiar el formulario
-            form = HabilidadCandidatoForm()
-            return redirect('candidato:candidato_habilidad', candidato_id=candidato.id)
+        return redirect('candidato:candidato_habilidad', candidato_id = candidato.id)
     else: 
-        
         form = HabilidadCandidatoForm()
-        habi = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato)
+        habilidades = Can101CandidatoSkill.objects.filter(candidato_id_10 = candidato.id)
     
     return render(request, 'candidato/form_habilidad.html',
         { 
             'form': form,
-            'habi': habi,
+            'habilidades': habilidades,
             'candidato': candidato,
         })
     

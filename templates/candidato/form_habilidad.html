@@ -69,314 +69,11 @@ Información Habilidades
                             </div>
                         </div>
                         <div class="card-toolbar">
-                            <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                                
-                                <!-- <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                <i class="ki-duotone ki-filter fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>Filtro</button>
-                                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
-                                    <div class="px-7 py-5">
-                                        <div class="fs-5 text-gray-900 fw-bold">Filtro Opciones</div>
-                                    </div>
-                                    <div class="separator border-gray-200"></div>
-                                    <div class="px-7 py-5" data-kt-user-table-filter="form">
-                                        
-                                        <div class="mb-10">
-                                            <label class="form-label fs-6 fw-semibold">Role:</label>
-                                            <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Select option" data-allow-clear="true" data-kt-user-table-filter="role" data-hide-search="true">
-                                                <option></option>
-                                                <option value="BOGOTA">BOGOTA</option>
-                                                
-                                            </select>
-                                        </div>
-                                        
-                                        <div class="mb-10">
-                                            <label class="form-label fs-6 fw-semibold">Two Step Verification:</label>
-                                            <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Select option" data-allow-clear="true" data-kt-user-table-filter="two-step" data-hide-search="true">
-                                                <option></option>
-                                                <option value="Enabled">Enabled</option>
-                                            </select>
-                                        </div>
-                                        
-                                        <div class="d-flex justify-content-end">
-                                            <button type="reset" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6" data-kt-menu-dismiss="true" data-kt-user-table-filter="reset">Reset</button>
-                                            <button type="submit" class="btn btn-primary fw-semibold px-6" data-kt-menu-dismiss="true" data-kt-user-table-filter="filter">Apply</button>
-                                        </div>
-                                    
-                                    </div>
-                                
-                                </div> -->
-                
-                                <!-- <button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#kt_modal_export_users">
-                                <i class="ki-duotone ki-exit-up fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>Exportar</button> -->
-                                <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_user">
-                                <i class="ki-duotone ki-plus fs-2"></i>Crear Habilidad</button>    -->
-                                <button class="btn btn-light-facebook"  data-bs-placement="top" title="Agregar Visitante" data-bs-toggle="modal" data-bs-target="#kt_modal_1">
-                                    Registrar Habilidad
-                                </button>
-                                
-                            </div>
-                            <div class="d-flex justify-content-end align-items-center d-none" data-kt-user-table-toolbar="selected">
-                                <div class="fw-bold me-5">
-                                <span class="me-2" data-kt-user-table-select="selected_count"></span>Selected</div>
-                                <button type="button" class="btn btn-danger" data-kt-user-table-select="delete_selected">Delete Selected</button>
-                            </div>
-                            <div class="modal fade" id="kt_modal_add_user" tabindex="-1" aria-hidden="true">
-                                <!--begin::Modal dialog-->
-                                <div class="modal-dialog modal-dialog-centered mw-650px">
-                                    <!--begin::Modal content-->
-                                    <div class="modal-content">
-                                        <!--begin::Modal header-->
-                                        <div class="modal-header" id="kt_modal_add_user_header">
-                                            <!--begin::Modal title-->
-                                            <h2 class="fw-bold">Crear Habilidad</h2>
-                                            <!--end::Modal title-->
-                                            <!--begin::Close-->
-                                            <div class="btn btn-icon btn-sm btn-active-icon-primary" data-kt-users-modal-action="close">
-                                                <i class="ki-duotone ki-cross fs-1">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                            </div>
-                                            <!--end::Close-->
-                                        </div>
-                                        <!--end::Modal header-->
-                                        <!--begin::Modal body-->
-                                        <div class="modal-body px-5 my-7">
-                                            <!--begin::Form-->
-                                            <form id="kt_modal_add_user_form" class="form" action="#" enctype="multipart/form-data">
-                                                
-                                                <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_user_header" data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
-                                                    
-                                                    {% crispy form %}
-                
-                                                    <!-- <div class="fv-row mb-7">
-                                                        
-                                                        <label class="d-block fw-semibold fs-6 mb-5">Avatar</label>
-                                                        
-                                                        <style>.image-input-placeholder { background-image: url('{% static "media/svg/files/blank-image.svg" %}'); } [data-bs-theme="dark"] .image-input-placeholder { background-image: url('{% static "media/svg/files/blank-image-dark.svg" %}'); }</style>
-                                                        
-                                                        <div class="image-input image-input-outline image-input-placeholder" data-kt-image-input="true">
-                                                            
-                                                            <div class="image-input-wrapper w-125px h-125px" style="background-image: url({% static 'media/avatars/300-6.jpg' %}); "></div>
-                                                            
-                                                            <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change avatar">
-                                                                <i class="ki-duotone ki-pencil fs-7">
-                                                                    <span class="path1"></span>
-                                                                    <span class="path2"></span>
-                                                                </i>
-                                                                
-                                                                <input type="file" name="avatar" accept=".png, .jpg, .jpeg" />
-                                                                <input type="hidden" name="avatar_remove" />
-                                                            
-                                                            </label>
-                                                            
-                                                            <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Cancel avatar">
-                                                                <i class="ki-duotone ki-cross fs-2">
-                                                                    <span class="path1"></span>
-                                                                    <span class="path2"></span>
-                                                                </i>
-                                                            </span>
-                                                            
-                                                            <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar">
-                                                                <i class="ki-duotone ki-cross fs-2">
-                                                                    <span class="path1"></span>
-                                                                    <span class="path2"></span>
-                                                                </i>
-                                                            </span>
-                                                        
-                                                        </div>
-                                                        
-                                                        <div class="form-text">Allowed file types: png, jpg, jpeg.</div>
-                                                    
-                                                    </div>
-                                                    
-                                                    <div class="fv-row mb-7">
-                                                        
-                                                        <label class="required fw-semibold fs-6 mb-2">Full Name</label>
-                                                        
-                                                        <input type="text" name="user_name" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Full name" value="Emma Smith" />
-                                                    
-                                                    </div>
-                                                    
-                                                    <div class="fv-row mb-7">
-                                                        
-                                                        <label class="required fw-semibold fs-6 mb-2">Email</label>
-                                                        
-                                                        <input type="email" name="user_email" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="example@domain.com" value="smith@kpmg.com" />
-                                                    
-                                                    </div>
-                                                    
-                                                    <div class="mb-5">
-                                                        
-                                                        <label class="required fw-semibold fs-6 mb-5">Role</label>
-                                                        
-                                                        <div class="d-flex fv-row">
-                                                            
-                                                            <div class="form-check form-check-custom form-check-solid">
-                                                                
-                                                                <input class="form-check-input me-3" name="user_role" type="radio" value="0" id="kt_modal_update_role_option_0" checked='checked' />
-                                                                
-                                                                <label class="form-check-label" for="kt_modal_update_role_option_0">
-                                                                    <div class="fw-bold text-gray-800">Administrator</div>
-                                                                    <div class="text-gray-600">Best for business owners and company administrators</div>
-                                                                </label>
-                                                            
-                                                            </div>
-                                                        
-                                                        </div>
-                                                        
-                                                        <div class='separator separator-dashed my-5'></div>
-                                                        
-                                                        <div class="d-flex fv-row">
-                                                            
-                                                            <div class="form-check form-check-custom form-check-solid">
-                                                                
-                                                                <input class="form-check-input me-3" name="user_role" type="radio" value="1" id="kt_modal_update_role_option_1" />
-                                                                
-                                                                <label class="form-check-label" for="kt_modal_update_role_option_1">
-                                                                    <div class="fw-bold text-gray-800">Developer</div>
-                                                                    <div class="text-gray-600">Best for developers or people primarily using the API</div>
-                                                                </label>
-                                                            
-                                                            </div>
-                                                        
-                                                        </div>
-                                                        
-                                                        <div class='separator separator-dashed my-5'></div>
-                                                        
-                                                        <div class="d-flex fv-row">
-                                                            
-                                                            <div class="form-check form-check-custom form-check-solid">
-                                                                
-                                                                <input class="form-check-input me-3" name="user_role" type="radio" value="2" id="kt_modal_update_role_option_2" />
-                                                                
-                                                                <label class="form-check-label" for="kt_modal_update_role_option_2">
-                                                                    <div class="fw-bold text-gray-800">Analyst</div>
-                                                                    <div class="text-gray-600">Best for people who need full access to analytics data, but don't need to update business settings</div>
-                                                                </label>
-                                                            
-                                                            </div>
-                                                        
-                                                        </div>
-                                                        
-                                                        <div class='separator separator-dashed my-5'></div>
-                                                        
-                                                        <div class="d-flex fv-row">
-                                                            
-                                                            <div class="form-check form-check-custom form-check-solid">
-                                                                
-                                                                <input class="form-check-input me-3" name="user_role" type="radio" value="3" id="kt_modal_update_role_option_3" />
-                                                                
-                                                                <label class="form-check-label" for="kt_modal_update_role_option_3">
-                                                                    <div class="fw-bold text-gray-800">Support</div>
-                                                                    <div class="text-gray-600">Best for employees who regularly refund payments and respond to disputes</div>
-                                                                </label>
-                                                            
-                                                            </div>
-                                                        
-                                                        </div>
-                                                        
-                                                        <div class='separator separator-dashed my-5'></div>
-                                                        
-                                                        <div class="d-flex fv-row">
-                                                            
-                                                            <div class="form-check form-check-custom form-check-solid">
-                                                                
-                                                                <input class="form-check-input me-3" name="user_role" type="radio" value="4" id="kt_modal_update_role_option_4" />
-                                                                
-                                                                <label class="form-check-label" for="kt_modal_update_role_option_4">
-                                                                    <div class="fw-bold text-gray-800">Trial</div>
-                                                                    <div class="text-gray-600">Best for people who need to preview content data, but don't need to make any updates</div>
-                                                                </label>
-                                                            
-                                                            </div>
-                                                        
-                                                        </div>
-                                                    
-                                                    </div> -->
-                                                
-                                                </div>
-                                                
-                                                <div class="text-center pt-10">
-                                                    <button type="reset" class="btn btn-light me-3" data-kt-users-modal-action="cancel">Descartar</button>
-                                                    <button type="submit" class="btn btn-primary" data-kt-users-modal-action="submit">
-                                                        <span class="indicator-label">Guardar</span>
-                                                        <span class="indicator-progress">Por favor espere... 
-                                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                                    </button>
-                                                </div>
-                                                
-                                            </form>
-                                            <!--end::Form-->
-                                        </div>
-                                        <!--end::Modal body-->
-                                    </div>
-                                    <!--end::Modal content-->
-                                </div>
-                            </div>
-
-                            <div class="modal fade" tabindex="-1" id="kt_modal_1">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Agregar Habilidades </h5>
                             
-                                            <!--begin::Close-->
-                                            <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
-                                                <i class="fa fa-fw fa-times"></i>
-                                            </div>
-                                            <!--end::Close-->
-                                        </div>
+                            {% crispy form %}   
+                            <br>
+                            <ul id="sugerencias" class="list-unstyled"></ul>
                             
-                                        <div class="modal-body">
-                                            {% crispy form %}
-                                            <div class="table-responsive">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr class="fw-bold fs-6 text-gray-800">
-                                                            <th> </th>
-                                                            <th> </th>
-                                                            <th> </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for item in listskill %}
-                                                            <tr>
-                                                                <td class="d-flex justify-content-center align-items-center">{{ item.ability }}</td>
-                                                                <td class="text-center">
-                                                                    {% if item.level == '1' %}
-                                                                        <span class="badge badge-warning d-flex justify-content-center align-items-center">Básico</span>
-                                                                    {% elif item.level == '2' %}
-                                                                        <span class="badge badge-primary d-flex justify-content-center align-items-center">Intermedio</span>
-                                                                    {% else %}
-                                                                        <span class="badge badge-success d-flex justify-content-center align-items-center">Superior</span>
-                                                                    {% endif %}
-                                                                </td>
-                                                                <td class="text-center">
-                                                                    <a href="#" class="btn btn-danger d-flex justify-content-center align-items-center" style="width: 3rem; height: 3rem;">
-                                                                        <i class="fa fa-fw fa-times"></i>
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                    
-                                                </table>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     
@@ -395,7 +92,7 @@ Información Habilidades
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-semibold">
-                                {% for e in habi %}
+                                {% for e in habilidades %}
                                     <tr>
                                         <td>
                                             <div class="form-check form-check-sm form-check-custom form-check-solid">
@@ -446,45 +143,32 @@ Información Habilidades
 {% block extrajs %}
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Verificar si el modal estaba abierto antes de la recarga
-        if (localStorage.getItem('modal-open') === 'true') {
-            var modal = new bootstrap.Modal(document.getElementById('kt_modal_1'));
-            modal.show();
-        }
-
-        // Guardar el estado del modal cuando se abra
-        var myModalEl = document.getElementById('kt_modal_1');
-        myModalEl.addEventListener('show.bs.modal', function () {
-            localStorage.setItem('modal-open', 'true');
-        });
-
-        // Limpiar el estado y la sesión cuando se cierre el modal
-        var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
-        closeButtons.forEach(function (button) {
-            button.addEventListener('click', function () {
-                localStorage.removeItem('modal-open');
-                
-                // Enviar solicitud para limpiar la variable de sesión
-                fetch('{% url "candidatos:limpiar_lisskill" %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        // Recargar la página si la solicitud fue exitosa
-                        window.location.reload();
-                    } else {
-                        console.error('Error al limpiar la sesión');
-                    }
-                }).catch(error => {
-                    console.error('Error de red:', error);
-                });
-            });
+    document.addEventListener('DOMContentLoaded', function() {
+        const habilidadInput = document.getElementById('habilidad');
+        const sugerenciasList = document.getElementById('sugerencias');
+    
+        habilidadInput.addEventListener('input', function() {
+            const query = this.value;
+            if (query.length > 2) {
+                fetch(`http://127.0.0.1:8000/pruebas/api/prueba_texto_sugerido?query=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        sugerenciasList.innerHTML = '';
+                        data.forEach(sugerencia => {
+                            const li = document.createElement('li');
+                            li.textContent = sugerencia;
+                            li.addEventListener('click', function() {
+                                habilidadInput.value = this.textContent;
+                                sugerenciasList.innerHTML = '';
+                            });
+                            sugerenciasList.appendChild(li);
+                        });
+                    });
+            } else {
+                sugerenciasList.innerHTML = '';
+            }
         });
     });
-</script>
+    </script>
 
 {% endblock extrajs %}

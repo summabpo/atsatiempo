@@ -16,20 +16,24 @@ level_Choices = [
 ]
 
 class HabilidadCandidatoForm(forms.Form):
-    ability = forms.ChoiceField(choices=[], label='Habilidad',widget=forms.Select(attrs={'data-control': 'select2' ,' data-dropdown-parent':'#kt_modal_1','data-tags':'true'}) )
-    level =  forms.ChoiceField(choices=level_Choices, label='Nivel',widget=forms.Select(attrs={ 'class': 'form-select form-select-solid fw-bold'}))
+    ability = forms.CharField()
+    level =  forms.ChoiceField(choices=level_Choices, label='Nivel', widget = forms.Select(attrs={ 'class': 'form-select form-select-solid fw-bold'}))
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Actualizar choices dinámicamente
-        self.fields['ability'].choices = [('', '----------')] + [(item.id, item.nombre) for item in Can104Skill.objects.all().order_by('nombre')]
+        self.fields['ability'].widget.attrs.update({
+            'class': 'form-control form-control-solid', 
+            'id': 'habilidad', 
+            'required': 'required'
+            
+        })
 
         self.fields['ability'].widget.attrs.update({
-            'data-control': 'select2',
-            'data-tags':'true',
-            'data-dropdown-parent': '#kt_modal_1',
-            'class': 'form-select form-select-solid fw-bold',
+            'class': 'form-control form-control-solid', 
+            'id': 'habilidad', 
+            'required': 'required'
             
         })
         
@@ -38,13 +42,17 @@ class HabilidadCandidatoForm(forms.Form):
         self.helper.form_id = 'form_habilidades'
         self.helper.layout = Layout(
             Div(
-                
                 Div('ability',css_class='me-4 mb-0'),
                 Div('level',css_class='me-4 mb-0'),
                 Submit('submit', 'Agregar', css_class='btn btn-lg btn-primary px-8'),
                 css_class='d-flex align-items-center'), 
-    
-
         )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        ability = cleaned_data.get('ability')
+        level = cleaned_data.get('level')
+
+        return cleaned_data
 
     

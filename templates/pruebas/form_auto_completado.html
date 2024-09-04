@@ -1,5 +1,5 @@
-
 {% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
 {% load static %}
 {% block titulo_pagina %} Pruebas {% endblock titulo_pagina %}
 
@@ -14,6 +14,27 @@
 {% endblock navegacion %}
 
 {% block content %}
+<style>
+    #sugerencias {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ddd;
+        max-height: 150px;
+        overflow-y: auto;
+    }
+    
+    #sugerencias li {
+        padding: 10px;
+        cursor: pointer;
+    }
+    
+    #sugerencias li:hover {
+        background-color: #f0f0f0;
+    }
+    </style>
 <div class="card shadow-sm">
     <div class="card-header">
         <h3 class="card-title">Habilidades</h3>
@@ -26,7 +47,7 @@
     <div class="card-body">
         <form id="habilidadesForm">
             <div class="row">
-                <!-- Columna 1 -->
+                
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="habilidad">Habilidad*</label>
@@ -35,22 +56,33 @@
                     </div>
                 </div>
                 
-                <!-- Columna 2 -->
+                
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="nivel">Nivel*</label>
-                        <select id="nivel" name="nivel" class="form-control" required>
+                        <select id="nivel" name="nivel" class="form-control jq-select2" required>
                             <option value="">----------</option>
-                            <!-- Agrega tus opciones de nivel aquí -->
+                            <option value="1">----------</option>
+                            <option value="">----------</option>
+                            <option value="">----------</option>
+                        
                         </select>
                     </div>
                 </div>
                 
-                <!-- Columna 3 -->
+                
                 <div class="col-md-4 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">Agregar</button>
                 </div>
             </div>
+        </form>
+
+        <hr>
+
+        <form method="POST" id="habilidadesForm">
+            
+                <ul id="sugerencias"></ul>
+                {{ form|crispy }}
         </form>
     </div>
     <div class="card-footer">
