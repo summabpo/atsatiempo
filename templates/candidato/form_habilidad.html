@@ -99,13 +99,13 @@ Información Habilidades
                                                 <input class="form-check-input" type="checkbox" value="1" />
                                             </div>
                                         </td>
-                                        <td style="text-align: center;">{{ e.skill_id_104.nombre }}</td>
+                                        <td style="text-align: center;">{{ e.skill_id_104.nombre|upper }}</td>
                                         <td style="text-align: center;">
                                             {% if e.nivel == 1 %}
                                                 Básico
                                             {% elif e.nivel == 2 %}
                                                 Intermedio
-                                            {% elif e.nivel == 1 %}
+                                            {% elif e.nivel == 3 %}
                                                 Superior
                                             {% endif %}
                                         </td>

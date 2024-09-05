@@ -19,8 +19,6 @@ def habilidad_obtener(request, pk=None):
             level = form.cleaned_data['level']
             ability = form.cleaned_data['ability']
             
-            print(level)
-
             # Convertir el nombre a minúsculas
             ability = ability.lower()
             
@@ -30,10 +28,20 @@ def habilidad_obtener(request, pk=None):
                 defaults={'estado_id_004': data}
             )
 
-        return redirect('candidato:candidato_habilidad', candidato_id = candidato.id)
+            # Crear el registro de la habilidad del candidato
+            candidato_skill = Can101CandidatoSkill.objects.create(
+                candidato_id_101=candidato,
+                skill_id_104=skill,
+                nivel=level
+            )
+
+            messages.success(request, 'El registro de experiencia academica ha sido creado')    
+            return redirect('candidatos:candidato_habilidad', pk = candidato.id)
+        else:
+            messages.error(request, form.errors)
     else: 
         form = HabilidadCandidatoForm()
-        habilidades = Can101CandidatoSkill.objects.filter(candidato_id_10 = candidato.id)
+        habilidades = Can101CandidatoSkill.objects.filter(candidato_id_101 = candidato.id)
     
     return render(request, 'candidato/form_habilidad.html',
         { 

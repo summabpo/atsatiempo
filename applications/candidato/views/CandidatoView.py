@@ -20,8 +20,6 @@ def candidato_mostrar(request, pk=None):
         candidato = None
         accion = 'Crear'
 
-   
-
     if request.method == 'POST':
 
         if 'submit_candidato' in request.POST:
@@ -47,7 +45,7 @@ def candidato_mostrar(request, pk=None):
         'form': form,
         'candidato': candidato,
         'accion': accion, 
-         })
+        })
 
 global_dato = None 
 
