@@ -30,6 +30,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Application usuarios
+AUTH_USER_MODEL = 'usuarios.UsuarioBase'
 
 # Application definition
 
@@ -47,6 +49,8 @@ INSTALLED_APPS = [
     'applications.cliente',
     'applications.common',
     'applications.pruebas_psi',
+    'applications.usuarios',
+    'applications.vacante',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
