@@ -21,10 +21,10 @@ class UsuarioBase(AbstractUser):
     segundo_apellido = models.CharField(max_length=15, blank=True)
     telefono = models.CharField(max_length=15, blank=True)
     is_verificado = models.BooleanField(default=False)
-    group = models.ForeignKey(Grupo, on_delete=models.CASCADE, blank=True)
+    group = models.ForeignKey(Grupo, on_delete=models.CASCADE)
     cliente_id_051 = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, null=True)
-
-    def __str__(self):
+    
+    def str(self):
         return self.username
     class Meta:
         #managed = False
