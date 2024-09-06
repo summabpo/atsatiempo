@@ -134,21 +134,6 @@ frases_inicio_sesion = [
 ]
 
 
-#* create company 
-
-frases_cancelacion = [
-    "¡Vaya! Parece que te arrepentiste. No te preocupes, aquí te esperamos si decides regresar.",
-    "¡Oh no! El proceso de creación de cuenta se quedó a medias. ¿Seguro que quieres abandonar la aventura?",
-    "¡Ups! Parece que cambiaste de opinión. ¡Esperamos verte de nuevo cuando estés listo para unirte!",
-    "¡Menuda sorpresa! Cancelaste el registro. Si te animas, siempre habrá una cuenta esperándote.",
-    "¡Oh! Parece que te echa atrás. La puerta queda abierta para cuando quieras completar el proceso.",
-    "¡Oh no! Te saliste antes de terminar. ¡No dudes en volver cuando estés listo para formar parte!",
-    "¡Vaya! El proceso se detuvo en seco. Si decides retomar, aquí estaremos para ayudarte a completar el registro.",
-    "¡Ay! Te has escapado antes de terminar. Si te vuelves a animar, la puerta siempre estará abierta.",
-    "¡Ups! El registro quedó en pausa. ¡No dudes en regresar cuando quieras completar tu cuenta!",
-    "¡Oh! Parece que te echa atrás el proceso. Si decides intentarlo de nuevo, estaremos aquí para ayudarte."
-]
-
 
 
 def login_view(request):
@@ -193,14 +178,6 @@ def signup_view(request):
             password2 = form.cleaned_data['password2']
             name = form.cleaned_data['name']
             last_name = form.cleaned_data['last_name']
-            
-            
-            # nit = form.cleaned_data['nit']
-            # companyname = form.cleaned_data['companyname']
-            # city = form.cleaned_data['city']
-            # companycontact = form.cleaned_data['companycontact']
-            # companyemail = form.cleaned_data['companyemail']
-            
             
             if password1 == password2:
                 if UsuarioBase.objects.filter(username=email).exists():
