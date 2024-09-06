@@ -1,104 +1,133 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %} {% endblock title %}</title>
-    
-    <link rel="shortcut icon" href="{% static 'img/favicons/favicon.png' %}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'img/favicons/favicon-192x192.png' %}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<head>
+		<title>{% block title %} {% endblock title %}</title>
+		<meta charset="utf-8" />
+		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+		<link href="{% static 'plugins/custom/fullcalendar/fullcalendar.bundle.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'plugins/custom/datatables/datatables.bundle.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'plugins/global/plugins.bundle.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'css/style.bundle.css' %}" rel="stylesheet" type="text/css" />
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script>// Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }</script>
+	
+		<style type="text/css">
+			
+			{% block css %}
+		
+			{% endblock css %}
+		</style>
+	
+	
+	</head>
+	<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled aside-enabled" >
 
-    <link rel="stylesheet" href="{% static 'js/plugins/datatables-bs5/css/dataTables.bootstrap5.min.css' %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/datatables-buttons-bs5/css/buttons.bootstrap5.min.css' %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/datatables-responsive-bs5/css/responsive.bootstrap5.min.css' %}">
-
-    <link rel="stylesheet" href="{% static 'js/plugins/select2/css/select2.min.css' %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css'  %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/ion-rangeslider/css/ion.rangeSlider.css'  %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/dropzone/min/dropzone.min.css'  %}">
-    <link rel="stylesheet" href="{% static 'js/plugins/flatpickr/flatpickr.min.css'  %}">
-
-    <link rel="stylesheet" id="css-main" href="{% static 'css/dashmix.min.css' %} ">
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 
-    <style>
-        /* Ocultar asteriscos y estilos adicionales */
-        .asteriskField {
-            color: red !important;
-        }
-        {% block css %}
-                    
-        {% endblock css %}
-    </style>
+		<script>
+			var defaultThemeMode = "light"; 
+			var themeMode; 
+			if ( document.documentElement ) { 
+				if ( document.documentElement.hasAttribute("data-bs-theme-mode")) { 
+					themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); 
+				} else { 
+					if ( localStorage.getItem("data-bs-theme") !== null ) { 
+						themeMode = localStorage.getItem("data-bs-theme"); 
+					} else { 
+						themeMode = defaultThemeMode; 
+					} 
+				} 
+				
+				if (themeMode === "system") { 
+					themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; 
+				} 
+				
+				document.documentElement.setAttribute("data-bs-theme", themeMode); 
+			}
+			
+			
 
-</head>
-<body>  
-    
-    <!-- ocultar sidebar sidebar-o -->
-    <div id="page-container" class="enable-page-overlay side-scroll page-header-fixed page-header-dark side-trans-enabled sidebar-o">
-        {% include 'base/aside.html' %}
-        {% include 'base/menu.html' %}
-        {% include 'base/cabecera.html' %}
-            <!-- Contenido Principal -->
-        <main id="main-container">
-            <div class="content">
-                <h2 class="content-heading">{% block titulo-pagina %} {% endblock titulo-pagina %}</h2>
-                {% block content %}
-                    
-                {% endblock content %}
-            </div>
-        </main>
-        {% include 'base/piePagina.html' %}
-    </div>
 
-    <script src="{% static 'js/dashmix.app.min.js' %}"></script>
+		</script>
+		<div class="d-flex flex-column flex-root">
+			<div class="page d-flex flex-row flex-column-fluid">
+				
+				<div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
+					
+					{% include 'base/cabecera.html' %}
+					
+					<div class="toolbar py-5 py-lg-15" id="kt_toolbar">
+						
+						<div id="kt_toolbar_container" class="container-xxl d-flex flex-stack flex-wrap">
+							
+							<div class="page-title d-flex flex-column">
+								
+								<h1 class="d-flex text-white fw-bold fs-2qx my-1 me-5">{% block titulo_pagina %} {% endblock titulo_pagina %}</h1>
+								
+								<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-1">
+									
+									<li class="breadcrumb-item text-white opacity-75">
+										<a href="{% url 'candidatos:inicio' %}" class="text-white text-hover-primary">Inicio</a>
+									</li>
+									
+									<li class="breadcrumb-item">
+										<span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+									</li>
+									
+									
+									{% block navegacion %}
+										
+									{% endblock navegacion %}
+										
+								
+								</ul>
+							
+							</div>
+							{% include 'base/accionesTitulo.html' %}
+						</div>
+						<!--end::Container-->
+					</div>
+					
+					<div id="kt_content_container" class="d-flex flex-column-fluid align-items-start  container-fluid ">
+						
+						{% include 'base/aside.html' %}
 
-    <!-- jQuery (required for Select2 + jQuery Validation plugins) -->
-    <script src="{% static 'js/lib/jquery.min.js' %}"></script>
+						<div class="content flex-row-fluid" id="kt_content">
 
-    <!-- Page JS Plugins -->
-    <script src="{% static 'js/plugins/select2/js/select2.full.min.js' %}"></script>
-    <script src="{% static 'js/plugins/jquery-validation/jquery.validate.min.js' %}"></script>
-    <script src="{% static 'js/plugins/jquery-validation/additional-methods.js' %}"></script>
+							{% block content %} {% endblock content %}
 
-    <!-- Page JS Helpers (Select2 plugin) -->
-    <script>Dashmix.helpersOnLoad(['jq-select2']);</script>
+						</div>
+					</div>
+					{% include 'base/piePagina.html' %}
+					<!--end::Footer-->
+				</div>
+				<!--end::Wrapper-->
+			</div>
+			<!--end::Page-->
+		</div>
+        
+        <script src="{% static 'plugins/global/plugins.bundle.js' %}"></script>
+		<script src="{% static 'js/scripts.bundle.js' %}"></script>
+		
+        <script src="{% static 'plugins/custom/datatables/datatables.bundle.js' %}"></script>
+		
+		<script src="{% static 'js/custom/apps/user-management/users/list/table.js' %}"></script>
+		<script src="{% static 'js/custom/apps/user-management/users/list/export-users.js' %}"></script>
+		<script src="{% static 'js/custom/apps/user-management/users/list/add.js' %}"></script>
 
-    <!-- Page JS Code -->
-    <script src="{% static 'js/pages/be_forms_validation.min.js' %}"></script>
+		<script src="{% static 'js/custom/apps/ecommerce/settings/settings.js' %}"></script>
+        <script src="{% static 'js/widgets.bundle.js' %}"></script>
+		<script src="{% static 'js/custom/widgets.js' %}"></script>
+		<script src="{% static 'js/custom/apps/chat/chat.js' %}"></script>
+		<script src="{% static 'js/custom/utilities/modals/upgrade-plan.js' %}"></script>
+		<script src="{% static 'js/custom/utilities/modals/create-campaign.js' %}"></script>
+		<script src="{% static 'js/custom/utilities/modals/new-target.js' %}"></script>
+		<script src="{% static 'js/custom/utilities/modals/users-search.js' %}"></script>
 
-    <!-- Page JS Code -->
-    <!-- Page JS Plugins -->
-    <script src="{% static 'js/plugins/datatables/dataTables.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-bs5/js/dataTables.bootstrap5.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-responsive-bs5/js/responsive.bootstrap5.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-buttons/dataTables.buttons.min.js' %}"></script>
-    <!-- <script src="{% static 'js/plugins/js/plugins/datatables-buttons-bs5/js/buttons.bootstrap5.min.js' %}"></script> -->
-    <!-- <script src="{% static 'js/plugins/js/plugins/datatables-buttons-jszip/jszip.min.js' %}"></script> -->
-    <script src="{% static 'js/plugins/datatables-buttons-pdfmake/pdfmake.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-buttons-pdfmake/vfs_fonts.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-buttons/buttons.print.min.js' %}"></script>
-    <script src="{% static 'js/plugins/datatables-buttons/buttons.html5.min.js' %}"></script>
-
-    <script src="{% static 'js/pages/be_tables_datatables.min.js' %}"></script>
-
-    <script src="{% static 'js/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/select2/js/select2.full.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/ion-rangeslider/js/ion.rangeSlider.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/jquery.maskedinput/jquery.maskedinput.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/dropzone/min/dropzone.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/pwstrength-bootstrap/pwstrength-bootstrap.min.js'  %}"></script>
-    <script src="{% static 'js/plugins/flatpickr/flatpickr.min.js'  %}"></script>
-
-    <script>Dashmix.helpersOnLoad(['js-flatpickr', 'jq-datepicker', 'jq-maxlength', 'jq-select2', 'jq-rangeslider', 'jq-masked-inputs', 'jq-pw-strength']);</script>
-    {% if messages %}
+		{% if messages %}
         {% for message in messages %}
             <script>
             Swal.fire({
@@ -118,6 +147,6 @@
         {% endfor %}
     {% endif %}
 
-    {% block extrajs %}{% endblock %} 
-</body>
+	{% block extrajs %}  {% endblock extrajs %}
+	</body>
 </html>

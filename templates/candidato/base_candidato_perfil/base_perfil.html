@@ -1,0 +1,45 @@
+{% load static %}
+<div class="card-body pt-0 p-10">
+    <div class="d-flex flex-center flex-column mb-10">
+        <div class="symbol mb-3 symbol-100px symbol-circle">
+            <img alt="Pic" src="{% static 'media/avatars/300-1.jpg' %}" />
+        </div>
+        <a href="#" class="fs-2 text-gray-800 text-hover-primary fw-bold mb-1">{{ candidato.primer_nombre }} {{ candidato.segundo_nombre }}</a>
+        <div class="fs-6 fw-semibold text-gray-500 mb-2">{{ candidato.primer_apellido }} {{ candidato.segundo_apellido }}</div>
+    </div>
+    
+    <ul class="menu menu-column menu-pill menu-title-gray-700 menu-bullet-gray-300 menu-state-bg menu-state-bullet-primary fw-bold fs-5 mb-10">
+        <li class="menu-item mb-1">
+            <a class="menu-link px-6 py-4 " href="{% url 'candidatos:candidato_editar' candidato.id  %}">
+                <span class="menu-bullet">
+                    <span class="bullet"></span>
+                </span>
+                <span class="menu-title">Información Personal</span>
+            </a>
+        </li>
+        <li class="menu-item mb-1">
+            <a class="menu-link px-6 py-4" href="{% url 'candidatos:candidato_academica' candidato.id  %}">
+                <span class="menu-bullet">
+                    <span class="bullet"></span>
+                </span>
+                <span class="menu-title">Información Académica</span>
+            </a>
+        </li>
+        <li class="menu-item mb-1">
+            <a class="menu-link px-6 py-4" href="{% url 'candidatos:candidato_laboral' candidato.id  %}">
+                <span class="menu-bullet">
+                    <span class="bullet"></span>
+                </span>
+                <span class="menu-title">Información Laboral</span>
+            </a>
+        </li>
+        <li class="menu-item mb-1">
+            <a class="menu-link px-6 py-4" href="{% url 'candidatos:candidato_habilidad' candidato.id  %}">
+                <span class="menu-bullet">
+                    <span class="bullet"></span>
+                </span>
+                <span class="menu-title">Habilidades</span>
+            </a>
+        </li>
+    </ul>
+</div>

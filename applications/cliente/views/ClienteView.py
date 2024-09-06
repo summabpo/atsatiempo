@@ -23,10 +23,7 @@ def cliente_crear(request):
     return render(request, 'cliente/form_cliente.html', {'form': form})
 
 
-class ListadoClientes(ListView):
-    template_name = 'cliente/listado_clientes.html'
-    model = Cli051Cliente
-    context_object_name = 'clientes'
+
 
 def mostrar_clientes(request):
     clientes = Cli051Cliente.objects.filter(estado_id_001=1).order_by('-id')
@@ -41,11 +38,7 @@ def mostrar_clientes(request):
             return redirect('clientes:cliente_listar')  # Cambia a la vista deseada después de guardar
         else:
             form_errors = True
-            # errores = ''
-            # for field, errors in form.errors.items():
-            #     errores += f'{field}: {", ".join(errors)}'
-            # messages.error(request, f'El formulario tiene los siguientes errores: {errores}')
-
+            form = ClienteForm(request.POST, request.FILES)
     else:
         form = ClienteForm()
 
@@ -84,10 +77,7 @@ def obtener_cliente_view(request):
                 'logo': solicitud_cliente.logo.url if solicitud_cliente.logo else None,
                 
             }
-        }
-
-        print(response_data)
-        
+        }       
         return JsonResponse(response_data)
 
     if request.method == 'POST':
@@ -110,7 +100,7 @@ def obtener_cliente_view(request):
         ciudad_id_004 = request.POST.get('ciudad_id_004')
 
         cliente_id = global_id
-
+        
         cliente_modificar = get_object_or_404(Cli051Cliente, pk=cliente_id)
         
         # Obtener la instancia del modelo Cat004Ciudad

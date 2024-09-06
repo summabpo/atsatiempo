@@ -2,7 +2,7 @@
 import re, os
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field
+from crispy_forms.layout import Layout, Submit, Row, Column, Field , Div
 from applications.common.models import Cat004Ciudad, Cat001Estado
 from ..models import Cli051Cliente
 
@@ -15,26 +15,107 @@ class ClienteForm(forms.Form):
     email         = forms.CharField(label='EMAIL'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Email'}))
     contacto      = forms.CharField(label='CONTACTO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Contacto'}))
     telefono      = forms.CharField(label='TELEFONO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
-    perfil_empresarial = forms.CharField(label='PERFIL EMPRESARIAL', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Empresa'}))
+    perfil_empresarial = forms.CharField(
+        label='PERFIL EMPRESARIAL',
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Descripción de la Empresa',
+                'rows': 5,  
+                'cols': 40,  
+                'class': 'fixed-size-textarea'
+            }
+        )
+    )
     logo = forms.ImageField(label='LOGO', required=False)
 
     def __init__(self, *args, **kwargs):
         super(ClienteForm, self).__init__(*args, **kwargs)
+        
+        
+        
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.enctype = 'multipart/form-data'
+        self.helper.form_id = 'form_cliente'
+
+        
+        
+
+        self.fields['nit'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Nit'
+        })
+
+        self.fields['razon_social'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+        
+        self.fields['ciudad_id_004'].widget.attrs.update({
+            'data-control': 'select2',
+            'data-tags':'true',
+            'data-dropdown-parent': '#kt_modal_edit_client,#kt_modal_add_user',
+            'class': 'form-select form-select-solid fw-bold',
+            
+        })
+
+        self.fields['email'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+        self.fields['contacto'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+        self.fields['telefono'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+        self.fields['perfil_empresarial'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+        self.fields['logo'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+
         self.helper.layout = Layout(
-            # Field('estado_id_001', css_class='form-control, js-select2'),
-            Field('nit'),
-            Field('razon_social'),
-            Field('ciudad_id_004', css_class='form-control, js-select2'),
-            Field('email'),
-            Field('contacto'),
-            Field('telefono'),
-            Field('perfil_empresarial'),
-            Field('logo'),
-            Submit('submit', 'Guardar', css_class='btn-primary')
+            Div(
+                Div(
+                    Div('nit', css_class='col form-control-solid mb-3 mb-lg-0'),
+                    Div('razon_social', css_class='col'),
+                    css_class='row'
+                ),
+                Div(
+                    Div('ciudad_id_004', css_class='col'),
+                    Div('email', css_class='col'),
+                    css_class='row'
+                ),
+                Div(
+                    Div('contacto', css_class='col'),
+                    Div('telefono', css_class='col'),
+                    css_class='row'
+                ),
+                Div(
+                    Div('logo', css_class='col'),
+                    css_class='row'
+                ),
+                Div(
+                    Div('perfil_empresarial', css_class='col'),
+                    
+                    css_class='row'
+                ),
+            )
         )
+        
     
     def clean(self):
         cleaned_data = super().clean()

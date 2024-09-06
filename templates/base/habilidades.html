@@ -1,0 +1,125 @@
+{% extends 'base/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %} ATS Habilidad {% endblock title %}
+
+{% block titulo_pagina %} Habilidad {% endblock titulo_pagina %}
+
+{% block content %}
+
+
+
+<button class="btn btn-light-facebook"  data-bs-placement="top" title="Agregar Visitante" data-bs-toggle="modal" data-bs-target="#kt_modal_1">
+    Launch demo modal
+</button>
+
+<!--begin::Modal-->
+<div class="modal fade" tabindex="-1" id="kt_modal_1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Habilidades </h5>
+
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-fw fa-times"></i>
+                </div>
+                <!--end::Close-->
+            </div>
+
+            <div class="modal-body">
+                {% crispy form %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr class="fw-bold fs-6 text-gray-800">
+                                <th> </th>
+                                <th> </th>
+                                <th> </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in listskill %}
+                                <tr>
+                                    <td class="d-flex justify-content-center align-items-center">{{ item.ability }}</td>
+                                    <td class="text-center">
+                                        {% if item.level == '1' %}
+                                            <span class="badge badge-warning d-flex justify-content-center align-items-center">Básico</span>
+                                        {% elif item.level == '2' %}
+                                            <span class="badge badge-primary d-flex justify-content-center align-items-center">Intermedio</span>
+                                        {% else %}
+                                            <span class="badge badge-success d-flex justify-content-center align-items-center">Superior</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="#" class="btn btn-danger d-flex justify-content-center align-items-center" style="width: 3rem; height: 3rem;">
+                                            <i class="fa fa-fw fa-times"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        
+                    </table>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}
+
+{% block extrajs %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Verificar si el modal estaba abierto antes de la recarga
+        if (localStorage.getItem('modal-open') === 'true') {
+            var modal = new bootstrap.Modal(document.getElementById('kt_modal_1'));
+            modal.show();
+        }
+
+        // Guardar el estado del modal cuando se abra
+        var myModalEl = document.getElementById('kt_modal_1');
+        myModalEl.addEventListener('show.bs.modal', function () {
+            localStorage.setItem('modal-open', 'true');
+        });
+
+        // Limpiar el estado y la sesión cuando se cierre el modal
+        var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+        closeButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                localStorage.removeItem('modal-open');
+                
+                // Enviar solicitud para limpiar la variable de sesión
+                fetch('{% url "candidatos:limpiar_lisskill" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        // Recargar la página si la solicitud fue exitosa
+                        window.location.reload();
+                    } else {
+                        console.error('Error al limpiar la sesión');
+                    }
+                }).catch(error => {
+                    console.error('Error de red:', error);
+                });
+            });
+        });
+    });
+</script>
+
+{% endblock extrajs %}

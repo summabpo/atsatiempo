@@ -1,3 +1,5 @@
+import environ # type: ignore
+
 """
 Django settings for atsatiempo project.
 
@@ -28,6 +30,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Application usuarios
+AUTH_USER_MODEL = 'usuarios.UsuarioBase'
 
 # Application definition
 
@@ -45,6 +49,8 @@ INSTALLED_APPS = [
     'applications.cliente',
     'applications.common',
     'applications.pruebas_psi',
+    'applications.usuarios',
+    'applications.vacante',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
@@ -92,14 +98,18 @@ WSGI_APPLICATION = 'atsatiempo.wsgi.application'
 #     }
 # }
 
+# Inicializa el entorno
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_ats',
-        'USER': 'postgres',
-        'PASSWORD': '4t13mp0*s4s*',  
-        'HOST': 'devatiempo.cqfpcv4ejul5.us-east-1.rds.amazonaws.com',
-        'PORT': '5432',
+        'NAME':  env('DB_NAME'),
+        'USER':  env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),  
+        'HOST': env('DB_HOST', default='localhost'),  # o la dirección IP de tu servidor de POStgres
+        'PORT': env('DB_PORT', default='5432'), 
     }
 }
 
