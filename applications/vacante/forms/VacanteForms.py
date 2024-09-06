@@ -5,25 +5,75 @@ from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio
 from applications.common.models import Cat004Ciudad
 
 class VacanteForm(forms.Form):
+    EXPERIENCIA_TIEMPO = [
+        ('', 'Seleccione una opción... '),
+        (1, '0 a 6 Meses'),
+        (2, '1 año a 2 años'),
+        (3, 'Más de 2 años'),
+        (4, 'Sin experiencia'),
+    ]
+
+    titulo = forms.CharField(label='TITULO DE LA VACANTE',
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid',  # Clases CSS del campo  
+            }
+        ), required=True)
+    numero_posiciones = forms.IntegerField(label="NUMERO VACANTES",
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid',  # Clases CSS del campo  
+            }
+        ), required=True)
+    profesion_estudio_id_055 = forms.CharField(label='PROFESION O ESTUDIANTE',
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid',  # Clases CSS del campo  
+            }
+        ), required=True)
+    experiencia_requerida = forms.ChoiceField(label='EXPERIENCIA ', choices = EXPERIENCIA_TIEMPO, widget = forms.Select(attrs={ 'class': 'form-select form-select-solid fw-bold'}), required=True)
+    soft_skills_id_053 = forms.CharField(label='HABILIDADES BLANDAS', 
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid',  # Clases CSS del campo
+                'id': 'soft_skills',  # ID del campo    
+            }
+        ), required=True)
     
-    titulo = forms.CharField(label='TITULO DE LA VACANTE', required=True)
-    numero_posiciones = forms.IntegerField(label="NUMERO VACANTES", required=True)
-    profesion_estudio_id_055 = forms.CharField(label='PROFESION O ESTUDIANTE', required=True)
-    experiencia_requerida = forms.CharField(label='EXPERIENCIA ', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Fortalezas'}))
-    soft_skills_id_053 = forms.CharField(label='HABILIDADES BLANDAS', required=True)
-    hard_skills_id_054 = forms.CharField(label='HABILIDADES FUERTES', required=True)
+    hard_skills_id_054 = forms.CharField(label='HABILIDADES FUERTES', 
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid',  # Clases CSS del campo
+                'id': 'hard_skills',  # ID del campo    
+            }
+        ), required=True)
+    
     funciones_responsabilidades = forms.CharField( label='FUNCIONES Y RESPONSABILIDADES', required=True,
         widget=forms.Textarea(
             attrs={
-                'placeholder': 'Tus logros empresariales',
+                'placeholder': 'Describa por favor las funciones y responsabilidades',
                 'rows': 5,  
                 'cols': 40,  
-                'class': 'fixed-size-textarea'
+                'class': 'fixed-size-textarea form-control-solid'
             }
         )
     )
-    ciudad = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)
-    salario = forms.IntegerField(label="NUMERO VACANTES", required=True)
+
+    # ciudad = forms.ModelChoiceField(label='CIUDAD',
+    #     widget=forms.TextInput(
+    #         attrs={
+    #             'class': 'form-select form-control-solid',  # Clases CSS del campo  
+    #             'data-control': 'select2',
+    #             'data-placeholder': 'Select an option',
+    #             'data-dropdown-parent': '#modal_vacante',
+    #             }
+    #     ), queryset=Cat004Ciudad.objects.all(), required=True)
+    salario = forms.IntegerField(label="SALARIO",
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid',  # Clases CSS del campo  
+            }
+        ), required=True)
     # estado_vacante 
     # estado_id_004
     # cliente_id_051 
@@ -33,6 +83,22 @@ class VacanteForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+
+        cities = Cat004Ciudad.objects.all().order_by('nombre')
+        city_choices = [('', '----------')] + [(ciudad.id, f"{ciudad.nombre}") for ciudad in cities]
+
+        self.fields['ciudad'] = forms.ChoiceField(
+            label='CIUDAD',
+            choices=city_choices,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select form-select-solid',  # Clases CSS del campo  
+                    'data-control': 'select2',
+                    'data-placeholder': 'Seleccion una opción',
+                    'data-dropdown-parent': '#modal_vacante',
+                    }
+        ), required=True)
+
         self.helper.layout = Layout(
             Fieldset(
                 'Información General',
@@ -58,15 +124,7 @@ class VacanteForm(forms.Form):
                     css_class='form-row'
                 ),
             ),
-            Fieldset(
-                'Estado y Cliente',
-                Row(
-                    Column('estado_vacante', css_class='form-group col-md-4 mb-0'),
-                    Column('estado_id_004', css_class='form-group col-md-4 mb-0'),
-                    Column('cliente_id_051', css_class='form-group col-md-4 mb-0'),
-                    css_class='form-row'
-                ),
-            ),
+            
             Submit('submit', 'Guardar Vacante', css_class='btn btn-primary')
         )
 
@@ -98,8 +156,6 @@ class VacanteForm(forms.Form):
         experiencia_requerida = cleaned_data.get('experiencia_requerida')
         if not experiencia_requerida:
             self.add_error('experiencia_requerida', 'La experiencia requerida es obligatoria.')
-        elif not isinstance(experiencia_requerida, int) or experiencia_requerida < 0:
-            self.add_error('experiencia_requerida', 'La experiencia requerida debe ser un número entero no negativo.')
 
         # Validate soft_skills_id_053
         soft_skills_id_053 = cleaned_data.get('soft_skills_id_053')

@@ -50,6 +50,7 @@ class Cli052Vacante(models.Model):
         (1, '0 a 6 Meses'),
         (2, '1 año a 2 años'),
         (3, 'Más de 2 años'),
+        (4, 'Sin Experiencia'),
     ]
 
     titulo = models.CharField(max_length=200)

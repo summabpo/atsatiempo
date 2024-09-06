@@ -14,9 +14,12 @@ def vacante_cliente_mostrar(request, pk=None):
     #listado vacantes activas
     vacantes = Cli052Vacante.objects.filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
 
+    form_errors = False
+
     # Formulario Vacantes
     if request.method == 'POST': 
         form = VacanteForm(request.POST)
+        
         if form.is_valid():
             #datos formulario
 
@@ -28,6 +31,8 @@ def vacante_cliente_mostrar(request, pk=None):
             funciones_responsabilidades = form.cleaned_data['funciones_responsabilidades']
             ciudad = form.cleaned_data['ciudad']
             salario = form.cleaned_data['salario']
+
+            print(f'Skillis: {soft_skills_id_053}')
 
             # Intentar obtener el objeto profesion estudio
             profesion_estudio_dato, created = Cli055ProfesionEstudio.objects.get_or_create(
@@ -64,7 +69,7 @@ def vacante_cliente_mostrar(request, pk=None):
             #     fecha_creacion
             # )
 
-            form.save()
+            # form.save()
             messages.success(request, 'El registro de experiencia academica ha sido creado')
             return redirect('vacantes:vacantes_cliente', pk=cliente.id)
         else:
@@ -79,4 +84,5 @@ def vacante_cliente_mostrar(request, pk=None):
             'form': form,
             'vacantes': vacantes,
             'cliente': cliente,
+            'form_errors': form_errors,
         })    
