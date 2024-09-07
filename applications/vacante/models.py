@@ -76,3 +76,25 @@ class Cli052Vacante(models.Model):
 
         verbose_name = 'VACANTE'
         verbose_name_plural = 'VACANTES'
+
+
+class Cli052VacanteHardSkillsId054(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    cli052vacante = models.ForeignKey(Cli052Vacante, models.DO_NOTHING)
+    cli054hardskill = models.ForeignKey('Cli054HardSkill', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'cli_052_vacante_hard_skills_id_054'
+        unique_together = (('cli052vacante', 'cli054hardskill'),)
+
+
+class Cli052VacanteSoftSkillsId053(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    cli052vacante = models.ForeignKey(Cli052Vacante, models.DO_NOTHING)
+    cli053softskill = models.ForeignKey('Cli053SoftSkill', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'cli_052_vacante_soft_skills_id_053'
+        unique_together = (('cli052vacante', 'cli053softskill'),)

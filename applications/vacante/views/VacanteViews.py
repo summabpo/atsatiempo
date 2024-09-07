@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from applications.cliente.models import Cli051Cliente
 from applications.vacante.forms.VacanteForms import VacanteForm
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from django.contrib import messages
 from django.http import JsonResponse
+import json
 
 def vacante_cliente_mostrar(request, pk=None):
     #datos clientes
@@ -26,13 +27,16 @@ def vacante_cliente_mostrar(request, pk=None):
             titulo = form.cleaned_data['titulo']
             numero_posiciones = form.cleaned_data['numero_posiciones']
             profesion_estudio_id_055 = form.cleaned_data['profesion_estudio_id_055']
+            experiencia_requerida = form.cleaned_data['experiencia_requerida']
             soft_skills_id_053 = form.cleaned_data['soft_skills_id_053']
             hard_skills_id_054 = form.cleaned_data['hard_skills_id_054']
             funciones_responsabilidades = form.cleaned_data['funciones_responsabilidades']
-            ciudad = form.cleaned_data['ciudad']
             salario = form.cleaned_data['salario']
 
-            print(f'Skillis: {soft_skills_id_053}')
+            estado_id = Cat001Estado.objects.get(id=1)
+            ciudad_id = Cat004Ciudad.objects.get(id=form.cleaned_data['ciudad'])
+
+            print(profesion_estudio_id_055)
 
             # Intentar obtener el objeto profesion estudio
             profesion_estudio_dato, created = Cli055ProfesionEstudio.objects.get_or_create(
@@ -40,37 +44,62 @@ def vacante_cliente_mostrar(request, pk=None):
                 defaults={'estado_id_001': estado}
             )
 
-            # Intentar obtener el objeto soft_skills
-            soft_skills, created = Cli053SoftSkill.objects.get_or_create(
-                nombre = soft_skills_id_053,
-                defaults={'estado_id_001': estado}
-            )
-
-            # Intentar obtener el objeto hard_skills
-            hard_skills, created = Cli054HardSkill.objects.get_or_create(
-                nombre = hard_skills_id_054,
-                defaults={'estado_id_001': estado}
-            )
+            print(profesion_estudio_dato)
 
             #crea la vacante
-            # vacante_creada = Cli052Vacante.objects.create(
-            #     titulo = titulo,
-            #     numero_posiciones = numero_posiciones,
-            #     profesion_estudio_id_055 = profesion_estudio_dato
-            #     experiencia_requerida = experiencia_requerida
-            #     soft_skills_id_053 = soft_skills,
-            #     hard_skills_id_054 = hard_skills,
-            #     funciones_responsabilidades = funciones_responsabilidades,
-            #     ciudad = ciudad,
-            #     salario = salario
-            #     estado_vacante
-            #     estado_id_001 
-            #     cliente_id_051
-            #     fecha_creacion
-            # )
+            vacante_creada = Cli052Vacante.objects.create(
+                titulo = titulo,
+                numero_posiciones = numero_posiciones,
+                experiencia_requerida = experiencia_requerida,
+                funciones_responsabilidades = funciones_responsabilidades,
+                salario = salario,
+                estado_vacante = 1,
+                ciudad_id = ciudad_id.id,
+                cliente_id_051_id = cliente,
+                estado_id_001_id = estado_id.id,
+                profesion_estudio_id_055_id = profesion_estudio_dato.id,
+            )
 
-            # form.save()
-            messages.success(request, 'El registro de experiencia academica ha sido creado')
+
+
+            # Convertir el string JSON en un objeto Python (lista de diccionarios)
+            skills = json.loads(soft_skills_id_053)
+            
+            # Ahora puedes iterar sobre la lista de diccionarios
+            for skill in skills:
+                print(skill['value'])  # Aquí puedes hacer lo que necesites con cada valor
+
+                # Intentar obtener el objeto soft_skills
+                soft_skills, created = Cli053SoftSkill.objects.get_or_create(
+                    nombre = skill['value'],
+                    defaults={'estado_id_001': estado}
+                )
+
+                Cli052VacanteSoftSkillsId053.objects.create(
+                    cli052vacante=vacante_creada.id,
+                    cli053softskill=soft_skills.id
+                )
+
+
+            # Convertir el string JSON en un objeto Python (lista de diccionarios)
+            skills = json.loads(hard_skills_id_054)
+            
+            # Ahora puedes iterar sobre la lista de diccionarios
+            for skill in skills:
+                print(skill['value'])  # Aquí puedes hacer lo que necesites con cada valor
+
+                # Intentar obtener el objeto hard_skills
+                hard_skills, created = Cli054HardSkill.objects.get_or_create(
+                    nombre = skill['value'],
+                    defaults={'estado_id_001': estado}
+                )
+
+                Cli052VacanteHardSkillsId054.objects.create(
+                    cli052vacante=vacante_creada.id,
+                    cli054hardskill=hard_skills.id
+                )
+
+            messages.success(request, 'El registro de la vacante ha sido creado con éxito.')
             return redirect('vacantes:vacantes_cliente', pk=cliente.id)
         else:
             form_errors = True

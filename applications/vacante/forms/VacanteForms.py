@@ -31,7 +31,7 @@ class VacanteForm(forms.Form):
                 'class': 'form-control form-control-solid',  # Clases CSS del campo  
             }
         ), required=True)
-    experiencia_requerida = forms.ChoiceField(label='EXPERIENCIA ', choices = EXPERIENCIA_TIEMPO, widget = forms.Select(attrs={ 'class': 'form-select form-select-solid fw-bold'}), required=True)
+    experiencia_requerida = forms.ChoiceField(label='EXPERIENCIA ', choices = EXPERIENCIA_TIEMPO, widget = forms.Select( attrs={ 'class': 'form-select form-select-solid fw-bold'}), required=True)
     soft_skills_id_053 = forms.CharField(label='HABILIDADES BLANDAS', 
         widget=forms.TextInput(
             attrs={

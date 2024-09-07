@@ -20,11 +20,19 @@
     <li class="breadcrumb-item text-white opacity-75">Multipurpose</li> -->
 {% endblock navegacion %}
 
+
+			
+    {% block css %}
+    .asteriskField {
+            color: red !important;
+            }
+    {% endblock css %}
+
 {% block content %}
 <div class="card">
     <div class="card-header border-0 pt-6">
         <div class="card-title">
-            <h2>Vacantes {{ cliente.nombre}}</h2>
+            <h2>Vacantes {{ cliente.razon_social}}</h2>
         </div>
         <div class="card-toolbar">
             <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
