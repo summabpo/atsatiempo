@@ -80,13 +80,21 @@
                 </tr>
             </thead>
             <tbody>
-                {% for e in candidatos %}
+                {% for e in vacantes %}
                 <tr>
                     <td>{{e.titulo}}</td>
                     <td>{{e.fecha_creacion}}</td>
                     <td>{{e.ciudad.nombre}}</td>
-                    <td>{{e.ciudad}}</td>
-                    <td>{{e.estado_vacante}}</td>
+                    <td>{{e.numero_posiciones}}</td>
+                    <td>
+                        {% if e.estado_vacante == 1 %}
+                            Abierta
+                        {% elif e.estado_vacante == 2 %}
+                            Cerrada
+                        {% elif e.estado_vacante == 3 %}
+                            En proceso
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

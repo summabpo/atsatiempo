@@ -13,7 +13,7 @@ class Cli051Cliente(models.Model):
     logo = models.ImageField(upload_to='cliente', blank=True, null=True)  # Nuevo campo de imagen
 
     def __str__(self):
-        return self.razon_social + ' - ' + self.nit
+        return self.razon_social + ' - ' + str(self.nit)
     class Meta:
         
         db_table = 'cli_051_cliente'

@@ -15,6 +15,8 @@ def vacante_cliente_mostrar(request, pk=None):
     #listado vacantes activas
     vacantes = Cli052Vacante.objects.filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
 
+    print(vacantes)
+
     form_errors = False
 
     # Formulario Vacantes
@@ -55,7 +57,7 @@ def vacante_cliente_mostrar(request, pk=None):
                 salario = salario,
                 estado_vacante = 1,
                 ciudad_id = ciudad_id.id,
-                cliente_id_051_id = cliente,
+                cliente_id_051_id = cliente.id,
                 estado_id_001_id = estado_id.id,
                 profesion_estudio_id_055_id = profesion_estudio_dato.id,
             )
@@ -76,8 +78,8 @@ def vacante_cliente_mostrar(request, pk=None):
                 )
 
                 Cli052VacanteSoftSkillsId053.objects.create(
-                    cli052vacante=vacante_creada.id,
-                    cli053softskill=soft_skills.id
+                    cli052vacante=vacante_creada,
+                    cli053softskill=soft_skills
                 )
 
 
@@ -95,8 +97,8 @@ def vacante_cliente_mostrar(request, pk=None):
                 )
 
                 Cli052VacanteHardSkillsId054.objects.create(
-                    cli052vacante=vacante_creada.id,
-                    cli054hardskill=hard_skills.id
+                    cli052vacante=vacante_creada,
+                    cli054hardskill=hard_skills
                 )
 
             messages.success(request, 'El registro de la vacante ha sido creado con éxito.')
