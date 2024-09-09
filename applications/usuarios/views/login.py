@@ -4,11 +4,15 @@ from django.contrib import messages
 from django.http import HttpResponse
 from applications.usuarios.forms.loginform import LoginForm
 from applications.usuarios.forms.UserForms import SignupForm
-from applications.usuarios.models import UsuarioBase 
+from applications.usuarios.models import UsuarioBase, TokenAutorizacion
 from applications.cliente.models import Cli051Cliente
 import random
 from django.utils.text import capfirst
 from applications.common.models import Cat004Ciudad, Cat001Estado
+from applications.common.views.EnvioCorreo import enviar_correo, generate_token
+from django.utils import timezone
+from datetime import datetime, timedelta
+from django.shortcuts import get_object_or_404
 
 ## login 
 
@@ -215,8 +219,7 @@ def signup_view(request):
                         nit= form.cleaned_data['nit'],                        
                         ciudad_id_004= city ,
                         email= form.cleaned_data['companyemail'],
-                        contacto= form.cleaned_data['companycontact'],
-                        
+                        contacto= form.cleaned_data['companycontact'],    
                     )
                     
                     new_company.save()
@@ -227,14 +230,34 @@ def signup_view(request):
                         password=password1,
                         cliente_id_051 = new_company ,
                         primer_nombre = name.capitalize() ,
-                        primer_apellido = last_name.capitalize(),
-                        
+                        primer_apellido = last_name.capitalize(),   
                     )
-            
-                    login(request, user)
-                    frase_aleatoria = random.choice(frases_bienvenida)
+                    
+                    token_generado = generate_token(50);
+
+                    TokenAutorizacion.objects.create(
+                        user_id=user.id,
+                        token=token_generado,  # Una función que genere un token único
+                        fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
+                    )
+
+                    # Envio del correo electronico de confirmación del usuario y contraseña
+                    contexto = {
+                        'name': name.capitalize(),
+                        'last_name': last_name.capitalize(),
+                        'user': user,
+                        'email': email,
+                        'password': password1,
+                        'token': token_generado
+                    }
+
+                    # Envia el metodo
+                    enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
+                    
+                    # login(request, user)
+                    frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
                     messages.success(request, frase_aleatoria)
-                    return redirect('candidatos:inicio')  
+                    return redirect('accesses:signup')  
             else:
                 frase_aleatoria = random.choice(frases_error_contrasena)
                 messages.error(request, frase_aleatoria)
@@ -246,3 +269,37 @@ def signup_view(request):
                     'login_f':login_f,
                     })
     
+
+# valdidar token
+def validar_token(request, token):
+    print(token)
+    context = {
+        'is_valid': False,
+        'message': ''
+    }
+    
+
+    # Buscar el token en la base de datos
+    
+    try:
+        # Buscar el token en la base de datos
+        token_obj = TokenAutorizacion.objects.get(token=token)
+        
+        # Validar si el token ha vencido
+        if token_obj.fecha_expiracion < timezone.now():
+            context['message'] = 'Link vencido'
+        else:
+            # Si el token es válido
+            usuario = get_object_or_404(UsuarioBase, id=token_obj.user.id)
+
+            #Actualizar el estado de verificación
+            usuario.is_verificado = True
+            usuario.save()
+
+            context['is_valid'] = True
+            context['message'] = 'Correo validado correctamente'
+
+    except TokenAutorizacion.DoesNotExist:
+        context['message'] = 'Token no válido'
+
+    return render(request, 'authentication/correo_validar.html', context)

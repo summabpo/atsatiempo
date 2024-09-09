@@ -170,3 +170,24 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Datos para el envio de correo
+EMAIL_BACKEND =  'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST =  env('EM_EMAIL_HOST')
+EMAIL_PORT =  env('EM_EMAIL_PORT')
+EMAIL_USE_TLS =  env('EM_EMAIL_USE_TLS')
+EMAIL_HOST_USER = env('EM_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EM_EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('EM_DEFAULT_FROM_EMAIL')
+EMAIL_USE_SSL = False
+EMAIL_TIMEOUT = None
+EMAIL_SSL_KEYFILE = None
+EMAIL_SSL_CERTFILE = None
+EMAIL_SSL_CAFILE = None
+EMAIL_SSL_CERT_SUBJ = None
+EMAIL_SSL_CERT_PASSWD = None
+EMAIL_SSL_CIPHER = None
+EMAIL_USE_LOCALTIME = False
+EMAIL_FILE_PATH = None
+EMAIL_FROM = None
+EMAIL_SUBJECT_PREFIX = '[Django] '
