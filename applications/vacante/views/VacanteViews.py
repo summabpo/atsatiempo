@@ -6,7 +6,10 @@ from applications.common.models import Cat001Estado, Cat004Ciudad
 from django.contrib import messages
 from django.http import JsonResponse
 import json
+from django.contrib.auth.decorators import login_required
 
+# vacante sin loqin
+@login_required
 def vacante_cliente_mostrar(request, pk=None):
     #datos clientes
     cliente = get_object_or_404(Cli051Cliente, pk=pk)
