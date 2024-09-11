@@ -45,7 +45,7 @@ class SignupForm(forms.Form):
     ) 
     
     companycontact = forms.CharField(
-        label='compañía de la compañía', 
+        label='Contacto de la compañía', 
         widget=forms.TextInput(attrs={'placeholder': 'Persona de compañía'}),
         max_length=150
     )

@@ -73,7 +73,7 @@ class VacanteForm(forms.Form):
             attrs={
                 'class': 'form-control form-control-solid',  # Clases CSS del campo  
             }
-        ), required=True)
+        ), required=False)
     # estado_vacante 
     # estado_id_004
     # cliente_id_051 
@@ -83,6 +83,8 @@ class VacanteForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.helper.form_id = 'form_vacante'
+
 
         cities = Cat004Ciudad.objects.all().order_by('nombre')
         city_choices = [('', '----------')] + [(ciudad.id, f"{ciudad.nombre}") for ciudad in cities]
@@ -101,7 +103,7 @@ class VacanteForm(forms.Form):
 
         self.helper.layout = Layout(
             Fieldset(
-                'Información General',
+                '',
                 Row(
                     Column('titulo', css_class='form-group col-md-6 mb-0'),
                     Column('numero_posiciones', css_class='form-group col-md-6 mb-0'),
@@ -111,12 +113,12 @@ class VacanteForm(forms.Form):
                 'experiencia_requerida',
             ),
             Fieldset(
-                'Habilidades',
+                '',
                 'soft_skills_id_053',
                 'hard_skills_id_054',
             ),
             Fieldset(
-                'Detalles del Puesto',
+                '',
                 'funciones_responsabilidades',
                 Row(
                     Column('ciudad', css_class='form-group col-md-6 mb-0'),
@@ -125,7 +127,7 @@ class VacanteForm(forms.Form):
                 ),
             ),
             
-            Submit('submit', 'Guardar Vacante', css_class='btn btn-primary')
+            # Submit('submit', 'Guardar Vacante', css_class='btn btn-primary')
         )
 
     def clean(self):
@@ -144,8 +146,8 @@ class VacanteForm(forms.Form):
         numero_posiciones = cleaned_data.get('numero_posiciones')
         if not numero_posiciones:
             self.add_error('numero_posiciones', 'El número de posiciones es obligatorio.')
-        elif not isinstance(numero_posiciones, int) or numero_posiciones <= 0:
-            self.add_error('numero_posiciones', 'El número de posiciones debe ser un entero positivo.')
+        elif not str(numero_posiciones).isdigit() or int(numero_posiciones) <= 0:
+            self.add_error('numero_posiciones', 'El número de posiciones debe ser un número positivo.')
 
         # Validate profesion_estudio_id_055
         profesion_estudio_id_055 = cleaned_data.get('profesion_estudio_id_055')
@@ -181,9 +183,12 @@ class VacanteForm(forms.Form):
 
         # Validate salario
         salario = cleaned_data.get('salario')
-        if not salario:
-            self.add_error('salario', 'El salario es obligatorio.')
+        # Si salario es un valor vacío (None o ''), lo asignamos como None
+        if salario in [None, '']:
+            cleaned_data['salario'] = None
+        # Si tiene un valor, validamos que sea un número positivo
         elif not isinstance(salario, (int, float)) or salario <= 0:
             self.add_error('salario', 'El salario debe ser un número positivo.')
+        
 
         return cleaned_data

@@ -7,9 +7,22 @@ from django.views.generic import (TemplateView, ListView)
 from django.contrib import messages
 
 # Create your views here.
-class InicioView(TemplateView):
-    """ vista que carga la pagina de inicio """
-    template_name = 'base/index.html'
+
+def inicio_view(request):
+    """ Vista que carga la página de inicio y muestra variables de sesión """
+    
+    # Obtener todas las variables de sesión
+    session_variables = dict(request.session)
+    
+    # Puedes imprimir las variables de sesión para debug
+    print("Variables de sesión:", session_variables)
+    
+    # Si quieres pasar las variables de sesión al template
+    context = {
+        'session_variables': session_variables,
+    }
+    
+    return render(request, 'base/index.html', context)
 
 class ListadoCandidato(ListView):
     template_name = 'candidato/listado_candidatos.html'

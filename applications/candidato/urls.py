@@ -5,7 +5,7 @@ from .views import views, CandidatoView , LaboralView, EstudioView, HabilidadVie
 url_principal = 'candidato/'
 
 urlpatterns = [
-    path('inicio/parcial', views.InicioView.as_view(), name='inicio'),
+    path('inicio/parcial', views.inicio_view, name='inicio'),
     path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),
     path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),
     

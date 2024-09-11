@@ -166,10 +166,16 @@ def login_view(request):
                 password = form.cleaned_data['password']
                 user = authenticate(request, username=username, password=password)
                 if user is not None:
-                    login(request, user)
-                    # request.session['company'] = user.company.id
+                    usuario = UsuarioBase.objects.get(username=user)
                     
-                    return redirect('candidatos:inicio')  
+                    if usuario.is_verificado == True:
+                        login(request, user)
+                        request.session['cliente_id'] = usuario.cliente_id_051.id
+                        request.session['primer_nombre'] = usuario.primer_nombre
+                        return redirect('vacantes:vacantes')  
+                    else:
+                        messages.error(request, 'No se ha válidado su correo, por favor revise la bandeja de entrada.')
+                        return redirect('accesses:login')  
                 else:
                     frase_aleatoria = random.choice(frases_falla_login)
                     messages.error(request, frase_aleatoria)

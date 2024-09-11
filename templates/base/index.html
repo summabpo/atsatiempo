@@ -20,7 +20,12 @@
 
 {% block content %}
 
-
+<h2>Variables de Sesión:</h2>
+<ul>
+{% for key, value in session_variables.items %}
+    <li>{{ key }}: {{ value }}</li>
+{% endfor %}
+</ul>
 
 {% endblock content %}
 

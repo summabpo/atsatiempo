@@ -4,10 +4,14 @@
 
 {% block title %} ATS Listado Vacantes {% endblock title %}
 
-{% block titulo_pagina %} Bienvenido {{ primer_nombre }}, Listado Vacantes {% endblock titulo_pagina %}
+{% block titulo_pagina %} Listado Vacantes {% endblock titulo_pagina %}
+
+{% block titulo-pagina %}
+    Listado de Vacantes
+{% endblock titulo-pagina %}
 
 {% block navegacion %}
-    <!-- <li class="breadcrumb-item text-white opacity-75">Listado Vacantes</li> -->
+    <li class="breadcrumb-item text-white opacity-75">Listado Vacantes</li>
     
     <!-- <li class="breadcrumb-item">
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
@@ -32,34 +36,7 @@
         </div>
         <div class="card-toolbar">
             <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_vacante">
-                    Crear Vacante
-                </button>
                 
-                <div class="modal fade " tabindex="-1" id="modal_vacante">
-                    <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Vacantessss</h5>
-                
-                                <!--begin::Close-->
-                                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
-                                    <i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span class="path2"></span></i>
-                                </div>
-                                <!--end::Close-->
-                            </div>
-                
-                            <div class="modal-body">
-                                {% crispy form %} 
-                            </div>
-                
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                                <button type="submit" class="btn btn-primary" form="form_vacante">Guardar Vacante</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -68,6 +45,7 @@
         <table id="kt_prueba" class="table table-striped table-row-bordered gy-5 gs-7 border rounded">
             <thead>
                 <tr class="fw-bold fs-6 text-gray-800 px-7">
+                    <th>CLIENTE</th>
                     <th>TITULO VACANTE</th>
                     <th>FECHA VACANTE</th>
                     <th>CIUDAD</th>
@@ -78,6 +56,7 @@
             <tbody>
                 {% for e in vacantes %}
                 <tr>
+                    <td>{{e.cliente_id_051.razon_social}}</td>
                     <td>{{e.titulo}}</td>
                     <td>{{e.fecha_creacion | date:"Y/m/d" }}</td>
                     <td>{{e.ciudad.nombre}}</td>
@@ -125,15 +104,6 @@
     
     var input2 = document.querySelector("#hard_skills");
     new Tagify(input2);
-</script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Si el formulario tiene errores, reabrir el modal
-        {% if form.errors %}
-        var myModal = new bootstrap.Modal(document.getElementById('modal_vacante'));
-        myModal.show();
-        {% endif %}
-    });
 </script>
 {% endblock extrajs %}

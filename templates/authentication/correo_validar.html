@@ -6,7 +6,7 @@
 <base href="../../" />
 		<title>Verificación Correo</title>
 		<meta charset="utf-8" />
-		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
+		<link rel="shortcut icon" href="{% static 'media/logos/favicon.ico' %}" />
 		
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
 		
@@ -23,7 +23,7 @@
                 <div class="d-flex flex-column flex-column-fluid text-center p-10">
 					
                     <a href="index.html" class="mb-10 mb-lg-20 pt-lg-20">
-						<img alt="Logo" src="{% static 'media/logos/default.svg' %} " class="h-35px" />
+						<img alt="Logo" src="{% static 'media/logos/logo_atiempo_2.png' %} " class="h-35px" />
 					</a>
 					
                     <div class="mb-10 mb-lg-15">
@@ -34,9 +34,7 @@
                             </div>
                         {% else %}
                             <h1 style="color: red;">{{ message }}</h1>
-                            <div class="fs-3 fw-semibold text-muted mb-10">We have sent an email to 
-                            <a href="#" class="link-primary fw-bold">max@keenthemes.com</a>
-                            <br />pelase follow a link to verify your email.</div>
+                            
                             <div class="fs-5">
                                 <span class="fw-semibold text-gray-700">¿No ha recibido el correo de confirmación?</span>
                                 <a href="#" class="link-primary fw-bold">Reenviar Correo</a>
