@@ -153,7 +153,9 @@ frases_cancelacion = [
     "¡Oh! Parece que te echa atrás el proceso. Si decides intentarlo de nuevo, estaremos aquí para ayudarte."
 ]
 
-
+def principal(request):
+    """Pantalla Inicial"""
+    return render(request, 'authentication/home.html')
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -187,8 +189,6 @@ def login_view(request):
         'form':form,
         })
     
-    
-
 def logout_view(request):
     logout(request)
     return redirect('accesses:login')    # Redirigir a la página de inicio de sesión después de cerrar sesión
@@ -275,7 +275,6 @@ def signup_view(request):
                     'login_f':login_f,
                     })
     
-
 # valdidar token
 def validar_token(request, token):
     print(token)
