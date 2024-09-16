@@ -30,7 +30,7 @@
                         {% if is_valid %}
                             <h1  style="color: green;">{{ message }}</h1>
                             <div class="text-center mb-10"></div>
-                                <a href="" class="btn btn-lg btn-primary fw-bold">Ingresar</a>
+                                <a href="{% url 'accesses:login' %}" class="btn btn-lg btn-primary fw-bold">Ingresar</a>
                             </div>
                         {% else %}
                             <h1 style="color: red;">{{ message }}</h1>

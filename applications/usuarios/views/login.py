@@ -4,7 +4,8 @@ from django.contrib import messages
 from django.http import HttpResponse
 from applications.usuarios.forms.loginform import LoginForm
 from applications.usuarios.forms.UserForms import SignupForm
-from applications.usuarios.models import UsuarioBase, TokenAutorizacion
+from applications.usuarios.forms.CandidatoForm import SignupFormCandidato
+from applications.usuarios.models import UsuarioBase, TokenAutorizacion, Grupo
 from applications.cliente.models import Cli051Cliente
 import random
 from django.utils.text import capfirst
@@ -174,8 +175,12 @@ def login_view(request):
                     
                     if usuario.is_verificado == True:
                         login(request, user)
-                        request.session['cliente_id'] = usuario.cliente_id_051.id
                         request.session['primer_nombre'] = usuario.primer_nombre
+                        # Valida el usuario es de grupo cliente para mostrar el id cliente. 
+                        if usuario.group.id == 1:
+                            request.session['cliente_id'] = usuario.cliente_id_051.id
+                        
+                        request.session['grupo_id'] = usuario.group.id
                         return redirect('vacantes:vacantes')  
                     else:
                         messages.error(request, 'No se ha válidado su correo, por favor revise la bandeja de entrada.')
@@ -233,14 +238,16 @@ def signup_view(request):
                     )
                     
                     new_company.save()
-                    
+
+                    grupo = Grupo.objects.get(id=1)
                     user = UsuarioBase.objects.create_user(
                         username= email, 
                         email= email, 
                         password=password1,
                         cliente_id_051 = new_company ,
                         primer_nombre = name.capitalize() ,
-                        primer_apellido = last_name.capitalize(),   
+                        primer_apellido = last_name.capitalize(),  
+                        group=grupo,
                     )
                     
                     token_generado = generate_token(50);
@@ -279,6 +286,70 @@ def signup_view(request):
                     'login_f':login_f,
                     })
     
+#registro candidato
+def signup_candidato(request):
+    if request.method == 'POST':
+        form = SignupFormCandidato(request.POST)
+        if form.is_valid():
+
+            email = form.cleaned_data['email']
+            password1 = form.cleaned_data['password1']
+            password2 = form.cleaned_data['password2']
+            primer_nombre = form.cleaned_data['primer_nombre']
+            segundo_nombre = form.cleaned_data['segundo_nombre']
+            primer_apellido = form.cleaned_data['primer_apellido']
+            segundo_apellido = form.cleaned_data['segundo_apellido']
+
+            if password1 == password2:
+                if UsuarioBase.objects.filter(username=email).exists():
+                    messages.error(request, '¡Oops! Parece que alguien más ya se adelantó y tomó ese correo. Prueba con otro, o tal vez es el momento de reconciliarte con tu contraseña olvidada.')
+                else:
+                    grupo = Grupo.objects.get(id=2)
+                    user = UsuarioBase.objects.create_user(
+                        username= email, 
+                        email= email, 
+                        password=password1,
+                        primer_nombre = primer_nombre.capitalize() ,
+                        segundo_nombre = segundo_nombre.capitalize() ,
+                        primer_apellido = primer_apellido.capitalize(),   
+                        segundo_apellido = segundo_apellido.capitalize(), 
+                        group = grupo
+                    )
+                    
+                    token_generado = generate_token(50);
+
+                    TokenAutorizacion.objects.create(
+                        user_id=user.id,
+                        token=token_generado,  # Una función que genere un token único
+                        fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
+                    )
+
+                    # Envio del correo electronico de confirmación del usuario y contraseña
+                    contexto = {
+                        'name': primer_nombre.capitalize(),
+                        'last_name': primer_apellido.capitalize(),
+                        'user': user,
+                        'email': email,
+                        'password': password1,
+                        'token': token_generado
+                    }
+
+                    # Envia el metodo
+                    enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
+                    
+                    # login(request, user)
+                    frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
+                    messages.success(request, frase_aleatoria)
+                    return redirect('accesses:login') 
+            else:
+                frase_aleatoria = random.choice(frases_error_contrasena)
+                messages.error(request, frase_aleatoria)
+    else:
+        form = SignupFormCandidato()
+
+    login_f = random.choice(frases_inicio_sesion)
+    return render(request, './authentication/signup_candidato.html', {'form': form, 'login_f':login_f,} )
+
 # valdidar token.
 def validar_token(request, token):
     print(token)

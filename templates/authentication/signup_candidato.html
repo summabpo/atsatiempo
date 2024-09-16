@@ -16,7 +16,7 @@ License: For each use you must have a valid license purchased only from above li
 	<!--begin::Head-->
 	<head>
 <base href="../../" />
-		<title>ATS Atiempo | Ingreso</title>
+		<title>ATS Atiempo | Registro Candidato</title>
 		<meta charset="utf-8" />
 
 		<link rel="shortcut icon" href="{% static 'media/logos/favicon.ico' %}" />
@@ -74,11 +74,11 @@ License: For each use you must have a valid license purchased only from above li
 								<!--begin::Heading-->
 								<div class="text-center mb-10">
 									<!--begin::Title-->
-									<h1 class="text-gray-900 mb-3">Iniciar sesión en ATS Atiempo</h1>
+									<h1 class="text-gray-900 mb-3">Crear una cuenta en ATS Atiempo</h1>
 									<!--end::Title-->
 									<!--begin::Link-->
-									<div class="text-gray-500 fw-semibold fs-4">¿Nuevo aquí?
-									<a href="{% url 'accesses:home' %}" class="link-primary fw-bold">Crear una cuenta</a></div>
+									<div class="text-gray-500 fw-semibold fs-4">¿Ya tienes una cuenta?
+									<a href="{% url 'accesses:login' %}" class="link-primary fw-bold">Iniciar sesión</a></div>
 									<!--end::Link-->
 								</div>
 								<!--begin::Heading-->
@@ -88,28 +88,10 @@ License: For each use you must have a valid license purchased only from above li
 								<!--begin::Actions-->
 								<div class="text-center">
 									
-									<!--begin::Separator-->
-									<div class="text-center text-muted text-uppercase fw-bold mb-5">or</div>
-									<!--end::Separator-->
-									<!--begin::Google link-->
-									<a href="#" class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5">
-									<img alt="Logo" src="{% static '/media/svg/brand-logos/google-icon.svg' %}" class="h-20px me-3" />Continue with Google</a>
-									<!--end::Google link-->
-									<!--begin::Google link-->
-									<a href="#" class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5">
-									<img alt="Logo" src="{% static '/media/svg/brand-logos/facebook-4.svg' %} " class="h-20px me-3" />Continue with Facebook</a>
-									<!--end::Google link-->
-									<!--begin::Google link-->
-									<a href="#" class="btn btn-flex flex-center btn-light btn-lg w-100">
-									<img alt="Logo" src="{% static 'media/svg/brand-logos/apple-black.svg' %}" class="theme-light-show h-20px me-3" />
-									<img alt="Logo" src=" {% static 'media/svg/brand-logos/apple-black-dark.svg' %}" class="theme-dark-show h-20px me-3" />Continue with Apple</a>
-									<!--end::Google link-->
+									
 								</div>
 								<!--end::Actions-->
-							</div>
-						
-						
-						
+						</div>
 						<!--end::Form-->
 					</div>
 					<!--end::Wrapper-->

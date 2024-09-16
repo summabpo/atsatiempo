@@ -4,8 +4,21 @@ from django.utils import timezone
 from datetime import timedelta
 from applications.cliente.models import Cli051Cliente
 # Create your models here.
+
+class Permiso(models.Model):
+    nombre = models.CharField(max_length=255, unique=True)
+    descripcion = models.TextField(blank=True)
+    
+    class Meta:
+        db_table = 'permiso'
+        verbose_name = 'PERMISO'
+        verbose_name_plural = 'PERMISOS'
+
+    def __str__(self):
+        return self.nombre
+
 class Grupo(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     activate = models.BooleanField(default=True)
     date = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=255)
@@ -16,6 +29,20 @@ class Grupo(models.Model):
 
         verbose_name = 'GRUPO'
         verbose_name_plural = 'GRUPOS'
+
+class GrupoPermiso(models.Model):
+    grupo = models.ForeignKey('Grupo', on_delete=models.CASCADE, related_name='grupo_permisos')
+    permiso = models.ForeignKey('Permiso', on_delete=models.CASCADE, related_name='grupo_permisos')
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'grupo_permiso'
+        unique_together = ('grupo', 'permiso')
+        verbose_name = 'ASIGNACIÓN DE PERMISO A GRUPO'
+        verbose_name_plural = 'ASIGNACIONES DE PERMISOS A GRUPOS'
+
+    def __str__(self):
+        return f"{self.grupo.name} - {self.permiso.nombre} ({self.fecha})"
 
 class UsuarioBase(AbstractUser):
     primer_nombre    = models.CharField(max_length=15, blank=True)
