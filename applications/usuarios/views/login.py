@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
 from applications.usuarios.forms.loginform import LoginForm
@@ -14,7 +15,7 @@ from applications.common.views.EnvioCorreo import enviar_correo, generate_token
 from django.utils import timezone
 from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
-
+from applications.usuarios.decorators import validar_permisos
 ## login 
 
 ## login 
@@ -155,11 +156,14 @@ frases_cancelacion = [
 ]
 
 # pantalla principal
+@login_required
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_entrevistador')
 def principal(request):
     """Pantalla Inicial"""
     return render(request, 'authentication/home.html')
 
-# Acceso a sistemas
+
+# Acceso a sistema
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('candidatos:inicio')
@@ -181,7 +185,7 @@ def login_view(request):
                             request.session['cliente_id'] = usuario.cliente_id_051.id
                         
                         request.session['grupo_id'] = usuario.group.id
-                        return redirect('vacantes:vacantes')  
+                        return redirect('accesses:home')  
                     else:
                         messages.error(request, 'No se ha válidado su correo, por favor revise la bandeja de entrada.')
                         return redirect('accesses:login')  
