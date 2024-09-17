@@ -6,11 +6,16 @@ def validar_permisos(*nombres_permisos):
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
-            if not request.UsuarioBase.is_authenticated:
+            if not request.user.is_authenticated:
                 raise PermissionDenied
             
-            user = request.UsuarioBase
-            grupos_usuario = Grupo.objects.filter(grupousuario__usuario=user, activate=True)
+            user = request.user
+
+            #tra el nombre del usuario
+            usuario = UsuarioBase.objects.get(username=user)
+            
+            #trae el nombre del grupo
+            grupos_usuario = Grupo.objects.filter(id=usuario.group.id, activate=True)
             
             permisos = Permiso.objects.filter(nombre__in=nombres_permisos)
             if not permisos:

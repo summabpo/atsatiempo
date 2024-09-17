@@ -15,7 +15,7 @@ from applications.common.views.EnvioCorreo import enviar_correo, generate_token
 from django.utils import timezone
 from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
-from applications.usuarios.decorators import validar_permisos
+from ..decorators  import validar_permisos
 ## login 
 
 ## login 
@@ -156,17 +156,33 @@ frases_cancelacion = [
 ]
 
 # pantalla principal
-@login_required
-@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_entrevistador')
 def principal(request):
     """Pantalla Inicial"""
     return render(request, 'authentication/home.html')
 
+#pantalla inicio
+@login_required
+@validar_permisos('acceso_admin', 'acceso_candidato', 'acceso_entrevistador')
+def inicio_app(request):
+    """ Vista que carga la página de inicio y muestra variables de sesión """
+    
+    # Obtener todas las variables de sesión
+    session_variables = dict(request.session)
+    
+    # Puedes imprimir las variables de sesión para debug
+    print("Variables de sesión:", session_variables)
+    
+    # Si quieres pasar las variables de sesión al template
+    context = {
+        'session_variables': session_variables,
+    }
+    
+    return render(request, 'base/index.html', context)
 
 # Acceso a sistema
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('candidatos:inicio')
+        return redirect('accesses:inicio')
     else:
         if request.method == 'POST':
             form = LoginForm(request.POST)
@@ -185,7 +201,7 @@ def login_view(request):
                             request.session['cliente_id'] = usuario.cliente_id_051.id
                         
                         request.session['grupo_id'] = usuario.group.id
-                        return redirect('accesses:home')  
+                        return redirect('accesses:inicio')  
                     else:
                         messages.error(request, 'No se ha válidado su correo, por favor revise la bandeja de entrada.')
                         return redirect('accesses:login')  
