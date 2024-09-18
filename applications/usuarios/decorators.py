@@ -1,6 +1,9 @@
 from functools import wraps
 from django.core.exceptions import PermissionDenied
 from .models import Grupo, Permiso, GrupoPermiso, UsuarioBase
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.contrib.auth import logout
 
 def validar_permisos(*nombres_permisos):
     def decorator(view_func):
@@ -29,11 +32,13 @@ def validar_permisos(*nombres_permisos):
             # Guardamos los permisos en request
             request.permisos_usuario = list(permisos_usuario)
             
-            
             if permisos_usuario:
                 return view_func(request, *args, **kwargs)
             else:
-                raise PermissionDenied
+                logout(request)
+                messages.error(request, 'NO tiene acceso al sistema ATS, por favor cree una cuenta.')
+                return redirect('accesses:login')
+                # raise PermissionDenied
         
         return _wrapped_view
     return decorator

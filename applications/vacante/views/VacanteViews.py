@@ -2,11 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from applications.cliente.models import Cli051Cliente
 from applications.vacante.forms.VacanteForms import VacanteForm
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053
+from applications.usuarios.models import Permiso
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from django.contrib import messages
 from django.http import JsonResponse
 import json
 from django.contrib.auth.decorators import login_required
+from applications.usuarios.decorators  import validar_permisos
 
 # vacante por cliente sin loqin 
 def vacante_cliente_mostrar(request, pk=None):
@@ -221,13 +223,24 @@ def vacante_cliente(request):
         })
 
 #ver todas las vacantes
+
+
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def vacante_cliente_todas(request):
     
-    estado = Cat001Estado.objects.get(id=1)
-    #listado vacantes activas
     vacantes = Cli052Vacante.objects.filter(estado_id_001=1).order_by('-id')
 
     return render(request, 'vacante/listado_vacantes_todos.html',
         { 
             'vacantes': vacantes,
         })
+
+def vacante_detalle(request, pk):
+    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+
+
+    contexto = {
+        'vacante': vacante
+    }
+    return render(request, 'vacante/detalle_vacante.html', contexto)

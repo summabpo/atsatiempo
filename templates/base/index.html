@@ -6,7 +6,7 @@
 
 {% block title %} ATS | Inicio {% endblock title %}
 
-{% block titulo_pagina %} Bienvendido Nombre Usuario {% endblock titulo_pagina %}
+{% block titulo_pagina %} Bienvendido {{request.session.primer_nombre}} {% endblock titulo_pagina %}
 
 {% block navegacion %}
     <!-- <li class="breadcrumb-item text-white opacity-75">Inicio</li> -->

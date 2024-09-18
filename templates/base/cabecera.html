@@ -27,7 +27,7 @@
                     
                     <div class="menu menu-rounded menu-column menu-lg-row menu-active-bg menu-title-gray-700 menu-state-primary menu-arrow-gray-500 fw-semibold my-5 my-lg-0 px-4 px-lg-0 align-items-stretch" id="#kt_header_menu" data-kt-menu="true">
                         
-                        
+                        {% if 'acceso_admin' in request.permisos_usuario %}
                         <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
                             
                             <span class="menu-link py-3">
@@ -110,7 +110,46 @@
                                 </div>
                             </div>
                         </div>
+                        {% endif %}
+
+                        {% if 'acceso_cliente' in request.permisos_usuario %}
+
+                        {% endif %}
+
+                        {% if 'acceso_candidato' in request.permisos_usuario %}
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">VACANTES</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                <!--begin:Menu item-->
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'clientes:cliente_crear' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Vacantes Aplicadas</span>
+                                    </a>
+                                
+                                </div>
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link  py-3" href="{% url 'vacantes:vacantes_cliente_todas' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Vacantes</span>
+                                    </a>
+                                
+                                </div>
+                            
+                            </div>
                         
+                        </div>
+                        {% endif %}
                         
                     </div>
                 

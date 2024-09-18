@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from applications.cliente.models import Cli051Cliente
+from applications.candidato.models import Can101Candidato
 # Create your models here.
 
 class Permiso(models.Model):
@@ -16,6 +17,10 @@ class Permiso(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+    @classmethod
+    def obtener_nombres(cls):
+        return list(cls.objects.values_list('nombre', flat=True))
 
 class Grupo(models.Model):
     name = models.CharField(max_length=255)
@@ -53,6 +58,7 @@ class UsuarioBase(AbstractUser):
     is_verificado = models.BooleanField(default=False)
     group = models.ForeignKey(Grupo, on_delete=models.CASCADE, null=True, blank=True)
     cliente_id_051 = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, null=True)
+    candidato_id_101 = models.ForeignKey(Can101Candidato, on_delete=models.SET_NULL, null=True, blank=True, related_name='usuario')
     
     def str(self):
         return self.username

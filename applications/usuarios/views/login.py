@@ -6,8 +6,9 @@ from django.http import HttpResponse
 from applications.usuarios.forms.loginform import LoginForm
 from applications.usuarios.forms.UserForms import SignupForm
 from applications.usuarios.forms.CandidatoForm import SignupFormCandidato
-from applications.usuarios.models import UsuarioBase, TokenAutorizacion, Grupo
+from applications.usuarios.models import UsuarioBase, TokenAutorizacion, Grupo, Permiso
 from applications.cliente.models import Cli051Cliente
+from applications.candidato.models import Can101Candidato
 import random
 from django.utils.text import capfirst
 from applications.common.models import Cat004Ciudad, Cat001Estado
@@ -16,10 +17,8 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
 from ..decorators  import validar_permisos
-## login 
 
 ## login 
-
 frases_falla_login = [
     "¡Parece que el nombre de usuario o la contraseña están jugando a las escondidas! Revisa y vuelve a intentarlo.",
     "¡Oh no! El nombre de usuario o la contraseña decidieron tomar un día libre. ¡Verifica los datos y vuelve a intentarlo!",
@@ -32,7 +31,6 @@ frases_falla_login = [
     "¡Ups! Parece que el nombre de usuario o la contraseña se perdieron. Verifica los datos e intenta nuevamente.",
     "¡Oh! El nombre de usuario o la contraseña están de fiesta. Revisa tus credenciales y prueba de nuevo."
 ]
-
 
 frases_creacion_cuenta = [
     "¿Aún no tienes cuenta? ¡No te preocupes! Crear una es tan rápido que podrías hacerlo antes de que termine el video viral que estás viendo.",
@@ -60,8 +58,6 @@ frases_restablecimiento = [
     "Un correo con las instrucciones para restablecer tu contraseña llegará pronto. ¡Es tan fácil que podrías hacerlo mientras le das un vistazo a tus redes sociales!"
 ]
 
-## Create cuenta
-
 frases_bienvenida = [
     "¡Hola, aventurero! Espero que disfrutes más que un niño en una tienda de golosinas.",
     "¡Bienvenido al club! Espero que te diviertas tanto como un perro en una fiesta de disfraces.",
@@ -84,7 +80,6 @@ frases_bienvenida = [
     "¡Bienvenido! Espero que disfrutes más que un niño en un rincón de juegos lleno de sorpresas.",
     "¡Hey, qué onda! Espero que te guste tanto como un gato jugando con una pelota de lana."
 ]
-
 
 frases_error_contrasena = [
     "¡Oops! Las contraseñas están jugando al escondite. Asegúrate de que coincidan y prueba de nuevo.",
@@ -112,7 +107,6 @@ frases_error_usuario = [
     "¡Oh! Este nombre de usuario ya está ocupado. ¡Asegúrate de que tu nuevo nombre sea tan memorable como el primero!"
 ]
 
-
 frases_error_email = [
     "¡Oops! Este correo electrónico ya está registrado. ¿Quizás quieras probar con otro antes de que todos se acaben?",
     "¡Oh no! Este correo electrónico ya está en uso. Parece que alguien más también le gusta el mismo dominio.",
@@ -139,9 +133,6 @@ frases_inicio_sesion = [
     "¿Ya tienes una cuenta? ¡Entonces inicia sesión y deja de perder el tiempo aquí!"
 ]
 
-
-#* create company 
-
 frases_cancelacion = [
     "¡Vaya! Parece que te arrepentiste. No te preocupes, aquí te esperamos si decides regresar.",
     "¡Oh no! El proceso de creación de cuenta se quedó a medias. ¿Seguro que quieres abandonar la aventura?",
@@ -161,8 +152,9 @@ def principal(request):
     return render(request, 'authentication/home.html')
 
 #pantalla inicio
+
 @login_required
-@validar_permisos('acceso_admin', 'acceso_candidato', 'acceso_entrevistador')
+@validar_permisos(*Permiso.obtener_nombres())
 def inicio_app(request):
     """ Vista que carga la página de inicio y muestra variables de sesión """
     
@@ -203,8 +195,11 @@ def login_view(request):
                         login(request, user)
                         request.session['primer_nombre'] = usuario.primer_nombre
                         # Valida el usuario es de grupo cliente para mostrar el id cliente. 
-                        if usuario.group.id == 1:
+                        if usuario.group.id == 3:
                             request.session['cliente_id'] = usuario.cliente_id_051.id
+
+                        if usuario.group.id == 2:
+                            request.session['candidato_id'] = usuario.candidato_id_101.id
                         
                         request.session['grupo_id'] = usuario.group.id
                         return redirect('accesses:inicio')  
@@ -265,7 +260,7 @@ def signup_view(request):
                     
                     new_company.save()
 
-                    grupo = Grupo.objects.get(id=1)
+                    grupo = Grupo.objects.get(id=3)
                     user = UsuarioBase.objects.create_user(
                         username= email, 
                         email= email, 
@@ -330,6 +325,17 @@ def signup_candidato(request):
                 if UsuarioBase.objects.filter(username=email).exists():
                     messages.error(request, '¡Oops! Parece que alguien más ya se adelantó y tomó ese correo. Prueba con otro, o tal vez es el momento de reconciliarte con tu contraseña olvidada.')
                 else:
+                    
+                    #creacion del candidato en la tabla candidato
+                    candidato = Can101Candidato.objects.create(
+                        email=email,
+                        primer_nombre=primer_nombre,
+                        segundo_nombre=segundo_nombre,
+                        primer_apellido=primer_apellido,
+                        segundo_apellido=segundo_apellido,
+                        estado_id_001 = Cat001Estado.objects.get(id=1)
+                    )
+
                     grupo = Grupo.objects.get(id=2)
                     user = UsuarioBase.objects.create_user(
                         username= email, 
@@ -339,7 +345,8 @@ def signup_candidato(request):
                         segundo_nombre = segundo_nombre.capitalize() ,
                         primer_apellido = primer_apellido.capitalize(),   
                         segundo_apellido = segundo_apellido.capitalize(), 
-                        group = grupo
+                        group = grupo,
+                        candidato_id_101 = candidato,
                     )
                     
                     token_generado = generate_token(50);
