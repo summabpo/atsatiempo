@@ -27,6 +27,29 @@
 {% endfor %}
 </ul>
 
+
+<h2>Tus permisos:</h2>
+<ul>
+{% for permiso in permisos %}
+    <li>{{ permiso }}</li>
+{% empty %}
+    <li>No tienes permisos asignados para esta vista.</li>
+{% endfor %}
+</ul>
+
+<h2>Accesos disponibles:</h2>
+<ul>
+    {% if 'acceso_admin' in permisos %}
+        <li>Tienes acceso de administrador</li>
+    {% endif %}
+    {% if 'acceso_candidato' in permisos %}
+        <li>Tienes acceso de candidato</li>
+    {% endif %}
+    {% if 'acceso_entrevistador' in permisos %}
+        <li>Tienes acceso de entrevistador</li>
+    {% endif %}
+</ul>
+
 {% endblock content %}
 
 {% block extrajs %}

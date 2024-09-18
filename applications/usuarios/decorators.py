@@ -21,12 +21,16 @@ def validar_permisos(*nombres_permisos):
             if not permisos:
                 raise ValueError(f"Ninguno de los permisos especificados existe: {nombres_permisos}")
             
-            tiene_algun_permiso = GrupoPermiso.objects.filter(
+            permisos_usuario = GrupoPermiso.objects.filter(
                 grupo__in=grupos_usuario,
                 permiso__in=permisos
-            ).exists()
+            ).values_list('permiso__nombre', flat=True)
             
-            if tiene_algun_permiso:
+            # Guardamos los permisos en request
+            request.permisos_usuario = list(permisos_usuario)
+            
+            
+            if permisos_usuario:
                 return view_func(request, *args, **kwargs)
             else:
                 raise PermissionDenied

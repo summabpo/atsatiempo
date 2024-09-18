@@ -168,6 +168,11 @@ def inicio_app(request):
     
     # Obtener todas las variables de sesión
     session_variables = dict(request.session)
+
+    # Accedemos a los permisos guardados en el request
+    permisos_usuario = getattr(request, 'permisos_usuario', [])
+
+    print(permisos_usuario)
     
     # Puedes imprimir las variables de sesión para debug
     print("Variables de sesión:", session_variables)
@@ -175,6 +180,7 @@ def inicio_app(request):
     # Si quieres pasar las variables de sesión al template
     context = {
         'session_variables': session_variables,
+        'permisos' : permisos_usuario,
     }
     
     return render(request, 'base/index.html', context)
