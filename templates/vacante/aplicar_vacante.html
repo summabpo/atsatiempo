@@ -1,0 +1,50 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} ATS Listado Vacantes {% endblock title %}
+
+{% block titulo_pagina %} Aplicación vacante {% endblock titulo_pagina %}
+
+{% block navegacion %}
+    <a href="{% url 'vacantes:vacantes_cliente_todas' %}" class="text-white text-hover-primary"> Listado Vacantes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Aplicación Vacante</li>
+{% endblock navegacion %}
+
+
+			
+    {% block css %}
+    .asteriskField {
+        color: red !important;
+    }
+    {% endblock css %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex flex-column flex-column-fluid">
+            <div class="d-flex flex-column flex-column-fluid text-center p-10">
+                <div class="mb-10 mb-lg-15">
+                    <h1 class="fw-bold fs-2qx text-gray-800 mb-7">Felicitaciones se ha aplicado su vacante</h1>
+                    <div class="fw-semibold fs-3 text-muted mb-15">Vacante:{{ vacantes.titulo }}, Cliente: {{vacante.cliente_id_051.razon_social}}</div>
+                    <div class="text-center">
+                        <a href="index.html" class="btn btn-lg btn-primary fw-bold">Volver</a>
+                    </div>
+                </div>
+                <div class="d-flex flex-row-auto bgi-no-repeat bgi-position-x-center bgi-size-contain bgi-position-y-bottom min-h-100px min-h-lg-300px" style="background-image: url(assets/media/illustrations/dozzy-1/11.png"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block extrajs %}
+
+{% endblock extrajs %}

@@ -26,83 +26,117 @@
 
 {% block content %}
 <div class="card shadow-sm">
-    <div class="card-header">
-        <h3 class="card-title">Detalles vacante</h3>
-        <div class="card-toolbar">
-            <button type="button" class="btn btn-sm btn-light">
-                Action
-            </button>
-        </div>
-    </div>
+    
     <div class="card-body">
-        <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed mb-12 p-6">
-            <!--begin::Icon-->
-            <i class="ki-duotone ki-information fs-2tx text-warning me-4">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-            </i>
-            <!--end::Icon-->
-            <!--begin::Wrapper-->
-            <div class="d-flex flex-stack flex-grow-1">
-                <!--begin::Content-->
-                <div class="fw-semibold">
-                    <h4 class="text-gray-900 fw-bold">We need your attention!</h4>
-                    <div class="fs-6 text-gray-700">Your payment was declined. To start using tools, please 
-                    <a href="#" class="fw-bold" data-bs-toggle="modal" data-bs-target="#kt_modal_new_card">Add Payment Method</a>.</div>
+        <div class="d-flex flex-wrap flex-sm-nowrap mb-3 notice d-flex bg-light-primary rounded border-primary border  p-6" >
+            <div class="me-7 mb-4">
+                <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
+                    {% if cliente.logo %}
+                        <img src="{{ cliente.logo.url }}" title="{{cliente.logo}} />
+                    {% else %}  
+                        <img src="{% static 'media/avatars/blank.png' %}" title="{{cliente.logo}}" />
+                    {% endif %}
                 </div>
-                <!--end::Content-->
             </div>
-            <!--end::Wrapper-->
+            <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
+                    <div class="d-flex flex-column">
+                        <div class="d-flex align-items-center mb-2">
+                            <a href="#" class="text-gray-900 text-hover-primary fs-2 fw-bold me-1">{{vacante.titulo}}</a>
+                            <a href="#">
+                                <i class="ki-duotone ki-verify fs-1 text-primary">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                            </a>
+                        </div>
+                        <div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2">
+                            
+                            <a href="#" class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
+                            <i class="ki-duotone ki-briefcase fs-4 me-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>{{ cliente.razon_social }}</a>
+
+                            <a href="#" class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
+                                <i class="ki-duotone ki-profile-circle fs-4 me-1">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                            </i>{{vacante.profesion_estudio_id_055.nombre}}</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex flex-wrap flex-stack">
+                    <div class="d-flex flex-column flex-grow-1 pe-8">
+                        <div class="d-flex flex-wrap">
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="ki-duotone ki-dollar fs-3 text-primary me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    <div class="fs-2 fw-bold"> {% if salario %} $ {{ vacante.salario }} {% else %}A convenir{% endif %}</div>
+                                </div>
+                                <div class="fw-semibold fs-6 text-gray-500">Salario</div>
+                            </div>
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="ki-duotone ki-geolocation fs-3 text-primary me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    <div class="fs-2 fw-bold" >{{vacante.ciudad.nombre}}</div>
+                                </div>
+                                <div class="fw-semibold fs-6 text-gray-500">Ubicación</div>
+                            </div>
+                            <div class="rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                <a href="{% url 'vacantes:vacante_aplicada' vacante.id  %}" class="btn btn-flex btn-primary px-6">
+                                    <i class="ki-duotone ki-check-square fs-2x">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    <span class="d-flex flex-column align-items-start ms-2">
+                                        <span class="fs-3 fw-bold">APLICAR VACANTE</span>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!--end::Notice-->
-        <!--begin::Row-->
-        <div class="row">
-            <!--begin::Col-->
-            <div class="col-lg-7">
-                <!--begin::Heading-->
-                <h3 class="mb-2">Active until Dec 09, 2024</h3>
-                <p class="fs-6 text-gray-600 fw-semibold mb-6 mb-lg-15">We will send you a notification upon Subscription expiration</p>
-                <!--end::Heading-->
-                <!--begin::Info-->
-                <div class="fs-5 mb-2">
-                    <span class="text-gray-800 fw-bold me-1">$24.99</span>
-                    <span class="text-gray-600 fw-semibold">Per Month</span>
-                </div>
-                <!--end::Info-->
-                <!--begin::Notice-->
-                <div class="fs-6 text-gray-600 fw-semibold">Extended Pro Package. Up to 100 Agents & 25 Projects</div>
-                <!--end::Notice-->
+        <div class="separator separator-content border-primary my-15"><span class="w-150px fw-bold text-primary">DETALLES</span></div>
+        <div class="row mb-10">
+            <div class="col-xl-6 mb-15 mb-xl-0 pe-5">
+                <h4 class="mb-0">Funciones y Responsabilidades</h4>
+                <p class="fs-6 fw-semibold text-gray-600 py-4 m-0">{{ vacante.funciones_responsabilidades }}</p>
             </div>
-            <!--end::Col-->
-            <!--begin::Col-->
-            <div class="col-lg-5">
-                <!--begin::Heading-->
-                <div class="d-flex text-muted fw-bold fs-5 mb-3">
-                    <span class="flex-grow-1 text-gray-800">Users</span>
-                    <span class="text-gray-800">86 of 100 Used</span>
+            <div class="col-xl-6">
+                <h4 class="text-gray-800 mb-0">Especificaciones:</h4>
+                <div class="d-flex flex-column">
+                    <li class="d-flex align-items-center py-2">
+                        <span class="bullet me-5"></span> <b>Fecha Publicación: </b> {{ vacante.fecha_creacion }}
+                    </li>
+                    <li class="d-flex align-items-center py-2">
+                        <span class="bullet me-5"></span> <b>Vacantes Disponibles: </b> {{vacante.numero_posiciones}}
+                    </li>
+                    <li class="d-flex align-items-center py-2">
+                        <span class="bullet me-5"></span> <b>Experiencia Requerida: </b>
+                        {% if vacante.experiencia_requerida == 1 %}
+                            0 a 6 Meses
+                        {% elif vacante.experiencia_requerida == 2  %}
+                            1 año a 2 años
+                        {% elif vacante.experiencia_requerida == 3  %}
+                            Más de 2 años
+                        {% elif vacante.experiencia_requerida == 4  %}
+                            Sin experiencia
+                        {% endif %}
+                    </li>
                 </div>
-                <!--end::Heading-->
-                <!--begin::Progress-->
-                <div class="progress h-8px bg-light-primary mb-2">
-                    <div class="progress-bar bg-primary" role="progressbar" style="width: 86%" aria-valuenow="86" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <!--end::Progress-->
-                <!--begin::Description-->
-                <div class="fs-6 text-gray-600 fw-semibold mb-10">14 Users remaining until your plan requires update</div>
-                <!--end::Description-->
-                <!--begin::Action-->
-                <div class="d-flex justify-content-end pb-0 px-0">
-                    <a href="#" class="btn btn-light btn-active-light-primary me-2" id="kt_account_billing_cancel_subscription_btn">Cancel Subscription</a>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_upgrade_plan">Upgrade Plan</button>
-                </div>
-                <!--end::Action-->
             </div>
-            <!--end::Col-->
         </div>
-    </div>
-    <div class="card-footer">
-        Footer
     </div>
 </div>
 {% endblock content %}

@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from applications.cliente.models import Cli051Cliente
 from applications.vacante.forms.VacanteForms import VacanteForm
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli056AplicacionVacante
 from applications.usuarios.models import Permiso
 from applications.common.models import Cat001Estado, Cat004Ciudad
+from applications.candidato.models import Can101Candidato
 from django.contrib import messages
 from django.http import JsonResponse
 import json
@@ -236,11 +237,44 @@ def vacante_cliente_todas(request):
             'vacantes': vacantes,
         })
 
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def vacante_detalle(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
 
+    user_id = request.session.get('_auth_user_id')
+    print(user_id)
 
     contexto = {
-        'vacante': vacante
+        'vacante': vacante,
+        'cliente': cliente,
     }
     return render(request, 'vacante/detalle_vacante.html', contexto)
+
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def vacante_aplicada(request, pk):
+    candidato_id = request.session.get('candidato_id')
+    vacante = get_object_or_404(Cli052Vacante, id=pk)
+    candidato = get_object_or_404(Can101Candidato, id=candidato_id)
+    # Verifica si ya existe una aplicación para esta vacante y este candidato
+    aplicacion_existente = Cli056AplicacionVacante.objects.filter(
+        candidato_101=candidato,
+        vacante_id_052=vacante
+    ).exists()
+
+
+    if aplicacion_existente:
+        messages.warning(request, 'Ya has aplicado a esta vacante anteriormente.')
+    else:
+        Cli056AplicacionVacante.objects.create(
+                candidato_101=candidato,
+                vacante_id_052=vacante
+            )
+        messages.success(request, 'Has aplicado a la vacante con éxito.')
+
+    return render(request, 'vacante/aplicar_vacante.html',
+        { 
+            'vacantes': vacante,
+        })
