@@ -6,7 +6,12 @@ from django.views.generic import (TemplateView, ListView)
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from applications.usuarios.models import Permiso
+from django.contrib.auth.decorators import login_required
+from applications.usuarios.decorators  import validar_permisos
 
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def habilidad_obtener(request, pk=None):
     candidato = get_object_or_404(Can101Candidato, pk=pk)
     data = Cat001Estado.objects.get(id=1)
@@ -54,6 +59,8 @@ def habilidad_obtener(request, pk=None):
 ##* utilidades 
 
 @csrf_exempt
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def limpiar_lisskill(request):
     if request.method == 'POST':
         request.session.pop('listskill', None)

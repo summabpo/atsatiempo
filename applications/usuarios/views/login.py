@@ -229,11 +229,12 @@ def signup_view(request):
         if form.is_valid():
             
             email = form.cleaned_data['email']
+            email2 = form.cleaned_data['email2']
             password1 = form.cleaned_data['password1']
             password2 = form.cleaned_data['password2']
             name = form.cleaned_data['name']
             last_name = form.cleaned_data['last_name']
-            
+            nombre_completo = name+' '+last_name
             
             # nit = form.cleaned_data['nit']
             # companyname = form.cleaned_data['companyname']
@@ -241,64 +242,66 @@ def signup_view(request):
             # companycontact = form.cleaned_data['companycontact']
             # companyemail = form.cleaned_data['companyemail']
             
-            
-            if password1 == password2:
-                if UsuarioBase.objects.filter(username=email).exists():
-                    messages.error(request, '¡Oops! Parece que alguien más ya se adelantó y tomó ese correo. Prueba con otro, o tal vez es el momento de reconciliarte con tu contraseña olvidada.')
+            if email == email2:
+                if password1 == password2:
+                    if UsuarioBase.objects.filter(username=email).exists():
+                        messages.error(request, '¡Oops! Parece que alguien más ya se adelantó y tomó ese correo. Prueba con otro, o tal vez es el momento de reconciliarte con tu contraseña olvidada.')
+                    else:
+                        
+                        city =  Cat004Ciudad.objects.get(id = form.cleaned_data['city'] )
+                        print(type(form.cleaned_data['nit']))
+                        new_company = Cli051Cliente (
+                            estado_id_001 = Cat001Estado.objects.get(id=1),
+                            razon_social= form.cleaned_data['companyname'] ,
+                            nit= form.cleaned_data['nit'],                        
+                            ciudad_id_004= city ,
+                            email= form.cleaned_data['email'],
+                            contacto= nombre_completo,    
+                        )
+                        
+                        new_company.save()
+
+                        grupo = Grupo.objects.get(id=3)
+                        user = UsuarioBase.objects.create_user(
+                            username= email, 
+                            email= email, 
+                            password=password1,
+                            cliente_id_051 = new_company ,
+                            primer_nombre = name.capitalize() ,
+                            primer_apellido = last_name.capitalize(),  
+                            group=grupo,
+                        )
+                        
+                        token_generado = generate_token(50);
+
+                        TokenAutorizacion.objects.create(
+                            user_id=user.id,
+                            token=token_generado,  # Una función que genere un token único
+                            fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
+                        )
+
+                        # Envio del correo electronico de confirmación del usuario y contraseña
+                        contexto = {
+                            'name': name.capitalize(),
+                            'last_name': last_name.capitalize(),
+                            'user': user,
+                            'email': email,
+                            'password': password1,
+                            'token': token_generado
+                        }
+
+                        # Envia el metodo
+                        enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
+                        
+                        # login(request, user)
+                        frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
+                        messages.success(request, frase_aleatoria)
+                        return redirect('accesses:signup')  
                 else:
-                    
-                    city =  Cat004Ciudad.objects.get(id = form.cleaned_data['city'] )
-                    print(type(form.cleaned_data['nit']))
-                    new_company = Cli051Cliente (
-                        estado_id_001 = Cat001Estado.objects.get(id=1),
-                        razon_social= form.cleaned_data['companyname'] ,
-                        nit= form.cleaned_data['nit'],                        
-                        ciudad_id_004= city ,
-                        email= form.cleaned_data['companyemail'],
-                        contacto= form.cleaned_data['companycontact'],    
-                    )
-                    
-                    new_company.save()
-
-                    grupo = Grupo.objects.get(id=3)
-                    user = UsuarioBase.objects.create_user(
-                        username= email, 
-                        email= email, 
-                        password=password1,
-                        cliente_id_051 = new_company ,
-                        primer_nombre = name.capitalize() ,
-                        primer_apellido = last_name.capitalize(),  
-                        group=grupo,
-                    )
-                    
-                    token_generado = generate_token(50);
-
-                    TokenAutorizacion.objects.create(
-                        user_id=user.id,
-                        token=token_generado,  # Una función que genere un token único
-                        fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
-                    )
-
-                    # Envio del correo electronico de confirmación del usuario y contraseña
-                    contexto = {
-                        'name': name.capitalize(),
-                        'last_name': last_name.capitalize(),
-                        'user': user,
-                        'email': email,
-                        'password': password1,
-                        'token': token_generado
-                    }
-
-                    # Envia el metodo
-                    enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
-                    
-                    # login(request, user)
-                    frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
-                    messages.success(request, frase_aleatoria)
-                    return redirect('accesses:signup')  
+                    frase_aleatoria = random.choice(frases_error_contrasena)
+                    messages.error(request, frase_aleatoria)
             else:
-                frase_aleatoria = random.choice(frases_error_contrasena)
-                messages.error(request, frase_aleatoria)
+                messages.error(request, 'La dirección de correo electrónico no coincide.')
     else:
         form = SignupForm()
     login_f = random.choice(frases_inicio_sesion)

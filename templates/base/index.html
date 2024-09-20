@@ -20,36 +20,52 @@
 
 {% block content %}
 
-<h2>Variables de Sesión:</h2>
-<ul>
-{% for key, value in session_variables.items %}
-    <li>{{ key }}: {{ value }}</li>
-{% endfor %}
-</ul>
 
 
-<h2>Tus permisos:</h2>
-<ul>
-{% for permiso in permisos %}
-    <li>{{ permiso }}</li>
-{% empty %}
-    <li>No tienes permisos asignados para esta vista.</li>
-{% endfor %}
-</ul>
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Title</h3>
+        <div class="card-toolbar">
+            <button type="button" class="btn btn-sm btn-light">
+                Action
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <h2>Variables de Sesión:</h2>
+        <ul>
+        {% for key, value in session_variables.items %}
+            <li>{{ key }}: {{ value }}</li>
+        {% endfor %}
+        </ul>
 
-<h2>Accesos disponibles:</h2>
-<ul>
-    {% if 'acceso_admin' in permisos %}
-        <li>Tienes acceso de administrador</li>
-    {% endif %}
-    {% if 'acceso_candidato' in permisos %}
-        <li>Tienes acceso de candidato</li>
-    {% endif %}
-    {% if 'acceso_entrevistador' in permisos %}
-        <li>Tienes acceso de entrevistador</li>
-    {% endif %}
-</ul>
 
+        <h2>Tus permisos:</h2>
+        <ul>
+        {% for permiso in permisos %}
+            <li>{{ permiso }}</li>
+        {% empty %}
+            <li>No tienes permisos asignados para esta vista.</li>
+        {% endfor %}
+        </ul>
+
+        <h2>Accesos disponibles:</h2>
+        <ul>
+            {% if 'acceso_admin' in permisos %}
+                <li>Tienes acceso de administrador</li>
+            {% endif %}
+            {% if 'acceso_candidato' in permisos %}
+                <li>Tienes acceso de candidato</li>
+            {% endif %}
+            {% if 'acceso_entrevistador' in permisos %}
+                <li>Tienes acceso de entrevistador</li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="card-footer">
+        
+    </div>
+</div>
 {% endblock content %}
 
 {% block extrajs %}

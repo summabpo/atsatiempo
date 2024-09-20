@@ -11,16 +11,17 @@ class SignupForm(forms.Form):
         widget=forms.TextInput(attrs={'placeholder': 'Nombre del usuario'}),
         max_length=150
     )
-    
     last_name = forms.CharField(
         label='Apellido', 
         widget=forms.TextInput(attrs={'placeholder': 'Apellido del usuario'}),
         max_length=150
     )
-    
-    
     email = forms.EmailField(
         label='Correo electrónico Usuario', 
+        widget=forms.EmailInput(attrs={'placeholder': 'Correo electrónico'})
+    )
+    email2 = forms.EmailField(
+        label='Confirme Correo electrónico Usuario', 
         widget=forms.EmailInput(attrs={'placeholder': 'Correo electrónico'})
     )
     password1 = forms.CharField(
@@ -43,17 +44,6 @@ class SignupForm(forms.Form):
         widget=forms.TextInput(attrs={'placeholder': 'Nombre de la compañía'}),
         max_length=150
     ) 
-    
-    companycontact = forms.CharField(
-        label='Contacto de la compañía', 
-        widget=forms.TextInput(attrs={'placeholder': 'Persona de compañía'}),
-        max_length=150
-    )
-    companyemail = forms.EmailField(
-        label='Correo electrónico de la compañía', 
-        widget=forms.EmailInput(attrs={'placeholder': 'Correo electrónico de la compañía'}),
-        max_length=150
-    )
 
     
     
@@ -74,17 +64,6 @@ class SignupForm(forms.Form):
         if nit is not None:
             if not (100000000 <= nit <= 999999999):  # Verificar que el NIT tenga 9 dígitos
                 self.add_error('nit', 'El NIT debe contener exactamente 9 dígitos.')
-
-
-        if companyemail and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', companyemail):
-            self.add_error('companyemail','El mail no es válido.')
-
-        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', companycontact):
-            self.add_error('companycontact','El Nombre del Contacto solo puede contener letras.')
-        else:
-            self.cleaned_data['companycontact'] = companycontact.upper()
-
-
 
         return super().clean()
     
@@ -125,6 +104,10 @@ class SignupForm(forms.Form):
                 css_class='row'
             ),
             Row(
+                Column('email2', css_class='form-group mb-0'),
+                css_class='row'
+            ),
+            Row(
                 Column('password1', css_class='form-group mb-0'),
                 Column('password2', css_class='form-group mb-0'),
                 css_class='row'
@@ -137,11 +120,6 @@ class SignupForm(forms.Form):
             ),
             Row(
                 Column('city', css_class='form-group mb-0'),
-                Column('companycontact', css_class='form-group mb-0'),
-                css_class='fv-row mb-10'
-            ),
-            Row(
-                Column('companyemail', css_class='form-group mb-0'),
                 css_class='fv-row mb-10'
             ),
             Submit('submit', 'Crear', css_class='btn btn-lg btn-primary w-100 mb-5'),

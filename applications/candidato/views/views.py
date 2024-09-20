@@ -5,6 +5,9 @@ from ..forms.ExperienciaForms import ExperienciaCandidatoForm
 from ..forms.EstudioForms import EstudioCandidatoForm
 from django.views.generic import (TemplateView, ListView)
 from django.contrib import messages
+from applications.usuarios.models import Permiso
+from django.contrib.auth.decorators import login_required
+from applications.usuarios.decorators  import validar_permisos
 
 # Create your views here.
 class ListadoCandidato(ListView):

@@ -8,10 +8,14 @@ from django.contrib import messages
 from django.http import JsonResponse
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from datetime import datetime
+from applications.usuarios.models import Permiso
+from django.contrib.auth.decorators import login_required
+from applications.usuarios.decorators  import validar_permisos
 
 global_id = None 
 
-
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def estudio_mostrar(request, pk=None):
     form_errors = False
     candidato = get_object_or_404(Can101Candidato, pk=pk)
@@ -43,7 +47,8 @@ def estudio_mostrar(request, pk=None):
 
 
 
-
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def estudio_api(request):
     global global_id
 

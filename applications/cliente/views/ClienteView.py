@@ -8,8 +8,13 @@ from django.views.generic import (
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from applications.usuarios.models import Permiso
+from django.contrib.auth.decorators import login_required
+from applications.usuarios.decorators  import validar_permisos
 
 # Create your views here.
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def cliente_crear(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST, request.FILES)
@@ -24,7 +29,8 @@ def cliente_crear(request):
 
 
 
-
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def mostrar_clientes(request):
     clientes = Cli051Cliente.objects.filter(estado_id_001=1).order_by('-id')
     form_errors = False
@@ -51,6 +57,8 @@ def mostrar_clientes(request):
 
 global_id = None 
 
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def obtener_cliente_view(request):
     global global_id
 
