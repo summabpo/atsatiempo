@@ -10,4 +10,6 @@ urlpatterns = [
     path( url_principal+'cliente/', VacanteViews.vacante_cliente, name='vacantes'),
     path( url_principal+'detalle_vacante/<int:pk>/', VacanteViews.vacante_detalle, name='vacante_detalle'),
     path( url_principal+'aplicacion_vacante/<int:pk>/', VacanteViews.vacante_aplicada, name='vacante_aplicada'),
+    path( url_principal+'vacante_candidato/', VacanteViews.vacante_candidato, name='vacante_candidato'),
+    path( url_principal+'gestion/<int:pk>/', VacanteViews.vacante_gestion, name='vacante_gestion'),
 ]

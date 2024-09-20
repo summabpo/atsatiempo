@@ -116,6 +116,7 @@ def vacante_cliente_mostrar(request, pk=None):
 
 #vacante por cliente login
 @login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def vacante_cliente(request):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
@@ -255,6 +256,8 @@ def vacante_detalle(request, pk):
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def vacante_aplicada(request, pk):
+    error_vacante = False
+
     candidato_id = request.session.get('candidato_id')
     vacante = get_object_or_404(Cli052Vacante, id=pk)
     candidato = get_object_or_404(Can101Candidato, id=candidato_id)
@@ -267,6 +270,7 @@ def vacante_aplicada(request, pk):
 
     if aplicacion_existente:
         messages.warning(request, 'Ya has aplicado a esta vacante anteriormente.')
+        error_vacante = True
     else:
         Cli056AplicacionVacante.objects.create(
                 candidato_101=candidato,
@@ -277,4 +281,40 @@ def vacante_aplicada(request, pk):
     return render(request, 'vacante/aplicar_vacante.html',
         { 
             'vacantes': vacante,
+            'error_vacante': error_vacante,
         })
+
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def vacante_candidato(request):
+    candidato_id = request.session.get('candidato_id')
+    candidato = get_object_or_404(Can101Candidato, id=candidato_id)
+    vacante_aplicada = Cli056AplicacionVacante.objects.filter(candidato_101=candidato.id)
+    # vacante = get_object_or_404(Cli052Vacante, id=vacante_aplicada.vacante_id_052)
+
+    contexto = {
+        # 'vacante': vacante,
+        'vacante_aplicada' : vacante_aplicada,
+
+    }
+
+    return render(request, 'vacante/vacante_candidato.html', contexto)
+
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def vacante_gestion(request, pk):
+    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
+    vacante_aplicada = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante.id)
+
+    user_id = request.session.get('_auth_user_id')
+    print(user_id)
+
+    contexto = {
+        'vacante': vacante,
+        'cliente': cliente,
+        'vacante_aplicada': vacante_aplicada,
+    }
+    return render(request, 'vacante/gestion_vacante.html', contexto)
+
+

@@ -2,9 +2,9 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block title %} ATS Listado Vacantes {% endblock title %}
+{% block title %} ATS Listado Mis Vacantes {% endblock title %}
 
-{% block titulo_pagina %} Bienvenido {{ primer_nombre }}, Listado Vacantes {% endblock titulo_pagina %}
+{% block titulo_pagina %} Bienvenido {{ primer_nombre }}, Mis Vacantes {% endblock titulo_pagina %}
 
 {% block navegacion %}
     <!-- <li class="breadcrumb-item text-white opacity-75">Listado Vacantes</li> -->
@@ -73,6 +73,7 @@
                     <th>CIUDAD</th>
                     <th># VACANTES</th>
                     <th>ESTADO</th>
+                    <th>GESTION</th>
                 </tr>
             </thead>
             <tbody>
@@ -90,6 +91,12 @@
                         {% elif e.estado_vacante == 3 %}
                             En proceso
                         {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'vacantes:vacante_gestion' e.id  %}" class="btn btn-primary">
+                            <i class="ki-duotone ki-chart-simple-2 fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+                            Ver Detalle
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}
