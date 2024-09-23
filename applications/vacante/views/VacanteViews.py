@@ -114,14 +114,19 @@ def vacante_cliente_mostrar(request, pk=None):
             'form_errors': form_errors,
         })    
 
+# def vacante_api(request, pk=None):
+#     global centinela
+
+#     if request.method == 'GET':
+
 #vacante por cliente login
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def vacante_cliente(request):
+    
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
     primer_nombre = request.session.get('primer_nombre')
-    
     
     # Obtener el cliente usando el id de la sesión
     cliente = get_object_or_404(Cli051Cliente, pk=cliente_id)
@@ -170,8 +175,6 @@ def vacante_cliente(request):
                 estado_id_001_id = estado_id.id,
                 profesion_estudio_id_055_id = profesion_estudio_dato.id,
             )
-
-
 
             # Convertir el string JSON en un objeto Python (lista de diccionarios)
             skills = json.loads(soft_skills_id_053)
@@ -225,8 +228,6 @@ def vacante_cliente(request):
         })
 
 #ver todas las vacantes
-
-
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def vacante_cliente_todas(request):
