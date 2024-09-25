@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def habilidad_obtener(request, pk=None):
     candidato = get_object_or_404(Can101Candidato, pk=pk)
     data = Cat001Estado.objects.get(id=1)
@@ -60,7 +60,7 @@ def habilidad_obtener(request, pk=None):
 
 @csrf_exempt
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def limpiar_lisskill(request):
     if request.method == 'POST':
         request.session.pop('listskill', None)

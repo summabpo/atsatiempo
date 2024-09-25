@@ -37,7 +37,7 @@
                             
                             <div class="fs-5">
                                 <span class="fw-semibold text-gray-700">¿No ha recibido el correo de confirmación?</span>
-                                <a href="#" class="link-primary fw-bold">Reenviar Correo</a>
+                                <a href="{% url 'accesses:enviar_token' %}" class="link-primary fw-bold">Solicitar Acceso</a>
                             </div>
                         {% endif %}					
                     </div>

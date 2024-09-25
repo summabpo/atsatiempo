@@ -15,7 +15,7 @@ from applications.usuarios.decorators  import validar_permisos
 global_id = None 
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def estudio_mostrar(request, pk=None):
     form_errors = False
     candidato = get_object_or_404(Can101Candidato, pk=pk)
@@ -48,7 +48,7 @@ def estudio_mostrar(request, pk=None):
 
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def estudio_api(request):
     global global_id
 

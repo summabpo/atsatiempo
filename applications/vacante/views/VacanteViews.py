@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from applications.cliente.models import Cli051Cliente
-from applications.vacante.forms.VacanteForms import VacanteForm
+from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli056AplicacionVacante
 from applications.usuarios.models import Permiso
 from applications.common.models import Cat001Estado, Cat004Ciudad
@@ -10,6 +10,9 @@ from django.http import JsonResponse
 import json
 from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
+
+
+centinela = None
 
 # vacante por cliente sin loqin 
 def vacante_cliente_mostrar(request, pk=None):
@@ -25,7 +28,6 @@ def vacante_cliente_mostrar(request, pk=None):
     # Formulario Vacantes
     if request.method == 'POST': 
         form = VacanteForm(request.POST)
-        
         if form.is_valid():
             #datos formulario
 
@@ -41,7 +43,6 @@ def vacante_cliente_mostrar(request, pk=None):
             estado_id = Cat001Estado.objects.get(id=1)
             ciudad_id = Cat004Ciudad.objects.get(id=form.cleaned_data['ciudad'])
 
-            
             # Intentar obtener el objeto profesion estudio
             profesion_estudio_dato, created = Cli055ProfesionEstudio.objects.get_or_create(
                 nombre = profesion_estudio_id_055,
@@ -62,8 +63,6 @@ def vacante_cliente_mostrar(request, pk=None):
                 profesion_estudio_id_055_id = profesion_estudio_dato.id,
             )
 
-
-
             # Convertir el string JSON en un objeto Python (lista de diccionarios)
             skills = json.loads(soft_skills_id_053)
             
@@ -79,7 +78,6 @@ def vacante_cliente_mostrar(request, pk=None):
                     cli052vacante=vacante_creada,
                     cli053softskill=soft_skills
                 )
-
 
             # Convertir el string JSON en un objeto Python (lista de diccionarios)
             skills = json.loads(hard_skills_id_054)
@@ -104,24 +102,52 @@ def vacante_cliente_mostrar(request, pk=None):
             messages.error(request, form.errors)
     else:
         form = VacanteForm()
+        form_edit = VacanteFormEdit()
         vacantes = Cli052Vacante.objects.filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
 
     return render(request, 'vacante/listado_vacantes_cliente.html',
         { 
             'form': form,
+            'form_edit': form_edit,
             'vacantes': vacantes,
             'cliente': cliente,
             'form_errors': form_errors,
         })    
 
-# def vacante_api(request, pk=None):
-#     global centinela
+def vacante_api(request, pk=None):
+    global centinela
 
-#     if request.method == 'GET':
+    if request.method == 'GET':
+        id_vacante = request.GET.get('dato')
+        vacante = Cli052Vacante.objects.get(id=id_vacante)
+
+        centinela = vacante.id
+
+        ciudad = Cat004Ciudad.objects.get(id=vacante.ciudad.id)
+        profesion = Cli055ProfesionEstudio.objects.get(id=vacante.profesion_estudio_id_055.id)
+        print(profesion)
+
+        response_data = {
+            'data': {
+                'id': vacante.id,
+                'titulo': vacante.titulo,
+                'numero_posiciones': vacante.numero_posiciones,
+                'profesion_estudio': profesion.nombre,
+                'experiencia': vacante.experiencia_requerida,
+                'soft_skills': vacante.numero_posiciones,
+                'hard_skills': vacante.numero_posiciones,
+                'funciones_responsabilidades': vacante.funciones_responsabilidades,
+                'salario': vacante.salario,
+                'ciudad': ciudad.id,
+            }
+        }
+
+        print(response_data);
+        return JsonResponse(response_data)
 
 #vacante por cliente login
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def vacante_cliente(request):
     
     # Verificar si el cliente_id está en la sesión
@@ -229,7 +255,7 @@ def vacante_cliente(request):
 
 #ver todas las vacantes
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def vacante_cliente_todas(request):
     
     vacantes = Cli052Vacante.objects.filter(estado_id_001=1).order_by('-id')
@@ -240,7 +266,7 @@ def vacante_cliente_todas(request):
         })
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def vacante_detalle(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
@@ -255,7 +281,7 @@ def vacante_detalle(request, pk):
     return render(request, 'vacante/detalle_vacante.html', contexto)
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def vacante_aplicada(request, pk):
     error_vacante = False
 
@@ -286,7 +312,7 @@ def vacante_aplicada(request, pk):
         })
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def vacante_candidato(request):
     candidato_id = request.session.get('candidato_id')
     candidato = get_object_or_404(Can101Candidato, id=candidato_id)
@@ -302,7 +328,7 @@ def vacante_candidato(request):
     return render(request, 'vacante/vacante_candidato.html', contexto)
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def vacante_gestion(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)

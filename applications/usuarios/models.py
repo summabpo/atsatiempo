@@ -59,6 +59,10 @@ class UsuarioBase(AbstractUser):
     group = models.ForeignKey(Grupo, on_delete=models.CASCADE, null=True, blank=True)
     cliente_id_051 = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, on_delete=models.SET_NULL, null=True, blank=True, related_name='usuario')
+
+    # Sobrescribimos estos campos para evitar conflictos
+    groups = None
+    user_permissions = None
     
     def str(self):
         return self.username
@@ -68,13 +72,21 @@ class UsuarioBase(AbstractUser):
 
         verbose_name = 'USUARIO'
         verbose_name_plural = 'USUARIOS'
+    
+    def has_perm(self, perm, obj=None):
+        # Implementa aquí tu lógica personalizada o simplemente:
+        return True  # O False, dependiendo de tu caso de uso
+
+    def has_perms(self, perm_list, obj=None):
+        # Puedes implementar tu lógica aquí o:
+        return all(self.has_perm(perm) for perm in perm_list)
 
 class TokenAutorizacion(models.Model):
-    user = models.OneToOneField(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True)
     token = models.CharField(max_length=255, unique=True)
     fecha_expiracion = models.DateTimeField(default=timezone.now() + timedelta(days=1))
+    fecha_validacion = models.DateTimeField(null=True, blank=True)
     class Meta:
         db_table = 'token_autorizacion'
 
         verbose_name = 'TOKEN AUTORIZACION'
-    

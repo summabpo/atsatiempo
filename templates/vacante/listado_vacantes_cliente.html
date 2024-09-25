@@ -40,7 +40,7 @@
                     <div class="modal-dialog modal-dialog-scrollable modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Vacantessss</h5>
+                                <h5 class="modal-title">Vacantes</h5>
                 
                                 <!--begin::Close-->
                                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
@@ -68,6 +68,7 @@
         <table id="kt_prueba" class="table table-striped table-row-bordered gy-5 gs-7 border rounded">
             <thead>
                 <tr class="fw-bold fs-6 text-gray-800 px-7">
+                    <th>EDITAR</th>
                     <th>TITULO VACANTE</th>
                     <th>FECHA VACANTE</th>
                     <th>CIUDAD</th>
@@ -79,6 +80,11 @@
             <tbody>
                 {% for e in vacantes %}
                 <tr>
+                    <td>
+                        <button type="button" class="btn btn-active-light-primary" data-bs-toggle="modal" data-bs-target="#edit_vacante" data-cliente_id="{{ e.id }}">
+                            <i class="ki-duotone ki-notepad-edit fs-1"><span class="path1"></span><span class="path2"></span></i>
+                        </button>
+                    </td>
                     <td>{{e.titulo}}</td>
                     <td>{{e.fecha_creacion | date:"Y/m/d" }}</td>
                     <td>{{e.ciudad.nombre}}</td>
@@ -104,6 +110,34 @@
         </table>
     </div>
 </div>
+
+
+<div class="modal fade modal-lg" tabindex="-1" id="edit_vacante">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Vacante.</h5>
+
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+
+            <div class="modal-body">
+                <form id="form_edit_vacante" method="post" action="{% url 'vacantes:vacante_api' %}">
+                    {% crispy form %}
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" form="form_edit_vacante">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}
 
 {% block extrajs %}
@@ -127,11 +161,63 @@
             ">"
     });
 
+    $('#edit_vacante').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var recipient = button.data('cliente_id');
+        var modal = $(this);
+
+        $.ajax({ 
+            url: '/vacante/api/',
+            type: 'GET',
+            data: {
+                'dato': recipient
+            },
+
+            success: function(response) {
+    
+                modal.find('.modal-title').text('Editar Laboral ID #' + response.data.id)
+                modal.find('.modal-body #id_titulo').val(response.data.titulo)
+                modal.find('.modal-body #id_numero_posiciones').val(response.data.numero_posiciones)
+                modal.find('.modal-body #id_profesion_estudio_id_055').val(response.data.profesion_estudio)
+                modal.find('.modal-body #id_experiencia_requerida').val(response.data.experiencia)
+                modal.find('.modal-body #soft_skills').val(response.data.telefono)
+                modal.find('.modal-body #hard_skills').text(response.data.perfil_empresarial)
+                modal.find('.modal-body #id_funciones_responsabilidades').text(response.data.funciones_responsabilidades) 
+                modal.find('.modal-body #id_salario').val(response.data.salario) 
+                var $select2 = modal.find('.modal-body #id_ciudad');
+                $select2.val(response.data.ciudad).trigger('change'); 
+                console.log(response.data.numero_posiciones)
+
+                // Manejar el checkbox
+                if (response.data.grado_en) {
+                    modal.find('.modal-body #id_grado_en').prop('checked', true);
+                } else {
+                    modal.find('.modal-body #id_grado_en').prop('checked', false);
+                }
+
+                // Manejar el select2
+                var $select2 = modal.find('.modal-body #id_ciudad_id_004');
+                $select2.val(response.data.ciudad_id_004).trigger('change'); // Actualiza el valor y refleja el cambio
+
+                // (Opcional) Reinicializar select2 si es necesario
+                // $select2.select2('destroy').select2();
+
+            },
+            error: function(response) {
+                console.log(response.error);
+            }
+        })
+    })
+
     var input1 = document.querySelector("#soft_skills");
     new Tagify(input1);
     
     var input2 = document.querySelector("#hard_skills");
     new Tagify(input2);
+
+    
+
+
 </script>
 
 <script>

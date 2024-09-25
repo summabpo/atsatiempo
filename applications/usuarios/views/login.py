@@ -7,6 +7,7 @@ from applications.usuarios.forms.loginform import LoginForm
 from applications.usuarios.forms.UserForms import SignupForm
 from applications.usuarios.forms.CandidatoForm import SignupFormCandidato
 from applications.usuarios.models import UsuarioBase, TokenAutorizacion, Grupo, Permiso
+from applications.usuarios.forms.CorreoForm import CorreoForm
 from applications.cliente.models import Cli051Cliente
 from applications.candidato.models import Can101Candidato
 import random
@@ -376,7 +377,7 @@ def signup_candidato(request):
                     # login(request, user)
                     frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
                     messages.success(request, frase_aleatoria)
-                    return redirect('accesses:login') 
+                    return redirect('accesses:home') 
             else:
                 frase_aleatoria = random.choice(frases_error_contrasena)
                 messages.error(request, frase_aleatoria)
@@ -404,6 +405,10 @@ def validar_token(request, token):
         # Validar si el token ha vencido
         if token_obj.fecha_expiracion < timezone.now():
             context['message'] = 'Link vencido'
+            
+            token_obj.fecha_validacion = timezone.now()
+            token_obj.save()  # No olvides guardar el objeto actualizado
+
         else:
             # Si el token es válido
             usuario = get_object_or_404(UsuarioBase, id=token_obj.user.id)
@@ -412,6 +417,10 @@ def validar_token(request, token):
             usuario.is_verificado = True
             usuario.save()
 
+            # Actualizar la fecha de validación del token
+            token_obj.fecha_validacion = timezone.now()
+            token_obj.save()  # No olvides guardar el objeto actualizado
+
             context['is_valid'] = True
             context['message'] = 'Correo validado correctamente'
 
@@ -419,3 +428,48 @@ def validar_token(request, token):
         context['message'] = 'Token no válido'
 
     return render(request, 'authentication/correo_validar.html', context)
+
+#validar correo para enviar correo
+def enviar_token(request):
+    if request.method == 'POST':
+        form = CorreoForm(request.POST)
+
+        if form.is_valid():
+            email = form.cleaned_data['email']
+
+            if UsuarioBase.objects.filter(username=email).exists():
+                usuario_email = UsuarioBase.objects.get(username=email)
+                
+                token_generado = generate_token(50);
+                TokenAutorizacion.objects.create(
+                    user_id=usuario_email.id,
+                    token=token_generado,  # Una función que genere un token único
+                    fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
+                )
+
+                #Envio del correo electronico de confirmación del usuario y contraseña
+                contexto = {
+                    'name': usuario_email.primer_nombre.capitalize(),
+                    'last_name': usuario_email.primer_apellido.capitalize(),
+                    'user': usuario_email.username,
+                    'email': email,
+                    'token': token_generado
+                }
+                # Envia el metodo
+                enviar_correo('token', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
+                
+                # login(request, user)
+                frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
+                messages.success(request, frase_aleatoria)
+                return redirect('accesses:login')
+                
+            else:
+                messages.error(request, 'El correo ingresado no se encuentra registrado')
+                return redirect('accesses:enviar_token')  
+        else:
+            messages.error(request, '¡Oops! Hubo un error al procesar el correo.')
+            return redirect('accesses:enviar_token') 
+    else:
+        form = CorreoForm()
+
+    return render(request, './authentication/correo_revalidacion.html', {'form': form, })

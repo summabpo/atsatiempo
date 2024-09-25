@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def candidato_mostrar(request, pk=None):
     # Valida si se pasa un parametro pk o ID del candidato
     if pk:
@@ -55,7 +55,7 @@ def candidato_mostrar(request, pk=None):
 global_dato = None 
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def obtener_estudio_view(request):
     global global_dato
 
@@ -141,7 +141,7 @@ def obtener_estudio_view(request):
 # 
 global_id_laboral = None
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def obtener_laboral_view(request):
     global global_id_laboral
 
@@ -212,7 +212,7 @@ def obtener_laboral_view(request):
 
 #Crear Habilidades opcional
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+#@validar_permisos(*Permiso.obtener_nombres())
 def habilidades_crear(request):
 
     if request.method == 'POST':

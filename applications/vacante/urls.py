@@ -5,6 +5,7 @@ from .views import VacanteViews
 url_principal = 'vacante/'
 
 urlpatterns = [
+    path( url_principal+'api/', VacanteViews.vacante_api, name='vacante_api'),
     path( url_principal+'cliente/<int:pk>/', VacanteViews.vacante_cliente_mostrar, name='vacantes_cliente'),
     path( url_principal+'cliente_todos/', VacanteViews.vacante_cliente_todas, name='vacantes_cliente_todas'),
     path( url_principal+'cliente/', VacanteViews.vacante_cliente, name='vacantes'),
