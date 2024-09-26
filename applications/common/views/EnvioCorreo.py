@@ -12,6 +12,7 @@ def enviar_correo(tipo_correo, contexto, asunto, lista_destinatarios, correo_rem
     plantilla_correo = {
         'bienvenida': 'authentication/correo_bienvenida.html',
         'token': 'authentication/token_generado.html',
+        'creacion_usuario_cliente': 'cliente/creacion_usuario.html',
     }
 
     nombre_plantilla = plantilla_correo.get(tipo_correo)
