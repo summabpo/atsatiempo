@@ -2,6 +2,7 @@ from django.db import models
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.cliente.models import Cli051Cliente
 from applications.candidato.models import Can101Candidato
+from applications.usuarios.models import UsuarioBase
 
 # Create your models here.
 class Cli053SoftSkill(models.Model):
@@ -123,3 +124,41 @@ class Cli056AplicacionVacante(models.Model):
         verbose_name = 'APLICACIÓN A VACANTE'
         verbose_name_plural = 'APLICACIONES A VACANTES'
         unique_together = ('candidato_101', 'vacante_id_052')  # Evita aplicaciones duplicadas
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class Cli057AsignacionEntrevista(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    
+    TIPO_ENTREVISTA = [
+        ('V', 'Virtual'),
+        ('P', 'Presencial'),
+    ]
+    
+    ESTADO_ASIGNACION = [
+        (1, 'Pendiente'),
+        (2, 'Apto'),
+        (3, 'No Apto'),
+        (4, 'Cancelado'),
+    ]
+
+    asignacion_vacante = models.ForeignKey(Cli056AplicacionVacante, on_delete=models.CASCADE, related_name='asignaciones_entrevista')
+    fecha_asignacion = models.DateTimeField(auto_now_add=True)
+    usuario_asigno = models.ForeignKey(UsuarioBase, on_delete=models.SET_NULL, null=True, related_name='entrevistas_asignadas')
+    usuario_asignado = models.ForeignKey(UsuarioBase, on_delete=models.SET_NULL, null=True, related_name='entrevistas_por_realizar')
+    fecha_entrevista = models.DateField()
+    hora_entrevista = models.TimeField()
+    tipo_entrevista = models.CharField(max_length=1, choices=TIPO_ENTREVISTA)
+    lugar_enlace = models.CharField(max_length=255)
+    estado_asignacion = models.IntegerField(choices=ESTADO_ASIGNACION, default=1)
+    estado = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
+
+    def __str__(self):
+        return f"Entrevista para vacante {self.vacante.id} - {self.get_estado_asignacion_display()}"
+
+    class Meta:
+        db_table = 'cli_057_asignacion_entrevista'
+        verbose_name = 'ASIGNACIÓN DE ENTREVISTA'
+        verbose_name_plural = 'ASIGNACIONES DE ENTREVISTAS'
+        unique_together = ('asignacion_vacante', 'usuario_asignado', 'fecha_entrevista', 'hora_entrevista')  # Evita asignaciones duplicadas

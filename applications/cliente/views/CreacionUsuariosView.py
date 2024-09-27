@@ -9,11 +9,19 @@ from django.contrib.auth.hashers import make_password
 import random
 import string
 from applications.common.views.EnvioCorreo import enviar_correo, generate_token
+from applications.usuarios.models import Permiso
+from django.contrib.auth.decorators import login_required
+from applications.usuarios.decorators  import validar_permisos
+
+# Create your views here.
+
 
 def generate_random_password(length=12):
     characters = string.ascii_letters + string.digits + string.punctuation
     return ''.join(random.choice(characters) for i in range(length))
 
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def usuario_interno(request):
     # Verificar si el cliente_id está en la sesión
     user_id = request.session.get('_auth_user_id')

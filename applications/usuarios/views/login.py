@@ -310,7 +310,7 @@ def signup_view(request):
                     {'form': form,
                     'login_f':login_f,
                     })
-    
+
 #registro candidato
 def signup_candidato(request):
     if request.method == 'POST':

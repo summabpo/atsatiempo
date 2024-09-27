@@ -126,6 +126,7 @@
                             <th>Fecha Aplico</th>
                             <th>Score</th>
                             <th>Ver Candidato</th>
+                            <th>Generar Entrevista</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -141,6 +142,9 @@
                                 <td> {{e.fecha_aplicacion|date:"Y-m-d"}} </td>
                                 <td>0%</td>
                                 <td>Ver</td>
+                                <td>
+                                    <a href="{% url 'vacantes:crear_entrevista' e.id %}" class="btn btn-icon btn-primary"><i class="bi bi-chat-square-text-fill fs-4 me-2"></i></a>
+                                </td>
                             </tr>
                         {% endfor %}
                             

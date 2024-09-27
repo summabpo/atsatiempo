@@ -1,0 +1,76 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} Detalle vacante {% endblock title %}
+
+{% block titulo_pagina %} Detalle vacante: {{ vacante.titulo }} {% endblock titulo_pagina %}
+
+{% block navegacion %}
+    <a href="{% url 'vacantes:vacantes' %}" class="text-white text-hover-primary"> Mis Vacantes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="text-white text-hover-primary"> Detalle Vacante {{ vacante.titulo }}</a>
+
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Crear Entrevista </li>
+{% endblock navegacion %}
+
+
+			
+    {% block css %}
+    .asteriskField {
+        color: red !important;
+    }
+    {% endblock css %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h3 class="card-title">Title</h3>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-light">
+                        Action
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% crispy EntrevistaForm %}
+            </div>
+            <div class="card-footer">
+                Footer
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h3 class="card-title">Title</h3>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-light">
+                        Action
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                Lorem Ipsum is simply dummy text...
+            </div>
+            <div class="card-footer">
+                Footer
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extrajs %}
+
+{% endblock extrajs %}

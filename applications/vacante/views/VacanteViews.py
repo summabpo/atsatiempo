@@ -11,144 +11,16 @@ import json
 from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 
-
 centinela = None
 
-# vacante por cliente sin loqin 
-def vacante_cliente_mostrar(request, pk=None):
-    #datos clientes
-    cliente = get_object_or_404(Cli051Cliente, pk=pk)
-    #estado_general_vacante
-    estado = Cat001Estado.objects.get(id=1)
-    #listado vacantes activas
-    vacantes = Cli052Vacante.objects.filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
+#ADMIN
 
-    form_errors = False
+#CLIENTE
 
-    # Formulario Vacantes
-    if request.method == 'POST': 
-        form = VacanteForm(request.POST)
-        if form.is_valid():
-            #datos formulario
-
-            titulo = form.cleaned_data['titulo']
-            numero_posiciones = form.cleaned_data['numero_posiciones']
-            profesion_estudio_id_055 = form.cleaned_data['profesion_estudio_id_055']
-            experiencia_requerida = form.cleaned_data['experiencia_requerida']
-            soft_skills_id_053 = form.cleaned_data['soft_skills_id_053']
-            hard_skills_id_054 = form.cleaned_data['hard_skills_id_054']
-            funciones_responsabilidades = form.cleaned_data['funciones_responsabilidades']
-            salario = form.cleaned_data['salario']
-
-            estado_id = Cat001Estado.objects.get(id=1)
-            ciudad_id = Cat004Ciudad.objects.get(id=form.cleaned_data['ciudad'])
-
-            # Intentar obtener el objeto profesion estudio
-            profesion_estudio_dato, created = Cli055ProfesionEstudio.objects.get_or_create(
-                nombre = profesion_estudio_id_055,
-                defaults={'estado_id_001': estado}
-            )
-
-            #crea la vacante
-            vacante_creada = Cli052Vacante.objects.create(
-                titulo = titulo,
-                numero_posiciones = numero_posiciones,
-                experiencia_requerida = experiencia_requerida,
-                funciones_responsabilidades = funciones_responsabilidades,
-                salario = salario,
-                estado_vacante = 1,
-                ciudad_id = ciudad_id.id,
-                cliente_id_051_id = cliente.id,
-                estado_id_001_id = estado_id.id,
-                profesion_estudio_id_055_id = profesion_estudio_dato.id,
-            )
-
-            # Convertir el string JSON en un objeto Python (lista de diccionarios)
-            skills = json.loads(soft_skills_id_053)
-            
-            # Ahora puedes iterar sobre la lista de diccionarios
-            for skill in skills:
-                # Intentar obtener el objeto soft_skills
-                soft_skills, created = Cli053SoftSkill.objects.get_or_create(
-                    nombre = skill['value'],
-                    defaults={'estado_id_001': estado}
-                )
-
-                Cli052VacanteSoftSkillsId053.objects.create(
-                    cli052vacante=vacante_creada,
-                    cli053softskill=soft_skills
-                )
-
-            # Convertir el string JSON en un objeto Python (lista de diccionarios)
-            skills = json.loads(hard_skills_id_054)
-            
-            # Ahora puedes iterar sobre la lista de diccionarios
-            for skill in skills:
-                # Intentar obtener el objeto hard_skills
-                hard_skills, created = Cli054HardSkill.objects.get_or_create(
-                    nombre = skill['value'],
-                    defaults={'estado_id_001': estado}
-                )
-
-                Cli052VacanteHardSkillsId054.objects.create(
-                    cli052vacante=vacante_creada,
-                    cli054hardskill=hard_skills
-                )
-
-            messages.success(request, 'El registro de la vacante ha sido creado con éxito.')
-            return redirect('vacantes:vacantes_cliente', pk=cliente.id)
-        else:
-            form_errors = True
-            messages.error(request, form.errors)
-    else:
-        form = VacanteForm()
-        form_edit = VacanteFormEdit()
-        vacantes = Cli052Vacante.objects.filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
-
-    return render(request, 'vacante/listado_vacantes_cliente.html',
-        { 
-            'form': form,
-            'form_edit': form_edit,
-            'vacantes': vacantes,
-            'cliente': cliente,
-            'form_errors': form_errors,
-        })    
-
-def vacante_api(request, pk=None):
-    global centinela
-
-    if request.method == 'GET':
-        id_vacante = request.GET.get('dato')
-        vacante = Cli052Vacante.objects.get(id=id_vacante)
-
-        centinela = vacante.id
-
-        ciudad = Cat004Ciudad.objects.get(id=vacante.ciudad.id)
-        profesion = Cli055ProfesionEstudio.objects.get(id=vacante.profesion_estudio_id_055.id)
-        print(profesion)
-
-        response_data = {
-            'data': {
-                'id': vacante.id,
-                'titulo': vacante.titulo,
-                'numero_posiciones': vacante.numero_posiciones,
-                'profesion_estudio': profesion.nombre,
-                'experiencia': vacante.experiencia_requerida,
-                'soft_skills': vacante.numero_posiciones,
-                'hard_skills': vacante.numero_posiciones,
-                'funciones_responsabilidades': vacante.funciones_responsabilidades,
-                'salario': vacante.salario,
-                'ciudad': ciudad.id,
-            }
-        }
-
-        print(response_data);
-        return JsonResponse(response_data)
-
-#vacante por cliente login
+# Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
-#@validar_permisos(*Permiso.obtener_nombres())
-def vacante_cliente(request):
+@validar_permisos(*Permiso.obtener_nombres())
+def ver_vacante_cliente(request):
     
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
@@ -253,10 +125,110 @@ def vacante_cliente(request):
             'primer_nombre': primer_nombre,
         })
 
-#ver todas las vacantes
+# vacante por cliente sin loqin 
+def vacante_cliente_mostrar(request, pk=None):
+    #datos clientes
+    cliente = get_object_or_404(Cli051Cliente, pk=pk)
+    #estado_general_vacante
+    estado = Cat001Estado.objects.get(id=1)
+    #listado vacantes activas
+    vacantes = Cli052Vacante.objects.filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
+
+    form_errors = False
+
+    # Formulario Vacantes
+    if request.method == 'POST': 
+        form = VacanteForm(request.POST)
+        if form.is_valid():
+            #datos formulario
+
+            titulo = form.cleaned_data['titulo']
+            numero_posiciones = form.cleaned_data['numero_posiciones']
+            profesion_estudio_id_055 = form.cleaned_data['profesion_estudio_id_055']
+            experiencia_requerida = form.cleaned_data['experiencia_requerida']
+            soft_skills_id_053 = form.cleaned_data['soft_skills_id_053']
+            hard_skills_id_054 = form.cleaned_data['hard_skills_id_054']
+            funciones_responsabilidades = form.cleaned_data['funciones_responsabilidades']
+            salario = form.cleaned_data['salario']
+
+            estado_id = Cat001Estado.objects.get(id=1)
+            ciudad_id = Cat004Ciudad.objects.get(id=form.cleaned_data['ciudad'])
+
+            # Intentar obtener el objeto profesion estudio
+            profesion_estudio_dato, created = Cli055ProfesionEstudio.objects.get_or_create(
+                nombre = profesion_estudio_id_055,
+                defaults={'estado_id_001': estado}
+            )
+
+            #crea la vacante
+            vacante_creada = Cli052Vacante.objects.create(
+                titulo = titulo,
+                numero_posiciones = numero_posiciones,
+                experiencia_requerida = experiencia_requerida,
+                funciones_responsabilidades = funciones_responsabilidades,
+                salario = salario,
+                estado_vacante = 1,
+                ciudad_id = ciudad_id.id,
+                cliente_id_051_id = cliente.id,
+                estado_id_001_id = estado_id.id,
+                profesion_estudio_id_055_id = profesion_estudio_dato.id,
+            )
+
+            # Convertir el string JSON en un objeto Python (lista de diccionarios)
+            skills = json.loads(soft_skills_id_053)
+            
+            # Ahora puedes iterar sobre la lista de diccionarios
+            for skill in skills:
+                # Intentar obtener el objeto soft_skills
+                soft_skills, created = Cli053SoftSkill.objects.get_or_create(
+                    nombre = skill['value'],
+                    defaults={'estado_id_001': estado}
+                )
+
+                Cli052VacanteSoftSkillsId053.objects.create(
+                    cli052vacante=vacante_creada,
+                    cli053softskill=soft_skills
+                )
+
+            # Convertir el string JSON en un objeto Python (lista de diccionarios)
+            skills = json.loads(hard_skills_id_054)
+            
+            # Ahora puedes iterar sobre la lista de diccionarios
+            for skill in skills:
+                # Intentar obtener el objeto hard_skills
+                hard_skills, created = Cli054HardSkill.objects.get_or_create(
+                    nombre = skill['value'],
+                    defaults={'estado_id_001': estado}
+                )
+
+                Cli052VacanteHardSkillsId054.objects.create(
+                    cli052vacante=vacante_creada,
+                    cli054hardskill=hard_skills
+                )
+
+            messages.success(request, 'El registro de la vacante ha sido creado con éxito.')
+            return redirect('vacantes:vacantes_cliente', pk=cliente.id)
+        else:
+            form_errors = True
+            messages.error(request, form.errors)
+    else:
+        form = VacanteForm()
+        form_edit = VacanteFormEdit()
+        vacantes = Cli052Vacante.objects.filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
+
+    return render(request, 'vacante/listado_vacantes_cliente.html',
+        { 
+            'form': form,
+            'form_edit': form_edit,
+            'vacantes': vacantes,
+            'cliente': cliente,
+            'form_errors': form_errors,
+        })    
+
+# Ver todas las vacantes activas
 @login_required
-#@validar_permisos(*Permiso.obtener_nombres())
-def vacante_cliente_todas(request):
+@validar_permisos(*Permiso.obtener_nombres())
+def ver_vacante_cliente_todos(request):
     
     vacantes = Cli052Vacante.objects.filter(estado_id_001=1).order_by('-id')
 
@@ -265,11 +237,13 @@ def vacante_cliente_todas(request):
             'vacantes': vacantes,
         })
 
+#Ver Gestión de la vacante
 @login_required
-#@validar_permisos(*Permiso.obtener_nombres())
-def vacante_detalle(request, pk):
+@validar_permisos(*Permiso.obtener_nombres())
+def vacante_gestion(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
+    vacante_aplicada = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante.id)
 
     user_id = request.session.get('_auth_user_id')
     print(user_id)
@@ -277,11 +251,33 @@ def vacante_detalle(request, pk):
     contexto = {
         'vacante': vacante,
         'cliente': cliente,
+        'vacante_aplicada': vacante_aplicada,
     }
-    return render(request, 'vacante/detalle_vacante.html', contexto)
+    return render(request, 'vacante/gestion_vacante.html', contexto)
 
+
+#CANDIDATO
+
+#Ver vacantes aplicadas del candidato
 @login_required
-#@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos(*Permiso.obtener_nombres())
+def ver_vacante_candidato_aplicadas(request):
+    candidato_id = request.session.get('candidato_id')
+    candidato = get_object_or_404(Can101Candidato, id=candidato_id)
+    vacante_aplicada = Cli056AplicacionVacante.objects.filter(candidato_101=candidato.id)
+    # vacante = get_object_or_404(Cli052Vacante, id=vacante_aplicada.vacante_id_052)
+
+    contexto = {
+        # 'vacante': vacante,
+        'vacante_aplicada' : vacante_aplicada,
+
+    }
+
+    return render(request, 'vacante/vacante_candidato.html', contexto)
+
+#Confirmación de Vacante Aplicada
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
 def vacante_aplicada(request, pk):
     error_vacante = False
 
@@ -311,28 +307,12 @@ def vacante_aplicada(request, pk):
             'error_vacante': error_vacante,
         })
 
+#Ver Detalle de la vacante
 @login_required
-#@validar_permisos(*Permiso.obtener_nombres())
-def vacante_candidato(request):
-    candidato_id = request.session.get('candidato_id')
-    candidato = get_object_or_404(Can101Candidato, id=candidato_id)
-    vacante_aplicada = Cli056AplicacionVacante.objects.filter(candidato_101=candidato.id)
-    # vacante = get_object_or_404(Cli052Vacante, id=vacante_aplicada.vacante_id_052)
-
-    contexto = {
-        # 'vacante': vacante,
-        'vacante_aplicada' : vacante_aplicada,
-
-    }
-
-    return render(request, 'vacante/vacante_candidato.html', contexto)
-
-@login_required
-#@validar_permisos(*Permiso.obtener_nombres())
-def vacante_gestion(request, pk):
+@validar_permisos(*Permiso.obtener_nombres())
+def vacante_detalle(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
-    vacante_aplicada = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante.id)
 
     user_id = request.session.get('_auth_user_id')
     print(user_id)
@@ -340,8 +320,44 @@ def vacante_gestion(request, pk):
     contexto = {
         'vacante': vacante,
         'cliente': cliente,
-        'vacante_aplicada': vacante_aplicada,
     }
-    return render(request, 'vacante/gestion_vacante.html', contexto)
+    return render(request, 'vacante/detalle_vacante.html', contexto)
+
+
+
+def vacante_api(request, pk=None):
+    global centinela
+
+    if request.method == 'GET':
+        id_vacante = request.GET.get('dato')
+        vacante = Cli052Vacante.objects.get(id=id_vacante)
+
+        centinela = vacante.id
+
+        ciudad = Cat004Ciudad.objects.get(id=vacante.ciudad.id)
+        profesion = Cli055ProfesionEstudio.objects.get(id=vacante.profesion_estudio_id_055.id)
+        print(profesion)
+
+        response_data = {
+            'data': {
+                'id': vacante.id,
+                'titulo': vacante.titulo,
+                'numero_posiciones': vacante.numero_posiciones,
+                'profesion_estudio': profesion.nombre,
+                'experiencia': vacante.experiencia_requerida,
+                'soft_skills': vacante.numero_posiciones,
+                'hard_skills': vacante.numero_posiciones,
+                'funciones_responsabilidades': vacante.funciones_responsabilidades,
+                'salario': vacante.salario,
+                'ciudad': ciudad.id,
+            }
+        }
+
+        print(response_data);
+        return JsonResponse(response_data)
+
+
+
+
 
 

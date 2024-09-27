@@ -1,0 +1,126 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} ATS Listado Vacantes {% endblock title %}
+
+{% block titulo_pagina %} Listado Vacantes {% endblock titulo_pagina %}
+
+{% block titulo-pagina %}
+    Listado de Vacantes
+{% endblock titulo-pagina %}
+
+{% block navegacion %}
+    <li class="breadcrumb-item text-white opacity-75">Listado Vacantes</li>
+    
+    <!-- <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Multipurpose</li> -->
+{% endblock navegacion %}
+
+
+			
+    {% block css %}
+    .asteriskField {
+            color: red !important;
+            }
+    {% endblock css %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Title</h3>
+        <div class="card-toolbar">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#kt_modal_1">
+                <i class="ki-duotone ki-profile-user fs-1"><span class="path1"></span><span class="path2"></span></i>
+                Asignar Entrevista
+            </button>
+            
+            <div class="modal fade" tabindex="-1" id="kt_modal_1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Asignación Vacante</h3>
+            
+                            <!--begin::Close-->
+                            <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                            </div>
+                            <!--end::Close-->
+                        </div>
+            
+                        <div class="modal-body">
+                            <p>Modal body text goes here.</p>
+                        </div>
+            
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="kt_datatable_dom_positioning" class="table table-striped table-row-bordered gy-5 gs-7 border rounded">
+            <thead>
+                <tr class="fw-bold fs-6 text-gray-800 px-7">
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Salary</th>
+                    <th>Office</th>
+                    <th>Extn.</th>
+                    <th>E-mail</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tiger Nixon</td>
+                    <td>System Architect</td>
+                    <td>Edinburgh</td>
+                    <td>61</td>
+                    <td>2011/04/25</td>
+                    <td>$320,800</td>
+                </tr>
+                <tr>
+                    <td>Garrett Winters</td>
+                    <td>Accountant</td>
+                    <td>Tokyo</td>
+                    <td>63</td>
+                    <td>2011/07/25</td>
+                    <td>$170,750</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        Pie Página
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block extrajs %}
+<script>
+    $("#kt_datatable_dom_positioning").DataTable({
+        "language": {
+            "lengthMenu": "Show _MENU_",
+        },
+        "dom":
+            "<'row mb-2'" +
+            "<'col-sm-6 d-flex align-items-center justify-conten-start dt-toolbar'l>" +
+            "<'col-sm-6 d-flex align-items-center justify-content-end dt-toolbar'f>" +
+            ">" +
+    
+            "<'table-responsive'tr>" +
+    
+            "<'row'" +
+            "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+            "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+            ">"
+    });
+</script>
+{% endblock extrajs %}
