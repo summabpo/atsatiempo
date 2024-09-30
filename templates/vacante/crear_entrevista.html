@@ -35,18 +35,16 @@
     <div class="col-lg-4">
         <div class="card shadow-lg">
             <div class="card-header">
-                <h3 class="card-title">Title</h3>
+                <h3 class="card-title">Asignación de Entrevista</h3>
                 <div class="card-toolbar">
-                    <button type="button" class="btn btn-sm btn-light">
-                        Action
-                    </button>
+                    <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
                 </div>
             </div>
             <div class="card-body">
-                {% crispy EntrevistaForm %}
+                {% crispy form %}
             </div>
             <div class="card-footer">
-                Footer
+                <button type="submit" class="btn btn-light-success" form="form_crear_entrevista">GUARDAR</button>
             </div>
         </div>
     </div>
@@ -55,16 +53,15 @@
             <div class="card-header">
                 <h3 class="card-title">Title</h3>
                 <div class="card-toolbar">
-                    <button type="button" class="btn btn-sm btn-light">
-                        Action
-                    </button>
+                    <button type="button"  data-bs-dismiss="modal">Volver</button>
+                    
                 </div>
             </div>
             <div class="card-body">
                 Lorem Ipsum is simply dummy text...
             </div>
             <div class="card-footer">
-                Footer
+                
             </div>
         </div>
     </div>

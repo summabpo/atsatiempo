@@ -13,6 +13,8 @@ def enviar_correo(tipo_correo, contexto, asunto, lista_destinatarios, correo_rem
         'bienvenida': 'authentication/correo_bienvenida.html',
         'token': 'authentication/token_generado.html',
         'creacion_usuario_cliente': 'cliente/creacion_usuario.html',
+        'asignacion_entrevista_entrevistador' : 'vacante/asignacion_entrevista_correo.html',
+        'asignacion_entrevista_entrevistado' : 'vacante/asignacion_entrevista_correo_candidato.html'
     }
 
     nombre_plantilla = plantilla_correo.get(tipo_correo)

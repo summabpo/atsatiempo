@@ -117,7 +117,7 @@ class Cli056AplicacionVacante(models.Model):
     estado_aplicacion = models.IntegerField(choices=ESTADO_APLICACION, default=1)
 
     def __str__(self):
-        return f"{self.candidato} - {self.vacante} - {self.get_estado_aplicacion_display()}"
+        return str(self.id)
 
     class Meta:
         db_table = 'cli_056_aplicacion_vacante'
@@ -125,8 +125,6 @@ class Cli056AplicacionVacante(models.Model):
         verbose_name_plural = 'APLICACIONES A VACANTES'
         unique_together = ('candidato_101', 'vacante_id_052')  # Evita aplicaciones duplicadas
 
-from django.db import models
-from django.contrib.auth.models import User
 
 class Cli057AsignacionEntrevista(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -155,7 +153,7 @@ class Cli057AsignacionEntrevista(models.Model):
     estado = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
 
     def __str__(self):
-        return f"Entrevista para vacante {self.vacante.id} - {self.get_estado_asignacion_display()}"
+        return str(self.id)
 
     class Meta:
         db_table = 'cli_057_asignacion_entrevista'

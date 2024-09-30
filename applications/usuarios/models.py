@@ -65,7 +65,7 @@ class UsuarioBase(AbstractUser):
     user_permissions = None
     
     def str(self):
-        return self.username
+        return str(self.id)
     class Meta:
         #managed = False
         db_table = 'usuario'

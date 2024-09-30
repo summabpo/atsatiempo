@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from applications.cliente.models import Cli051Cliente
 from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli056AplicacionVacante
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli056AplicacionVacante, Cli057AsignacionEntrevista
 from applications.usuarios.models import Permiso
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato
@@ -244,6 +244,7 @@ def vacante_gestion(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
     vacante_aplicada = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante.id)
+    # entrevista_generada = Cli057AsignacionEntrevista.objects.filter(asignacion_vacante=vacante_aplicada)
 
     user_id = request.session.get('_auth_user_id')
     print(user_id)
