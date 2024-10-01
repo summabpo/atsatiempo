@@ -15,7 +15,7 @@ urlpatterns = [
     path( url_principal+'gestion/<int:pk>/', VacanteViews.vacante_gestion, name='vacante_gestion'),
     
     #Entrevistas
-    path( url_principal+'entrevista', EntrevistaView.ver_entrevista_todos, name='ver_entrevista_todos'),
+    path( url_principal+'entrevista/', EntrevistaView.ver_entrevista_todos, name='ver_entrevista_todos'),
     path( url_principal+'crear_entrevista/<int:asignacion_id>/', EntrevistaView.crear_entrevista, name='crear_entrevista'),
     
 ]

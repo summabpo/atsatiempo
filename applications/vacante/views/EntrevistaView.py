@@ -13,6 +13,7 @@ from applications.cliente.models import Cli051Cliente
 from applications.usuarios.models import Permiso
 from applications.usuarios.models import UsuarioBase
 from applications.common.models import Cat001Estado
+from applications.candidato.models import Can101Candidato
 
 # Create your views here.
 
@@ -23,12 +24,9 @@ from applications.common.models import Cat001Estado
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def ver_entrevista_todos(request):    
-    asignaciones = Cli057AsignacionEntrevista.objects.filter(estado=1, asignacion_vacante__candidato_101__id=1 ).select_related(
-        'asignacion_vacante__candidato_101',
-        'asignacion_vacante__vacante_id_052',
-        'usuario_asigno',
-        'usuario_asignado'
-    ).values('asignacion_vacante__id','asignacion_vacante__candidato_101__primer_nombre').order_by('fecha_asignacion')
+    cliente_id = request.session.get('cliente_id')
+    asignaciones = Cli057AsignacionEntrevista.objects.select_related('asignacion_vacante__vacante_id_052__cliente_id_051', 'asignacion_vacante__candidato_101') \
+    .values('asignacion_vacante__candidato_101__primer_nombre')
     
     print(asignaciones)
 
@@ -36,22 +34,37 @@ def ver_entrevista_todos(request):
         'asignaciones': asignaciones
     }
 
+    return render(request, 'vacante/ver_entrevista_todos.html', contexto)
+
 #Generar Entrevista
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def crear_entrevista(request, asignacion_id):
 
+    validar_registro = False
     usuario_id = request.session.get('_auth_user_id')
     cliente_id = request.session.get('cliente_id')
     grupo_id = request.session.get('grupo_id')
-    print(asignacion_id)
+    
 
     aplicacion_entrevista = get_object_or_404(Cli056AplicacionVacante, pk=asignacion_id)
     vacante = get_object_or_404(Cli052Vacante, id=aplicacion_entrevista.vacante_id_052.id)
     cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
     usuario = get_object_or_404(UsuarioBase, id=usuario_id)
-    print(grupo_id)
-    print(cliente_id)
+    
+    asignacion_vacante = Cli056AplicacionVacante.objects.get(id=asignacion_id)
+    info_candidato = Can101Candidato.objects.get(id= asignacion_vacante.candidato_101.id)
+    
+    
+    entrevista_existente = Cli057AsignacionEntrevista.objects.filter(asignacion_vacante=asignacion_vacante)
+
+    if entrevista_existente:
+        validar_registro = True
+        entrevista = Cli057AsignacionEntrevista.objects.get(asignacion_vacante=asignacion_vacante)
+        messages.success(request, 'Ya se ha asignado una entrevista')
+    else:
+        entrevista = None    
+
     if request.method == 'POST':
         form = EntrevistaCrearForm(request.POST, grupo_id=4, cliente_id=cliente_id)
         if form.is_valid():
@@ -64,7 +77,6 @@ def crear_entrevista(request, asignacion_id):
             usuario_asignado = get_object_or_404(UsuarioBase, id=entrevistador)
 
             # Obtener instancias de los modelos relacionados
-            asignacion_vacante = Cli056AplicacionVacante.objects.get(id=asignacion_id)
             usuario_asigno = request.user  # Asumiendo que el usuario actual es quien asigna la entrevista
             estado_default = Cat001Estado.objects.get(id=1)  # Asumiendo que 1 es el estado por defecto
 
@@ -81,9 +93,10 @@ def crear_entrevista(request, asignacion_id):
                 estado=estado_default,
             )
 
+            
             contexto_email_1 = {
-                'name' : f'{usuario_asignado.primer_nombre} {usuario_asignado.segundo_nombre} {usuario_asignado.primer_apellido}',
-                'nombre_candidato' : f'{usuario_asignado.primer_nombre} {usuario_asignado.segundo_nombre} {usuario_asignado.primer_apellido}',
+                'entrevistador' : f'{usuario_asignado.primer_nombre} {usuario_asignado.segundo_nombre} {usuario_asignado.primer_apellido}',
+                'nombre_candidato' : f'{info_candidato.primer_nombre} {info_candidato.segundo_nombre} {info_candidato.primer_apellido} {info_candidato.segundo_apellido}' ,
                 'fecha_entrevista' : fecha_entrevista,
                 'hora_entrevista' : hora_entrevista,
                 'lugar_enlace' : lugar_enlace,
@@ -91,8 +104,13 @@ def crear_entrevista(request, asignacion_id):
                 'cliente' : cliente.razon_social,
             }
 
+            lista_correos = [
+                usuario_asignado.email,
+                info_candidato.email
+            ]
+
             # Envio de correo
-            enviar_correo('asignacion_entrevista_entrevistador', contexto_email_1, f'Asginación de Entrevista ID: {asignacion_entrevista.id}', [usuario_asignado.email], correo_remitente=None)
+            enviar_correo('asignacion_entrevista_entrevista', contexto_email_1, f'Asginación de Entrevista ID: {asignacion_entrevista.id}', lista_correos, correo_remitente=None)
 
             frase_aleatoria = 'Se ha asignado entrevista correctamente.'
             messages.success(request, frase_aleatoria)
@@ -108,7 +126,8 @@ def crear_entrevista(request, asignacion_id):
         'form' : form,
         'aplicacion_entrevista': aplicacion_entrevista,
         'vacante': vacante,
-        'EntrevistaForm': EntrevistaCrearForm,
+        'validar_registro' : validar_registro,
+        'entrevista' : entrevista,
     }
 
     return render(request, 'vacante/crear_entrevista.html', contexto)

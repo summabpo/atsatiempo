@@ -32,8 +32,10 @@
 
 {% block content %}
 <div class="row">
+    <div class="col-lg-4"></div>
     <div class="col-lg-4">
         <div class="card shadow-lg">
+            {% if not validar_registro  %}
             <div class="card-header">
                 <h3 class="card-title">Asignación de Entrevista</h3>
                 <div class="card-toolbar">
@@ -46,25 +48,30 @@
             <div class="card-footer">
                 <button type="submit" class="btn btn-light-success" form="form_crear_entrevista">GUARDAR</button>
             </div>
-        </div>
-    </div>
-    <div class="col-lg-8">
-        <div class="card shadow-lg">
+            {% else %}
             <div class="card-header">
-                <h3 class="card-title">Title</h3>
+                <h3 class="card-title">Datos Entrevista</h3>
                 <div class="card-toolbar">
-                    <button type="button"  data-bs-dismiss="modal">Volver</button>
-                    
+                    <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
                 </div>
             </div>
             <div class="card-body">
-                Lorem Ipsum is simply dummy text...
+                <ul>
+                    <li>Empresa: <h5><b>{{ entrevista.asignacion_vacante.vacante_id_052.cliente_id_051.razon_social }}</b></h5></li>
+                    <li>Vacante: <h5><b>{{ entrevista.asignacion_vacante.vacante_id_052.titulo }}</b></h5></li>
+                    <li>Fecha Entrevista: <h5><b>{{ entrevista.fecha_entrevista  }}</b></h5></li>
+                    <li>Tipo Entrevista: <h5><b>{% if entrevista.tipo_entrevista == V  %} VIRUTAL {% else %} PRESENCIAL {% endif %}</b></h5></li>
+                    <li>Fecha Entrevista: <h5><b>{{ entrevista.hora_entrevista  }}</b></h5></li>
+                </ul>
+                
             </div>
             <div class="card-footer">
                 
             </div>
+            {% endif %}
         </div>
     </div>
+    <div class="col-lg-4"></div>
 </div>
 {% endblock content %}
 

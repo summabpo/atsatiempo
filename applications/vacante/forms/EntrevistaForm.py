@@ -62,9 +62,6 @@ class EntrevistaCrearForm(forms.Form):
         cliente_id = kwargs.pop('cliente_id', None)
         super().__init__(*args, **kwargs)
 
-        print(f'grupo_form: {grupo_id}')
-        print(f'cliente: {cliente_id}')
-
         # Configuración de Crispy Forms
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -75,7 +72,7 @@ class EntrevistaCrearForm(forms.Form):
 
         usuarios =  UsuarioBase.objects.filter(group=grupo_id, cliente_id_051=cliente_id, is_active=True).order_by('primer_apellido')
         usuario_choices = [('', '----------')] + [(usuario.id, f" {usuario.primer_apellido} {usuario.primer_nombre}") for usuario in usuarios]
-        print(usuario_choices)
+        
         # Añadir el campo city al formulario con las opciones obtenidas
         self.fields['entrevistador'] = forms.ChoiceField(
             choices=usuario_choices,
