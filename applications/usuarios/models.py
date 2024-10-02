@@ -81,10 +81,13 @@ class UsuarioBase(AbstractUser):
         # Puedes implementar tu lógica aquí o:
         return all(self.has_perm(perm) for perm in perm_list)
 
+def calcular_fecha_expiracion():
+    return timezone.now() + timezone.timedelta(hours=24)
+
 class TokenAutorizacion(models.Model):
     user = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True)
     token = models.CharField(max_length=255, unique=True)
-    fecha_expiracion = models.DateTimeField(default=timezone.now() + timedelta(days=1))
+    fecha_expiracion = models.DateTimeField(default=calcular_fecha_expiracion)
     fecha_validacion = models.DateTimeField(null=True, blank=True)
     class Meta:
         db_table = 'token_autorizacion'
