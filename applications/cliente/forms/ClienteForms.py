@@ -32,15 +32,10 @@ class ClienteForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ClienteForm, self).__init__(*args, **kwargs)
         
-        
-        
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.enctype = 'multipart/form-data'
         self.helper.form_id = 'form_cliente'
-
-        
-        
 
         self.fields['nit'].widget.attrs.update({
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
@@ -52,7 +47,6 @@ class ClienteForm(forms.Form):
             'data-placeholder': 'Ingrese Razón Social'
         })
 
-        
         self.fields['ciudad_id_004'].widget.attrs.update({
             'data-control': 'select2',
             'data-tags':'true',
