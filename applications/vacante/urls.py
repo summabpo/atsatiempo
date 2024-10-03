@@ -17,6 +17,7 @@ urlpatterns = [
     #Entrevistas
     path( url_principal+'entrevista/', EntrevistaView.ver_entrevista_todos, name='ver_entrevista_todos'),
     path( url_principal+'entrevista/candidato', EntrevistaView.ver_entrevista_candidato, name='ver_entrevista_candidato'),
+    path( url_principal+'entrevista/entrevistador', EntrevistaView.ver_entrevista_entrevistador, name='ver_entrevista_entrevistador'),
     path( url_principal+'crear_entrevista/<int:asignacion_id>/', EntrevistaView.crear_entrevista, name='crear_entrevista'),
     
 ]
