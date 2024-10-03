@@ -152,6 +152,46 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">GRUPO TRABAJO</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'clientes:usuarios_internos_listar' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Grupo Trabajo</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">CONFIGURACIONES</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'clientes:ver_preguntas_cliente' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Preguntas ADN</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                         {% endif %}
 
                         {% if 'acceso_candidato' in request.permisos_usuario %}
@@ -311,9 +351,9 @@
                                     <!--end::Avatar-->
                                     <!--begin::Username-->
                                     <div class="d-flex flex-column">
-                                        <div class="fw-bold d-flex align-items-center fs-5">Max Smith 
+                                        <div class="fw-bold d-flex align-items-center fs-5">{{ request.session.primer_nombre }}
                                         <span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">Pro</span></div>
-                                        <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">max@kt.com</a>
+                                        <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">{{ request.session.email }}</a>
                                     </div>
                                     <!--end::Username-->
                                 </div>
@@ -324,13 +364,13 @@
                             <!--end::Menu separator-->
                             <!--begin::Menu item-->
                             <div class="menu-item px-5">
-                                <a href="account/overview.html" class="menu-link px-5">My Profile</a>
+                                <a href="account/overview.html" class="menu-link px-5">Mi Perfil</a>
                             </div>
                             
                             <div class="separator my-2"></div>
                             
                             <div class="menu-item px-5">
-                                <a href="{% url 'accesses:logout'%}" class="menu-link px-5">Sign Out</a>
+                                <a href="{% url 'accesses:logout'%}" class="menu-link px-5">Cerrar Sesión</a>
                             </div>
                             <!--end::Menu item-->
                         </div>

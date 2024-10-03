@@ -194,7 +194,10 @@ def login_view(request):
                     
                     if usuario.is_verificado == True:
                         login(request, user)
-                        request.session['primer_nombre'] = usuario.primer_nombre
+                        request.session['primer_nombre'] = f'{usuario.primer_nombre} {usuario.primer_apellido}'
+                        request.session['email'] = usuario.username
+                        
+                        
                         # Valida el usuario es de grupo cliente para mostrar el id cliente. 
                         if usuario.group.id == 3:
                             request.session['cliente_id'] = usuario.cliente_id_051.id

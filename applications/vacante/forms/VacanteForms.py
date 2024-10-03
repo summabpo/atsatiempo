@@ -52,8 +52,8 @@ class VacanteForm(forms.Form):
         widget=forms.Textarea(
             attrs={
                 'placeholder': 'Describa por favor las funciones y responsabilidades',
-                'rows': 5,  
-                'cols': 40,  
+                'rows': 1,  
+                'cols': 30,  
                 'class': 'fixed-size-textarea form-control-solid'
             }
         )
