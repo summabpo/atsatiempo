@@ -27,17 +27,12 @@ def ver_preguntas_cliente(request):
             respuesta = form.cleaned_data['respuesta']
             pregunta_correlacion = form.cleaned_data['pregunta_correlacion']
 
-            print(pregunta_cliente)
-            print(respuesta)
-            print(pregunta_correlacion)
-
-
             cliente = Cli051Cliente.objects.get(id=cliente_id)  
 
             pregunta = Cli058Pregunta.objects.create(
                 cliente=cliente,
                 pregunta=pregunta_cliente,
-                respuesta=4,
+                respuesta=respuesta,
                 pregunta_correlacion=pregunta_correlacion,
             )
 

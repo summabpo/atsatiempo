@@ -17,7 +17,7 @@ from applications.usuarios.decorators  import validar_permisos
 
 
 def generate_random_password(length=12):
-    characters = string.ascii_letters + string.digits + string.punctuation
+    characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for i in range(length))
 
 @login_required
@@ -48,7 +48,7 @@ def usuario_interno(request):
             grupo = get_object_or_404(Grupo, id=rol)
 
             passwordoriginal = generate_random_password()
-            password = make_password(passwordoriginal)
+            
 
             user = UsuarioBase.objects.create_user(
                 username= correo, 
@@ -57,7 +57,7 @@ def usuario_interno(request):
                 segundo_nombre = segundo_nombre.capitalize(), 
                 primer_apellido = primer_apellido.capitalize(), 
                 segundo_apellido = segundo_apellido.capitalize(),  
-                password=password,
+                password=passwordoriginal,
                 cliente_id_051 = cliente,
                 is_verificado = True,
                 group=grupo,

@@ -99,10 +99,6 @@ class CrearUsuarioInternoForm(forms.Form):
                 css_class='fw-semibold fs-6 mb-2'
             ),
             Row(
-                Column('ciudad', css_class='form-group mb-0'),
-                css_class='fw-semibold fs-6 mb-2'
-            ),
-            Row(
                 Column('rol', css_class='form-group mb-0'),
                 css_class='fw-semibold fs-6 mb-2'
             ),
