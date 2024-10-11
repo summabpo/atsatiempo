@@ -1,0 +1,116 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} ATS Listado Vacantes {% endblock title %}
+
+{% block titulo_pagina %} Listado Vacantes {% endblock titulo_pagina %}
+
+{% block titulo-pagina %}
+    Listado de Vacantes
+{% endblock titulo-pagina %}
+
+{% block navegacion %}
+    <li class="breadcrumb-item text-white opacity-75">Listado Vacantes</li>
+    
+    <!-- <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Multipurpose</li> -->
+{% endblock navegacion %}
+
+
+			
+    {% block css %}
+    .asteriskField {
+            color: red !important;
+            }
+    {% endblock css %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header border-0 pt-6">
+        <div class="card-title">
+            <h2>Vacantes {{ cliente.razon_social}}</h2>
+        </div>
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-body py-4">
+        <table id="kt_prueba" class="table table-striped table-row-bordered gy-5 gs-7 border rounded">
+            <thead>
+                <tr class="fw-bold fs-6 text-gray-800 px-7">
+                    <th>CLIENTE</th>
+                    <th>TITULO VACANTE</th>
+                    <th>FECHA VACANTE</th>
+                    <th>CIUDAD</th>
+                    <th># VACANTES</th>
+                    <th>ESTADO</th>
+                    <th>VER DETALLE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in vacantes %}
+                <tr>
+                    <td>{{e.cliente_id_051.razon_social}}</td>
+                    <td>{{e.titulo}}</td>
+                    <td>{{e.fecha_creacion | date:"Y/m/d" }}</td>
+                    <td>{{e.ciudad.nombre}}</td>
+                    <td>{{e.numero_posiciones}}</td>
+                    <td>
+                        {% if e.estado_vacante == 1 %}
+                            Abierta
+                        {% elif e.estado_vacante == 2 %}
+                            Cerrada
+                        {% elif e.estado_vacante == 3 %}
+                            En proceso
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'vacantes:vacante_detalle' e.id  %}" class="btn btn-primary">
+                            <i class="ki-duotone ki-chart-simple-2 fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+                            Ver Detalle
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extrajs %}
+<script>
+
+    $("#kt_prueba").DataTable({
+        "language": {
+            "lengthMenu": "Show _MENU_",
+        },
+        "dom":
+            "<'row mb-2'" +
+            "<'col-sm-6 d-flex align-items-center justify-conten-start dt-toolbar'l>" +
+            "<'col-sm-6 d-flex align-items-center justify-content-end dt-toolbar'f>" +
+            ">" +
+    
+            "<'table-responsive'tr>" +
+    
+            "<'row'" +
+            "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+            "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+            ">"
+    });
+
+    var input1 = document.querySelector("#soft_skills");
+    new Tagify(input1);
+    
+    var input2 = document.querySelector("#hard_skills");
+    new Tagify(input2);
+
+</script>
+{% endblock extrajs %}

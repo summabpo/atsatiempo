@@ -1,0 +1,67 @@
+{% extends 'base/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %} ATS Atiempo | Editar Candidato {% endblock title %}
+
+{% block titulo_pagina %} Información Personal {% endblock titulo_pagina %}
+
+{% block css %}
+
+{% endblock css %}
+
+
+{% block navegacion %}
+    <li class="breadcrumb-item text-white opacity-75">
+        <a href="{% url 'candidatos:candidato_listar' %}" class="text-white text-hover-primary">Listado Candidatos</a>
+    </li>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <li class="breadcrumb-item text-white opacity-75">Información Candidato</li>
+{% endblock navegacion %}
+
+{% block content %}
+
+
+<div class="d-flex flex-column flex-xl-row">
+    <!--begin::Sidebar-->
+    
+    <div class="flex-lg-row-fluid ms-lg-10">
+        <div class="row g-xxl-9">
+            <div class="col-xxl-12">
+                <div class="card card-xxl-stretch mb-5 mb-xxl-10">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3>Información Personal</h3>
+                        </div>
+                    </div>
+                    <div class="card-body pb-0">
+                        {% crispy form %}
+                    </div>
+                    <div class="card-footer">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+
+{% if accion == 'Editar' %}
+
+
+{% endif %}
+
+
+
+{% endblock content %}
+
+
+{% block extrajs %}  {% endblock extrajs %}

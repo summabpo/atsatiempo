@@ -1,0 +1,30 @@
+{% extends 'base/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %} ATS Crear Cliente {% endblock title %}
+
+{% block titulo-pagina %}
+    Crear Cliente
+{% endblock titulo-pagina %}
+
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Title</h3>
+        
+    </div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {% crispy form %}
+        </form> 
+    </div>
+    <div class="card-footer">
+        Footer
+    </div>
+</div>
+
+{% endblock content %}
