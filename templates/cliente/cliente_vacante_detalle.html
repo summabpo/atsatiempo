@@ -1,0 +1,44 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} ATS | Cliente {{cliente.razon_social}} {% endblock title %}
+
+{% block titulo_pagina %} Vacante: {{vacante.titulo}} {% endblock titulo_pagina %}
+
+{% block navegacion %}
+    <a href="{% url 'clientes:cliente_listar' %}" class="breadcrumb-item text-white text-hover-primary"> Listado Clientes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <a href="{% url 'clientes:cliente_detalle' cliente.id %}" class="breadcrumb-item text-white text-hover-primary"> Cliente: {{cliente.razon_social}}</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <a href="{% url 'clientes:cliente_vacante' cliente.id %}" class="breadcrumb-item text-white text-hover-primary"> Listado Vacantes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">{{vacante.titulo}}</li>
+{% endblock navegacion %}
+
+
+{% block css %}
+    .asteriskField {
+        color: red !important;
+    }
+    {% endblock css %}
+
+{% block content %}
+
+{% endblock content %}
+
+{% block extrajs %}
+
+{% endblock extrajs %}

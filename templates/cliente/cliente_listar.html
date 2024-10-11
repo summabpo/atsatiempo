@@ -1,0 +1,288 @@
+{% extends 'base/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %} ATS Listado Clientes {% endblock title %}
+
+{% block titulo_pagina %} Listado de Clientes {% endblock titulo_pagina %}
+
+{% block css %}
+    .asteriskField {
+        color: red !important;
+    }
+{% endblock css %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header border-0 pt-6">
+        <div class="card-title">
+            
+        </div>
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                <button type="button" class="btn btn-light-success" data-bs-toggle="modal" data-bs-target="#modal1">
+                <i class="ki-duotone ki-plus fs-2"></i>Crear Cliente </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body py-4">
+        <table id="kt_datatable_cliente" class="table align-middle table-row-dashed fs-5 gy-5">
+            <thead>
+                <tr class="text-start  fw-bold fs-7 text-uppercase gs-0">
+                    <th class="min-w-125px">Detalle</th>
+                    <th style="text-align: left;" class="min-w-125px">Cliente</th>
+                    <th style="text-align: left;" class="min-w-125px">Nit</th>
+                    <th style="text-align: left;" class="min-w-125px">Email</th>
+                    <th style="text-align: left;" class="min-w-125px">Teléfono</th>
+                    <th style="text-align: left;" class="min-w-125px">Ciudad</th>
+                    <th style="text-align: left;" class="text-end min-w-100px">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in clientes %}
+                <tr>
+                    <td class="align-items-left">
+
+                        <!-- Detalle -->
+                        <a class="btn btn-light-primary" href="{% url 'clientes:cliente_detalle' e.id  %}"  >
+                            <i class="ki-duotone ki-element-8                        ">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </a>
+
+                    </td>
+                    <td class="d-flex align-items-left">
+                        
+                        <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                            <div class="symbol-label">
+                                {% if e.logo %}
+                                    <img src="{{ e.logo.url }}" alt="Emma Smith" class="w-100" />
+                                {% else %}  
+                                    <img src="{% static 'media/avatars/blank.png' %}" alt="Emma Smith" class="w-100" />
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex flex-column">
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">{{ e.razon_social }}</a>
+                            <span>{{ e.contacto }}</span>
+                        </div>
+                    
+                    </td>
+                    <td style="text-align: left;">{{ e.nit }}</td>
+                    <td style="text-align: left;">{{ e.email }}</td>
+                    <td style="text-align: left;">{{ e.telefono }}</td>
+                    <td style="text-align: left;">{{ e.ciudad_id_004.nombre }}</td>
+                    <td style="text-align: left;" class="text-end min-w-100px">
+                        <!-- Botón 1 -->
+                        <button type="button" class="btn btn-icon btn-primary text-center" data-bs-toggle="modal" data-bs-target="#modal2" data-cliente_id="{{ e.id }}">
+                            <i class="fa-solid fa-file-pen fs-4"></i>
+                        </button>
+
+                        <!-- Botón 2 -->
+                        <a class="btn btn-icon btn-primary" href="{% url 'vacantes:vacantes_cliente' e.id  %}"  >
+                            <i class="fa-solid fa-user fs-4"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal 1 -->
+<div class="modal fade" tabindex="-1" id="modal1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nuevo Cliente</h3>
+    
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+    
+            <div class="modal-body">
+                {% crispy form %}
+            </div>
+    
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" form="form_cliente" >Crear Cliente</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2 -->
+<div class="modal fade" tabindex="-1" id="modal2">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"> Editar Cliente </h3>
+    
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+    
+            <div class="modal-body">
+                <form id="form_edit_client" method="post" action="{% url 'clientes:ajax_obtener_cliente' %}">
+                    {% crispy form %}
+                </form>
+            </div>
+    
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" form="form_edit_client" >Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 3 -->
+<div class="modal fade" id="modal3" tabindex="-1" aria-labelledby="modal3Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal3Label">Modal 3</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Contenido del Modal 3
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+
+{% block extrajs %}
+<script>
+    $(document).ready(function() {
+        // Si hay errores en el formulario, aseguramos que el modal se mantenga abierto
+        {% if form_errors %}
+            $('#modal1').modal('show');
+        {% endif %}
+
+        $("#kt_datatable_cliente").DataTable({
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron resultados",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar: ",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "emptyTable": "No hay datos disponibles en la tabla",
+                "aria": {
+                    "sortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            },
+            "dom":
+                "<'row mb-2'" +
+                "<'col-sm-6 d-flex align-items-center justify-conten-start dt-toolbar'l>" +
+                "<'col-sm-6 d-flex align-items-center justify-content-end dt-toolbar'f>" +
+                ">" +
+        
+                "<'table-responsive'tr>" +
+        
+                "<'row'" +
+                "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+                "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+                ">"
+        });
+    })
+    
+    $('#modal2').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var recipient = button.data('cliente_id');
+        var modal = $(this);
+    
+        $.ajax({ 
+            url: '/cliente/ajax/obtener_cliente/',
+            type: 'GET',
+            data: {
+                'dato': recipient
+            },
+    
+            success: function(response) {
+                modal.find('.modal-title').text('Editar Laboral ID #' + response.data.id)
+                modal.find('.modal-body #id_nit').val(response.data.nit)
+                modal.find('.modal-body #id_razon_social').val(response.data.razon_social)
+                modal.find('.modal-body #id_email').val(response.data.email)
+                modal.find('.modal-body #id_contacto').val(response.data.contacto)
+                modal.find('.modal-body #id_telefono').val(response.data.telefono)
+                modal.find('.modal-body #id_perfil_empresarial').text(response.data.perfil_empresarial)
+                modal.find('.modal-body #id_logo').val(response.data.logo) 
+                var $select2 = modal.find('.modal-body #id_ciudad_id_004');
+                $select2.val(response.data.ciudad_id_004).trigger('change'); 
+            },
+            error: function(response) {
+                console.log(response.error);
+            }
+        })
+    })
+    
+    
+    // Element to indecate
+    var button = document.querySelector("#kt_button_crear_cliente");
+    
+    // Handle button click event
+    button.addEventListener("click", function() {
+        // Activate indicator
+        button.setAttribute("data-kt-indicator", "on");
+    
+        // Disable indicator after 3 seconds
+        setTimeout(function() {
+            button.removeAttribute("data-kt-indicator");
+        }, 3000);
+    });
+    
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        // // Verificar si el modal estaba abierto antes de la recarga
+        // if (localStorage.getItem('modal-open') === 'true') {
+        //     var modal = new bootstrap.Modal(document.getElementById('kt_modal_add_user'));
+        //     modal.show();
+        // }
+    
+        // // Guardar el estado del modal cuando se abra
+        // var myModalEl = document.getElementById('kt_modal_add_user');
+        // myModalEl.addEventListener('show.bs.modal', function () {
+        //     localStorage.setItem('modal-open', 'true');
+        // });
+    
+        // Limpiar el estado cuando se cierre el modal
+        var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+        closeButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                localStorage.removeItem('modal-open');
+            });
+        });
+    });
+
+    
+</script>
+{% endblock extrajs %}
