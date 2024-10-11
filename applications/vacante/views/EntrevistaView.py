@@ -120,7 +120,6 @@ def ver_entrevista_entrevistador(request):
 
     return render(request, 'vacante/ver_entrevista_todos.html', contexto)
 
-
 #Generar Entrevista
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
