@@ -41,6 +41,22 @@
         "documentation": {}
     },
     {
+        "label": "forms",
+        "importPath": "django",
+        "description": "django",
+        "isExtraImport": true,
+        "detail": "django",
+        "documentation": {}
+    },
+    {
+        "label": "FormHelper",
+        "importPath": "crispy_forms.helper",
+        "description": "crispy_forms.helper",
+        "isExtraImport": true,
+        "detail": "crispy_forms.helper",
+        "documentation": {}
+    },
+    {
         "label": "FormHelper",
         "importPath": "crispy_forms.helper",
         "description": "crispy_forms.helper",
@@ -81,6 +97,22 @@
         "documentation": {}
     },
     {
+        "label": "Layout",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Div",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
         "label": "Submit",
         "importPath": "crispy_forms.layout",
         "description": "crispy_forms.layout",
@@ -89,23 +121,7 @@
         "documentation": {}
     },
     {
-        "label": "Row",
-        "importPath": "crispy_forms.layout",
-        "description": "crispy_forms.layout",
-        "isExtraImport": true,
-        "detail": "crispy_forms.layout",
-        "documentation": {}
-    },
-    {
-        "label": "Column",
-        "importPath": "crispy_forms.layout",
-        "description": "crispy_forms.layout",
-        "isExtraImport": true,
-        "detail": "crispy_forms.layout",
-        "documentation": {}
-    },
-    {
-        "label": "Field",
+        "label": "HTML",
         "importPath": "crispy_forms.layout",
         "description": "crispy_forms.layout",
         "isExtraImport": true,
@@ -161,6 +177,22 @@
         "documentation": {}
     },
     {
+        "label": "Div",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Submit",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
         "label": "Layout",
         "importPath": "crispy_forms.layout",
         "description": "crispy_forms.layout",
@@ -202,6 +234,86 @@
     },
     {
         "label": "Hidden",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Div",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Submit",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Layout",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Submit",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Row",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Column",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Hidden",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Div",
+        "importPath": "crispy_forms.layout",
+        "description": "crispy_forms.layout",
+        "isExtraImport": true,
+        "detail": "crispy_forms.layout",
+        "documentation": {}
+    },
+    {
+        "label": "Submit",
         "importPath": "crispy_forms.layout",
         "description": "crispy_forms.layout",
         "isExtraImport": true,
@@ -282,6 +394,38 @@
     },
     {
         "label": "Cat001Estado",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat001Estado",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat004Ciudad",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat001Estado",
+        "importPath": "applications.common.models",
+        "description": "applications.common.models",
+        "isExtraImport": true,
+        "detail": "applications.common.models",
+        "documentation": {}
+    },
+    {
+        "label": "Cat004Ciudad",
         "importPath": "applications.common.models",
         "description": "applications.common.models",
         "isExtraImport": true,
@@ -362,6 +506,22 @@
         "documentation": {}
     },
     {
+        "label": "timezone",
+        "importPath": "django.utils",
+        "description": "django.utils",
+        "isExtraImport": true,
+        "detail": "django.utils",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
         "label": "datetime",
         "importPath": "datetime",
         "description": "datetime",
@@ -403,6 +563,86 @@
     },
     {
         "label": "Can102Experiencia",
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "isExtraImport": true,
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can101Candidato",
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "isExtraImport": true,
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can104Skill",
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "isExtraImport": true,
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can101CandidatoSkill",
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "isExtraImport": true,
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can101Candidato",
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "isExtraImport": true,
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can102Experiencia",
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "isExtraImport": true,
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can103Educacion",
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "isExtraImport": true,
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can101CandidatoSkill",
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "isExtraImport": true,
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can101Candidato",
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "isExtraImport": true,
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can102Experiencia",
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "isExtraImport": true,
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can103Educacion",
         "importPath": "applications.candidato.models",
         "description": "applications.candidato.models",
         "isExtraImport": true,
@@ -459,110 +699,6 @@
         "documentation": {}
     },
     {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
         "label": "migrations",
         "importPath": "django.db",
         "description": "django.db",
@@ -723,7 +859,279 @@
         "documentation": {}
     },
     {
-        "label": "admin",
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "render",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "redirect",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "get_object_or_404",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "render",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "redirect",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "get_object_or_404",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "render",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "redirect",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "get_object_or_404",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "render",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "redirect",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "render",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "CandidatoForm",
+        "importPath": "applications.candidato.forms.CandidatoForms",
+        "description": "applications.candidato.forms.CandidatoForms",
+        "isExtraImport": true,
+        "detail": "applications.candidato.forms.CandidatoForms",
+        "documentation": {}
+    },
+    {
+        "label": "CandidatoForm",
+        "importPath": "applications.candidato.forms.CandidatoForms",
+        "description": "applications.candidato.forms.CandidatoForms",
+        "isExtraImport": true,
+        "detail": "applications.candidato.forms.CandidatoForms",
+        "documentation": {}
+    },
+    {
+        "label": "ExperienciaCandidatoForm",
+        "importPath": "applications.candidato.forms.ExperienciaForms",
+        "description": "applications.candidato.forms.ExperienciaForms",
+        "isExtraImport": true,
+        "detail": "applications.candidato.forms.ExperienciaForms",
+        "documentation": {}
+    },
+    {
+        "label": "ExperienciaCandidatoForm",
+        "importPath": "applications.candidato.forms.ExperienciaForms",
+        "description": "applications.candidato.forms.ExperienciaForms",
+        "isExtraImport": true,
+        "detail": "applications.candidato.forms.ExperienciaForms",
+        "documentation": {}
+    },
+    {
+        "label": "HabilidadCandidatoForm",
+        "importPath": "applications.candidato.forms.HabilidadForms",
+        "description": "applications.candidato.forms.HabilidadForms",
+        "isExtraImport": true,
+        "detail": "applications.candidato.forms.HabilidadForms",
+        "documentation": {}
+    },
+    {
+        "label": "EstudioCandidatoForm",
+        "importPath": "applications.candidato.forms.EstudioForms",
+        "description": "applications.candidato.forms.EstudioForms",
+        "isExtraImport": true,
+        "detail": "applications.candidato.forms.EstudioForms",
+        "documentation": {}
+    },
+    {
+        "label": "EstudioCandidatoForm",
+        "importPath": "applications.candidato.forms.EstudioForms",
+        "description": "applications.candidato.forms.EstudioForms",
+        "isExtraImport": true,
+        "detail": "applications.candidato.forms.EstudioForms",
+        "documentation": {}
+    },
+    {
+        "label": "TemplateView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "ListView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "TemplateView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "ListView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "TemplateView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "ListView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "ListView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "DetailView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "CreateView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "TemplateView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "UpdateView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "DeleteView",
+        "importPath": "django.views.generic",
+        "description": "django.views.generic",
+        "isExtraImport": true,
+        "detail": "django.views.generic",
+        "documentation": {}
+    },
+    {
+        "label": "messages",
+        "importPath": "django.contrib",
+        "description": "django.contrib",
+        "isExtraImport": true,
+        "detail": "django.contrib",
+        "documentation": {}
+    },
+    {
+        "label": "messages",
+        "importPath": "django.contrib",
+        "description": "django.contrib",
+        "isExtraImport": true,
+        "detail": "django.contrib",
+        "documentation": {}
+    },
+    {
+        "label": "messages",
         "importPath": "django.contrib",
         "description": "django.contrib",
         "isExtraImport": true,
@@ -760,6 +1168,31 @@
         "description": "django.contrib",
         "isExtraImport": true,
         "detail": "django.contrib",
+        "documentation": {}
+    },
+    {
+        "label": "admin",
+        "importPath": "django.contrib",
+        "description": "django.contrib",
+        "isExtraImport": true,
+        "detail": "django.contrib",
+        "documentation": {}
+    },
+    {
+        "label": "JsonResponse",
+        "importPath": "django.http",
+        "description": "django.http",
+        "isExtraImport": true,
+        "detail": "django.http",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
         "documentation": {}
     },
     {
@@ -859,118 +1292,6 @@
         "documentation": {}
     },
     {
-        "label": "render",
-        "importPath": "django.shortcuts",
-        "description": "django.shortcuts",
-        "isExtraImport": true,
-        "detail": "django.shortcuts",
-        "documentation": {}
-    },
-    {
-        "label": "redirect",
-        "importPath": "django.shortcuts",
-        "description": "django.shortcuts",
-        "isExtraImport": true,
-        "detail": "django.shortcuts",
-        "documentation": {}
-    },
-    {
-        "label": "get_object_or_404",
-        "importPath": "django.shortcuts",
-        "description": "django.shortcuts",
-        "isExtraImport": true,
-        "detail": "django.shortcuts",
-        "documentation": {}
-    },
-    {
-        "label": "render",
-        "importPath": "django.shortcuts",
-        "description": "django.shortcuts",
-        "isExtraImport": true,
-        "detail": "django.shortcuts",
-        "documentation": {}
-    },
-    {
-        "label": "redirect",
-        "importPath": "django.shortcuts",
-        "description": "django.shortcuts",
-        "isExtraImport": true,
-        "detail": "django.shortcuts",
-        "documentation": {}
-    },
-    {
-        "label": "render",
-        "importPath": "django.shortcuts",
-        "description": "django.shortcuts",
-        "isExtraImport": true,
-        "detail": "django.shortcuts",
-        "documentation": {}
-    },
-    {
-        "label": "TemplateView",
-        "importPath": "django.views.generic",
-        "description": "django.views.generic",
-        "isExtraImport": true,
-        "detail": "django.views.generic",
-        "documentation": {}
-    },
-    {
-        "label": "ListView",
-        "importPath": "django.views.generic",
-        "description": "django.views.generic",
-        "isExtraImport": true,
-        "detail": "django.views.generic",
-        "documentation": {}
-    },
-    {
-        "label": "ListView",
-        "importPath": "django.views.generic",
-        "description": "django.views.generic",
-        "isExtraImport": true,
-        "detail": "django.views.generic",
-        "documentation": {}
-    },
-    {
-        "label": "DetailView",
-        "importPath": "django.views.generic",
-        "description": "django.views.generic",
-        "isExtraImport": true,
-        "detail": "django.views.generic",
-        "documentation": {}
-    },
-    {
-        "label": "CreateView",
-        "importPath": "django.views.generic",
-        "description": "django.views.generic",
-        "isExtraImport": true,
-        "detail": "django.views.generic",
-        "documentation": {}
-    },
-    {
-        "label": "TemplateView",
-        "importPath": "django.views.generic",
-        "description": "django.views.generic",
-        "isExtraImport": true,
-        "detail": "django.views.generic",
-        "documentation": {}
-    },
-    {
-        "label": "UpdateView",
-        "importPath": "django.views.generic",
-        "description": "django.views.generic",
-        "isExtraImport": true,
-        "detail": "django.views.generic",
-        "documentation": {}
-    },
-    {
-        "label": "DeleteView",
-        "importPath": "django.views.generic",
-        "description": "django.views.generic",
-        "isExtraImport": true,
-        "detail": "django.views.generic",
-        "documentation": {}
-    },
-    {
         "label": "os",
         "kind": 6,
         "isExtraImport": true,
@@ -985,6 +1306,30 @@
         "description": "django.core.asgi",
         "isExtraImport": true,
         "detail": "django.core.asgi",
+        "documentation": {}
+    },
+    {
+        "label": "load_dotenv",
+        "importPath": "dotenv",
+        "description": "dotenv",
+        "isExtraImport": true,
+        "detail": "dotenv",
+        "documentation": {}
+    },
+    {
+        "label": "load_dotenv",
+        "importPath": "dotenv",
+        "description": "dotenv",
+        "isExtraImport": true,
+        "detail": "dotenv",
+        "documentation": {}
+    },
+    {
+        "label": "Session",
+        "importPath": "boto3.session",
+        "description": "boto3.session",
+        "isExtraImport": true,
+        "detail": "boto3.session",
         "documentation": {}
     },
     {
@@ -1033,7 +1378,7 @@
         "kind": 6,
         "importPath": "applications.candidato.forms.CandidatoForms",
         "description": "applications.candidato.forms.CandidatoForms",
-        "peekOfCode": "class CandidatoForm(forms.Form):\n    estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)\n    email = forms.CharField(label='EMAIL', required=True , widget=forms.TextInput(attrs={'placeholder': 'Email'}))\n    primer_nombre = forms.CharField(label='PRIMER NOMBRE', required=True, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Primer Nombre'}))\n    segundo_nombre = forms.CharField(label='SEGUNDO NOMBRE', required=False, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Segundo Nombre'}))\n    primer_apellido = forms.CharField(label='PRIMER APELLIDO', required=True, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Primer Apellido'}))\n    segundo_apellido = forms.CharField(label='SEGUNDO APELLIDO', required=False, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Segundo Apellido'}))\n    ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)\n    sexo = forms.ChoiceField(label='GENERO', choices=[ ('', '---'), ('M', 'MASCULINO'), ('F', 'FEMENINO')], required=True)\n    fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)",
+        "peekOfCode": "class CandidatoForm(forms.Form):\n    # estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)\n    email = forms.CharField(label='EMAIL', required=True , widget=forms.TextInput(attrs={'placeholder': 'Email'}))\n    primer_nombre = forms.CharField(label='PRIMER NOMBRE', required=True, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Primer Nombre'}))\n    segundo_nombre = forms.CharField(label='SEGUNDO NOMBRE', required=False, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Segundo Nombre'}))\n    primer_apellido = forms.CharField(label='PRIMER APELLIDO', required=True, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Primer Apellido'}))\n    segundo_apellido = forms.CharField(label='SEGUNDO APELLIDO', required=False, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Segundo Apellido'}))\n    ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)\n    sexo = forms.ChoiceField(label='GENERO', choices=[ ('', '---'), ('M', 'MASCULINO'), ('F', 'FEMENINO')], required=True)\n    fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)",
         "detail": "applications.candidato.forms.CandidatoForms",
         "documentation": {}
     },
@@ -1042,7 +1387,7 @@
         "kind": 6,
         "importPath": "applications.candidato.forms.EstudioForms",
         "description": "applications.candidato.forms.EstudioForms",
-        "peekOfCode": "class EstudioCandidatoForm(forms.Form):\n    estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)\n    institucion = forms.CharField(label='INSTITUCION', required=True , widget=forms.TextInput(attrs={'placeholder': 'Institución'}))\n    fecha_inicial = forms.DateField(label='FECHA DE INICIO', widget=forms.DateInput(attrs={'type': 'date'}), required=True)\n    fecha_final = forms.DateField(label='FECHA TERMINACION', widget=forms.DateInput(attrs={'type': 'date'}), required=False)\n    grado_en = forms.CharField(label='GRADO EN', required=False , widget=forms.TextInput(attrs={'placeholder': 'Grado en'}))\n    titulo = forms.CharField(label='TITULO', required=True , widget=forms.TextInput(attrs={'placeholder': 'Titulo'}))\n    carrera = forms.CharField(label='CARRERA', required=True , widget=forms.TextInput(attrs={'placeholder': 'Carrera'}))\n    fortaleza_adquiridas = forms.CharField(label='LOGROS', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Fortalezas'}))\n    ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)",
+        "peekOfCode": "class EstudioCandidatoForm(forms.Form):\n    estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=False)\n    institucion = forms.CharField(label='INSTITUCION', required=True , widget=forms.TextInput(attrs={'placeholder': 'Institución'}))\n    fecha_inicial = forms.DateField(label='FECHA DE INICIO', widget=forms.DateInput(attrs={'type': 'date'}), required=True)\n    fecha_final = forms.DateField(label='FECHA TERMINACION', widget=forms.DateInput(attrs={'type': 'date'}), required=False)\n    grado_en = forms.CharField(label='GRADO EN', required=False , widget=forms.TextInput(attrs={'placeholder': 'Grado en'}))\n    titulo = forms.CharField(label='TITULO', required=True , widget=forms.TextInput(attrs={'placeholder': 'Titulo'}))\n    carrera = forms.CharField(label='CARRERA', required=True , widget=forms.TextInput(attrs={'placeholder': 'Carrera'}))\n    fortaleza_adquiridas = forms.CharField(label='LOGROS', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Fortalezas'}))\n    ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)",
         "detail": "applications.candidato.forms.EstudioForms",
         "documentation": {}
     },
@@ -1051,8 +1396,17 @@
         "kind": 6,
         "importPath": "applications.candidato.forms.ExperienciaForms",
         "description": "applications.candidato.forms.ExperienciaForms",
-        "peekOfCode": "class ExperienciaCandidatoForm(forms.Form):\n    estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)\n    entidad = forms.CharField(label='ENTIDAD', required=True , widget=forms.TextInput(attrs={'placeholder': 'Entidad o Nombre Empresa'}))\n    sector = forms.CharField(label='SECTOR', required=True , widget=forms.TextInput(attrs={'placeholder': 'Sector'}))\n    fecha_inicial = forms.DateField(label='FECHA DE INICIO', widget=forms.DateInput(attrs={'type': 'date'}), required=True)\n    fecha_final = forms.DateField(label='FECHA TERMINACION', widget=forms.DateInput(attrs={'type': 'date'}), required=False)\n    activo = forms.ChoiceField(label='ACTIVO', choices=[ ('', '---'), ('SI', 'SI'), ('NO', 'NO')], required=True)\n    logro = forms.CharField(label='LOGROS', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Empresa'}))\n    def __init__(self, *args, **kwargs):\n        super(ExperienciaCandidatoForm, self).__init__(*args, **kwargs)",
+        "peekOfCode": "class ExperienciaCandidatoForm(forms.Form):\n    estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=False)\n    entidad = forms.CharField(label='ENTIDAD', required=True , widget=forms.TextInput(attrs={'placeholder': 'Entidad o Nombre Empresa'}))\n    sector = forms.CharField(label='SECTOR', required=True , widget=forms.TextInput(attrs={'placeholder': 'Sector'}))\n    fecha_inicial = forms.DateField(label='FECHA DE INICIO', widget=forms.DateInput(attrs={'type': 'date'}), required=True)\n    fecha_final = forms.DateField(label='FECHA TERMINACION', widget=forms.DateInput(attrs={'type': 'date'}), required=False)\n    activo = forms.ChoiceField(label='ACTIVO', choices=[ ('', '---'), ('SI', 'SI'), ('NO', 'NO')], required=True)\n    logro = forms.CharField(label='LOGROS', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Empresa'}))\n    cargo = forms.CharField(label='CARGO',  required=True, widget=forms.TextInput(attrs={'placeholder': 'Cargo Desempeñado'}))\n    def __init__(self, *args, **kwargs):",
         "detail": "applications.candidato.forms.ExperienciaForms",
+        "documentation": {}
+    },
+    {
+        "label": "HabilidadCandidatoForm",
+        "kind": 6,
+        "importPath": "applications.candidato.forms.HabilidadForms",
+        "description": "applications.candidato.forms.HabilidadForms",
+        "peekOfCode": "class HabilidadCandidatoForm(forms.Form):\n    candidato_id_101 = forms.ModelChoiceField(label='CANDIDATO', queryset=Can101Candidato.objects.all(), required=False)\n    skill_id_104 = forms.ModelChoiceField(label='HABILIDAD', queryset=Can104Skill.objects.all(), required=True)\n    nivel = forms.ChoiceField(label='NIVEL', choices=[ ('', '---'), ('1', 'BÁSICO'), ('2', 'INTERMEDIO'), ('3', 'SUPERIOR')], required=True)\n    def __init__(self, *args, **kwargs):\n        self.candidato_id = kwargs.pop('candidato_id', None)\n        super(HabilidadCandidatoForm, self).__init__(*args, **kwargs)\n        self.helper = FormHelper()\n        self.helper.form_method = 'post'\n        self.helper.form_class = 'container'",
+        "detail": "applications.candidato.forms.HabilidadForms",
         "documentation": {}
     },
     {
@@ -1060,98 +1414,170 @@
         "kind": 6,
         "importPath": "applications.candidato.migrations.0001_initial",
         "description": "applications.candidato.migrations.0001_initial",
-        "peekOfCode": "class Migration(migrations.Migration):\n    initial = True\n    dependencies = [\n        ('common', '__first__'),\n    ]\n    operations = [\n        migrations.CreateModel(\n            name='Can101Candidato',\n            fields=[\n                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),",
+        "peekOfCode": "class Migration(migrations.Migration):\n    initial = True\n    dependencies = [\n        ('common', '0002_alter_cat001estado_nombre_alter_cat001estado_sigla_and_more'),\n    ]\n    operations = [\n        migrations.CreateModel(\n            name='Can101Candidato',\n            fields=[\n                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),",
         "detail": "applications.candidato.migrations.0001_initial",
         "documentation": {}
     },
     {
         "label": "Migration",
         "kind": 6,
-        "importPath": "applications.candidato.migrations.0002_alter_can101candidato_primer_apellido_and_more",
-        "description": "applications.candidato.migrations.0002_alter_can101candidato_primer_apellido_and_more",
-        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0001_initial'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='can101candidato',\n            name='primer_apellido',\n            field=models.CharField(blank=True, max_length=50, verbose_name='Primer Apellido'),\n        ),",
-        "detail": "applications.candidato.migrations.0002_alter_can101candidato_primer_apellido_and_more",
+        "importPath": "applications.candidato.migrations.0002_can102experiencia_cargo",
+        "description": "applications.candidato.migrations.0002_can102experiencia_cargo",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0001_initial'),\n    ]\n    operations = [\n        migrations.AddField(\n            model_name='can102experiencia',\n            name='cargo',\n            field=models.CharField(default=None, max_length=100),\n        ),",
+        "detail": "applications.candidato.migrations.0002_can102experiencia_cargo",
         "documentation": {}
     },
     {
         "label": "Migration",
         "kind": 6,
-        "importPath": "applications.candidato.migrations.0003_can101candidato_fecha_nacimiento_and_more",
-        "description": "applications.candidato.migrations.0003_can101candidato_fecha_nacimiento_and_more",
-        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0002_alter_can101candidato_primer_apellido_and_more'),\n        ('common', '0002_alter_cat001estado_nombre_alter_cat001estado_sigla_and_more'),\n    ]\n    operations = [\n        migrations.AddField(\n            model_name='can101candidato',\n            name='fecha_nacimiento',\n            field=models.DateField(blank=True, null=True),",
-        "detail": "applications.candidato.migrations.0003_can101candidato_fecha_nacimiento_and_more",
+        "importPath": "applications.candidato.migrations.0003_alter_can102experiencia_options",
+        "description": "applications.candidato.migrations.0003_alter_can102experiencia_options",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0002_can102experiencia_cargo'),\n    ]\n    operations = [\n        migrations.AlterModelOptions(\n            name='can102experiencia',\n            options={'managed': True, 'verbose_name': 'EXPERIENCIA', 'verbose_name_plural': 'EXPERIENCIAS'},\n        ),\n    ]",
+        "detail": "applications.candidato.migrations.0003_alter_can102experiencia_options",
         "documentation": {}
     },
     {
         "label": "Migration",
         "kind": 6,
-        "importPath": "applications.candidato.migrations.0004_can101candidato_skills",
-        "description": "applications.candidato.migrations.0004_can101candidato_skills",
-        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0003_can101candidato_fecha_nacimiento_and_more'),\n    ]\n    operations = [\n        migrations.AddField(\n            model_name='can101candidato',\n            name='skills',\n            field=models.ManyToManyField(related_name='candidatos_skill', to='candidato.can104skill'),\n        ),",
-        "detail": "applications.candidato.migrations.0004_can101candidato_skills",
+        "importPath": "applications.candidato.migrations.0004_alter_can102experiencia_cargo",
+        "description": "applications.candidato.migrations.0004_alter_can102experiencia_cargo",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0003_alter_can102experiencia_options'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='can102experiencia',\n            name='cargo',\n            field=models.CharField(default='Sin especificar', max_length=100),\n        ),",
+        "detail": "applications.candidato.migrations.0004_alter_can102experiencia_cargo",
         "documentation": {}
     },
     {
         "label": "Migration",
         "kind": 6,
-        "importPath": "applications.candidato.migrations.0005_alter_can102experiencia_activo",
-        "description": "applications.candidato.migrations.0005_alter_can102experiencia_activo",
-        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0004_can101candidato_skills'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='can102experiencia',\n            name='activo',\n            field=models.CharField(choices=[('S', 'SI'), ('N', 'NO')], max_length=2),\n        ),",
-        "detail": "applications.candidato.migrations.0005_alter_can102experiencia_activo",
+        "importPath": "applications.candidato.migrations.0005_alter_can102experiencia_cargo",
+        "description": "applications.candidato.migrations.0005_alter_can102experiencia_cargo",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0004_alter_can102experiencia_cargo'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='can102experiencia',\n            name='cargo',\n            field=models.CharField(blank=True, max_length=100, null=True),\n        ),",
+        "detail": "applications.candidato.migrations.0005_alter_can102experiencia_cargo",
         "documentation": {}
     },
     {
-        "label": "Migration",
-        "kind": 6,
-        "importPath": "applications.candidato.migrations.0006_alter_can102experiencia_activo",
-        "description": "applications.candidato.migrations.0006_alter_can102experiencia_activo",
-        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0005_alter_can102experiencia_activo'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='can102experiencia',\n            name='activo',\n            field=models.CharField(choices=[('SI', 'SI'), ('NO', 'NO')], max_length=2),\n        ),",
-        "detail": "applications.candidato.migrations.0006_alter_can102experiencia_activo",
+        "label": "candidato_mostrar",
+        "kind": 2,
+        "importPath": "applications.candidato.views.CandidatoView",
+        "description": "applications.candidato.views.CandidatoView",
+        "peekOfCode": "def candidato_mostrar(request, pk=None):\n    # Valida si se pasa un parametro pk o ID del candidato\n    if pk:\n        candidato = get_object_or_404(Can101Candidato, pk=pk)\n        experiencias = Can102Experiencia.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')\n        estudios = Can103Educacion.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')\n        habilidades = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato.id).order_by('-id')\n        accion = 'Editar'\n    else:\n        candidato = None",
+        "detail": "applications.candidato.views.CandidatoView",
         "documentation": {}
     },
     {
-        "label": "Migration",
-        "kind": 6,
-        "importPath": "applications.candidato.migrations.0007_alter_can102experiencia_fecha_final_and_more",
-        "description": "applications.candidato.migrations.0007_alter_can102experiencia_fecha_final_and_more",
-        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0006_alter_can102experiencia_activo'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='can102experiencia',\n            name='fecha_final',\n            field=models.DateField(blank=True),\n        ),",
-        "detail": "applications.candidato.migrations.0007_alter_can102experiencia_fecha_final_and_more",
+        "label": "obtener_estudio_view",
+        "kind": 2,
+        "importPath": "applications.candidato.views.CandidatoView",
+        "description": "applications.candidato.views.CandidatoView",
+        "peekOfCode": "def obtener_estudio_view(request):\n    global global_dato\n    if request.method == 'GET':\n        dato              = request.GET.get('dato')\n        solicitud_estudio = get_object_or_404(Can103Educacion, pk=dato)\n        global_dato = dato\n        estado_id    = Cat001Estado.objects.get(nombre=solicitud_estudio.estado_id_001)\n        candidato_id = Can101Candidato.objects.get(email=solicitud_estudio.candidato_id_101)\n        ciudad_id    = Cat004Ciudad.objects.get(nombre=solicitud_estudio.ciudad_id_004)\n        response_data = {",
+        "detail": "applications.candidato.views.CandidatoView",
         "documentation": {}
     },
     {
-        "label": "Migration",
-        "kind": 6,
-        "importPath": "applications.candidato.migrations.0008_alter_can103educacion_fecha_final_and_more",
-        "description": "applications.candidato.migrations.0008_alter_can103educacion_fecha_final_and_more",
-        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0007_alter_can102experiencia_fecha_final_and_more'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='can103educacion',\n            name='fecha_final',\n            field=models.DateField(blank=True, null=True),\n        ),",
-        "detail": "applications.candidato.migrations.0008_alter_can103educacion_fecha_final_and_more",
+        "label": "obtener_laboral_view",
+        "kind": 2,
+        "importPath": "applications.candidato.views.CandidatoView",
+        "description": "applications.candidato.views.CandidatoView",
+        "peekOfCode": "def obtener_laboral_view(request):\n    global global_id_laboral\n    if request.method == 'GET':\n        dato              = request.GET.get('dato')\n        solicitud_laboral = get_object_or_404(Can102Experiencia, pk=dato)\n        global_id_laboral = dato\n        estado_id    = Cat001Estado.objects.get(nombre=solicitud_laboral.estado_id_001)\n        candidato_id = Can101Candidato.objects.get(email=solicitud_laboral.candidato_id_101)\n        print(solicitud_laboral.sector)\n        response_data = {",
+        "detail": "applications.candidato.views.CandidatoView",
         "documentation": {}
     },
     {
-        "label": "Migration",
-        "kind": 6,
-        "importPath": "applications.candidato.migrations.0009_alter_can103educacion_fecha_final_and_more",
-        "description": "applications.candidato.migrations.0009_alter_can103educacion_fecha_final_and_more",
-        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0008_alter_can103educacion_fecha_final_and_more'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='can103educacion',\n            name='fecha_final',\n            field=models.DateField(blank=True),\n        ),",
-        "detail": "applications.candidato.migrations.0009_alter_can103educacion_fecha_final_and_more",
+        "label": "habilidades_crear",
+        "kind": 2,
+        "importPath": "applications.candidato.views.CandidatoView",
+        "description": "applications.candidato.views.CandidatoView",
+        "peekOfCode": "def habilidades_crear(request):\n    if request.method == 'POST':\n        try:\n            data = json.loads(request.body)\n            for item in data:\n                Palabra.objects.create(\n                    palabra=item['palabra'],\n                    estado=item['estado']\n                )\n            return JsonResponse({\"mensaje\": \"Palabras guardadas exitosamente\"}, status=201)",
+        "detail": "applications.candidato.views.CandidatoView",
         "documentation": {}
     },
     {
-        "label": "Migration",
-        "kind": 6,
-        "importPath": "applications.candidato.migrations.0010_alter_can103educacion_carrera_and_more",
-        "description": "applications.candidato.migrations.0010_alter_can103educacion_carrera_and_more",
-        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0009_alter_can103educacion_fecha_final_and_more'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='can103educacion',\n            name='carrera',\n            field=models.CharField(blank=True, max_length=100),\n        ),",
-        "detail": "applications.candidato.migrations.0010_alter_can103educacion_carrera_and_more",
+        "label": "global_dato",
+        "kind": 5,
+        "importPath": "applications.candidato.views.CandidatoView",
+        "description": "applications.candidato.views.CandidatoView",
+        "peekOfCode": "global_dato = None \ndef obtener_estudio_view(request):\n    global global_dato\n    if request.method == 'GET':\n        dato              = request.GET.get('dato')\n        solicitud_estudio = get_object_or_404(Can103Educacion, pk=dato)\n        global_dato = dato\n        estado_id    = Cat001Estado.objects.get(nombre=solicitud_estudio.estado_id_001)\n        candidato_id = Can101Candidato.objects.get(email=solicitud_estudio.candidato_id_101)\n        ciudad_id    = Cat004Ciudad.objects.get(nombre=solicitud_estudio.ciudad_id_004)",
+        "detail": "applications.candidato.views.CandidatoView",
         "documentation": {}
     },
     {
-        "label": "Migration",
+        "label": "global_id_laboral",
+        "kind": 5,
+        "importPath": "applications.candidato.views.CandidatoView",
+        "description": "applications.candidato.views.CandidatoView",
+        "peekOfCode": "global_id_laboral = None\ndef obtener_laboral_view(request):\n    global global_id_laboral\n    if request.method == 'GET':\n        dato              = request.GET.get('dato')\n        solicitud_laboral = get_object_or_404(Can102Experiencia, pk=dato)\n        global_id_laboral = dato\n        estado_id    = Cat001Estado.objects.get(nombre=solicitud_laboral.estado_id_001)\n        candidato_id = Can101Candidato.objects.get(email=solicitud_laboral.candidato_id_101)\n        print(solicitud_laboral.sector)",
+        "detail": "applications.candidato.views.CandidatoView",
+        "documentation": {}
+    },
+    {
+        "label": "laboral_mostrar",
+        "kind": 2,
+        "importPath": "applications.candidato.views.LaboralView",
+        "description": "applications.candidato.views.LaboralView",
+        "peekOfCode": "def laboral_mostrar(request, candidato_id, pk=None):\n    candidato = get_object_or_404(Can101Candidato, pk=candidato_id)\n    # Mostrar experiencias\n    experiencias = Can102Experiencia.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')\n    #Mostrar estudios\n    estudios = Can103Educacion.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')\n    #Mostrar Skills\n    # Formulario Experiencias\n    if request.method == 'POST': \n        form = ExperienciaCandidatoForm(request.POST)",
+        "detail": "applications.candidato.views.LaboralView",
+        "documentation": {}
+    },
+    {
+        "label": "InicioView",
         "kind": 6,
-        "importPath": "applications.candidato.migrations.0011_alter_can103educacion_fortaleza_adquiridas",
-        "description": "applications.candidato.migrations.0011_alter_can103educacion_fortaleza_adquiridas",
-        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('candidato', '0010_alter_can103educacion_carrera_and_more'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='can103educacion',\n            name='fortaleza_adquiridas',\n            field=models.TextField(blank=True, null=True),\n        ),",
-        "detail": "applications.candidato.migrations.0011_alter_can103educacion_fortaleza_adquiridas",
+        "importPath": "applications.candidato.views.views",
+        "description": "applications.candidato.views.views",
+        "peekOfCode": "class InicioView(TemplateView):\n    \"\"\" vista que carga la pagina de inicio \"\"\"\n    template_name = 'candidato/index.html'\nclass ListadoCandidato(ListView):\n    template_name = 'candidato/listado_candidatos.html'\n    model = Can101Candidato\n    context_object_name = 'candidatos'\ndef candidato_crear(request, pk=None):\n    if pk:\n        candidato = get_object_or_404(Can101Candidato, pk=pk)",
+        "detail": "applications.candidato.views.views",
+        "documentation": {}
+    },
+    {
+        "label": "ListadoCandidato",
+        "kind": 6,
+        "importPath": "applications.candidato.views.views",
+        "description": "applications.candidato.views.views",
+        "peekOfCode": "class ListadoCandidato(ListView):\n    template_name = 'candidato/listado_candidatos.html'\n    model = Can101Candidato\n    context_object_name = 'candidatos'\ndef candidato_crear(request, pk=None):\n    if pk:\n        candidato = get_object_or_404(Can101Candidato, pk=pk)\n        accion = 'Editar'\n    else:\n        candidato = None",
+        "detail": "applications.candidato.views.views",
+        "documentation": {}
+    },
+    {
+        "label": "candidato_crear",
+        "kind": 2,
+        "importPath": "applications.candidato.views.views",
+        "description": "applications.candidato.views.views",
+        "peekOfCode": "def candidato_crear(request, pk=None):\n    if pk:\n        candidato = get_object_or_404(Can101Candidato, pk=pk)\n        accion = 'Editar'\n    else:\n        candidato = None\n        accion = 'Crear'\n    if request.method == 'POST':\n        form = CandidatoForm(request.POST, instance=candidato)\n        if form.is_valid():",
+        "detail": "applications.candidato.views.views",
+        "documentation": {}
+    },
+    {
+        "label": "experiencia_listar",
+        "kind": 2,
+        "importPath": "applications.candidato.views.views",
+        "description": "applications.candidato.views.views",
+        "peekOfCode": "def experiencia_listar(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, pk=candidato_id)\n    experiencias = Can102Experiencia.objects.filter(candidato_id_101=candidato)\n    context = {\n        'candidato': candidato,\n        'experiencias': experiencias,\n    }\n    return render(request, 'candidato/listado_experiencia_laboral.html', context)\ndef experiencia_crear(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, id=candidato_id)",
+        "detail": "applications.candidato.views.views",
+        "documentation": {}
+    },
+    {
+        "label": "experiencia_crear",
+        "kind": 2,
+        "importPath": "applications.candidato.views.views",
+        "description": "applications.candidato.views.views",
+        "peekOfCode": "def experiencia_crear(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, id=candidato_id)\n    if request.method == 'POST': \n        form = ExperienciaCandidatoForm(request.POST)\n        if form.is_valid():\n            form.save(candidato_id=candidato.id)\n            messages.success(request, 'El Registro ha sido creado')\n            return redirect('candidatos:experiencia_listar', candidato_id=candidato.id)\n        else:\n            messages.success(request, form.errors)",
+        "detail": "applications.candidato.views.views",
+        "documentation": {}
+    },
+    {
+        "label": "estudio_listar",
+        "kind": 2,
+        "importPath": "applications.candidato.views.views",
+        "description": "applications.candidato.views.views",
+        "peekOfCode": "def estudio_listar(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, pk=candidato_id)\n    estudios = Can103Educacion.objects.filter(candidato_id_101=candidato)\n    context = {\n        'candidato': candidato,\n        'estudios': estudios,\n    }\n    return render(request, 'candidato/listado_estudios.html', context)\ndef estudio_crear(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, id=candidato_id)",
+        "detail": "applications.candidato.views.views",
+        "documentation": {}
+    },
+    {
+        "label": "estudio_crear",
+        "kind": 2,
+        "importPath": "applications.candidato.views.views",
+        "description": "applications.candidato.views.views",
+        "peekOfCode": "def estudio_crear(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, id=candidato_id)\n    if request.method == 'POST':\n        form = EstudioCandidatoForm(request.POST)\n        if form.is_valid():\n            form.save(candidato_id=candidato.id)\n            return redirect('candidatos:estudio_listar', candidato_id=candidato.id)\n        else:\n            print(form.errors)\n    else:",
+        "detail": "applications.candidato.views.views",
         "documentation": {}
     },
     {
@@ -1186,7 +1612,7 @@
         "kind": 6,
         "importPath": "applications.candidato.models",
         "description": "applications.candidato.models",
-        "peekOfCode": "class Can103Educacion(models.Model):\n    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')\n    institucion = models.CharField(max_length=100)\n    fecha_inicial = models.DateField(blank=True, null=True)\n    fecha_final = models.DateField(blank=True, null=False)\n    grado_en = models.CharField(max_length=100, blank=True, null=False)\n    titulo = models.CharField(max_length=100, blank=True, null=False)\n    carrera = models.CharField(max_length=100, blank=True, null=False)\n    fortaleza_adquiridas = models.TextField(blank=True, null=True)\n    candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)",
+        "peekOfCode": "class Can103Educacion(models.Model):\n    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')\n    institucion = models.CharField(max_length=100, blank=False, null=False)\n    fecha_inicial = models.DateField(blank=False, null=False)\n    fecha_final = models.DateField(blank=True, null=True)\n    grado_en = models.CharField(max_length=100, blank=True, null=True)\n    titulo = models.CharField(max_length=100, blank=False, null=False)\n    carrera = models.CharField(max_length=100, blank=True, null=True)\n    fortaleza_adquiridas = models.TextField(blank=True, null=True)\n    candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)",
         "detail": "applications.candidato.models",
         "documentation": {}
     },
@@ -1195,7 +1621,16 @@
         "kind": 6,
         "importPath": "applications.candidato.models",
         "description": "applications.candidato.models",
-        "peekOfCode": "class Can104Skill(models.Model):\n    estado_id_004 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_004')\n    nombre = models.CharField(max_length=50)\n    class Meta:\n        #managed = False\n        db_table = 'can_104_skill'\n        verbose_name = 'SKILL'",
+        "peekOfCode": "class Can104Skill(models.Model):\n    estado_id_004 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_004')\n    nombre = models.CharField(max_length=50)\n    def __str__(self):\n        return self.nombre\n    class Meta:\n        #managed = False\n        db_table = 'can_104_skill'\n        verbose_name = 'SKILL'\nclass Can101CandidatoSkill(models.Model):",
+        "detail": "applications.candidato.models",
+        "documentation": {}
+    },
+    {
+        "label": "Can101CandidatoSkill",
+        "kind": 6,
+        "importPath": "applications.candidato.models",
+        "description": "applications.candidato.models",
+        "peekOfCode": "class Can101CandidatoSkill(models.Model):\n    candidato_id_101 = models.ForeignKey(Can101Candidato, on_delete=models.CASCADE, db_column='candidato_id_101')\n    skill_id_104 = models.ForeignKey(Can104Skill, on_delete=models.CASCADE, db_column='skill_id_104')\n    nivel= models.IntegerField(choices=[\n        (1, 'Básico'),\n        (2, 'Intermedio'),\n        (3, 'Superior')\n    ])\n    class Meta:\n        # managed = False ",
         "detail": "applications.candidato.models",
         "documentation": {}
     },
@@ -1204,7 +1639,7 @@
         "kind": 5,
         "importPath": "applications.candidato.urls",
         "description": "applications.candidato.urls",
-        "peekOfCode": "url_principal = 'candidato/'\nurlpatterns = [\n    path('', views.InicioView.as_view(), name='inicio'),\n    path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),\n    path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),\n    path( url_principal+'editar/<int:pk>/', views.candidato_crear, name='candidato_editar'),\n    path( url_principal+'experiencia/crear/<int:candidato_id>/', views.experiencia_crear, name='experiencia_crear'),\n    path( url_principal+'experiencia/listar/<int:candidato_id>/', views.experiencia_listar, name='experiencia_listar'),\n    path( url_principal+'estudio/crear/<int:candidato_id>/', views.estudio_crear, name='estudio_crear'),\n    path( url_principal+'estudio/listar/<int:candidato_id>/', views.estudio_listar, name='estudio_listar'),",
+        "peekOfCode": "url_principal = 'candidato/'\nurlpatterns = [\n    path('', views.InicioView.as_view(), name='inicio'),\n    path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),\n    path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),\n    # path( url_principal+'editar/<int:pk>/', views.candidato_crear, name='candidato_editar'),\n    path( url_principal+'editar/<int:pk>/', CandidatoView.candidato_mostrar, name='candidato_editar'),\n    path( url_principal+'experiencia/crear/<int:candidato_id>/', views.experiencia_crear, name='experiencia_crear'),\n    path( url_principal+'experiencia/listar/<int:candidato_id>/', views.experiencia_listar, name='experiencia_listar'),\n    path( url_principal+'estudio/crear/<int:candidato_id>/', views.estudio_crear, name='estudio_crear'),",
         "detail": "applications.candidato.urls",
         "documentation": {}
     },
@@ -1213,71 +1648,8 @@
         "kind": 5,
         "importPath": "applications.candidato.urls",
         "description": "applications.candidato.urls",
-        "peekOfCode": "urlpatterns = [\n    path('', views.InicioView.as_view(), name='inicio'),\n    path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),\n    path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),\n    path( url_principal+'editar/<int:pk>/', views.candidato_crear, name='candidato_editar'),\n    path( url_principal+'experiencia/crear/<int:candidato_id>/', views.experiencia_crear, name='experiencia_crear'),\n    path( url_principal+'experiencia/listar/<int:candidato_id>/', views.experiencia_listar, name='experiencia_listar'),\n    path( url_principal+'estudio/crear/<int:candidato_id>/', views.estudio_crear, name='estudio_crear'),\n    path( url_principal+'estudio/listar/<int:candidato_id>/', views.estudio_listar, name='estudio_listar'),\n]",
+        "peekOfCode": "urlpatterns = [\n    path('', views.InicioView.as_view(), name='inicio'),\n    path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),\n    path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),\n    # path( url_principal+'editar/<int:pk>/', views.candidato_crear, name='candidato_editar'),\n    path( url_principal+'editar/<int:pk>/', CandidatoView.candidato_mostrar, name='candidato_editar'),\n    path( url_principal+'experiencia/crear/<int:candidato_id>/', views.experiencia_crear, name='experiencia_crear'),\n    path( url_principal+'experiencia/listar/<int:candidato_id>/', views.experiencia_listar, name='experiencia_listar'),\n    path( url_principal+'estudio/crear/<int:candidato_id>/', views.estudio_crear, name='estudio_crear'),\n    path( url_principal+'estudio/listar/<int:candidato_id>/', views.estudio_listar, name='estudio_listar'),",
         "detail": "applications.candidato.urls",
-        "documentation": {}
-    },
-    {
-        "label": "InicioView",
-        "kind": 6,
-        "importPath": "applications.candidato.views",
-        "description": "applications.candidato.views",
-        "peekOfCode": "class InicioView(TemplateView):\n    \"\"\" vista que carga la pagina de inicio \"\"\"\n    template_name = 'candidato/index.html'\nclass ListadoCandidato(ListView):\n    template_name = 'candidato/listado_candidatos.html'\n    model = Can101Candidato\n    context_object_name = 'candidatos'\ndef candidato_crear(request, pk=None):\n    if pk:\n        candidato = get_object_or_404(Can101Candidato, pk=pk)",
-        "detail": "applications.candidato.views",
-        "documentation": {}
-    },
-    {
-        "label": "ListadoCandidato",
-        "kind": 6,
-        "importPath": "applications.candidato.views",
-        "description": "applications.candidato.views",
-        "peekOfCode": "class ListadoCandidato(ListView):\n    template_name = 'candidato/listado_candidatos.html'\n    model = Can101Candidato\n    context_object_name = 'candidatos'\ndef candidato_crear(request, pk=None):\n    if pk:\n        candidato = get_object_or_404(Can101Candidato, pk=pk)\n        accion = 'Editar'\n    else:\n        candidato = None",
-        "detail": "applications.candidato.views",
-        "documentation": {}
-    },
-    {
-        "label": "candidato_crear",
-        "kind": 2,
-        "importPath": "applications.candidato.views",
-        "description": "applications.candidato.views",
-        "peekOfCode": "def candidato_crear(request, pk=None):\n    if pk:\n        candidato = get_object_or_404(Can101Candidato, pk=pk)\n        accion = 'Editar'\n    else:\n        candidato = None\n        accion = 'Crear'\n    if request.method == 'POST':\n        form = CandidatoForm(request.POST, instance=candidato)\n        if form.is_valid():",
-        "detail": "applications.candidato.views",
-        "documentation": {}
-    },
-    {
-        "label": "experiencia_listar",
-        "kind": 2,
-        "importPath": "applications.candidato.views",
-        "description": "applications.candidato.views",
-        "peekOfCode": "def experiencia_listar(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, pk=candidato_id)\n    experiencias = Can102Experiencia.objects.filter(candidato_id_101=candidato)\n    context = {\n        'candidato': candidato,\n        'experiencias': experiencias,\n    }\n    return render(request, 'candidato/listado_experiencia_laboral.html', context)\ndef experiencia_crear(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, id=candidato_id)",
-        "detail": "applications.candidato.views",
-        "documentation": {}
-    },
-    {
-        "label": "experiencia_crear",
-        "kind": 2,
-        "importPath": "applications.candidato.views",
-        "description": "applications.candidato.views",
-        "peekOfCode": "def experiencia_crear(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, id=candidato_id)\n    if request.method == 'POST': \n        form = ExperienciaCandidatoForm(request.POST)\n        if form.is_valid():\n            experiencia = form.save(candidato_id=candidato.id)\n            return redirect('candidatos:experiencia_listar', candidato_id=candidato.id)\n    else:\n        form = ExperienciaCandidatoForm(candidato_id=candidato.id)\n    return render(request, 'candidato/form_experiencia.html', {'form': form, 'candidato': candidato})",
-        "detail": "applications.candidato.views",
-        "documentation": {}
-    },
-    {
-        "label": "estudio_listar",
-        "kind": 2,
-        "importPath": "applications.candidato.views",
-        "description": "applications.candidato.views",
-        "peekOfCode": "def estudio_listar(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, pk=candidato_id)\n    estudios = Can103Educacion.objects.filter(candidato_id_101=candidato)\n    context = {\n        'candidato': candidato,\n        'estudios': estudios,\n    }\n    return render(request, 'candidato/listado_estudios.html', context)\ndef estudio_crear(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, id=candidato_id)",
-        "detail": "applications.candidato.views",
-        "documentation": {}
-    },
-    {
-        "label": "estudio_crear",
-        "kind": 2,
-        "importPath": "applications.candidato.views",
-        "description": "applications.candidato.views",
-        "peekOfCode": "def estudio_crear(request, candidato_id):\n    candidato = get_object_or_404(Can101Candidato, id=candidato_id)\n    if request.method == 'POST':\n        form = EstudioCandidatoForm(request.POST)\n        if form.is_valid():\n            form.save(candidato_id=candidato.id)\n            return redirect('candidatos:estudios_listar', candidato_id=candidato.id)\n    else:\n        form = EstudioCandidatoForm(candidato_id=candidato.id)\n    return render(request, 'candidato/form_estudio.html', {'form': form, 'candidato': candidato})",
-        "detail": "applications.candidato.views",
         "documentation": {}
     },
     {
@@ -1375,7 +1747,7 @@
         "kind": 2,
         "importPath": "applications.cliente.views",
         "description": "applications.cliente.views",
-        "peekOfCode": "def cliente_crear(request):\n    if request.method == 'POST':\n        form = ClienteForm(request.POST, request.FILES)\n        if form.is_valid():\n            ClienteForm.logo = form.cleaned_data['logo']\n            form.save()\n            return redirect('cliente_crear')  # Cambia a la vista deseada después de guardar\n    else:\n        form = ClienteForm()\n    return render(request, 'cliente/form_cliente.html', {'form': form})",
+        "peekOfCode": "def cliente_crear(request):\n    if request.method == 'POST':\n        form = ClienteForm(request.POST, request.FILES)\n        if form.is_valid():\n            ClienteForm.logo = form.cleaned_data['logo']\n            form.save()\n            return redirect('clientes:cliente_listar')  # Cambia a la vista deseada después de guardar\n    else:\n        form = ClienteForm()\n    return render(request, 'cliente/form_cliente.html', {'form': form})",
         "detail": "applications.cliente.views",
         "documentation": {}
     },
@@ -1458,6 +1830,726 @@
         "description": "atsatiempo.asgi",
         "peekOfCode": "application = get_asgi_application()",
         "detail": "atsatiempo.asgi",
+        "documentation": {}
+    },
+    {
+        "label": "BASE_DIR",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n# Cargar las variables de entorno desde el archivo .env\n#load_dotenv(dotenv_path=os.path.join(os.path.dirname(BASE_DIR), '.env'))\nload_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))\nSETTINGS_ENV = 'base'\n# Application definition\nBASE_APPS = [\n    # Django REST Framework\n  #  'rest_framework',\n    'django.contrib.admin',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS_ENV",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "SETTINGS_ENV = 'base'\n# Application definition\nBASE_APPS = [\n    # Django REST Framework\n  #  'rest_framework',\n    'django.contrib.admin',\n    'django.contrib.auth',\n    'django.contrib.contenttypes',\n    'django.contrib.sessions',\n    'django.contrib.messages',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "BASE_APPS",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "BASE_APPS = [\n    # Django REST Framework\n  #  'rest_framework',\n    'django.contrib.admin',\n    'django.contrib.auth',\n    'django.contrib.contenttypes',\n    'django.contrib.sessions',\n    'django.contrib.messages',\n    'django.contrib.staticfiles',\n   # 'django.contrib.humanize',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "LOCAL_APPS",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "LOCAL_APPS = [\n    # Generated applications\n    'applications.candidato',\n    'applications.cliente',\n    'applications.common',\n    'applications.pruebas_psi',\n    'applications.usuarios',\n    'applications.vacante',\n    'candidate',\n    'client',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "THIRD_APPS",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "THIRD_APPS = [\n    # Crispy Forms\n    'crispy_forms',\n    \"crispy_bootstrap5\",\n    # Importar excel\n    #'import_export',\n    ## Debug toolbar\n    #'debug_toolbar',\n]\nINSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "INSTALLED_APPS",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS\nINTERNAL_IPS = [\n    '127.0.0.1',\n]\nCRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'\nCRISPY_TEMPLATE_PACK = 'bootstrap5'\nBASE_MIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "INTERNAL_IPS",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "INTERNAL_IPS = [\n    '127.0.0.1',\n]\nCRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'\nCRISPY_TEMPLATE_PACK = 'bootstrap5'\nBASE_MIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "CRISPY_ALLOWED_TEMPLATE_PACKS",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'\nCRISPY_TEMPLATE_PACK = 'bootstrap5'\nBASE_MIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "CRISPY_TEMPLATE_PACK",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "CRISPY_TEMPLATE_PACK = 'bootstrap5'\nBASE_MIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',\n    'debug_toolbar.middleware.DebugToolbarMiddleware',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "BASE_MIDDLEWARE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "BASE_MIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',\n    'debug_toolbar.middleware.DebugToolbarMiddleware',\n]",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "LOCAL_MIDDLEWARE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "LOCAL_MIDDLEWARE = [\n    'apps.login.middlewares.DatabaseRouterMiddleware',\n]\nTHIRD_MIDDLEWARE = [\n]\nMIDDLEWARE = BASE_MIDDLEWARE + LOCAL_MIDDLEWARE + THIRD_MIDDLEWARE\nROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "THIRD_MIDDLEWARE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "THIRD_MIDDLEWARE = [\n]\nMIDDLEWARE = BASE_MIDDLEWARE + LOCAL_MIDDLEWARE + THIRD_MIDDLEWARE\nROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, '..', 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "MIDDLEWARE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "MIDDLEWARE = BASE_MIDDLEWARE + LOCAL_MIDDLEWARE + THIRD_MIDDLEWARE\nROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, '..', 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {\n            'context_processors': [\n                'django.template.context_processors.debug',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "ROOT_URLCONF",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "ROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, '..', 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {\n            'context_processors': [\n                'django.template.context_processors.debug',\n                'django.template.context_processors.request',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "TEMPLATES",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "TEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, '..', 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {\n            'context_processors': [\n                'django.template.context_processors.debug',\n                'django.template.context_processors.request',\n                'django.contrib.auth.context_processors.auth',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "WSGI_APPLICATION",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "WSGI_APPLICATION = 'atsatiempo.wsgi.application'\n# Database\n# https://docs.djangoproject.com/en/5.0/ref/settings/#databases\n#SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # O el backend que estés usando\nSESSION_COOKIE_AGE = 1209600  # Duración de la sesión en segundos (2 semanas)\nSESSION_SAVE_EVERY_REQUEST = True  # Guardar la sesión en cada solicitud\nSESSION_EXPIRE_AT_BROWSER_CLOSE = True  # No expirar la sesión al cerrar el navegador\n# Password validation\n# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "#SESSION_ENGINE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "#SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # O el backend que estés usando\nSESSION_COOKIE_AGE = 1209600  # Duración de la sesión en segundos (2 semanas)\nSESSION_SAVE_EVERY_REQUEST = True  # Guardar la sesión en cada solicitud\nSESSION_EXPIRE_AT_BROWSER_CLOSE = True  # No expirar la sesión al cerrar el navegador\n# Password validation\n# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators\nAUTH_PASSWORD_VALIDATORS = [\n    {\n        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',\n    },",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "SESSION_COOKIE_AGE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "SESSION_COOKIE_AGE = 1209600  # Duración de la sesión en segundos (2 semanas)\nSESSION_SAVE_EVERY_REQUEST = True  # Guardar la sesión en cada solicitud\nSESSION_EXPIRE_AT_BROWSER_CLOSE = True  # No expirar la sesión al cerrar el navegador\n# Password validation\n# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators\nAUTH_PASSWORD_VALIDATORS = [\n    {\n        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',\n    },\n    {",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "SESSION_SAVE_EVERY_REQUEST",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "SESSION_SAVE_EVERY_REQUEST = True  # Guardar la sesión en cada solicitud\nSESSION_EXPIRE_AT_BROWSER_CLOSE = True  # No expirar la sesión al cerrar el navegador\n# Password validation\n# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators\nAUTH_PASSWORD_VALIDATORS = [\n    {\n        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',\n    },\n    {\n        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "SESSION_EXPIRE_AT_BROWSER_CLOSE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # No expirar la sesión al cerrar el navegador\n# Password validation\n# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators\nAUTH_PASSWORD_VALIDATORS = [\n    {\n        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',\n    },\n    {\n        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',\n    },",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "AUTH_PASSWORD_VALIDATORS",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "AUTH_PASSWORD_VALIDATORS = [\n    {\n        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',\n    },\n    {\n        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',\n    },\n    {\n        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',\n    },",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_BACKEND",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'\nEMAIL_HOST = os.environ.get('EM_EMAIL_HOST')\nEMAIL_PORT = os.environ.get('EM_EMAIL_PORT')\nEMAIL_USE_TLS = False\nEMAIL_HOST_USER = os.environ.get('EM_EMAIL_HOST_USER')\nEMAIL_HOST_PASSWORD = os.environ.get('EM_EMAIL_HOST_PASSWORD')\nEMAIL_USE_SSL = True\nEMAIL_TIMEOUT = None\nEMAIL_SSL_KEYFILE = None\nEMAIL_SSL_CERTFILE = None",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_HOST",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_HOST = os.environ.get('EM_EMAIL_HOST')\nEMAIL_PORT = os.environ.get('EM_EMAIL_PORT')\nEMAIL_USE_TLS = False\nEMAIL_HOST_USER = os.environ.get('EM_EMAIL_HOST_USER')\nEMAIL_HOST_PASSWORD = os.environ.get('EM_EMAIL_HOST_PASSWORD')\nEMAIL_USE_SSL = True\nEMAIL_TIMEOUT = None\nEMAIL_SSL_KEYFILE = None\nEMAIL_SSL_CERTFILE = None\nEMAIL_SSL_CAFILE = None",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_PORT",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_PORT = os.environ.get('EM_EMAIL_PORT')\nEMAIL_USE_TLS = False\nEMAIL_HOST_USER = os.environ.get('EM_EMAIL_HOST_USER')\nEMAIL_HOST_PASSWORD = os.environ.get('EM_EMAIL_HOST_PASSWORD')\nEMAIL_USE_SSL = True\nEMAIL_TIMEOUT = None\nEMAIL_SSL_KEYFILE = None\nEMAIL_SSL_CERTFILE = None\nEMAIL_SSL_CAFILE = None\nEMAIL_SSL_CERT_SUBJ = None",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_USE_TLS",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_USE_TLS = False\nEMAIL_HOST_USER = os.environ.get('EM_EMAIL_HOST_USER')\nEMAIL_HOST_PASSWORD = os.environ.get('EM_EMAIL_HOST_PASSWORD')\nEMAIL_USE_SSL = True\nEMAIL_TIMEOUT = None\nEMAIL_SSL_KEYFILE = None\nEMAIL_SSL_CERTFILE = None\nEMAIL_SSL_CAFILE = None\nEMAIL_SSL_CERT_SUBJ = None\nEMAIL_SSL_CERT_PASSWD = None",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_HOST_USER",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_HOST_USER = os.environ.get('EM_EMAIL_HOST_USER')\nEMAIL_HOST_PASSWORD = os.environ.get('EM_EMAIL_HOST_PASSWORD')\nEMAIL_USE_SSL = True\nEMAIL_TIMEOUT = None\nEMAIL_SSL_KEYFILE = None\nEMAIL_SSL_CERTFILE = None\nEMAIL_SSL_CAFILE = None\nEMAIL_SSL_CERT_SUBJ = None\nEMAIL_SSL_CERT_PASSWD = None\nEMAIL_SSL_CIPHER = None",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_HOST_PASSWORD",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_HOST_PASSWORD = os.environ.get('EM_EMAIL_HOST_PASSWORD')\nEMAIL_USE_SSL = True\nEMAIL_TIMEOUT = None\nEMAIL_SSL_KEYFILE = None\nEMAIL_SSL_CERTFILE = None\nEMAIL_SSL_CAFILE = None\nEMAIL_SSL_CERT_SUBJ = None\nEMAIL_SSL_CERT_PASSWD = None\nEMAIL_SSL_CIPHER = None\nEMAIL_USE_LOCALTIME = False",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_USE_SSL",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_USE_SSL = True\nEMAIL_TIMEOUT = None\nEMAIL_SSL_KEYFILE = None\nEMAIL_SSL_CERTFILE = None\nEMAIL_SSL_CAFILE = None\nEMAIL_SSL_CERT_SUBJ = None\nEMAIL_SSL_CERT_PASSWD = None\nEMAIL_SSL_CIPHER = None\nEMAIL_USE_LOCALTIME = False\nEMAIL_FILE_PATH = None",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_TIMEOUT",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_TIMEOUT = None\nEMAIL_SSL_KEYFILE = None\nEMAIL_SSL_CERTFILE = None\nEMAIL_SSL_CAFILE = None\nEMAIL_SSL_CERT_SUBJ = None\nEMAIL_SSL_CERT_PASSWD = None\nEMAIL_SSL_CIPHER = None\nEMAIL_USE_LOCALTIME = False\nEMAIL_FILE_PATH = None\nEMAIL_FROM = None",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_SSL_KEYFILE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_SSL_KEYFILE = None\nEMAIL_SSL_CERTFILE = None\nEMAIL_SSL_CAFILE = None\nEMAIL_SSL_CERT_SUBJ = None\nEMAIL_SSL_CERT_PASSWD = None\nEMAIL_SSL_CIPHER = None\nEMAIL_USE_LOCALTIME = False\nEMAIL_FILE_PATH = None\nEMAIL_FROM = None\nEMAIL_SUBJECT_PREFIX = '[Django] '",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_SSL_CERTFILE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_SSL_CERTFILE = None\nEMAIL_SSL_CAFILE = None\nEMAIL_SSL_CERT_SUBJ = None\nEMAIL_SSL_CERT_PASSWD = None\nEMAIL_SSL_CIPHER = None\nEMAIL_USE_LOCALTIME = False\nEMAIL_FILE_PATH = None\nEMAIL_FROM = None\nEMAIL_SUBJECT_PREFIX = '[Django] '\nLOGIN_URL = '/'",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_SSL_CAFILE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_SSL_CAFILE = None\nEMAIL_SSL_CERT_SUBJ = None\nEMAIL_SSL_CERT_PASSWD = None\nEMAIL_SSL_CIPHER = None\nEMAIL_USE_LOCALTIME = False\nEMAIL_FILE_PATH = None\nEMAIL_FROM = None\nEMAIL_SUBJECT_PREFIX = '[Django] '\nLOGIN_URL = '/'\n# Internationalization",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_SSL_CERT_SUBJ",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_SSL_CERT_SUBJ = None\nEMAIL_SSL_CERT_PASSWD = None\nEMAIL_SSL_CIPHER = None\nEMAIL_USE_LOCALTIME = False\nEMAIL_FILE_PATH = None\nEMAIL_FROM = None\nEMAIL_SUBJECT_PREFIX = '[Django] '\nLOGIN_URL = '/'\n# Internationalization\n# https://docs.djangoproject.com/en/5.0/topics/i18n/",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_SSL_CERT_PASSWD",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_SSL_CERT_PASSWD = None\nEMAIL_SSL_CIPHER = None\nEMAIL_USE_LOCALTIME = False\nEMAIL_FILE_PATH = None\nEMAIL_FROM = None\nEMAIL_SUBJECT_PREFIX = '[Django] '\nLOGIN_URL = '/'\n# Internationalization\n# https://docs.djangoproject.com/en/5.0/topics/i18n/\nLANGUAGE_CODE = 'es-co'",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_SSL_CIPHER",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_SSL_CIPHER = None\nEMAIL_USE_LOCALTIME = False\nEMAIL_FILE_PATH = None\nEMAIL_FROM = None\nEMAIL_SUBJECT_PREFIX = '[Django] '\nLOGIN_URL = '/'\n# Internationalization\n# https://docs.djangoproject.com/en/5.0/topics/i18n/\nLANGUAGE_CODE = 'es-co'\nTIME_ZONE = 'America/Bogota'",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_USE_LOCALTIME",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_USE_LOCALTIME = False\nEMAIL_FILE_PATH = None\nEMAIL_FROM = None\nEMAIL_SUBJECT_PREFIX = '[Django] '\nLOGIN_URL = '/'\n# Internationalization\n# https://docs.djangoproject.com/en/5.0/topics/i18n/\nLANGUAGE_CODE = 'es-co'\nTIME_ZONE = 'America/Bogota'\nUSE_I18N = True",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_FILE_PATH",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_FILE_PATH = None\nEMAIL_FROM = None\nEMAIL_SUBJECT_PREFIX = '[Django] '\nLOGIN_URL = '/'\n# Internationalization\n# https://docs.djangoproject.com/en/5.0/topics/i18n/\nLANGUAGE_CODE = 'es-co'\nTIME_ZONE = 'America/Bogota'\nUSE_I18N = True\nUSE_L10N = True",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_FROM",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_FROM = None\nEMAIL_SUBJECT_PREFIX = '[Django] '\nLOGIN_URL = '/'\n# Internationalization\n# https://docs.djangoproject.com/en/5.0/topics/i18n/\nLANGUAGE_CODE = 'es-co'\nTIME_ZONE = 'America/Bogota'\nUSE_I18N = True\nUSE_L10N = True\nUSE_TZ = True",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "EMAIL_SUBJECT_PREFIX",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "EMAIL_SUBJECT_PREFIX = '[Django] '\nLOGIN_URL = '/'\n# Internationalization\n# https://docs.djangoproject.com/en/5.0/topics/i18n/\nLANGUAGE_CODE = 'es-co'\nTIME_ZONE = 'America/Bogota'\nUSE_I18N = True\nUSE_L10N = True\nUSE_TZ = True",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "LOGIN_URL",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "LOGIN_URL = '/'\n# Internationalization\n# https://docs.djangoproject.com/en/5.0/topics/i18n/\nLANGUAGE_CODE = 'es-co'\nTIME_ZONE = 'America/Bogota'\nUSE_I18N = True\nUSE_L10N = True\nUSE_TZ = True\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "LANGUAGE_CODE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "LANGUAGE_CODE = 'es-co'\nTIME_ZONE = 'America/Bogota'\nUSE_I18N = True\nUSE_L10N = True\nUSE_TZ = True\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'\nLOGIN_REDIRECT_URL = '/'",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "TIME_ZONE",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "TIME_ZONE = 'America/Bogota'\nUSE_I18N = True\nUSE_L10N = True\nUSE_TZ = True\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'\nLOGIN_REDIRECT_URL = '/'",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "USE_I18N",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "USE_I18N = True\nUSE_L10N = True\nUSE_TZ = True\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'\nLOGIN_REDIRECT_URL = '/'",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "USE_L10N",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "USE_L10N = True\nUSE_TZ = True\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'\nLOGIN_REDIRECT_URL = '/'",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "USE_TZ",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "USE_TZ = True\n# Default primary key field type\n# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field\nDEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'\nLOGIN_REDIRECT_URL = '/'",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_AUTO_FIELD",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'\nLOGIN_REDIRECT_URL = '/'",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "LOGIN_REDIRECT_URL",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "LOGIN_REDIRECT_URL = '/'",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "#dotenv_path",
+        "kind": 5,
+        "importPath": "atsatiempo.development",
+        "description": "atsatiempo.development",
+        "peekOfCode": "#dotenv_path = os.path.join(os.path.dirname(__file__), '.env')\n#load_dotenv(dotenv_path)\n# SECURITY WARNING: keep the secret key used in production secret!\nSECRET_KEY = 'En_dev_no_importa'\n# SECURITY WARNING: don't run with debug turned on in production!\nDEBUG = True\nALLOWED_HOSTS = ['*']\nSETTINGS_ENV = 'development'\nDATABASES = {\n    'default': {",
+        "detail": "atsatiempo.development",
+        "documentation": {}
+    },
+    {
+        "label": "SECRET_KEY",
+        "kind": 5,
+        "importPath": "atsatiempo.development",
+        "description": "atsatiempo.development",
+        "peekOfCode": "SECRET_KEY = 'En_dev_no_importa'\n# SECURITY WARNING: don't run with debug turned on in production!\nDEBUG = True\nALLOWED_HOSTS = ['*']\nSETTINGS_ENV = 'development'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),",
+        "detail": "atsatiempo.development",
+        "documentation": {}
+    },
+    {
+        "label": "DEBUG",
+        "kind": 5,
+        "importPath": "atsatiempo.development",
+        "description": "atsatiempo.development",
+        "peekOfCode": "DEBUG = True\nALLOWED_HOSTS = ['*']\nSETTINGS_ENV = 'development'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),\n        'PASSWORD':  os.getenv('DB_PASSWORD'),  \n        'HOST':  os.getenv('DB_HOST'),",
+        "detail": "atsatiempo.development",
+        "documentation": {}
+    },
+    {
+        "label": "ALLOWED_HOSTS",
+        "kind": 5,
+        "importPath": "atsatiempo.development",
+        "description": "atsatiempo.development",
+        "peekOfCode": "ALLOWED_HOSTS = ['*']\nSETTINGS_ENV = 'development'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),\n        'PASSWORD':  os.getenv('DB_PASSWORD'),  \n        'HOST':  os.getenv('DB_HOST'),\n        'PORT':  os.getenv('DB_PORT'),",
+        "detail": "atsatiempo.development",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS_ENV",
+        "kind": 5,
+        "importPath": "atsatiempo.development",
+        "description": "atsatiempo.development",
+        "peekOfCode": "SETTINGS_ENV = 'development'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),\n        'PASSWORD':  os.getenv('DB_PASSWORD'),  \n        'HOST':  os.getenv('DB_HOST'),\n        'PORT':  os.getenv('DB_PORT'),\n    },",
+        "detail": "atsatiempo.development",
+        "documentation": {}
+    },
+    {
+        "label": "DATABASES",
+        "kind": 5,
+        "importPath": "atsatiempo.development",
+        "description": "atsatiempo.development",
+        "peekOfCode": "DATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),\n        'PASSWORD':  os.getenv('DB_PASSWORD'),  \n        'HOST':  os.getenv('DB_HOST'),\n        'PORT':  os.getenv('DB_PORT'),\n    },\n}",
+        "detail": "atsatiempo.development",
+        "documentation": {}
+    },
+    {
+        "label": "STATIC_URL",
+        "kind": 5,
+        "importPath": "atsatiempo.development",
+        "description": "atsatiempo.development",
+        "peekOfCode": "STATIC_URL = '/static/'\nSTATICFILES_DIRS = [\n    os.path.join(BASE_DIR, '..', 'static')\n]\nMEDIA_URL = '/media/'\nMEDIA_ROOT = os.path.join(BASE_DIR, 'media')",
+        "detail": "atsatiempo.development",
+        "documentation": {}
+    },
+    {
+        "label": "STATICFILES_DIRS",
+        "kind": 5,
+        "importPath": "atsatiempo.development",
+        "description": "atsatiempo.development",
+        "peekOfCode": "STATICFILES_DIRS = [\n    os.path.join(BASE_DIR, '..', 'static')\n]\nMEDIA_URL = '/media/'\nMEDIA_ROOT = os.path.join(BASE_DIR, 'media')",
+        "detail": "atsatiempo.development",
+        "documentation": {}
+    },
+    {
+        "label": "MEDIA_URL",
+        "kind": 5,
+        "importPath": "atsatiempo.development",
+        "description": "atsatiempo.development",
+        "peekOfCode": "MEDIA_URL = '/media/'\nMEDIA_ROOT = os.path.join(BASE_DIR, 'media')",
+        "detail": "atsatiempo.development",
+        "documentation": {}
+    },
+    {
+        "label": "MEDIA_ROOT",
+        "kind": 5,
+        "importPath": "atsatiempo.development",
+        "description": "atsatiempo.development",
+        "peekOfCode": "MEDIA_ROOT = os.path.join(BASE_DIR, 'media')",
+        "detail": "atsatiempo.development",
+        "documentation": {}
+    },
+    {
+        "label": "SECRET_KEY",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "SECRET_KEY =  os.getenv('SECRET_KEY')\n# SECURITY WARNING: don't run with debug turned on in production!\nDEBUG = True\nALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')\nSETTINGS_ENV = 'production'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "DEBUG",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "DEBUG = True\nALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')\nSETTINGS_ENV = 'production'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),\n        'PASSWORD':  os.getenv('DB_PASSWORD'),\n        'HOST':  os.getenv('DB_HOST'),",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "ALLOWED_HOSTS",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')\nSETTINGS_ENV = 'production'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),\n        'PASSWORD':  os.getenv('DB_PASSWORD'),\n        'HOST':  os.getenv('DB_HOST'),\n        'PORT':  os.getenv('DB_PORT'),",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "SETTINGS_ENV",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "SETTINGS_ENV = 'production'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),\n        'PASSWORD':  os.getenv('DB_PASSWORD'),\n        'HOST':  os.getenv('DB_HOST'),\n        'PORT':  os.getenv('DB_PORT'),\n    },",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "DATABASES",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "DATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),\n        'PASSWORD':  os.getenv('DB_PASSWORD'),\n        'HOST':  os.getenv('DB_HOST'),\n        'PORT':  os.getenv('DB_PORT'),\n    },\n}",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "STATICFILES_DIRS",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "STATICFILES_DIRS = [\n     os.path.join(BASE_DIR,  'static')\n]\n# Seguridad de cookies\nCSRF_COOKIE_SECURE = True\nSESSION_COOKIE_SECURE = True\nCSRF_COOKIE_HTTPONLY = True\nCSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "CSRF_COOKIE_SECURE",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "CSRF_COOKIE_SECURE = True\nSESSION_COOKIE_SECURE = True\nCSRF_COOKIE_HTTPONLY = True\nCSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'http://localhost:86'\n]",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "SESSION_COOKIE_SECURE",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "SESSION_COOKIE_SECURE = True\nCSRF_COOKIE_HTTPONLY = True\nCSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'http://localhost:86'\n]\n# Configuración de S3",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "CSRF_COOKIE_HTTPONLY",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "CSRF_COOKIE_HTTPONLY = True\nCSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'http://localhost:86'\n]\n# Configuración de S3\nAWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "CSRF_TRUSTED_ORIGINS",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "CSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'http://localhost:86'\n]\n# Configuración de S3\nAWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')\nAWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "AWS_ACCESS_KEY_ID",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')\nAWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')\nAWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')\nAWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')\nAWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'\nAWS_S3_OBJECT_PARAMETERS = {\n    'CacheControl': 'max-age=86400',\n}\nSTATICFILES_FINDERS = [\n    'django.contrib.staticfiles.finders.FileSystemFinder',",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "AWS_SECRET_ACCESS_KEY",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')\nAWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')\nAWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')\nAWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'\nAWS_S3_OBJECT_PARAMETERS = {\n    'CacheControl': 'max-age=86400',\n}\nSTATICFILES_FINDERS = [\n    'django.contrib.staticfiles.finders.FileSystemFinder',\n    'django.contrib.staticfiles.finders.AppDirectoriesFinder',",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "AWS_STORAGE_BUCKET_NAME",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')\nAWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')\nAWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'\nAWS_S3_OBJECT_PARAMETERS = {\n    'CacheControl': 'max-age=86400',\n}\nSTATICFILES_FINDERS = [\n    'django.contrib.staticfiles.finders.FileSystemFinder',\n    'django.contrib.staticfiles.finders.AppDirectoriesFinder',\n]",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "AWS_S3_REGION_NAME",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')\nAWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'\nAWS_S3_OBJECT_PARAMETERS = {\n    'CacheControl': 'max-age=86400',\n}\nSTATICFILES_FINDERS = [\n    'django.contrib.staticfiles.finders.FileSystemFinder',\n    'django.contrib.staticfiles.finders.AppDirectoriesFinder',\n]\n# Almacén estático y de medios",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "AWS_S3_CUSTOM_DOMAIN",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'\nAWS_S3_OBJECT_PARAMETERS = {\n    'CacheControl': 'max-age=86400',\n}\nSTATICFILES_FINDERS = [\n    'django.contrib.staticfiles.finders.FileSystemFinder',\n    'django.contrib.staticfiles.finders.AppDirectoriesFinder',\n]\n# Almacén estático y de medios\nSTATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "AWS_S3_OBJECT_PARAMETERS",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "AWS_S3_OBJECT_PARAMETERS = {\n    'CacheControl': 'max-age=86400',\n}\nSTATICFILES_FINDERS = [\n    'django.contrib.staticfiles.finders.FileSystemFinder',\n    'django.contrib.staticfiles.finders.AppDirectoriesFinder',\n]\n# Almacén estático y de medios\nSTATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'\nDEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "STATICFILES_FINDERS",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "STATICFILES_FINDERS = [\n    'django.contrib.staticfiles.finders.FileSystemFinder',\n    'django.contrib.staticfiles.finders.AppDirectoriesFinder',\n]\n# Almacén estático y de medios\nSTATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'\nDEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'\n# URL estática y de medios\nSTATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'\nMEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "STATICFILES_STORAGE",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'\nDEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'\n# URL estática y de medios\nSTATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'\nMEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'\n# Configuración de caché\nAWS_QUERYSTRING_AUTH = False\nAWS_S3_FILE_OVERWRITE = True",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_FILE_STORAGE",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'\n# URL estática y de medios\nSTATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'\nMEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'\n# Configuración de caché\nAWS_QUERYSTRING_AUTH = False\nAWS_S3_FILE_OVERWRITE = True",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "STATIC_URL",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'\nMEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'\n# Configuración de caché\nAWS_QUERYSTRING_AUTH = False\nAWS_S3_FILE_OVERWRITE = True",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "MEDIA_URL",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'\n# Configuración de caché\nAWS_QUERYSTRING_AUTH = False\nAWS_S3_FILE_OVERWRITE = True",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "AWS_QUERYSTRING_AUTH",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "AWS_QUERYSTRING_AUTH = False\nAWS_S3_FILE_OVERWRITE = True",
+        "detail": "atsatiempo.production",
+        "documentation": {}
+    },
+    {
+        "label": "AWS_S3_FILE_OVERWRITE",
+        "kind": 5,
+        "importPath": "atsatiempo.production",
+        "description": "atsatiempo.production",
+        "peekOfCode": "AWS_S3_FILE_OVERWRITE = True",
+        "detail": "atsatiempo.production",
         "documentation": {}
     },
     {
@@ -1686,6 +2778,15 @@
         "documentation": {}
     },
     {
+        "label": "BASE_DIR",
+        "kind": 5,
+        "importPath": "atsatiempo.wsgi",
+        "description": "atsatiempo.wsgi",
+        "peekOfCode": "BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nload_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))\nos.environ.setdefault('DJANGO_SETTINGS_MODULE', 'atsatiempo.production')\napplication = get_wsgi_application()",
+        "detail": "atsatiempo.wsgi",
+        "documentation": {}
+    },
+    {
         "label": "application",
         "kind": 5,
         "importPath": "atsatiempo.wsgi",
@@ -1701,6 +2802,168 @@
         "description": "manage",
         "peekOfCode": "def main():\n    \"\"\"Run administrative tasks.\"\"\"\n    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'atsatiempo.settings')\n    try:\n        from django.core.management import execute_from_command_line\n    except ImportError as exc:\n        raise ImportError(\n            \"Couldn't import Django. Are you sure it's installed and \"\n            \"available on your PYTHONPATH environment variable? Did you \"\n            \"forget to activate a virtual environment?\"",
         "detail": "manage",
+        "documentation": {}
+    },
+    {
+        "label": "AuthGroup",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class AuthGroup(models.Model):\n    name = models.CharField(unique=True, max_length=150)\n    class Meta:\n        managed = False\n        db_table = 'auth_group'\nclass AuthGroupPermissions(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)\n    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)\n    class Meta:",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "AuthGroupPermissions",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class AuthGroupPermissions(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)\n    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)\n    class Meta:\n        managed = False\n        db_table = 'auth_group_permissions'\n        unique_together = (('group', 'permission'),)\nclass AuthPermission(models.Model):\n    name = models.CharField(max_length=255)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "AuthPermission",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class AuthPermission(models.Model):\n    name = models.CharField(max_length=255)\n    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)\n    codename = models.CharField(max_length=100)\n    class Meta:\n        managed = False\n        db_table = 'auth_permission'\n        unique_together = (('content_type', 'codename'),)\nclass AuthUser(models.Model):\n    password = models.CharField(max_length=128)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "AuthUser",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class AuthUser(models.Model):\n    password = models.CharField(max_length=128)\n    last_login = models.DateTimeField(blank=True, null=True)\n    is_superuser = models.BooleanField()\n    username = models.CharField(unique=True, max_length=150)\n    first_name = models.CharField(max_length=150)\n    last_name = models.CharField(max_length=150)\n    email = models.CharField(max_length=254)\n    is_staff = models.BooleanField()\n    is_active = models.BooleanField()",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "AuthUserGroups",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class AuthUserGroups(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    user = models.ForeignKey(AuthUser, models.DO_NOTHING)\n    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)\n    class Meta:\n        managed = False\n        db_table = 'auth_user_groups'\n        unique_together = (('user', 'group'),)\nclass AuthUserUserPermissions(models.Model):\n    id = models.BigAutoField(primary_key=True)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "AuthUserUserPermissions",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class AuthUserUserPermissions(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    user = models.ForeignKey(AuthUser, models.DO_NOTHING)\n    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)\n    class Meta:\n        managed = False\n        db_table = 'auth_user_user_permissions'\n        unique_together = (('user', 'permission'),)\nclass Can101Candidato(models.Model):\n    id = models.BigAutoField(primary_key=True)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "Can101Candidato",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class Can101Candidato(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    email = models.CharField(unique=True, max_length=254)\n    primer_nombre = models.CharField(max_length=50)\n    segundo_nombre = models.CharField(max_length=50, blank=True, null=True)\n    primer_apellido = models.CharField(max_length=50)\n    segundo_apellido = models.CharField(max_length=50, blank=True, null=True)\n    sexo = models.CharField(max_length=1, blank=True, null=True)\n    ciudad_id_004 = models.ForeignKey('Cat004Ciudad', models.DO_NOTHING, db_column='ciudad_id_004', blank=True, null=True)\n    estado_id_001 = models.ForeignKey('Cat001Estado', models.DO_NOTHING, db_column='estado_id_001')",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "Can101CandidatoSkills",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class Can101CandidatoSkills(models.Model):\n    candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101')\n    skill_id_104 = models.ForeignKey('Can104Skill', models.DO_NOTHING, db_column='skill_id_104')\n    nivel = models.IntegerField(blank=True, null=True)\n    class Meta:\n        managed = False\n        db_table = 'can_101_candidato_skills'\nclass Can102Experiencia(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    entidad = models.CharField(max_length=100)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "Can102Experiencia",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class Can102Experiencia(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    entidad = models.CharField(max_length=100)\n    sector = models.CharField(max_length=100)\n    fecha_inicial = models.DateField()\n    fecha_final = models.DateField(blank=True, null=True)\n    activo = models.CharField(max_length=2)\n    logro = models.TextField(blank=True, null=True)\n    candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)\n    estado_id_001 = models.ForeignKey('Cat001Estado', models.DO_NOTHING, db_column='estado_id_001')",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "Can103Educacion",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class Can103Educacion(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    institucion = models.CharField(max_length=100, blank=True, null=True)\n    fecha_inicial = models.DateField(blank=True, null=True)\n    fecha_final = models.DateField()\n    grado_en = models.CharField(max_length=100)\n    titulo = models.CharField(max_length=100)\n    candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)\n    estado_id_001 = models.ForeignKey('Cat001Estado', models.DO_NOTHING, db_column='estado_id_001')\n    carrera = models.CharField(max_length=100)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "Can104Skill",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class Can104Skill(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    nombre = models.CharField(max_length=50)\n    estado_id_004 = models.ForeignKey('Cat001Estado', models.DO_NOTHING, db_column='estado_id_004')\n    class Meta:\n        managed = False\n        db_table = 'can_104_skill'\nclass Cat001Estado(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    nombre = models.CharField(max_length=30)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "Cat001Estado",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class Cat001Estado(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    nombre = models.CharField(max_length=30)\n    sigla = models.CharField(max_length=100, blank=True, null=True)\n    class Meta:\n        managed = False\n        db_table = 'cat_001_estado'\nclass Cat004Ciudad(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    nombre = models.CharField(max_length=50)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "Cat004Ciudad",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class Cat004Ciudad(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    nombre = models.CharField(max_length=50)\n    departamento_id_003 = models.IntegerField(blank=True, null=True)\n    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')\n    class Meta:\n        managed = False\n        db_table = 'cat_004_ciudad'\nclass Cli051Cliente(models.Model):\n    id = models.BigAutoField(primary_key=True)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "Cli051Cliente",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class Cli051Cliente(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    nit = models.IntegerField()\n    razon_social = models.CharField(max_length=100)\n    email = models.CharField(unique=True, max_length=254)\n    contacto = models.CharField(max_length=50)\n    telefono = models.CharField(max_length=20)\n    ciudad_id_004 = models.ForeignKey(Cat004Ciudad, models.DO_NOTHING, db_column='ciudad_id_004')\n    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')\n    logo = models.CharField(max_length=100, blank=True, null=True)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "DjangoAdminLog",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class DjangoAdminLog(models.Model):\n    action_time = models.DateTimeField()\n    object_id = models.TextField(blank=True, null=True)\n    object_repr = models.CharField(max_length=200)\n    action_flag = models.SmallIntegerField()\n    change_message = models.TextField()\n    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)\n    user = models.ForeignKey(AuthUser, models.DO_NOTHING)\n    class Meta:\n        managed = False",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "DjangoContentType",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class DjangoContentType(models.Model):\n    app_label = models.CharField(max_length=100)\n    model = models.CharField(max_length=100)\n    class Meta:\n        managed = False\n        db_table = 'django_content_type'\n        unique_together = (('app_label', 'model'),)\nclass DjangoMigrations(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    app = models.CharField(max_length=255)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "DjangoMigrations",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class DjangoMigrations(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    app = models.CharField(max_length=255)\n    name = models.CharField(max_length=255)\n    applied = models.DateTimeField()\n    class Meta:\n        managed = False\n        db_table = 'django_migrations'\nclass DjangoSession(models.Model):\n    session_key = models.CharField(primary_key=True, max_length=40)",
+        "detail": "models_db1",
+        "documentation": {}
+    },
+    {
+        "label": "DjangoSession",
+        "kind": 6,
+        "importPath": "models_db1",
+        "description": "models_db1",
+        "peekOfCode": "class DjangoSession(models.Model):\n    session_key = models.CharField(primary_key=True, max_length=40)\n    session_data = models.TextField()\n    expire_date = models.DateTimeField()\n    class Meta:\n        managed = False\n        db_table = 'django_session'",
+        "detail": "models_db1",
         "documentation": {}
     }
 ]
