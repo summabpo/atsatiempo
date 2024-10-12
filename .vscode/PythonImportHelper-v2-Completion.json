@@ -1964,6 +1964,22 @@
         "documentation": {}
     },
     {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
         "label": "models",
         "importPath": "django.db",
         "description": "django.db",
@@ -5047,6 +5063,15 @@
         "documentation": {}
     },
     {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "applications.vacante.migrations.0005_alter_cli057asignacionentrevista_usuario_asignado_and_more",
+        "description": "applications.vacante.migrations.0005_alter_cli057asignacionentrevista_usuario_asignado_and_more",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('usuarios', '0005_alter_tokenautorizacion_fecha_expiracion'),\n        ('vacante', '0004_alter_cli057asignacionentrevista_asignacion_vacante_and_more'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='cli057asignacionentrevista',\n            name='usuario_asignado',\n            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='entrevistas_por_realizar', to='usuarios.usuariobase'),",
+        "detail": "applications.vacante.migrations.0005_alter_cli057asignacionentrevista_usuario_asignado_and_more",
+        "documentation": {}
+    },
+    {
         "label": "ver_entrevista_todos",
         "kind": 2,
         "importPath": "applications.vacante.views.EntrevistaView",
@@ -5348,7 +5373,7 @@
         "kind": 5,
         "importPath": "atsatiempo.base",
         "description": "atsatiempo.base",
-        "peekOfCode": "CRISPY_TEMPLATE_PACK = 'bootstrap5'\nBASE_MIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',\n    'debug_toolbar.middleware.DebugToolbarMiddleware',",
+        "peekOfCode": "CRISPY_TEMPLATE_PACK = 'bootstrap5'\nBASE_MIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',\n    #'debug_toolbar.middleware.DebugToolbarMiddleware',",
         "detail": "atsatiempo.base",
         "documentation": {}
     },
@@ -5357,7 +5382,7 @@
         "kind": 5,
         "importPath": "atsatiempo.base",
         "description": "atsatiempo.base",
-        "peekOfCode": "BASE_MIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',\n    'debug_toolbar.middleware.DebugToolbarMiddleware',\n]",
+        "peekOfCode": "BASE_MIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',\n    #'debug_toolbar.middleware.DebugToolbarMiddleware',\n]",
         "detail": "atsatiempo.base",
         "documentation": {}
     },
@@ -5366,7 +5391,7 @@
         "kind": 5,
         "importPath": "atsatiempo.base",
         "description": "atsatiempo.base",
-        "peekOfCode": "LOCAL_MIDDLEWARE = [\n    'apps.login.middlewares.DatabaseRouterMiddleware',\n]\nTHIRD_MIDDLEWARE = [\n]\nMIDDLEWARE = BASE_MIDDLEWARE + LOCAL_MIDDLEWARE + THIRD_MIDDLEWARE\nROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',",
+        "peekOfCode": "LOCAL_MIDDLEWARE = [\n  #  'apps.login.middlewares.DatabaseRouterMiddleware',\n]\nTHIRD_MIDDLEWARE = [\n]\nMIDDLEWARE = BASE_MIDDLEWARE + LOCAL_MIDDLEWARE + THIRD_MIDDLEWARE\nROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',",
         "detail": "atsatiempo.base",
         "documentation": {}
     },
@@ -5375,7 +5400,7 @@
         "kind": 5,
         "importPath": "atsatiempo.base",
         "description": "atsatiempo.base",
-        "peekOfCode": "THIRD_MIDDLEWARE = [\n]\nMIDDLEWARE = BASE_MIDDLEWARE + LOCAL_MIDDLEWARE + THIRD_MIDDLEWARE\nROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, '..', 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {",
+        "peekOfCode": "THIRD_MIDDLEWARE = [\n]\nMIDDLEWARE = BASE_MIDDLEWARE + LOCAL_MIDDLEWARE + THIRD_MIDDLEWARE\nROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {",
         "detail": "atsatiempo.base",
         "documentation": {}
     },
@@ -5384,7 +5409,7 @@
         "kind": 5,
         "importPath": "atsatiempo.base",
         "description": "atsatiempo.base",
-        "peekOfCode": "MIDDLEWARE = BASE_MIDDLEWARE + LOCAL_MIDDLEWARE + THIRD_MIDDLEWARE\nROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, '..', 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {\n            'context_processors': [\n                'django.template.context_processors.debug',",
+        "peekOfCode": "MIDDLEWARE = BASE_MIDDLEWARE + LOCAL_MIDDLEWARE + THIRD_MIDDLEWARE\nROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {\n            'context_processors': [\n                'django.template.context_processors.debug',",
         "detail": "atsatiempo.base",
         "documentation": {}
     },
@@ -5393,7 +5418,7 @@
         "kind": 5,
         "importPath": "atsatiempo.base",
         "description": "atsatiempo.base",
-        "peekOfCode": "ROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, '..', 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {\n            'context_processors': [\n                'django.template.context_processors.debug',\n                'django.template.context_processors.request',",
+        "peekOfCode": "ROOT_URLCONF = 'atsatiempo.urls'\nTEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {\n            'context_processors': [\n                'django.template.context_processors.debug',\n                'django.template.context_processors.request',",
         "detail": "atsatiempo.base",
         "documentation": {}
     },
@@ -5402,7 +5427,7 @@
         "kind": 5,
         "importPath": "atsatiempo.base",
         "description": "atsatiempo.base",
-        "peekOfCode": "TEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, '..', 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {\n            'context_processors': [\n                'django.template.context_processors.debug',\n                'django.template.context_processors.request',\n                'django.contrib.auth.context_processors.auth',",
+        "peekOfCode": "TEMPLATES = [\n    {\n        'BACKEND': 'django.template.backends.django.DjangoTemplates',\n        'DIRS': [os.path.join(BASE_DIR, 'templates')],\n        'APP_DIRS': True,\n        'OPTIONS': {\n            'context_processors': [\n                'django.template.context_processors.debug',\n                'django.template.context_processors.request',\n                'django.contrib.auth.context_processors.auth',",
         "detail": "atsatiempo.base",
         "documentation": {}
     },
@@ -5411,7 +5436,7 @@
         "kind": 5,
         "importPath": "atsatiempo.base",
         "description": "atsatiempo.base",
-        "peekOfCode": "WSGI_APPLICATION = 'atsatiempo.wsgi.application'\n# Database\n# https://docs.djangoproject.com/en/5.0/ref/settings/#databases\n#SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # O el backend que estés usando\nSESSION_COOKIE_AGE = 1209600  # Duración de la sesión en segundos (2 semanas)\nSESSION_SAVE_EVERY_REQUEST = True  # Guardar la sesión en cada solicitud\nSESSION_EXPIRE_AT_BROWSER_CLOSE = True  # No expirar la sesión al cerrar el navegador\n# Password validation\n# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators",
+        "peekOfCode": "WSGI_APPLICATION = 'atsatiempo.wsgi.application'\n#SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # O el backend que estés usando\nSESSION_COOKIE_AGE = 1209600  # Duración de la sesión en segundos (2 semanas)\nSESSION_SAVE_EVERY_REQUEST = True  # Guardar la sesión en cada solicitud\nSESSION_EXPIRE_AT_BROWSER_CLOSE = True  # No expirar la sesión al cerrar el navegador\n# Password validation\n# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators\nAUTH_PASSWORD_VALIDATORS = [\n    {\n        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',",
         "detail": "atsatiempo.base",
         "documentation": {}
     },
@@ -6419,7 +6444,7 @@
         "kind": 5,
         "importPath": "atsatiempo.wsgi",
         "description": "atsatiempo.wsgi",
-        "peekOfCode": "BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nload_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))\nos.environ.setdefault('DJANGO_SETTINGS_MODULE', 'atsatiempo.production')\napplication = get_wsgi_application()",
+        "peekOfCode": "BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nload_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))\n#os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'atsatiempo.production')\napplication = get_wsgi_application()",
         "detail": "atsatiempo.wsgi",
         "documentation": {}
     },
