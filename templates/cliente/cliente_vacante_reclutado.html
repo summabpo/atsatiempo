@@ -59,15 +59,14 @@
         <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-8">
             
             <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4 active" href="#">RESUMEN</a>
-            </li>
+                <a class="nav-link text-active-primary pb-4 " href="{% url 'clientes:cliente_vacante_detalle' vacante.id %}">RESUMEN</a>
             
             <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4 " href="{% url 'clientes:cliente_vacante_reclutado' vacante.id %}">RECLUTADOS</a>
+                <a class="nav-link text-active-primary pb-4 active" href="#">RECLUTADOS</a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4" href="#">ENTREVISTAS</a>
+                <a class="nav-link text-active-primary pb-4" href="#">ENTREVISTA</a>
             </li>
 
             <li class="nav-item">

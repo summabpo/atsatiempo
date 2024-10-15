@@ -11,9 +11,13 @@ urlpatterns = [
     path( url_principal+'ajax/obtener_cliente/', ClienteView.obtener_cliente_view, name='ajax_obtener_cliente'),
 
     # Detalles Cliente
-    path( url_principal+'detalles/<int:pk>/', ClienteView.cliente_detalle, name='cliente_detalle'),
-    path( url_principal+'vacantes/<int:pk>/', ClienteView.cliente_vacante, name='cliente_vacante'),
-    path( url_principal+'vacantes/detalle/<int:pk>/', ClienteView.cliente_vacante_detalle, name='cliente_vacante_detalle'),
+    path( url_principal+'detalle/<int:pk>/', ClienteView.cliente_detalle, name='cliente_detalle'),
+
+    # Detalles Vacante
+    path( url_principal+'vacante/<int:pk>/', ClienteView.cliente_vacante, name='cliente_vacante'),
+    path( url_principal+'vacante/detalle/<int:pk>/', ClienteView.cliente_vacante_detalle, name='cliente_vacante_detalle'),
+    path( url_principal+'vacante/detalle/<int:pk>/', ClienteView.cliente_vacante_detalle, name='cliente_vacante_detalle'),
+    path( url_principal+'vacante/reclutado/<int:pk>/', ClienteView.cliente_vacante_reclutado, name='cliente_vacante_reclutado'),
 
     # Preguntas Cuestionario
     path( url_principal+'ver_preguntas/', PreguntasView.ver_preguntas_cliente, name='ver_preguntas_cliente'),

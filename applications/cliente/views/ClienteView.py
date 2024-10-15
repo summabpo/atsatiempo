@@ -8,7 +8,7 @@ from applications.usuarios.decorators  import validar_permisos
 
 
 #model
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli052VacanteSoftSkillsId053, Cli054HardSkill, Cli052VacanteHardSkillsId054
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli052VacanteSoftSkillsId053, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli056AplicacionVacante, Cli057AsignacionEntrevista
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.models import Permiso
 from ..models import Cli051Cliente
@@ -157,19 +157,50 @@ def cliente_vacante(request, pk):
     
     return render(request, 'cliente/cliente_vacante.html', contexto)
 
-# Mostrar detalle de cada cliente
+# Mostrar detalle de cada vacante
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def cliente_vacante_detalle(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
+    candidato_aplicante = Cli056AplicacionVacante.objects.select_related(
+        'vacante_id_052',
+        'candidato_101'
+    ).filter(
+        vacante_id_052__id=vacante.id
+    ).order_by('fecha_aplicacion')
+
 
     contexto = {
         'cliente' : cliente,
         'vacante' : vacante,
+        'candidato_aplicante' : candidato_aplicante,
     }        
     
     return render(request, 'cliente/cliente_vacante_detalle.html', contexto)
+
+# Mostrar reclutamiento de la vacante_seleccionada vacante
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def cliente_vacante_reclutado(request, pk):
+    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
+    candidato_aplicante = Cli056AplicacionVacante.objects.select_related(
+        'vacante_id_052',
+        'candidato_101'
+    ).filter(
+        vacante_id_052__id=vacante.id
+    ).order_by('fecha_aplicacion')
+
+
+    contexto = {
+        'cliente' : cliente,
+        'vacante' : vacante,
+        'candidato_aplicante' : candidato_aplicante,
+    }        
+    
+    return render(request, 'cliente/cliente_vacante_reclutado.html', contexto)
+
 
 # Create your views here.
 @login_required

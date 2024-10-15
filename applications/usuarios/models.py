@@ -50,10 +50,10 @@ class GrupoPermiso(models.Model):
         return f"{self.grupo.name} - {self.permiso.nombre} ({self.fecha})"
 
 class UsuarioBase(AbstractUser):
-    primer_nombre    = models.CharField(max_length=15, blank=True)
-    segundo_nombre   = models.CharField(max_length=15, blank=True)
-    primer_apellido  = models.CharField(max_length=15, blank=True)
-    segundo_apellido = models.CharField(max_length=15, blank=True)
+    primer_nombre    = models.CharField(max_length=60, blank=True)
+    segundo_nombre   = models.CharField(max_length=60, blank=True)
+    primer_apellido  = models.CharField(max_length=60, blank=True)
+    segundo_apellido = models.CharField(max_length=60, blank=True)
     telefono = models.CharField(max_length=15, blank=True)
     is_verificado = models.BooleanField(default=False)
     group = models.ForeignKey(Grupo, on_delete=models.CASCADE, null=True, blank=True)

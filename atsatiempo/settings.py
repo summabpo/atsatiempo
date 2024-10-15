@@ -105,11 +105,11 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME':  env('DB_NAME'),
-        'USER':  env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),  
-        'HOST': env('DB_HOST', default='localhost'),
-        'PORT': env('DB_PORT', default='5432'), 
+        'NAME':  os.getenv('DB_NAME'),
+        'USER':  os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),  
+        'HOST': os.getenv('DB_HOST', default='localhost'),
+        'PORT': os.getenv('DB_PORT', default='5432'), 
     }
 }
 
@@ -173,12 +173,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Datos para el envio de correo
 EMAIL_BACKEND =  'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST =  env('EM_EMAIL_HOST')
-EMAIL_PORT =  env('EM_EMAIL_PORT')
-EMAIL_USE_TLS =  env('EM_EMAIL_USE_TLS')
-EMAIL_HOST_USER = env('EM_EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EM_EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = env('EM_DEFAULT_FROM_EMAIL')
+EMAIL_HOST =  os.getenv('EM_EMAIL_HOST')
+EMAIL_PORT =  os.getenv('EM_EMAIL_PORT')
+EMAIL_USE_TLS = os.getenv('EM_EMAIL_USE_TLS')
+EMAIL_HOST_USER = os.getenv('EM_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EM_EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('EM_DEFAULT_FROM_EMAIL')
 EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = None
 EMAIL_SSL_KEYFILE = None

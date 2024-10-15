@@ -9,12 +9,12 @@ class SignupForm(forms.Form):
     name = forms.CharField(
         label='Nombre', 
         widget=forms.TextInput(attrs={'placeholder': 'Nombre del usuario'}),
-        max_length=150
+        max_length=60
     )
     last_name = forms.CharField(
         label='Apellido', 
         widget=forms.TextInput(attrs={'placeholder': 'Apellido del usuario'}),
-        max_length=150
+        max_length=60
     )
     email = forms.EmailField(
         label='Correo electrónico Usuario', 
