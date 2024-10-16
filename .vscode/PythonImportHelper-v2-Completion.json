@@ -5301,7 +5301,7 @@
         "kind": 5,
         "importPath": "atsatiempo.base",
         "description": "atsatiempo.base",
-        "peekOfCode": "BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n# Cargar las variables de entorno desde el archivo .env\n#load_dotenv(dotenv_path=os.path.join(os.path.dirname(BASE_DIR), '.env'))\nload_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))\nSETTINGS_ENV = 'base'\n# Application definition\nBASE_APPS = [\n    # Django REST Framework\n  #  'rest_framework',\n    'django.contrib.admin',",
+        "peekOfCode": "BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n# Cargar las variables de entorno desde el archivo .env\n#load_dotenv(dotenv_path=os.path.join(os.path.dirname(BASE_DIR), '.env'))\nload_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))\nSETTINGS_ENV = 'base'\n# Application usuarios\nAUTH_USER_MODEL = 'usuarios.UsuarioBase'\n# Application definition\nBASE_APPS = [\n    # Django REST Framework",
         "detail": "atsatiempo.base",
         "documentation": {}
     },
@@ -5310,7 +5310,16 @@
         "kind": 5,
         "importPath": "atsatiempo.base",
         "description": "atsatiempo.base",
-        "peekOfCode": "SETTINGS_ENV = 'base'\n# Application definition\nBASE_APPS = [\n    # Django REST Framework\n  #  'rest_framework',\n    'django.contrib.admin',\n    'django.contrib.auth',\n    'django.contrib.contenttypes',\n    'django.contrib.sessions',\n    'django.contrib.messages',",
+        "peekOfCode": "SETTINGS_ENV = 'base'\n# Application usuarios\nAUTH_USER_MODEL = 'usuarios.UsuarioBase'\n# Application definition\nBASE_APPS = [\n    # Django REST Framework\n  #  'rest_framework',\n    'django.contrib.admin',\n    'django.contrib.auth',\n    'django.contrib.contenttypes',",
+        "detail": "atsatiempo.base",
+        "documentation": {}
+    },
+    {
+        "label": "AUTH_USER_MODEL",
+        "kind": 5,
+        "importPath": "atsatiempo.base",
+        "description": "atsatiempo.base",
+        "peekOfCode": "AUTH_USER_MODEL = 'usuarios.UsuarioBase'\n# Application definition\nBASE_APPS = [\n    # Django REST Framework\n  #  'rest_framework',\n    'django.contrib.admin',\n    'django.contrib.auth',\n    'django.contrib.contenttypes',\n    'django.contrib.sessions',\n    'django.contrib.messages',",
         "detail": "atsatiempo.base",
         "documentation": {}
     },
@@ -5814,7 +5823,7 @@
         "kind": 5,
         "importPath": "atsatiempo.production",
         "description": "atsatiempo.production",
-        "peekOfCode": "SECRET_KEY =  os.getenv('SECRET_KEY')\n# SECURITY WARNING: don't run with debug turned on in production!\nDEBUG = True\nALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')\nSETTINGS_ENV = 'production'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),",
+        "peekOfCode": "SECRET_KEY =  os.getenv('SECRET_KEY')\n# SECURITY WARNING: don't run with debug turned on in production!\nDEBUG = False\nALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')\nSETTINGS_ENV = 'production'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),",
         "detail": "atsatiempo.production",
         "documentation": {}
     },
@@ -5823,7 +5832,7 @@
         "kind": 5,
         "importPath": "atsatiempo.production",
         "description": "atsatiempo.production",
-        "peekOfCode": "DEBUG = True\nALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')\nSETTINGS_ENV = 'production'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),\n        'PASSWORD':  os.getenv('DB_PASSWORD'),\n        'HOST':  os.getenv('DB_HOST'),",
+        "peekOfCode": "DEBUG = False\nALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')\nSETTINGS_ENV = 'production'\nDATABASES = {\n    'default': {\n        'ENGINE': 'django.db.backends.postgresql',\n        'NAME': os.getenv('DB_NAME'),\n        'USER':  os.getenv('DB_USER'),\n        'PASSWORD':  os.getenv('DB_PASSWORD'),\n        'HOST':  os.getenv('DB_HOST'),",
         "detail": "atsatiempo.production",
         "documentation": {}
     },
@@ -5868,7 +5877,7 @@
         "kind": 5,
         "importPath": "atsatiempo.production",
         "description": "atsatiempo.production",
-        "peekOfCode": "CSRF_COOKIE_SECURE = True\nSESSION_COOKIE_SECURE = True\nCSRF_COOKIE_HTTPONLY = True\nCSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'http://localhost:86'\n]",
+        "peekOfCode": "CSRF_COOKIE_SECURE = True\nSESSION_COOKIE_SECURE = True\nCSRF_COOKIE_HTTPONLY = True\nCSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'https://www.virtualempleo.com',\n    'http://localhost:86'",
         "detail": "atsatiempo.production",
         "documentation": {}
     },
@@ -5877,7 +5886,7 @@
         "kind": 5,
         "importPath": "atsatiempo.production",
         "description": "atsatiempo.production",
-        "peekOfCode": "SESSION_COOKIE_SECURE = True\nCSRF_COOKIE_HTTPONLY = True\nCSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'http://localhost:86'\n]\n# Configuración de S3",
+        "peekOfCode": "SESSION_COOKIE_SECURE = True\nCSRF_COOKIE_HTTPONLY = True\nCSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'https://www.virtualempleo.com',\n    'http://localhost:86'\n]",
         "detail": "atsatiempo.production",
         "documentation": {}
     },
@@ -5886,7 +5895,7 @@
         "kind": 5,
         "importPath": "atsatiempo.production",
         "description": "atsatiempo.production",
-        "peekOfCode": "CSRF_COOKIE_HTTPONLY = True\nCSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'http://localhost:86'\n]\n# Configuración de S3\nAWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')",
+        "peekOfCode": "CSRF_COOKIE_HTTPONLY = True\nCSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'https://www.virtualempleo.com',\n    'http://localhost:86'\n]\n# Configuración de S3",
         "detail": "atsatiempo.production",
         "documentation": {}
     },
@@ -5895,7 +5904,7 @@
         "kind": 5,
         "importPath": "atsatiempo.production",
         "description": "atsatiempo.production",
-        "peekOfCode": "CSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'http://localhost:86'\n]\n# Configuración de S3\nAWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')\nAWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')",
+        "peekOfCode": "CSRF_TRUSTED_ORIGINS = [\n    'http://127.0.0.1:8086',\n    'http://127.0.0.1:8000',\n    'http://localhost:8086',\n    'https://virtualempleo.com',\n    'https://www.virtualempleo.com',\n    'http://localhost:86'\n]\n# Configuración de S3\nAWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')",
         "detail": "atsatiempo.production",
         "documentation": {}
     },

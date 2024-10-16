@@ -13,6 +13,9 @@ load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))
 
 SETTINGS_ENV = 'base'
 
+# Application usuarios
+AUTH_USER_MODEL = 'usuarios.UsuarioBase'
+
 # Application definition
 
 BASE_APPS = [
