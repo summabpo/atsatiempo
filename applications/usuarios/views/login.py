@@ -19,6 +19,8 @@ from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
 from ..decorators  import validar_permisos
 
+from applications.common.views.PanelView import info_vacantes_pendientes
+
 ## login 
 frases_falla_login = [
     "¡Parece que el nombre de usuario o la contraseña están jugando a las escondidas! Revisa y vuelve a intentarlo.",
@@ -165,15 +167,24 @@ def inicio_app(request):
     # Accedemos a los permisos guardados en el request
     permisos_usuario = getattr(request, 'permisos_usuario', [])
 
-    print(permisos_usuario)
+    #print(permisos_usuario)
     
     # Puedes imprimir las variables de sesión para debug
-    print("Variables de sesión:", session_variables)
-    
+    #print("Variables de sesión:", session_variables)
+
+
+    # valida 
+    if session_variables['grupo_id'] == 3:
+        print('Sesion Cliente')
+        vacantes_pendiente_cliente = info_vacantes_pendientes(request.session['grupo_id'])
+    else:
+        vacantes_pendiente_cliente = None  
+
     # Si quieres pasar las variables de sesión al template
     context = {
         'session_variables': session_variables,
         'permisos' : permisos_usuario,
+        'vacantes_pendiente_cliente': vacantes_pendiente_cliente,
     }
     
     return render(request, 'base/index.html', context)
@@ -242,8 +253,8 @@ def signup_view(request):
             last_name = form.cleaned_data['last_name']
             nombre_completo = name+' '+last_name
             
-            # nit = form.cleaned_data['nit']
-            # companyname = form.cleaned_data['companyname']
+            nit = form.cleaned_data['nit']
+            companyname = form.cleaned_data['companyname']
             # city = form.cleaned_data['city']
             # companycontact = form.cleaned_data['companycontact']
             # companyemail = form.cleaned_data['companyemail']
@@ -252,19 +263,23 @@ def signup_view(request):
                 if password1 == password2:
                     if UsuarioBase.objects.filter(username=email).exists():
                         messages.error(request, '¡Oops! Parece que alguien más ya se adelantó y tomó ese correo. Prueba con otro, o tal vez es el momento de reconciliarte con tu contraseña olvidada.')
+                    elif Cli051Cliente.objects.filter(nit=nit).exists():
+                        messages.error(request, '¡Oops! Parece que alguien más ya se adelantó y registro este NIT.')
+                    elif Cli051Cliente.objects.filter(razon_social=companyname).exists():
+                        messages.error(request, '¡Oops! Parece que alguien más ya se adelantó y registro esta Razón Social.')# Usuario.objects.filter(email=email).exists():
                     else:
-                        
+
                         city =  Cat004Ciudad.objects.get(id = form.cleaned_data['city'] )
-                        print(type(form.cleaned_data['nit']))
+
                         new_company = Cli051Cliente (
                             estado_id_001 = Cat001Estado.objects.get(id=1),
-                            razon_social= form.cleaned_data['companyname'] ,
-                            nit= form.cleaned_data['nit'],                        
+                            razon_social= companyname,
+                            nit= nit,                        
                             ciudad_id_004= city ,
                             email= form.cleaned_data['email'],
                             contacto= nombre_completo,    
                         )
-                        
+
                         new_company.save()
 
                         grupo = Grupo.objects.get(id=3)
@@ -277,7 +292,7 @@ def signup_view(request):
                             primer_apellido = last_name.capitalize(),  
                             group=grupo,
                         )
-                        
+
                         token_generado = generate_token(50);
 
                         TokenAutorizacion.objects.create(

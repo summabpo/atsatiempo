@@ -54,20 +54,18 @@ class SignupForm(forms.Form):
         companyname = cleaned_data.get('companyname')
         companycontact = cleaned_data.get('companycontact')
         companyemail = cleaned_data.get('companyemail')
-        
-        
+
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', companyname):
             self.add_error('companyname', "El nombre solo puede contener letras.")
         else:
             self.cleaned_data['companyname'] = companyname.upper()
-        
+
         if nit is not None:
             if not (100000000 <= nit <= 999999999):  # Verificar que el NIT tenga 9 dígitos
                 self.add_error('nit', 'El NIT debe contener exactamente 9 dígitos.')
 
         return super().clean()
-    
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
