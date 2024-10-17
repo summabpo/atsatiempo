@@ -19,20 +19,7 @@
 {% endblock navegacion %}
 
 {% block content %}
-
-
-
-<div class="card shadow-sm">
-    <div class="card-header">
-        <h3 class="card-title">Inicio</h3>
-        <div class="card-toolbar">
-            <button type="button" class="btn btn-sm btn-light">
-                Action
-            </button>
-        </div>
-    </div>
-    <div class="card-body">
-        <!-- <h2>Variables de Sesión:</h2>
+<!-- <h2>Variables de Sesión:</h2>
         <ul>
         {% for key, value in session_variables.items %}
             <li>{{ key }}: {{ value }}</li>
@@ -61,11 +48,17 @@
                 <li>Tienes acceso de entrevistador</li>
             {% endif %}
         </ul> -->
-    </div>
-    <div class="card-footer">
+        {% if 'acceso_admin' in request.permisos_usuario %}
+        {% endif %}
         
-    </div>
-</div>
+
+        {% if 'acceso_cliente' in request.permisos_usuario %}
+            {% include 'cliente/cliente_panel.html' %}
+        {% endif %}
+        
+        {% if 'acceso_candidato' in request.permisos_usuario %}
+            {% include 'candidato/candidato_panel.html' %}
+        {% endif %}
 {% endblock content %}
 
 {% block extrajs %}

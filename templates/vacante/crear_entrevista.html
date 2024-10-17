@@ -60,8 +60,9 @@
                     <li>Empresa: <h5><b>{{ entrevista.asignacion_vacante.vacante_id_052.cliente_id_051.razon_social }}</b></h5></li>
                     <li>Vacante: <h5><b>{{ entrevista.asignacion_vacante.vacante_id_052.titulo }}</b></h5></li>
                     <li>Fecha Entrevista: <h5><b>{{ entrevista.fecha_entrevista  }}</b></h5></li>
-                    <li>Tipo Entrevista: <h5><b>{% if entrevista.tipo_entrevista == V  %} VIRUTAL {% else %} PRESENCIAL {% endif %}</b></h5></li>
                     <li>Fecha Entrevista: <h5><b>{{ entrevista.hora_entrevista  }}</b></h5></li>
+                    <li>Tipo Entrevista: <h5><b>{% if entrevista.tipo_entrevista == V  %} VIRUTAL {% else %} PRESENCIAL {% endif %}</b></h5></li>
+                    <li>Lugar o enlace Entrevista: <h5><b>{{ entrevista.lugar_enlace  }}</b></h5></li>
                 </ul>
                 
             </div>
@@ -76,5 +77,33 @@
 {% endblock content %}
 
 {% block extrajs %}
+<script>
+    $("#kt_daterangepicker_1").daterangepicker({
+        singleDatePicker: true,
+        showDropdowns: true,
+        minYear: 2000,
+        maxYear: parseInt(moment().format("YYYY"), 12),
+        
+        {% comment %} endDate: moment(), {% endcomment %}
+        minDate: moment(),
+        {% comment %} maxDate: moment(), {% endcomment %}
+        autoApply: true,
+        locale: {
+            format: 'YYYY-MM-DD',
+            applyLabel: 'Aplicar',
+            cancelLabel: 'Cancelar',
+            daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+        },
+    });
 
+    $("#kt_timepicker_1").flatpickr({
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        minTime: "07:00",  // Hora mínima: 7:00 AM
+        maxTime: "17:00",  // Hora máxima: 5:00 PM
+    });
+    
+</script>
 {% endblock extrajs %}

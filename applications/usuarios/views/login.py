@@ -19,6 +19,8 @@ from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
 from ..decorators  import validar_permisos
 
+from applications.common.views.PanelView import info_vacantes_pendientes, info_entrevistas_candidato
+
 ## login 
 frases_falla_login = [
     "¡Parece que el nombre de usuario o la contraseña están jugando a las escondidas! Revisa y vuelve a intentarlo.",
@@ -165,15 +167,37 @@ def inicio_app(request):
     # Accedemos a los permisos guardados en el request
     permisos_usuario = getattr(request, 'permisos_usuario', [])
 
-    print(permisos_usuario)
+    #print(permisos_usuario)
     
     # Puedes imprimir las variables de sesión para debug
     print("Variables de sesión:", session_variables)
-    
+
+
+    # valida 
+    #cliente informacion panel
+    if session_variables['grupo_id'] == 3:
+        print('Sesion Cliente')
+        cliente_id = request.session.get('cliente_id')
+        vacantes_pendiente_cliente = info_vacantes_pendientes(cliente_id)
+    else:
+        vacantes_pendiente_cliente = None  
+
+    #candidato información panel
+    if session_variables['grupo_id'] == 2:
+        print('Sesion Candidato')
+        candidato_id = request.session.get('candidato_id')
+        entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
+    else:
+        entrevistas_pendiente_candidato = None
+
+    print(entrevistas_pendiente_candidato)
+
     # Si quieres pasar las variables de sesión al template
     context = {
         'session_variables': session_variables,
         'permisos' : permisos_usuario,
+        'vacantes_pendiente_cliente': vacantes_pendiente_cliente,
+        'entrevistas_pendiente_candidato': entrevistas_pendiente_candidato,
     }
     
     return render(request, 'base/index.html', context)
@@ -196,7 +220,7 @@ def login_view(request):
                         login(request, user)
                         request.session['primer_nombre'] = f'{usuario.primer_nombre} {usuario.primer_apellido}'
                         request.session['email'] = usuario.username
-
+                        
                         # Valida el usuario es de grupo cliente para mostrar el id cliente. 
                         if usuario.group.id == 3:
                             request.session['cliente_id'] = usuario.cliente_id_051.id
@@ -242,8 +266,8 @@ def signup_view(request):
             last_name = form.cleaned_data['last_name']
             nombre_completo = name+' '+last_name
             
-            # nit = form.cleaned_data['nit']
-            # companyname = form.cleaned_data['companyname']
+            nit = form.cleaned_data['nit']
+            companyname = form.cleaned_data['companyname']
             # city = form.cleaned_data['city']
             # companycontact = form.cleaned_data['companycontact']
             # companyemail = form.cleaned_data['companyemail']
@@ -252,19 +276,23 @@ def signup_view(request):
                 if password1 == password2:
                     if UsuarioBase.objects.filter(username=email).exists():
                         messages.error(request, '¡Oops! Parece que alguien más ya se adelantó y tomó ese correo. Prueba con otro, o tal vez es el momento de reconciliarte con tu contraseña olvidada.')
+                    elif Cli051Cliente.objects.filter(nit=nit).exists():
+                        messages.error(request, '¡Oops! Parece que alguien más ya se adelantó y registro este NIT.')
+                    elif Cli051Cliente.objects.filter(razon_social=companyname).exists():
+                        messages.error(request, '¡Oops! Parece que alguien más ya se adelantó y registro esta Razón Social.')# Usuario.objects.filter(email=email).exists():
                     else:
-                        
+
                         city =  Cat004Ciudad.objects.get(id = form.cleaned_data['city'] )
-                        print(type(form.cleaned_data['nit']))
+
                         new_company = Cli051Cliente (
                             estado_id_001 = Cat001Estado.objects.get(id=1),
-                            razon_social= form.cleaned_data['companyname'] ,
-                            nit= form.cleaned_data['nit'],                        
+                            razon_social= companyname,
+                            nit= nit,                        
                             ciudad_id_004= city ,
                             email= form.cleaned_data['email'],
                             contacto= nombre_completo,    
                         )
-                        
+
                         new_company.save()
 
                         grupo = Grupo.objects.get(id=3)
@@ -277,7 +305,7 @@ def signup_view(request):
                             primer_apellido = last_name.capitalize(),  
                             group=grupo,
                         )
-                        
+
                         token_generado = generate_token(50);
 
                         TokenAutorizacion.objects.create(
@@ -379,10 +407,10 @@ def signup_candidato(request):
                     # Envia el metodo
                     enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
                     
-                    # login(request, user)
                     frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
                     messages.success(request, frase_aleatoria)
-                    return redirect('accesses:home') 
+
+                    return redirect('accesses:signup_candidato') 
             else:
                 frase_aleatoria = random.choice(frases_error_contrasena)
                 messages.error(request, frase_aleatoria)
