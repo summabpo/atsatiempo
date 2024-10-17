@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
 from ..decorators  import validar_permisos
 
-from applications.common.views.PanelView import info_vacantes_pendientes
+from applications.common.views.PanelView import info_vacantes_pendientes, info_entrevistas_candidato
 
 ## login 
 frases_falla_login = [
@@ -170,21 +170,34 @@ def inicio_app(request):
     #print(permisos_usuario)
     
     # Puedes imprimir las variables de sesión para debug
-    #print("Variables de sesión:", session_variables)
+    print("Variables de sesión:", session_variables)
 
 
     # valida 
+    #cliente informacion panel
     if session_variables['grupo_id'] == 3:
         print('Sesion Cliente')
-        vacantes_pendiente_cliente = info_vacantes_pendientes(request.session['grupo_id'])
+        cliente_id = request.session.get('cliente_id')
+        vacantes_pendiente_cliente = info_vacantes_pendientes(cliente_id)
     else:
         vacantes_pendiente_cliente = None  
+
+    #candidato información panel
+    if session_variables['grupo_id'] == 2:
+        print('Sesion Candidato')
+        candidato_id = request.session.get('candidato_id')
+        entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
+    else:
+        entrevistas_pendiente_candidato = None
+
+    print(entrevistas_pendiente_candidato)
 
     # Si quieres pasar las variables de sesión al template
     context = {
         'session_variables': session_variables,
         'permisos' : permisos_usuario,
         'vacantes_pendiente_cliente': vacantes_pendiente_cliente,
+        'entrevistas_pendiente_candidato': entrevistas_pendiente_candidato,
     }
     
     return render(request, 'base/index.html', context)
@@ -394,10 +407,10 @@ def signup_candidato(request):
                     # Envia el metodo
                     enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
                     
-                    # login(request, user)
                     frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
                     messages.success(request, frase_aleatoria)
-                    return redirect('accesses:home') 
+
+                    return redirect('accesses:signup_candidato') 
             else:
                 frase_aleatoria = random.choice(frases_error_contrasena)
                 messages.error(request, frase_aleatoria)

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import F, Count, Q
 from applications.cliente.models import Cli051Cliente
 from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli056AplicacionVacante, Cli057AsignacionEntrevista
@@ -31,7 +32,7 @@ def ver_vacante_cliente(request):
     #estado_general_vacante
     estado = Cat001Estado.objects.get(id=1)
     #listado vacantes activas
-    vacantes = Cli052Vacante.objects.filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
+    # vacantes = Cli052Vacante.objects.annotate(num_aplicaciones=Count('aplicaciones')).filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
 
     form_errors = False
 
@@ -114,7 +115,7 @@ def ver_vacante_cliente(request):
             messages.error(request, form.errors)
     else:
         form = VacanteForm()
-        vacantes = Cli052Vacante.objects.filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
+        vacantes = Cli052Vacante.objects.annotate(num_aplicaciones=Count('aplicaciones')).filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
 
     return render(request, 'vacante/listado_vacantes_cliente.html',
         { 
@@ -312,8 +313,23 @@ def vacante_aplicada(request, pk):
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def vacante_detalle(request, pk):
+
+    candidato_id = candidato_id = request.session.get('candidato_id')
+    candidato = get_object_or_404(Can101Candidato, id=candidato_id)
+
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
+
+    try:
+        asignacion_vacante = Cli056AplicacionVacante.objects.get(
+            candidato_101=candidato.id, vacante_id_052=vacante.id
+        )
+        asignacion_entrevista = Cli057AsignacionEntrevista.objects.get(
+            asignacion_vacante=asignacion_vacante.id
+        )
+    except Cli056AplicacionVacante.DoesNotExist:
+        asignacion_vacante = None
+        asignacion_entrevista = None
 
     user_id = request.session.get('_auth_user_id')
     print(user_id)
@@ -321,6 +337,8 @@ def vacante_detalle(request, pk):
     contexto = {
         'vacante': vacante,
         'cliente': cliente,
+        'asignacion_vacante': asignacion_vacante,
+        'asignacion_entrevista': asignacion_entrevista,
     }
     return render(request, 'vacante/detalle_vacante.html', contexto)
 

@@ -73,6 +73,7 @@
                     <th style="text-align: center">FECHA VACANTE</th>
                     <th style="text-align: center">CIUDAD</th>
                     <th style="text-align: center"># VACANTES</th>
+                    <th style="text-align: center"># APLICANTES</th>
                     <th style="text-align: center">ESTADO</th>
                     <th style="text-align: center">GESTION</th>
                 </tr>
@@ -89,6 +90,7 @@
                     <td style="text-align: center">{{e.fecha_creacion | date:"Y/m/d" }}</td>
                     <td style="text-align: center">{{e.ciudad.nombre}}</td>
                     <td style="text-align: center">{{e.numero_posiciones}}</td>
+                    <td style="text-align: center">{{e.num_aplicaciones}}</td>
                     <td style="text-align: center">
                         {% if e.estado_vacante == 1 %}
                             Abierta

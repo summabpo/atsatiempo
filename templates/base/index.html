@@ -57,6 +57,7 @@
         {% endif %}
         
         {% if 'acceso_candidato' in request.permisos_usuario %}
+            {% include 'candidato/candidato_panel.html' %}
         {% endif %}
 {% endblock content %}
 
