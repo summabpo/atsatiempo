@@ -9,12 +9,12 @@ from datetime import datetime, time
 
 class EntrevistaCrearForm(forms.Form):
     # Campos del usuario
-    fecha_entrevista = forms.DateField(
+    fecha_entrevista = forms.CharField(
         label='Fecha de Entrevista',
         required=True,
-        widget=forms.DateInput(attrs={
+        widget=forms.TextInput(attrs={
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
-            'type': 'date',
+            'id': 'kt_daterangepicker_1' 
         })
     )
 
@@ -24,6 +24,7 @@ class EntrevistaCrearForm(forms.Form):
         widget=forms.TimeInput(attrs={
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
             'type': 'time',
+            'id': 'kt_timepicker_1',
         })
     )
 
@@ -107,6 +108,10 @@ class EntrevistaCrearForm(forms.Form):
 
         fecha_entrevista = cleaned_data.get('fecha_entrevista')
         hora_entrevista = cleaned_data.get('hora_entrevista')
+
+        # Verificar si es una cadena y convertirla a un objeto datetime
+        if isinstance(fecha_entrevista, str):
+            fecha_entrevista = datetime.strptime(fecha_entrevista, "%Y-%m-%d").date()
 
         # valida fecha
         if fecha_entrevista:
