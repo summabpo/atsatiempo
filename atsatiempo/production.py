@@ -37,7 +37,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8086',
     'https://virtualempleo.com',
     'https://www.virtualempleo.com',
-    'http://localhost:86'
+    'http://localhost:86',
 ]
 
 
