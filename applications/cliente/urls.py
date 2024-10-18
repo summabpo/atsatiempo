@@ -16,7 +16,7 @@ urlpatterns = [
     # Detalles Vacante
     path( url_principal+'vacante/<int:pk>/', ClienteView.cliente_vacante, name='cliente_vacante'),
     path( url_principal+'vacante/detalle/<int:pk>/', ClienteView.cliente_vacante_detalle, name='cliente_vacante_detalle'),
-    path( url_principal+'vacante/detalle/<int:pk>/', ClienteView.cliente_vacante_detalle, name='cliente_vacante_detalle'),
+    # path( url_principal+'vacante/detalle/<int:pk>/', ClienteView.cliente_vacante_detalle, name='cliente_vacante_detalle'),
     path( url_principal+'vacante/reclutado/<int:pk>/', ClienteView.cliente_vacante_reclutado, name='cliente_vacante_reclutado'),
 
     # Preguntas Cuestionario

@@ -38,46 +38,10 @@
 {% block content %}
 <div class="row">
     <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h3 class="card-title">Detalle Vacante</h3>
-                <div class="card-toolbar">
-                    <button type="button" class="btn btn-sm btn-light">
-                        Editar
-                    </button>
-                </div>
-            </div>
-            <div class="card-body">
-                
-            </div>
-            <div class="card-footer">
-                Footer
-            </div>
-        </div>
+        {% include 'cliente/common/cliente_vacante_elemento_fijo.html' %}
     </div>
     <div class="col-md-8">
-        <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-8">
-            
-            <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4 " href="{% url 'clientes:cliente_vacante_detalle' vacante.id %}">RESUMEN</a>
-            
-            <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4 active" href="#">RECLUTADOS</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4" href="#">ENTREVISTA</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4" href="#">PRE ENTREVISTA</a>
-            </li>
-            
-            {% comment %} <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4" data-kt-countup-tabs="true" data-bs-toggle="tab" href="#kt_customer_view_overview_statements">Configuración</a>
-            </li> {% endcomment %}
-            
-        </ul>
+        {% include 'cliente/common/cliente_menu_vacantes.html' %}
         <div class="card shadow-sm">
             <div class="card-header">
                 <h3 class="card-title">Personal Reclutado</h3>
@@ -120,9 +84,6 @@
                             </td>
                         </tr> 
                         {% endfor %}
-                            
-                        
-                        
                     </tbody>
                 </table>
             </div>
