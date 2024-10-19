@@ -1,0 +1,66 @@
+{% extends 'base/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %} ATS | Inicio {% endblock title %}
+
+{% block titulo_pagina %} Bienvendido {{request.session.primer_nombre}} {% endblock titulo_pagina %}
+
+{% block navegacion %}
+    <!-- <li class="breadcrumb-item text-white opacity-75">Inicio</li> -->
+    
+    <!-- <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Multipurpose</li> -->
+{% endblock navegacion %}
+
+{% block content %}
+<!-- <h2>Variables de Sesión:</h2>
+        <ul>
+        {% for key, value in session_variables.items %}
+            <li>{{ key }}: {{ value }}</li>
+        {% endfor %}
+        </ul>
+
+
+        <h2>Tus permisos:</h2>
+        <ul>
+        {% for permiso in permisos %}
+            <li>{{ permiso }}</li>
+        {% empty %}
+            <li>No tienes permisos asignados para esta vista.</li>
+        {% endfor %}
+        </ul>
+
+        <h2>Accesos disponibles:</h2>
+        <ul>
+            {% if 'acceso_admin' in permisos %}
+                <li>Tienes acceso de administrador</li>
+            {% endif %}
+            {% if 'acceso_candidato' in permisos %}
+                <li>Tienes acceso de candidato</li>
+            {% endif %}
+            {% if 'acceso_entrevistador' in permisos %}
+                <li>Tienes acceso de entrevistador</li>
+            {% endif %}
+        </ul> -->
+        {% if 'acceso_admin' in request.permisos_usuario %}
+        {% endif %}
+        
+
+        {% if 'acceso_cliente' in request.permisos_usuario %}
+            {% include 'cliente/cliente_panel.html' %}
+        {% endif %}
+        
+        {% if 'acceso_candidato' in request.permisos_usuario %}
+            {% include 'candidato/candidato_panel.html' %}
+        {% endif %}
+{% endblock content %}
+
+{% block extrajs %}
+
+{% endblock extrajs %}

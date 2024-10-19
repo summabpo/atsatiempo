@@ -4,391 +4,58 @@
 
 {% load static %}
 
-{% block title %} ATS Atiempo Inicio {% endblock title %}
+{% block title %} ATS Atiempo | Editar Candidato {% endblock title %}
 
-{% block titulo-pagina %}
-PERFIL CANDIDATO
-{% endblock titulo-pagina %}
+{% block titulo_pagina %} Información Personal {% endblock titulo_pagina %}
+
+{% block css %}
+
+{% endblock css %}
+
+
+{% block navegacion %}
+    <li class="breadcrumb-item text-white opacity-75">
+        <a href="{% url 'candidatos:candidato_listar' %}" class="text-white text-hover-primary">Listado Candidatos</a>
+    </li>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <li class="breadcrumb-item text-white opacity-75">Información Candidato</li>
+{% endblock navegacion %}
 
 {% block content %}
 
-<div class="content">
+
+<div class="d-flex flex-column flex-xl-row">
+    <!--begin::Sidebar-->
     
-    <div class="rounded border overflow-hidden push">
-        <div class="bg-image pt-9" style="background-image: url('{% static 'media/photos/photo19@2x.jpg' %}');"></div>
-        <div class="px-4 py-3 bg-body-extra-light d-flex flex-column flex-md-row align-items-center">
-            <div class="d-block  mt-n5">
-                <img class="img-avatar img-avatar128 img-avatar-thumb" src="{% static 'media/avatars/avatar13.jpg' %}" alt="">
-            </div>
-            <div class="ms-3 flex-grow-1 text-center text-md-start my-3 my-md-0">
-                <h1 class="fs-4 fw-bold mb-1">{{ candidato.primer_nombre }} {{ candidato.primer_apellido }}</h1>
-                <h2 class="fs-sm fw-medium text-muted mb-0">
-                    {{ candidato.primer_apellido }} {{ candidato.segundo_apellido }}
-                </h2>
-            </div>
-            <div class="space-x-1">
-                <div style="text-align: center;">CREAR</div>
-                <hr>
-                <div class="btn-group" role="group" aria-label="Horizontal Alternate Info">
-                    <button type="button" class="btn btn-alt-info" data-bs-toggle="modal" data-bs-target="#modal-laboral"> <i class="fa fa-fw fa-plus me-1"></i>Registro Laboral</button>
-                    <button type="button" class="btn btn-alt-info" data-bs-toggle="modal" data-bs-target="#modal-academica"><i class="fa fa-fw fa-plus me-1" ></i> Registro Académica</button>
-                    <button type="button" class="btn btn-alt-info" data-bs-toggle="modal" data-bs-target="#modal-habilidad"><i class="fa fa-fw fa-plus me-1"></i>Registrar Habilidades</button>
-                </div>
-                <br>
-                <div class="dropdown">
-                    <button type="button" class="btn btn-success dropdown-toggle" id="dropdown-default-success"
-                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-fw fa-plus me-1"></i> AGREGAR
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdown-default-success">
-                        <a class="nav-main-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-laboral">Registro Laboral</a>
-                        <a class="nav-main-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-academica">Registro Académico</a>
-                        <a class="nav-main-link" href="#" data-bs-toggle="modal" data-bs-target="#modal-habilidad">Registro Habilidad</a>
+    <div class="flex-lg-row-fluid ms-lg-10">
+        <div class="row g-xxl-9">
+            <div class="col-xxl-12">
+                <div class="card card-xxl-stretch mb-5 mb-xxl-10">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3>Información Personal</h3>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-md-2">
-            <div class="block block-rounded">
-                <div class="block-header block-header-default">
-                    <h3 style="text-align: center;" class="block-title">Crear</h3>
-                </div>
-                <div class="block-content">
-                    <div style="text-align: center;" class="list-group push">
-                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#modal-laboral">
-                            Registro Laboral 
-                            <!-- <span class="badge rounded-pill bg-black-50">1</span> -->
-                        </a>
+                    <div class="card-body pb-0">
+                        {% crispy form %}
+                    </div>
+                    <div class="card-footer">
                         
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-10">
-            <div class="block block-bordered block-rounded">
-                <div class="block-header block-header-default">
-                    <h2 class="block-title">Ver</h2>
-                </div>
-                <ul style="text-align: center;" class="nav nav-tabs nav-tabs-alt" role="tablist">
-                    <li class="nav-item">
-                        <button class="nav-link space-x-1 active" id="account-profile-tab" data-bs-toggle="tab"
-                            data-bs-target="#account-profile" role="tab" aria-controls="account-profile" aria-selected="true">
-                            <i class="fa fa-user-circle d-sm-none"></i>
-                            <span class="d-none d-sm-inline">Perfil</span>
-                        </button>
-                    </li>
-                    {% if accion == 'Editar' %}
-                    <li class="nav-item">
-                        <button class="nav-link space-x-1" id="informacion-academica-tab" data-bs-toggle="tab"
-                            data-bs-target="#informacion-academica" role="tab" aria-controls="informacion-academica"
-                            aria-selected="false">
-                            <i class="fa fa-asterisk d-sm-none"></i>
-                            <span class="d-none d-sm-inline">Información Académica</span>
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link space-x-1" id="info-laboral-tab" data-bs-toggle="tab" data-bs-target="#info-laboral" role="tab" aria-controls="info-laboral"
-                            aria-selected="false">
-                            <i class="fa fa-share-alt d-sm-none"></i>
-                            <span class="d-none d-sm-inline">Información Laboral</span>
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link space-x-1" id="account-billing-tab" data-bs-toggle="tab"
-                            data-bs-target="#account-billing" role="tab" aria-controls="account-billing" aria-selected="false">
-                            <i class="fa fa-credit-card d-sm-none"></i>
-                            <span class="d-none d-sm-inline">Habilidades</span>
-                        </button>
-                    </li>
-                    {% endif %}
-                </ul>
-                <div class="block-content tab-content">
-                    <div class="tab-pane active" id="account-profile" role="tabpanel" aria-labelledby="account-profile-tab"
-                        tabindex="0">
-                        <div class="row push p-sm-2 p-lg-4">
-                            <div class="col-md-12">
-                                {% crispy form %}
-                            </div>
-                        </div>
-                    </div>
-                    {% if accion == 'Editar' %}
-                    <div class="tab-pane" id="informacion-academica" role="tabpanel" aria-labelledby="informacion-academica-tab"
-                        tabindex="0">
-                        <div class="row push p-sm-2 p-lg-4">
-                            <div class="col-md-12">
-                                <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center">INSTITUCION</th>
-                                            <th class="text-center">GRADO EN</th>
-                                            <th class="text-center">F.INICIAL</th>
-                                            <th class="text-center">F.FINAL</th>
-                                            <th class="text-center">ACTIVO</th>
-                                            
-                                            <th class="text-center"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-alt-success edit-experiencia"data-bs-toggle="modal" data-bs-target="#modal-academica" >
-                                                    <i class="fa fa-fw fa-plus"></i>  Crear
-                                                </button>
-                                            </td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                        </tr>
-                                        {% for est in estudios %}
-                                        <tr>
-                                            <td class="text-center">{{ est.institucion }}</td>
-                                            <td class="text-center">{{ est.grado_en }}</td>
-                                            <td class="text-center">{{ est.fecha_inicial|date:"Y-m-d" }}</td>
-                                            <td class="text-center">{{ est.fecha_final|date:"Y-m-d" }}</td>
-                                            <td class="text-center">{{ est.estado_id_001.nombre.nombre }}</td>
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-alt-primary edit-estudio"data-bs-toggle="modal" data-bs-target="#modal-edit-estudio"  data-estudio_id="{{ est.id }}">
-                                                    <i class="fa fa-fw fa-edit"></i> Editar
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        
-                                        <div class="modal fade" id="modal-edit-estudio" tabindex="-1" role="dialog" aria-labelledby="modal-edit-estudio" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg" role="document">
-                                                <div class="modal-content">
-                                                    <div class="block block-rounded block-themed block-transparent mb-0">
-                                                        <div class="block-header bg-primary-dark">
-                                                            <h3 class="block-title">Editar Información Académica</h3>
-                                                            <div class="block-options">
-                                                                <button type="button" class="btn-block-option" data-bs-dismiss="modal" aria-label="Close">
-                                                                    <i class="fa fa-fw fa-times"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                        <div class="block-content" id="edit-estudio-form-container">
-                                                            <form id="estudio-form-edit-{{ est.id }}" method="post" action="{% url 'candidatos:ajax_obtener_estudio' %}">
-                                                                <input type="hidden" name="estudio_id" value="">
-                                                                <input type="hidden" name="id_candidato" value="{{ candidato.id }}">
-                                                                {% crispy form_estudio %}
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="info-laboral" role="tabpanel" aria-labelledby="info-laboral-tab" tabindex="0">
-                        <div class="row push p-sm-2 p-lg-4">
-                            <div class="col-md-12">
-                                <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center">ENTIDAD</th>
-                                            <th class="text-center">SECTOR</th>
-                                            <th class="text-center">ACTIVO</th>
-                                            <th class="text-center">F.INICIAL</th>
-                                            <th class="text-center">F.FINAL</th>
-                                            
-                                            <th class="text-center"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-alt-success edit-experiencia"data-bs-toggle="modal" data-bs-target="#modal-laboral"  data-estudio_id="{{ exp.id }}">
-                                                    <i class="fa fa-fw fa-plus"></i>  Crear
-                                                </button>
-                                            </td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                        </tr>
-                                        {% for exp in experiencias %}
-                                        <tr>
-                                            <td class="text-center">{{ exp.entidad }}</td>
-                                            <td class="text-center">{{ exp.sector }}</td>
-                                            <td class="text-center">{{ exp.activo }}</td>
-                                            <td class="text-center">{{ exp.fecha_inicial|date:"Y-m-d" }}</td>
-                                            <td class="text-center">{{ exp.fecha_final|date:"Y-m-d" }}</td>
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-alt-primary edit-estudio"data-bs-toggle="modal" data-bs-target="#modal-edit-laboral"  data-laboral_id="{{ exp.id }}">
-                                                    <i class="fa fa-fw fa-edit"></i> Editar
-                                                </button>
-                                            </td>
-                                        </tr>
-
-                                        <div class="modal fade" id="modal-edit-laboral" tabindex="-1" role="dialog" aria-labelledby="modal-edit-laboral" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg" role="document">
-                                                <div class="modal-content">
-                                                    <div class="block block-rounded block-themed block-transparent mb-0">
-                                                        <div class="block-header bg-primary-dark">
-                                                            <h3 class="block-title">Editar Información Laboral</h3>
-                                                            <div class="block-options">
-                                                                <button type="button" class="btn-block-option" data-bs-dismiss="modal" aria-label="Close">
-                                                                    <i class="fa fa-fw fa-times"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                        <div class="block-content" id="edit-laboral-form-container">
-                                                            <form id="laboral-form-edit" method="post" action="{% url 'candidatos:ajax_obtener_laboral' %}">
-                                                                <input type="hidden" name="id_candidato" value="{{ candidato.id }}">
-                                                                {% crispy form_experiencia %}
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% endfor %}   
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="account-billing" role="tabpanel" aria-labelledby="account-billing-tab"
-                        tabindex="0">
-                        <div class="row push p-sm-2 p-lg-4">
-                            <div class="col-md-8">
-                                <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center">HABILIDAD</th>
-                                            <th class="text-center">NIVEL</th>
-                                            <th class="text-center"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for hab in habilidades %}
-                                        <tr>
-                                            <td class="text-center">{{ hab.skill_id_104 }}</td>
-                                            <td class="text-center">{{ hab.nivel }}</td>
-                                            <td class="text-center">
-                                                <div class="btn-toolbar mb-2" role="toolbar" aria-label="Icons Alternate Toolbar with button groups">
-                                                    <div class="btn-group me-2 mb-2" role="group" aria-label="Icons Alternate File group">
-                                                        <a href="#" class="btn btn-alt-primary">
-                                                            <i class="fa fa-fw fa-edit"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}   
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-md-4">
-                                <p class="bg-body-light p-4 rounded-3 text-muted fs-sm">
-                                    Your billing information is never shown to other users and only used for creating your
-                                    invoices.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>    
+        
+    </div>
 </div>
 
 
 {% if accion == 'Editar' %}
 
-<div class="modal fade" id="modal-academica" tabindex="-1" role="dialog" aria-labelledby="modal-default-extra-large" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="block block-rounded block-themed block-transparent mb-0">
-                <div class="block-header bg-primary-dark">
-                    <h3 class="block-title">Información Académica</h3>
-                    <div class="block-options">
-                        <button type="button" class="btn-block-option" data-bs-dismiss="modal" aria-label="Close">
-                            <i class="fa fa-fw fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="block-content">
-                    {% crispy form_estudio %}
-                </div>
-                <br>
-                <!-- <div class="block-content block-content-full text-end bg-body">
-                    <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Done</button>
-                </div> -->
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modal-laboral" tabindex="-1" role="dialog" aria-labelledby="modal-default-large" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="block block-rounded block-themed block-transparent mb-0">
-                <div class="block-header bg-primary-dark">
-                    <h3 class="block-title">Información Laboral</h3>
-                    <div class="block-options">
-                        <button type="button" class="btn-block-option" data-bs-dismiss="modal" aria-label="Close">
-                            <i class="fa fa-fw fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="block-content">
-                    {% crispy form_experiencia %}
-                </div>
-                <br>
-                <!-- <div class="block-content block-content-full text-end bg-body">
-                    <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Done</button>
-                </div> -->
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modal-habilidad" tabindex="-1" role="dialog" aria-labelledby="modal-default-large" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="block block-rounded block-themed block-transparent mb-0">
-                <div class="block-header bg-primary-dark">
-                    <h3 class="block-title">Información Habilidades</h3>
-                    <div class="block-options">
-                        <button type="button" class="btn-block-option" data-bs-dismiss="modal" aria-label="Close">
-                            <i class="fa fa-fw fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-                <div style="text-align: center;" class="block-content">
-                    <!-- {% crispy form_habilidad %} -->
-
-                    <input class="textinput form-control" type="text" id="palabraInput" placeholder="Escribe una habilidad">
-                    <br>
-                    <button class="btn btn btn-alt-primary" onclick="agregarPalabra()">Agregar</button>
-                    <br>
-                    <div class="content" id="listado"></div>
-                    <br>
-                    <button id="botonGuardar" class="btn btn-lg btn-alt-success" onclick="guardar()">Guardar</button>
-                </div>
-                <br>
-                <!-- <div class="block-content block-content-full text-end bg-body">
-                    <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Done</button>
-                </div> -->
-            </div>
-        </div>
-    </div>
-</div>
 
 {% endif %}
 
@@ -397,153 +64,4 @@ PERFIL CANDIDATO
 {% endblock content %}
 
 
-{% block extrajs %}
-<script>
-    $('#modal-edit-estudio').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var recipient = button.data('estudio_id');
-        var modal = $(this);
-        
-        $.ajax({
-            url: '/candidato/ajax/obtener_estudio/',
-            type: 'GET',
-            data: {
-                'dato': recipient
-            },
-            
-            success: function(response) {
-                // console.log(response.data.id);
-                console.log(response.data.institucion);
-                modal.find('.block-title').text('Editar Laboral ID #' + response.data.id)
-                modal.find('.block-content #id_institucion').val(response.data.institucion)
-                modal.find('.block-content #id_fecha_inicial').val(response.data.fecha_inicial)
-                modal.find('.block-content #id_fecha_final').val(response.data.fecha_final)
-                modal.find('.block-content #id_grado_en').val(response.data.grado_en)
-                modal.find('.block-content #id_titulo').val(response.data.titulo)
-                modal.find('.block-content #id_carrera').val(response.data.carrera)
-                modal.find('.block-content #id_fortaleza_adquiridas').text(response.data.fortaleza_adquiridas)
-                modal.find('.block-content #id_estado_id_001').val(response.data.estado_id_001)
-                modal.find('.block-content #id_ciudad_id_004').val(response.data.ciudad_id_004)
-            },
-            error: function(response) {
-                console.log(response.error);
-            }
-        })
-    })
-
-    // Edición laboral 
-    $('#modal-edit-laboral').on('show.bs.modal', function (event) {
-        console.log('llegamos laboral modal');
-
-        var button = $(event.relatedTarget);
-        var recipient = button.data('laboral_id');
-        var modal = $(this);
-
-        $.ajax({
-            url: '/candidato/ajax/obtener_laboral/',
-            type: 'GET',
-            data: {
-                'dato': recipient
-            },
-            
-            success: function(response) {
-                console.log(response.data.sector);
-                console.log(response.data.institucion);
-                modal.find('.block-title').text('Editar Experiencia ID #' + response.data.id)
-                modal.find('.block-content #id_entidad').val(response.data.entidad)
-                modal.find('.block-content #id_sector').val(response.data.sector)
-                modal.find('.block-content #id_activo').val(response.data.activo)
-                modal.find('.block-content #id_fecha_inicial').val(response.data.fecha_inicial)
-                modal.find('.block-content #id_fecha_final').val(response.data.fecha_final)
-                modal.find('.block-content #id_cargo').val(response.data.cargo)
-                modal.find('.block-content #id_logro').text(response.data.logro)
-                modal.find('.block-content #id_estado_id_001').val(response.data.estado_id_001)
-            },
-            error: function(response) {
-                console.log(response.error);
-            }
-        })
-    })
-</script>  
-
-<script>
-    const csrftoken = '{{ csrf_token }}';
-    let listadoPalabras = [];
-
-    botonGuardar.style.display = 'None'
-
-    function agregarPalabra() {
-        const palabra = document.getElementById('palabraInput').value.trim();
-        if (palabra) {
-            listadoPalabras.push({ palabra: palabra, estado: 'pendiente' });
-            actualizarListado();
-            document.getElementById('palabraInput').value = '';
-        }
-    }
-
-    function actualizarListado() {
-        const listadoDiv = document.getElementById('listado');
-        listadoDiv.innerHTML = '';
-        listadoPalabras.forEach((item, index) => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'row';
-            itemDiv.innerHTML = `
-                
-                    <div class="col-md-4"><span>${item.palabra}</span></div>
-                    <div style="text-align: center" class="col-md-4">                
-                        <select style="text-align: center" class="form-select js-select2 " onchange="cambiarEstado(${index}, this.value)">
-                            <option value="1" ${item.estado === '1' ? '1' : ''}>Básico</option>
-                            <option value="2" ${item.estado === '2' ? '2' : ''}>Intermedio</option>
-                            <option value="3" ${item.estado === '3' ? '3' : ''}>Superior</option>
-                        </select>
-                    </div>
-                    <div style="text-align: center" class="col-md-4">
-                        <button class="eliminar btn btn-sm btn-danger" onclick="eliminarPalabra(${index})">Eliminar</button>
-                    </div>
-                    <hr>
-                
-            `;
-            listadoDiv.appendChild(itemDiv);
-        });
-        actualizarVisibilidadBotonGuardar();
-    }
-
-    function cambiarEstado(index, nuevoEstado) {
-        listadoPalabras[index].estado = nuevoEstado;
-    }
-
-    function eliminarPalabra(index) {
-        listadoPalabras.splice(index, 1);
-        actualizarListado();
-    }
-
-    function actualizarVisibilidadBotonGuardar() {
-            const botonGuardar = document.getElementById('botonGuardar');
-            botonGuardar.style.display = listadoPalabras.length > 0 ? 'block' : 'none';
-        }
-
-    function guardar() {
-        // Aquí es donde normalmente harías la solicitud POST al servidor
-        console.log('Datos a enviar:', JSON.stringify(listadoPalabras));
-
-        
-        
-        fetch('/candidato/script/crear_habilidad/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken // Incluir el token CSRF
-            },
-            body: JSON.stringify(listadoPalabras)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Éxito:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-        
-    }
-</script>
-{% endblock extrajs %}
+{% block extrajs %}  {% endblock extrajs %}

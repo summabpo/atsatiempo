@@ -1,181 +1,415 @@
-<!-- Header -->
-<header id="page-header">
-    <!-- Header Content -->
-    <div class="content-header">
-        <!-- Left Section -->
-        <div class="space-x-1">
-        <!-- Toggle Sidebar -->
-        <!-- Layout API, functionality initialized in Template._uiApiLayout()-->
-        <button type="button" class="btn btn-alt-secondary" data-toggle="layout" data-action="sidebar_toggle">
-            <i class="fa fa-fw fa-bars"></i>
-        </button>
-        <!-- END Toggle Sidebar -->
-
-        <!-- Open Search Section -->
-        <!-- Layout API, functionality initialized in Template._uiApiLayout() -->
-        <button type="button" class="btn btn-alt-secondary" data-toggle="layout" data-action="header_search_on">
-            <i class="fa fa-fw opacity-50 fa-search"></i> <span class="ms-1 d-none d-sm-inline-block">Search</span>
-        </button>
-        <!-- END Open Search Section -->
-        </div>
-        <!-- END Left Section -->
-
-        <!-- Right Section -->
-        <div class="space-x-1">
-        <!-- User Dropdown -->
-        <div class="dropdown d-inline-block">
-            <button type="button" class="btn btn-alt-secondary" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-fw fa-user d-sm-none"></i>
-            <span class="d-none d-sm-inline-block">Admin</span>
-            <i class="fa fa-fw fa-angle-down opacity-50 ms-1 d-none d-sm-inline-block"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="page-header-user-dropdown">
-            <div class="bg-primary-dark rounded-top fw-semibold text-white text-center p-3">
-                User Options
-            </div>
-            <div class="p-2">
-                <a class="dropdown-item" href="be_pages_generic_profile.html">
-                <i class="far fa-fw fa-user me-1"></i> Profile
-                </a>
-                <a class="dropdown-item d-flex align-items-center justify-content-between" href="be_pages_generic_inbox.html">
-                <span><i class="far fa-fw fa-envelope me-1"></i> Inbox</span>
-                <span class="badge bg-primary rounded-pill">3</span>
-                </a>
-                <a class="dropdown-item" href="be_pages_generic_invoice.html">
-                <i class="far fa-fw fa-file-alt me-1"></i> Invoices
-                </a>
-                <div role="separator" class="dropdown-divider"></div>
-
-                <!-- Toggle Side Overlay -->
-                <!-- Layout API, functionality initialized in Template._uiApiLayout() -->
-                <a class="dropdown-item" href="javascript:void(0)" data-toggle="layout" data-action="side_overlay_toggle">
-                <i class="far fa-fw fa-building me-1"></i> Settings
-                </a>
-                <!-- END Side Overlay -->
-
-                <div role="separator" class="dropdown-divider"></div>
-                <a class="dropdown-item" href="op_auth_signin.html">
-                <i class="far fa-fw fa-arrow-alt-circle-left me-1"></i> Sign Out
-                </a>
-            </div>
+{% load static %}
+<div id="kt_header" class="header align-items-stretch" data-kt-sticky="true" data-kt-sticky-name="header" data-kt-sticky-offset="{default: '200px', lg: '300px'}">
+						
+    <div class="container-xxl d-flex align-items-center">
+        
+        <div class="d-flex align-items-center d-lg-none ms-n2 me-3" title="Show aside menu">
+            <div class="btn btn-icon btn-custom w-35px h-35px w-md-40px h-md-40px" id="kt_header_menu_mobile_toggle">
+                <i class="ki-duotone ki-abstract-14 fs-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                </i>
             </div>
         </div>
-        <!-- END User Dropdown -->
-
-        <!-- Notifications Dropdown -->
-        <div class="dropdown d-inline-block">
-            <button type="button" class="btn btn-alt-secondary" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-fw fa-bell"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
-            <div class="bg-primary-dark rounded-top fw-semibold text-white text-center p-3">
-                Notifications
-            </div>
-            <ul class="nav-items my-2">
-                <li>
-                <a class="d-flex text-dark py-2" href="javascript:void(0)">
-                    <div class="flex-shrink-0 mx-3">
-                    <i class="fa fa-fw fa-check-circle text-success"></i>
-                    </div>
-                    <div class="flex-grow-1 fs-sm pe-2">
-                    <div class="fw-semibold">App was updated to v5.6!</div>
-                    <div class="text-muted">3 min ago</div>
-                    </div>
-                </a>
-                </li>
-                <li>
-                <a class="d-flex text-dark py-2" href="javascript:void(0)">
-                    <div class="flex-shrink-0 mx-3">
-                    <i class="fa fa-fw fa-user-plus text-info"></i>
-                    </div>
-                    <div class="flex-grow-1 fs-sm pe-2">
-                    <div class="fw-semibold">New Subscriber was added! You now have 2580!</div>
-                    <div class="text-muted">10 min ago</div>
-                    </div>
-                </a>
-                </li>
-                <li>
-                <a class="d-flex text-dark py-2" href="javascript:void(0)">
-                    <div class="flex-shrink-0 mx-3">
-                    <i class="fa fa-fw fa-times-circle text-danger"></i>
-                    </div>
-                    <div class="flex-grow-1 fs-sm pe-2">
-                    <div class="fw-semibold">Server backup failed to complete!</div>
-                    <div class="text-muted">30 min ago</div>
-                    </div>
-                </a>
-                </li>
-                <li>
-                <a class="d-flex text-dark py-2" href="javascript:void(0)">
-                    <div class="flex-shrink-0 mx-3">
-                    <i class="fa fa-fw fa-exclamation-circle text-warning"></i>
-                    </div>
-                    <div class="flex-grow-1 fs-sm pe-2">
-                    <div class="fw-semibold">You are running out of space. Please consider upgrading your plan.</div>
-                    <div class="text-muted">1 hour ago</div>
-                    </div>
-                </a>
-                </li>
-                <li>
-                <a class="d-flex text-dark py-2" href="javascript:void(0)">
-                    <div class="flex-shrink-0 mx-3">
-                    <i class="fa fa-fw fa-plus-circle text-primary"></i>
-                    </div>
-                    <div class="flex-grow-1 fs-sm pe-2">
-                    <div class="fw-semibold">New Sale! + $30</div>
-                    <div class="text-muted">2 hours ago</div>
-                    </div>
-                </a>
-                </li>
-            </ul>
-            <div class="p-2 border-top">
-                <a class="btn btn-alt-primary w-100 text-center" href="javascript:void(0)">
-                <i class="fa fa-fw fa-eye opacity-50 me-1"></i> View All
-                </a>
-            </div>
-            </div>
+        
+        <div class="header-logo me-5 me-md-10 flex-grow-1 flex-lg-grow-0">
+            <a href="{% url 'accesses:inicio' %}">
+                <img alt="Logo" src="{% static 'media/logos/logo_atiempo.png' %}" class="h-15px h-lg-20px logo-default" />
+                <img alt="Logo" src="{% static 'media/logos/logo_atiempo.png' %}" class="h-15px h-lg-20px logo-sticky" />
+            </a>
         </div>
-        <!-- END Notifications Dropdown -->
+        
+        <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1">
+            
+            <div class="d-flex align-items-stretch" id="kt_header_nav">
+                
+                <div class="header-menu align-items-stretch" data-kt-drawer="true" data-kt-drawer-name="header-menu" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'200px', '300px': '225px'}" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_header_menu_mobile_toggle" data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_body', lg: '#kt_header_nav'}">
+                    
+                    <div class="menu menu-rounded menu-column menu-lg-row menu-active-bg menu-title-gray-700 menu-state-primary menu-arrow-gray-500 fw-semibold my-5 my-lg-0 px-4 px-lg-0 align-items-stretch" id="#kt_header_menu" data-kt-menu="true">
+                        
+                        {% if 'acceso_admin' in request.permisos_usuario %}
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">CLIENTES</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                <!--begin:Menu item-->
+                                <!-- <div class="menu-item">
+                                    
+                                    <a class="menu-link py-3" href="{% url 'clientes:cliente_crear' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Crear Cliente</span>
+                                    </a>
+                                
+                                </div> -->
+                                
+                                <div class="menu-item">
+                                    
+                                    <a class="menu-link  py-3" href="{% url 'clientes:cliente_listar' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Clientes</span>
+                                    </a>
+                                
+                                </div>
+                            
+                            </div>
+                        
+                        </div>
+                        
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">CANDIDATOS</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'candidatos:candidato_crear' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Crear Candidato</span>
+                                    </a>
+                                </div>
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'candidatos:candidato_listar' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Candidatos</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Toggle Side Overlay -->
-        <!-- Layout API, functionality initialized in Template._uiApiLayout() -->
-        <button type="button" class="btn btn-alt-secondary" data-toggle="layout" data-action="side_overlay_toggle">
-            <i class="far fa-fw fa-list-alt"></i>
-        </button>
-        <!-- END Toggle Side Overlay -->
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">VACANTES</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'vacantes:vacantes_cliente_todas' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Vacantes</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if 'acceso_cliente' in request.permisos_usuario %}
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">VACANTES</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'vacantes:vacantes' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Mis Vacantes</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">ENTREVISTAS</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'vacantes:ver_entrevista_todos' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Entrevistas</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">GRUPO TRABAJO</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'clientes:usuarios_internos_listar' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Grupo Trabajo</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">CONFIGURACIONES</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'clientes:ver_preguntas_cliente' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Preguntas ADN</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if 'acceso_candidato' in request.permisos_usuario %}
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">VACANTES</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                <!--begin:Menu item-->
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'vacantes:vacante_candidato' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Vacantes Aplicadas</span>
+                                    </a>
+                                
+                                </div>
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link  py-3" href="{% url 'vacantes:vacantes_cliente_todas' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Vacantes</span>
+                                    </a>
+                                
+                                </div>
+                            
+                            </div>
+                        
+                        </div>
+
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">ENTREVISTAS</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'vacantes:ver_entrevista_candidato' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Mis Entrevistas</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+
+                        {% if 'acceso_cliente_entrevistador' in request.permisos_usuario %}
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">ENTREVISTAS</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                <!--begin:Menu item-->
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'vacantes:ver_entrevista_entrevistador' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Entrevistas Asignadas</span>
+                                    </a>
+                                
+                                </div>
+                            </div>
+                        
+                        </div>
+                        {% endif %}
+                    </div>
+                
+                </div>
+            
+            </div>
+            
+            <div class="d-flex align-items-stretch flex-shrink-0">
+                
+                <div class="topbar d-flex align-items-stretch flex-shrink-0">
+                    <div class="d-flex align-items-center ms-2 ms-lg-3">
+                        <!--begin::Menu toggle-->
+                        <a href="#" class="btn btn-icon btn-custom btn-active-light w-35px h-35px w-md-40px h-md-40px" data-kt-menu-trigger="{default:'click', lg: 'hover'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+                            <i class="ki-duotone ki-night-day theme-light-show fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                                <span class="path6"></span>
+                                <span class="path7"></span>
+                                <span class="path8"></span>
+                                <span class="path9"></span>
+                                <span class="path10"></span>
+                            </i>
+                            <i class="ki-duotone ki-moon theme-dark-show fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </a>
+                        
+                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-title-gray-700 menu-icon-gray-500 menu-active-bg menu-state-color fw-semibold py-4 fs-base w-150px" data-kt-menu="true" data-kt-element="theme-mode-menu">
+                            <!--begin::Menu item-->
+                            <div class="menu-item px-3 my-0">
+                                <a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="light">
+                                    <span class="menu-icon" data-kt-element="icon">
+                                        <i class="ki-duotone ki-night-day fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                            <span class="path4"></span>
+                                            <span class="path5"></span>
+                                            <span class="path6"></span>
+                                            <span class="path7"></span>
+                                            <span class="path8"></span>
+                                            <span class="path9"></span>
+                                            <span class="path10"></span>
+                                        </i>
+                                    </span>
+                                    <span class="menu-title">Light</span>
+                                </a>
+                            </div>
+                            <!--end::Menu item-->
+                            <!--begin::Menu item-->
+                            <div class="menu-item px-3 my-0">
+                                <a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="dark">
+                                    <span class="menu-icon" data-kt-element="icon">
+                                        <i class="ki-duotone ki-moon fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </span>
+                                    <span class="menu-title">Dark</span>
+                                </a>
+                            </div>
+                            <!--end::Menu item-->
+                            <!--begin::Menu item-->
+                            <div class="menu-item px-3 my-0">
+                                <a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="system">
+                                    <span class="menu-icon" data-kt-element="icon">
+                                        <i class="ki-duotone ki-screen fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                            <span class="path4"></span>
+                                        </i>
+                                    </span>
+                                    <span class="menu-title">System</span>
+                                </a>
+                            </div>
+                            <!--end::Menu item-->
+                        </div>
+                        <!--end::Menu-->
+                    </div>
+                    <!--end::Theme mode-->
+                    <!--begin::User-->
+                    <div class="d-flex align-items-center ms-2 ms-lg-3" id="kt_header_user_menu_toggle">
+                        <!--begin::Menu wrapper-->
+                        <div class="cursor-pointer symbol symbol-35px symbol-md-40px" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+                            <img alt="Pic" src="{% static 'media/avatars/300-1.jpg' %}" />
+                        </div>
+                        <!--begin::User account menu-->
+                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px" data-kt-menu="true">
+                            <!--begin::Menu item-->
+                            <div class="menu-item px-3">
+                                <div class="menu-content d-flex align-items-center px-3">
+                                    <!--begin::Avatar-->
+                                    <div class="symbol symbol-50px me-5">
+                                        <img alt="Logo" src="{% static 'media/avatars/300-1.jpg' %}" />
+                                    </div>
+                                    <!--end::Avatar-->
+                                    <!--begin::Username-->
+                                    <div class="d-flex flex-column">
+                                        <div class="fw-bold d-flex align-items-center fs-5">{{ request.session.primer_nombre }}
+                                        <span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">Pro</span></div>
+                                        <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">{{ request.session.email }}</a>
+                                    </div>
+                                    <!--end::Username-->
+                                </div>
+                            </div>
+                            <!--end::Menu item-->
+                            <!--begin::Menu separator-->
+                            <div class="separator my-2"></div>
+                            <!--end::Menu separator-->
+                            <!--begin::Menu item-->
+                            <div class="menu-item px-5">
+                                <a href="account/overview.html" class="menu-link px-5">Mi Perfil</a>
+                            </div>
+                            
+                            <div class="separator my-2"></div>
+                            
+                            <div class="menu-item px-5">
+                                <a href="{% url 'accesses:logout'%}" class="menu-link px-5">Cerrar Sesión</a>
+                            </div>
+                            <!--end::Menu item-->
+                        </div>
+                        <!--end::User account menu-->
+                        <!--end::Menu wrapper-->
+                    </div>
+                    <!--end::User -->
+                    <!--begin::Aside mobile toggle-->
+                    <!--end::Aside mobile toggle-->
+                </div>
+            
+            </div>
+        
         </div>
-        <!-- END Right Section -->
+    
     </div>
-    <!-- END Header Content -->
 
-    <!-- Header Search -->
-    <div id="page-header-search" class="overlay-header bg-header-dark">
-        <div class="bg-white-10">
-        <div class="content-header">
-            <form class="w-100" action="be_pages_generic_search.html" method="POST">
-            <div class="input-group">
-                <!-- Layout API, functionality initialized in Template._uiApiLayout() -->
-                <button type="button" class="btn btn-alt-primary" data-toggle="layout" data-action="header_search_off">
-                <i class="fa fa-fw fa-times-circle"></i>
-                </button>
-                <input type="text" class="form-control border-0" placeholder="Search or hit ESC.." id="page-header-search-input" name="page-header-search-input">
-            </div>
-            </form>
-        </div>
-        </div>
-    </div>
-    <!-- END Header Search -->
-
-    <!-- Header Loader -->
-    <!-- Please check out the Loaders page under Components category to see examples of showing/hiding it -->
-    <div id="page-header-loader" class="overlay-header bg-header-dark">
-        <div class="bg-white-10">
-        <div class="content-header">
-            <div class="w-100 text-center">
-            <i class="fa fa-fw fa-sun fa-spin text-white"></i>
-            </div>
-        </div>
-        </div>
-    </div>
-    <!-- END Header Loader -->
-    </header>
+</div>

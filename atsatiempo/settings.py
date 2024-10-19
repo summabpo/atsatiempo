@@ -1,3 +1,5 @@
+import environ # type: ignore
+
 """
 Django settings for atsatiempo project.
 
@@ -28,6 +30,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Application usuarios
+AUTH_USER_MODEL = 'usuarios.UsuarioBase'
 
 # Application definition
 
@@ -45,6 +49,8 @@ INSTALLED_APPS = [
     'applications.cliente',
     'applications.common',
     'applications.pruebas_psi',
+    'applications.usuarios',
+    'applications.vacante',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
@@ -82,8 +88,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'atsatiempo.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+#Database
+#https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 # DATABASES = {
 #     'default': {
@@ -92,14 +98,18 @@ WSGI_APPLICATION = 'atsatiempo.wsgi.application'
 #     }
 # }
 
+# Inicializa el entorno
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_ats',
-        'USER': 'postgres',
-        'PASSWORD': '4t13mp0*s4s*',  
-        'HOST': 'devatiempo.cqfpcv4ejul5.us-east-1.rds.amazonaws.com',
-        'PORT': '5432',
+        'NAME':  env('DB_NAME'),
+        'USER':  env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),  
+        'HOST': env('DB_HOST', default='localhost'),
+        'PORT': env('DB_PORT', default='5432'), 
     }
 }
 
@@ -160,3 +170,26 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Datos para el envio de correo
+EMAIL_BACKEND =  'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST =  env('EM_EMAIL_HOST')
+EMAIL_PORT =  env('EM_EMAIL_PORT')
+EMAIL_USE_TLS =  env('EM_EMAIL_USE_TLS')
+EMAIL_HOST_USER = env('EM_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EM_EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('EM_DEFAULT_FROM_EMAIL')
+EMAIL_USE_SSL = False
+EMAIL_TIMEOUT = None
+EMAIL_SSL_KEYFILE = None
+EMAIL_SSL_CERTFILE = None
+EMAIL_SSL_CAFILE = None
+EMAIL_SSL_CERT_SUBJ = None
+EMAIL_SSL_CERT_PASSWD = None
+EMAIL_SSL_CIPHER = None
+EMAIL_USE_LOCALTIME = False
+EMAIL_FILE_PATH = None
+EMAIL_FROM = None
+EMAIL_SUBJECT_PREFIX = '[Django] '
+
+LOGIN_URL = '/'

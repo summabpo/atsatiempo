@@ -5,7 +5,7 @@ from boto3.session import Session
 SECRET_KEY =  os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
 SETTINGS_ENV = 'production'
@@ -36,6 +36,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://localhost:8086',
     'https://virtualempleo.com',
+    'https://www.virtualempleo.com',
     'http://localhost:86'
 ]
 

@@ -13,9 +13,29 @@ class ExperienciaCandidatoForm(forms.Form):
     sector = forms.CharField(label='SECTOR', required=True , widget=forms.TextInput(attrs={'placeholder': 'Sector'}))
     fecha_inicial = forms.DateField(label='FECHA DE INICIO', widget=forms.DateInput(attrs={'type': 'date'}), required=True)
     fecha_final = forms.DateField(label='FECHA TERMINACION', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
-    activo = forms.ChoiceField(label='ACTIVO', choices=[ ('', '---'), ('SI', 'SI'), ('NO', 'NO')], required=True)
-    logro = forms.CharField(label='LOGROS', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Empresa'}))
+    
+    activo =  forms.BooleanField(
+        label='ACTIVO',
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+    )
+    
+    
     cargo = forms.CharField(label='CARGO',  required=True, widget=forms.TextInput(attrs={'placeholder': 'Cargo Desempeñado'}))
+    
+    logro = forms.CharField(
+        label='LOGROS',
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Tus logros empresariales',
+                'rows': 5,  
+                'cols': 40,  
+                'class': 'fixed-size-textarea'
+            }
+        )
+    )
+    
 
     def __init__(self, *args, **kwargs):
         self.candidato_id = kwargs.pop('candidato_id', None)
@@ -23,21 +43,17 @@ class ExperienciaCandidatoForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.helper.form_id = 'form_experienciacandidato'
         self.helper.form_class = 'container'
+        
         self.helper.layout = Layout(
             Div(
                 Div('entidad', css_class='col'),
-                css_class='row'
-            ),
-            Div(
                 Div('sector', css_class='col'),
                 css_class='row'
             ),
             Div(
                 Div('activo', css_class='col'),
-                css_class='row'
-            ),
-            Div(
                 Div('fecha_inicial', css_class='col'),
                 Div('fecha_final', css_class='col'),
                 css_class='row'
@@ -50,11 +66,6 @@ class ExperienciaCandidatoForm(forms.Form):
                 Div('logro', css_class='col form-group'),
                 css_class='row'
             ),
-            # Div(
-            #     Div('estado_id_001', css_class='col form-group'),
-            #     css_class='row'
-            # ),
-            Submit('submit_experiencia', 'Guardar Experiencia', css_class='btn btn-primary mt-3'),
         )
     
     def clean(self):
@@ -66,14 +77,14 @@ class ExperienciaCandidatoForm(forms.Form):
         fecha_final = cleaned_data.get('fecha_final')
         activo = cleaned_data.get('activo')
         logro = cleaned_data.get('logro')
-        cargo = cleaned_data.get('logro')
+        cargo = cleaned_data.get('cargo')
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', entidad):
             self.add_error('entidad', "La entidad solo puede contener letras.")
         else:
             self.cleaned_data['entidad'] = entidad.upper()
 
-        self.cleaned_data['cargo'] = entidad.upper()
+        self.cleaned_data['cargo'] = cargo.upper()
             
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', sector):
@@ -90,8 +101,8 @@ class ExperienciaCandidatoForm(forms.Form):
         else:
             self.add_error('fecha_inicial', "La fecha actual es menor que la fecha inicial")
         
-        if len(logro.split()) < 15:
-            self.add_error('logro','La descripción debe contener al menos 30 palabras')
+        if len(logro.split()) < 10:
+            self.add_error('logro','La descripción debe contener al menos 10 palabras')
 
         
 
@@ -103,7 +114,7 @@ class ExperienciaCandidatoForm(forms.Form):
         sector        = self.cleaned_data['sector']
         fecha_inicial = self.cleaned_data['fecha_inicial']
         fecha_final   = self.cleaned_data['fecha_final']
-        activo        = self.cleaned_data['activo']
+        activo        = self.cleaned_data['activo']  
         logro         = self.cleaned_data['logro']
         cargo         = self.cleaned_data['cargo']
         candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)

@@ -1,7 +1,7 @@
 import re, os
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Layout, Div, Submit, HTML
+from crispy_forms.layout import Layout, Layout, Div, Submit, HTML, Row, Column
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from ..models import Can101Candidato
 
@@ -22,7 +22,7 @@ class CandidatoForm(forms.Form):
         super(CandidatoForm, self).__init__(*args, **kwargs)
 
         if self.instance:
-            # self.fields['estado_id_001'].initial = self.instance.estado_id_001
+            #self.fields['estado_id_001'].initial = self.instance.estado_id_001
             self.fields['email'].initial = self.instance.email
             self.fields['primer_nombre'].initial = self.instance.primer_nombre
             self.fields['segundo_nombre'].initial = self.instance.segundo_nombre
@@ -30,7 +30,7 @@ class CandidatoForm(forms.Form):
             self.fields['segundo_apellido'].initial = self.instance.segundo_apellido
             self.fields['ciudad_id_004'].initial = self.instance.ciudad_id_004
             self.fields['sexo'].initial = self.instance.sexo
-            self.fields['fecha_nacimiento'].initial = self.instance.fecha_nacimiento
+            self.fields['fecha_nacimiento'].initial = str(self.instance.fecha_nacimiento)
             self.fields['telefono'].initial = self.instance.telefono
 
         self.helper = FormHelper()
@@ -39,7 +39,7 @@ class CandidatoForm(forms.Form):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    Div('primer_nombre', css_class='col'),
+                    Div('primer_nombre', css_class='col form-control-solid mb-3 mb-lg-0'),
                     Div('segundo_nombre', css_class='col'),
                     Div('primer_apellido', css_class='col'),
                     Div('segundo_apellido', css_class='col'),

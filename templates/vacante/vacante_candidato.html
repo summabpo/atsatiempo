@@ -1,0 +1,94 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} Vacantes Aplicadas {% endblock title %}
+
+{% block titulo_pagina %} Vacantes Aplicadas {% endblock titulo_pagina %}
+
+{% block navegacion %}
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Vacantes Aplicadas</li>
+{% endblock navegacion %}
+
+	
+{% block css %}
+.asteriskField {
+    color: red !important;
+}
+{% endblock css %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header border-0 pt-6">
+        <div class="card-title">
+            <h2>Vacantes</h2>
+        </div>
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-body py-4">
+        <table id="kt_prueba" class="table table-striped table-row-bordered gy-5 gs-7 border rounded">
+            <thead>
+                <tr class="fw-bold fs-6 text-gray-800 px-7">
+                    <th>VACANTE</th>
+                    <th>EMPRESA</th>
+                    <th>CIUDAD</th>
+                    <th>FECHA PUBLICACION</th>
+                    <th>FECHA APLICACION</th>
+                    <th>VER DETALLE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in vacante_aplicada %}
+                <tr>
+                    <td>{{e.vacante_id_052}}</td>
+                    <td>{{e.vacante_id_052.razon_social}}</td>
+                    <td>{{e.vacante_id_052.ciudad.nombre}}</td>
+                    <td>{{e.vacante_id_052.fecha_creacion|date:"Y-m-d" }}</td>
+                    <td>{{e.fecha_aplicacion|date:"Y-m-d" }}</td>
+
+                    <td>
+                        <a href="{% url 'vacantes:vacante_detalle' e.vacante_id_052.id  %}" class="btn btn-primary">
+                            <i class="ki-duotone ki-chart-simple-2 fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+                            Ver Detalle
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extrajs %}
+<script>
+
+    $("#kt_prueba").DataTable({
+        "language": {
+            "lengthMenu": "Show _MENU_",
+        },
+        "dom":
+            "<'row mb-2'" +
+            "<'col-sm-6 d-flex align-items-center justify-conten-start dt-toolbar'l>" +
+            "<'col-sm-6 d-flex align-items-center justify-content-end dt-toolbar'f>" +
+            ">" +
+    
+            "<'table-responsive'tr>" +
+    
+            "<'row'" +
+            "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+            "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+            ">"
+    });
+
+</script>
+{% endblock extrajs %}

@@ -13,6 +13,9 @@ load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))
 
 SETTINGS_ENV = 'base'
 
+# Application usuarios
+AUTH_USER_MODEL = 'usuarios.UsuarioBase'
+
 # Application definition
 
 BASE_APPS = [
@@ -68,11 +71,11 @@ BASE_MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 LOCAL_MIDDLEWARE = [
-    'apps.login.middlewares.DatabaseRouterMiddleware',
+  #  'apps.login.middlewares.DatabaseRouterMiddleware',
 ]
 
 THIRD_MIDDLEWARE = [
@@ -90,7 +93,7 @@ ROOT_URLCONF = 'atsatiempo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, '..', 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -105,11 +108,6 @@ TEMPLATES = [
 
 
 WSGI_APPLICATION = 'atsatiempo.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 
 
 

@@ -1,0 +1,109 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} Detalle vacante {% endblock title %}
+
+{% block titulo_pagina %} Detalle vacante: {{ vacante.titulo }} {% endblock titulo_pagina %}
+
+{% block navegacion %}
+    <a href="{% url 'vacantes:vacantes' %}" class="text-white text-hover-primary"> Mis Vacantes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="text-white text-hover-primary"> Detalle Vacante {{ vacante.titulo }}</a>
+
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Crear Entrevista </li>
+{% endblock navegacion %}
+
+
+			
+    {% block css %}
+    .asteriskField {
+        color: red !important;
+    }
+    {% endblock css %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4"></div>
+    <div class="col-lg-4">
+        <div class="card shadow-lg">
+            {% if not validar_registro  %}
+            <div class="card-header">
+                <h3 class="card-title">Asignación de Entrevista</h3>
+                <div class="card-toolbar">
+                    <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% crispy form %}
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-light-success" form="form_crear_entrevista">GUARDAR</button>
+            </div>
+            {% else %}
+            <div class="card-header">
+                <h3 class="card-title">Datos Entrevista</h3>
+                <div class="card-toolbar">
+                    <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>Empresa: <h5><b>{{ entrevista.asignacion_vacante.vacante_id_052.cliente_id_051.razon_social }}</b></h5></li>
+                    <li>Vacante: <h5><b>{{ entrevista.asignacion_vacante.vacante_id_052.titulo }}</b></h5></li>
+                    <li>Fecha Entrevista: <h5><b>{{ entrevista.fecha_entrevista  }}</b></h5></li>
+                    <li>Fecha Entrevista: <h5><b>{{ entrevista.hora_entrevista  }}</b></h5></li>
+                    <li>Tipo Entrevista: <h5><b>{% if entrevista.tipo_entrevista == V  %} VIRUTAL {% else %} PRESENCIAL {% endif %}</b></h5></li>
+                    <li>Lugar o enlace Entrevista: <h5><b>{{ entrevista.lugar_enlace  }}</b></h5></li>
+                </ul>
+                
+            </div>
+            <div class="card-footer">
+                
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-4"></div>
+</div>
+{% endblock content %}
+
+{% block extrajs %}
+<script>
+    $("#kt_daterangepicker_1").daterangepicker({
+        singleDatePicker: true,
+        showDropdowns: true,
+        minYear: 2000,
+        maxYear: parseInt(moment().format("YYYY"), 12),
+        
+        {% comment %} endDate: moment(), {% endcomment %}
+        minDate: moment(),
+        {% comment %} maxDate: moment(), {% endcomment %}
+        autoApply: true,
+        locale: {
+            format: 'YYYY-MM-DD',
+            applyLabel: 'Aplicar',
+            cancelLabel: 'Cancelar',
+            daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+        },
+    });
+
+    $("#kt_timepicker_1").flatpickr({
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        minTime: "07:00",  // Hora mínima: 7:00 AM
+        maxTime: "17:00",  // Hora máxima: 5:00 PM
+    });
+    
+</script>
+{% endblock extrajs %}
