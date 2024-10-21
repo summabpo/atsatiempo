@@ -24,8 +24,14 @@
     <li class="breadcrumb-item">
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
     </li>
+
+    <a href="{% url 'clientes:cliente_vacante_detalle' vacante.id %}" class="breadcrumb-item text-white text-hover-primary"> Vacante: {{vacante.titulo}}</a>
     
-    <li class="breadcrumb-item text-white opacity-75">{{vacante.titulo}}</li>
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Reclutados</li>
 {% endblock navegacion %}
 
 
