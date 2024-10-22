@@ -181,15 +181,19 @@ class VacanteForm(forms.Form):
         if not ciudad:
             self.add_error('ciudad', 'La ciudad es obligatoria.')
 
-        # Validate salario
-        salario = cleaned_data.get('salario')
         # Si salario es un valor vacío (None o ''), lo asignamos como None
+        salario = cleaned_data.get('salario')
         if salario in [None, '']:
-            cleaned_data['salario'] = None
-        # Si tiene un valor, validamos que sea un número positivo
-        elif not isinstance(salario, (int, float)) or salario <= 0:
-            self.add_error('salario', 'El salario debe ser un número positivo.')
-        
+            self.cleaned_data['salario'] = None
+        else:
+            
+            if salario <= 0:
+                self.add_error('salario', 'El salario debe ser un número positivo.')
+            else:
+                salario = float(str(salario).replace('.', '').replace(',', ''))
+                self.cleaned_data['salario'] = salario  # Asignamos el valor limpio
+            
+                
 
         return cleaned_data
     

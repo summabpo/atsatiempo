@@ -22,7 +22,7 @@ DATABASES = {
 }
 
 STATICFILES_DIRS = [
-     os.path.join(BASE_DIR,  'static')
+    os.path.join(BASE_DIR,  'static')
 ]
 
 # Seguridad de cookies
@@ -37,7 +37,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8086',
     'https://virtualempleo.com',
     'https://www.virtualempleo.com',
-    'http://localhost:86'
+    'http://localhost:86',
 ]
 
 

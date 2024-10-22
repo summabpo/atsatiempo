@@ -32,7 +32,7 @@ def ver_vacante_cliente(request):
     #estado_general_vacante
     estado = Cat001Estado.objects.get(id=1)
     #listado vacantes activas
-    # vacantes = Cli052Vacante.objects.annotate(num_aplicaciones=Count('aplicaciones')).filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
+    vacantes = Cli052Vacante.objects.annotate(num_aplicaciones=Count('aplicaciones')).filter(cliente_id_051=cliente.id, estado_id_001=1).order_by('-id')
 
     form_errors = False
 
@@ -374,9 +374,3 @@ def vacante_api(request, pk=None):
 
         print(response_data);
         return JsonResponse(response_data)
-
-
-
-
-
-

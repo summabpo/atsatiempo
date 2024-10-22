@@ -254,6 +254,8 @@ def logout_view(request):
 
 # registro cliente.
 def signup_view(request):
+    url_actual = f"{request.scheme}://{request.get_host()}"
+
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -314,6 +316,7 @@ def signup_view(request):
                             fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
                         )
 
+
                         # Envio del correo electronico de confirmación del usuario y contraseña
                         contexto = {
                             'name': name.capitalize(),
@@ -321,7 +324,8 @@ def signup_view(request):
                             'user': user,
                             'email': email,
                             'password': password1,
-                            'token': token_generado
+                            'token': token_generado,
+                            'url': url_actual
                         }
 
                         # Envia el metodo
@@ -346,6 +350,8 @@ def signup_view(request):
 
 #registro candidato
 def signup_candidato(request):
+    url_actual = f"{request.scheme}://{request.get_host()}"
+
     if request.method == 'POST':
         form = SignupFormCandidato(request.POST)
         if form.is_valid():
@@ -401,7 +407,8 @@ def signup_candidato(request):
                         'user': user,
                         'email': email,
                         'password': password1,
-                        'token': token_generado
+                        'token': token_generado,
+                        'url' : url_actual
                     }
 
                     # Envia el metodo
@@ -422,6 +429,8 @@ def signup_candidato(request):
 
 # valdidar token.
 def validar_token(request, token):
+    
+
     print(token)
     context = {
         'is_valid': False,
@@ -464,6 +473,7 @@ def validar_token(request, token):
 
 #validar correo para enviar correo
 def enviar_token(request):
+    url_actual = f"{request.scheme}://{request.get_host()}"
     if request.method == 'POST':
         form = CorreoForm(request.POST)
 
@@ -486,7 +496,8 @@ def enviar_token(request):
                     'last_name': usuario_email.primer_apellido.capitalize(),
                     'user': usuario_email.username,
                     'email': email,
-                    'token': token_generado
+                    'token': token_generado,
+                    'url' : url_actual
                 }
                 # Envia el metodo
                 enviar_correo('token', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)

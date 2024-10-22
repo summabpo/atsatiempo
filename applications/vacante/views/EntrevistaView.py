@@ -124,7 +124,7 @@ def ver_entrevista_entrevistador(request):
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def crear_entrevista(request, asignacion_id):
-
+    url_actual = f"{request.scheme}://{request.get_host()}"
     validar_registro = False
     usuario_id = request.session.get('_auth_user_id')
     cliente_id = request.session.get('cliente_id')
@@ -186,6 +186,7 @@ def crear_entrevista(request, asignacion_id):
                 'lugar_enlace' : lugar_enlace,
                 'vacante' : vacante.titulo,
                 'cliente' : cliente.razon_social,
+                'url' : url_actual
             }
 
             lista_correos = [
