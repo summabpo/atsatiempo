@@ -71,7 +71,7 @@ class CrearUsuarioInternoForm(forms.Form):
             'data-control': 'select2',
             'data-placeholder': 'Seleccione un rol',
             'data-tags':'true',
-            'data-dropdown-parent': '#crear_usuario',
+            'data-dropdown-parent': '#modal_grupo_trabajo',
             'data-hide-search': 'true' ,
         })
     )

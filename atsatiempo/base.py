@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))
 
-SETTINGS_ENV = 'base'
+#SETTINGS_ENV = 'base'
 
 # Application usuarios
 AUTH_USER_MODEL = 'usuarios.UsuarioBase'
@@ -20,14 +20,14 @@ AUTH_USER_MODEL = 'usuarios.UsuarioBase'
 
 BASE_APPS = [
     # Django REST Framework
-  #  'rest_framework',
+    #  'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-   # 'django.contrib.humanize',
+    # 'django.contrib.humanize',
     'storages',
 ]
 
@@ -139,12 +139,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # SMTP email server config
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ.get('EM_EMAIL_HOST')
-EMAIL_PORT = os.environ.get('EM_EMAIL_PORT')
+EMAIL_BACKEND =  'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST =  os.getenv('EM_EMAIL_HOST')
+EMAIL_PORT =  os.getenv('EM_EMAIL_PORT')
 EMAIL_USE_TLS = False
-EMAIL_HOST_USER = os.environ.get('EM_EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EM_EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.getenv('EM_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EM_EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('EM_DEFAULT_FROM_EMAIL')
 EMAIL_USE_SSL = True
 EMAIL_TIMEOUT = None
 EMAIL_SSL_KEYFILE = None
@@ -185,3 +186,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # Log de consultas SQL
+            'propagate': False,
+        },
+        'django.core.mail': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # Log de envíos de correo
+            'propagate': False,
+        },
+    },
+}
