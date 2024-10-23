@@ -43,9 +43,10 @@ class Cli055ProfesionEstudio(models.Model):
         verbose_name_plural = 'PROFESIONES_ESTUDIOS'
 class Cli052Vacante(models.Model):
     ESTADO_VACANTE = [
-        (1, 'Abierta'),
-        (2, 'Cerrada'),
-        (3, 'Cancelada'),
+        (1, 'Activa'),
+        (2, 'En Proceso'),
+        (3, 'Finalizada'),
+        (4, 'Cancelada'),
     ]
 
     EXPERIENCIA_TIEMPO = [
@@ -103,11 +104,17 @@ class Cli052VacanteSoftSkillsId053(models.Model):
 
 class Cli056AplicacionVacante(models.Model):
     ESTADO_APLICACION = [
-        (1, 'En proceso'),
-        (2, 'Exitoso'),
-        (3, 'Cancelado'),
-        (4, 'Terminado'),
-        (5, 'Desiste'),
+        (1, 'Aplicado'),
+        (2, 'Entrevista Programada'),
+        (3, 'Entrevista Aprobada'),
+        (4, 'Entrevista No Aprobada'),
+        (5, 'Prueba Programada'),
+        (6, 'Prueba Superada'),
+        (7, 'Prueba No Superada'),
+        (8, 'Seleccionado'),
+        (9, 'Finalizada'),
+        (10, 'Cancelada'),
+        (11, 'Desiste'),
     ]
 
     candidato_101 = models.ForeignKey(Can101Candidato, on_delete=models.CASCADE, related_name='aplicaciones')
