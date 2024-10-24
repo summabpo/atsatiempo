@@ -24,6 +24,8 @@ def generate_random_password(length=12):
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def usuario_interno(request):
+    url_actual = f"{request.scheme}://{request.get_host()}"
+
     # Verificar si el cliente_id está en la sesión
     user_id = request.session.get('_auth_user_id')
     cliente_id = request.session.get('cliente_id')
@@ -71,6 +73,7 @@ def usuario_interno(request):
                 'user': correo,
                 'email': correo,
                 'password': passwordoriginal,
+                'url' : url_actual,
             }
 
             # Envio de correo
