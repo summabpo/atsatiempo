@@ -409,7 +409,7 @@
                             <!--end::Menu separator-->
                             <!--begin::Menu item-->
                             <div class="menu-item px-5">
-                                <a href="account/overview.html" class="menu-link px-5">Mi Perfil</a>
+                                <a href="{% url 'candidatos:candidato_editar' request.session.candidato_id %}" class="menu-link px-5">Mi Perfil</a>
                             </div>
                             
                             <div class="separator my-2"></div>
