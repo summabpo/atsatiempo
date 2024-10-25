@@ -368,3 +368,4 @@ def cliente_vacante_reclutado_todos(request):
         'asignacion_vacante' : consulta_asignacion_vacante()
     }
     return render(request, 'cliente/cliente_vacante_reclutado_todos.html', contexto)
+
