@@ -32,28 +32,43 @@
             <thead>
                 <tr class="fw-bold fs-6 text-gray-800 px-7">
                     <th style="text-align: center">ID</th>
-                    <th>Position</th>
-                    <th>Salary</th>
-                    <th>Office</th>
-                    <th>Extn.</th>
-                    <th>E-mail</th>
+                    <th style="text-align: center">NIT</th>
+                    <th style="text-align: center">CLIENTE</th>
+                    <th style="text-align: center">VACANTE</th>
+                    <th style="text-align: center">ESTADO VACANTE</th>
+                    <th style="text-align: center"># POSICIONES</th>
+                    <th style="text-align: center">CIUDAD</th>
+                    <th style="text-align: center">SALARIO</th>
+                    <th style="text-align: center">PROFESION / ESTUDIO</th>
+                    <th style="text-align: center">EXPERIENCIA</th>
+                    <th style="text-align: center">FECHA VACANTE</th>
+                    <th style="text-align: center">CANDIDATO ID</th>
+                    <th style="text-align: center">CANDIDATO</th>
+                    <th style="text-align: center">FECHA APLICACIÓN</th>
+                    <th style="text-align: center">ESTADO RECLUTAMIENTO</th>
                 </tr>
             </thead>
             <tbody>
                 
                 {% for e in asignacion_vacante %}
                 <tr>
-                    <td>Tiger Nixon</td>
-                    <td>System Architect</td>
-                    <td>Edinburgh</td>
-                    <td>61</td>
-                    <td>2011/04/25</td>
-                    <td>$320,800</td>
+                    <td style="text-align: center">ID{{e.id}}</td>
+                    <td style="text-align: center">{{e.cliente_nit}}</td>
+                    <td style="text-align: center">{{e.cliente_razon_social}}</td>
+                    <td style="text-align: center">{{e.vacante_titulo}}</td>
+                    <td style="text-align: center">{{e.vacante_estado}}</td>
+                    <td style="text-align: center">{{e.vacante_numero_posiciones}}</td>
+                    <td style="text-align: center">{{e.vacante_ciudad}}</td>
+                    <td style="text-align: center">${{e.vacante_salario}}</td>
+                    <td style="text-align: center">{{e.vacante_profesion_estudio}}</td>
+                    <td style="text-align: center">{{e.vacante_experiencia_requerida}}</td>
+                    <td style="text-align: center">{{e.vacante_fecha_creacion | date:"Y/m/d"}}</td>
+                    <td style="text-align: center">{{e.candidato_id}}</td>
+                    <td style="text-align: center"><b>{{e.candidato_nombre}}</b></td>
+                    <td style="text-align: center">{{e.fecha_aplicacion | date:"Y/m/d"}}</td>
+                    <td style="text-align: center">{{e.aplicacion_vacante_estado}}</td>
                 </tr>
                 {% endfor %}
-                    
-                
-                
             </tbody>
         </table>
     </div>
