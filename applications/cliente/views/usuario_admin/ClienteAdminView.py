@@ -25,6 +25,7 @@ from applications.cliente.forms.CreacionUsuariosForm import CrearUsuarioInternoF
 #utils
 from applications.common.views.EnvioCorreo import enviar_correo, generate_token
 from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante
+from applications.vacante.views.consultas.VacanteConsultaView import consulta_vacantes_todas
 
 def generate_random_password(length=12):
     characters = string.ascii_letters + string.digits
@@ -363,9 +364,20 @@ def cliente_vacante_entrevista(request, pk):
 
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
-def cliente_vacante_reclutado_todos(request):
+def reclutados_todos(request):
     contexto = {
         'asignacion_vacante' : consulta_asignacion_vacante()
     }
     return render(request, 'cliente/cliente_vacante_reclutado_todos.html', contexto)
 
+# Ver todas las vacantes activas
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def vacantes_todos(request):
+    
+    vacantes = consulta_vacantes_todas() 
+
+    return render(request, 'vacante/listado_vacantes_todos.html',
+        { 
+            'vacantes': vacantes,
+        })
