@@ -324,14 +324,22 @@ def vacante_detalle(request, pk):
         asignacion_vacante = Cli056AplicacionVacante.objects.get(
             candidato_101=candidato.id, vacante_id_052=vacante.id
         )
-        asignacion_entrevista = Cli057AsignacionEntrevista.objects.get(
-            asignacion_vacante=asignacion_vacante.id
-        )
+        
     except Cli056AplicacionVacante.DoesNotExist:
         asignacion_vacante = None
         asignacion_entrevista = None
-
+    
+    # Ajuste validación entrevista.
+    asignacion_entrevista = None
+    if asignacion_vacante:
+        try:
+            asignacion_entrevista = Cli057AsignacionEntrevista.objects.get(
+                asignacion_vacante=asignacion_vacante.id
+            )
+        except Cli057AsignacionEntrevista.DoesNotExist:
+            asignacion_entrevista = None
     user_id = request.session.get('_auth_user_id')
+
     print(user_id)
 
     contexto = {
