@@ -226,17 +226,7 @@ def vacante_cliente_mostrar(request, pk=None):
             'form_errors': form_errors,
         })    
 
-# Ver todas las vacantes activas
-@login_required
-@validar_permisos(*Permiso.obtener_nombres())
-def ver_vacante_cliente_todos(request):
-    
-    vacantes = Cli052Vacante.objects.filter(estado_id_001=1).order_by('-id')
 
-    return render(request, 'vacante/listado_vacantes_todos.html',
-        { 
-            'vacantes': vacantes,
-        })
 
 #Ver Gestión de la vacante
 @login_required
