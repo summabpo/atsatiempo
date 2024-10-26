@@ -101,11 +101,32 @@
                             <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
                                 
                                 <div class="menu-item">
-                                    <a class="menu-link py-3" href="{% url 'vacantes:vacantes_cliente_todas' %}">
+                                    <a class="menu-link py-3" href="{% url 'clientes:vacantes_cliente_todas' %}">
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
                                         <span class="menu-title">Ver Vacantes</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% comment %} Reclutados Todos Global {% endcomment %}
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">RECLUTADOS</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                
+                                <div class="menu-item">
+                                    <a class="menu-link py-3" href="{% url 'clientes:cliente_vacante_reclutado_todos' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Reclutamiento General</span>
                                     </a>
                                 </div>
                             </div>
@@ -388,7 +409,11 @@
                             <!--end::Menu separator-->
                             <!--begin::Menu item-->
                             <div class="menu-item px-5">
-                                <a href="account/overview.html" class="menu-link px-5">Mi Perfil</a>
+                                {% if request.session.candidato_id %}
+                                    <a href="{% url 'candidatos:candidato_editar' request.session.candidato_id %}" class="menu-link px-5">Mi Perfil</a>
+                                {% else %}
+                                <a href="#" class="menu-link px-5">Mi Perfil</a>
+                                {% endif %}
                             </div>
                             
                             <div class="separator my-2"></div>

@@ -2,12 +2,12 @@ from django.urls import path
 from .views import VacanteViews, EntrevistaView
 
 
+
 url_principal = 'vacante/'
 
 urlpatterns = [
     path( url_principal+'api/', VacanteViews.vacante_api, name='vacante_api'),
     path( url_principal+'cliente/<int:pk>/', VacanteViews.vacante_cliente_mostrar, name='vacantes_cliente'),
-    path( url_principal+'cliente_todos/', VacanteViews.ver_vacante_cliente_todos, name='vacantes_cliente_todas'),
     path( url_principal+'cliente/', VacanteViews.ver_vacante_cliente, name='vacantes'),
     path( url_principal+'detalle_vacante/<int:pk>/', VacanteViews.vacante_detalle, name='vacante_detalle'),
     path( url_principal+'aplicacion_vacante/<int:pk>/', VacanteViews.vacante_aplicada, name='vacante_aplicada'),

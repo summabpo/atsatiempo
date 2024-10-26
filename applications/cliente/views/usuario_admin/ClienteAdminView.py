@@ -7,6 +7,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
+from django.db.models import F, Value
+from django.db.models.functions import Concat
 
 #model
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli052VacanteSoftSkillsId053, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli056AplicacionVacante, Cli057AsignacionEntrevista
@@ -22,6 +24,8 @@ from applications.cliente.forms.CreacionUsuariosForm import CrearUsuarioInternoF
 
 #utils
 from applications.common.views.EnvioCorreo import enviar_correo, generate_token
+from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante
+from applications.vacante.views.consultas.VacanteConsultaView import consulta_vacantes_todas
 
 def generate_random_password(length=12):
     characters = string.ascii_letters + string.digits
@@ -307,8 +311,73 @@ def cliente_vacante_reclutado(request, pk):
 def cliente_vacante_entrevista(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
+    
+    entrevista = Cli057AsignacionEntrevista.objects.select_related(
+        'asignacion_vacante__vacante_id_052__cliente_id_051', 
+        'asignacion_vacante__vacante_id_052', 
+        'asignacion_vacante__candidato_101',
+        'usuario_asigno'
+        'usuario_asignado'
+    ).filter(
+        asignacion_vacante__vacante_id_052__id=vacante.id
+    ).order_by('-fecha_entrevista').values(
+        # Campos del modelo principal (Cli057AsignacionEntrevista)
+        'id',
+        'fecha_asignacion',
+        'fecha_entrevista',
+        'hora_entrevista',
+        'tipo_entrevista',
+        'lugar_enlace',
+        'estado_asignacion',
+        # Resto de clientes pendientes
+        razon_social=F('asignacion_vacante__vacante_id_052__cliente_id_051__razon_social'),
+        titulo_vacante=F('asignacion_vacante__vacante_id_052__titulo'),
+        nombre_candidato = Concat(
+            F('asignacion_vacante__candidato_101__primer_nombre'),
+            Value(' '),
+            F('asignacion_vacante__candidato_101__segundo_nombre'),
+            Value(' '),
+            F('asignacion_vacante__candidato_101__primer_apellido'),
+            Value(' '),
+            F('asignacion_vacante__candidato_101__segundo_apellido')
+        ),
+        nombre_asigno=Concat(
+            F('usuario_asigno__primer_nombre'),
+            Value(' '),
+            F('usuario_asigno__primer_apellido')
+        ),
+        nombre_asignado=Concat(
+            F('usuario_asignado__primer_nombre'),
+            Value(' '),
+            F('usuario_asignado__primer_apellido')
+        ),
+    )
+    var = consulta_asignacion_vacante()
+    print(var)
     contexto = {
         'vacante' : vacante,
-        'cliente' : cliente
+        'cliente' : cliente,
+        'entrevista' : entrevista,
+        
     }
     return render(request, 'cliente/cliente_vacante_entrevista.html', contexto)
+
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def reclutados_todos(request):
+    contexto = {
+        'asignacion_vacante' : consulta_asignacion_vacante()
+    }
+    return render(request, 'cliente/cliente_vacante_reclutado_todos.html', contexto)
+
+# Ver todas las vacantes activas
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def vacantes_todos(request):
+    
+    vacantes = consulta_vacantes_todas() 
+
+    return render(request, 'vacante/listado_vacantes_todos.html',
+        { 
+            'vacantes': vacantes,
+        })

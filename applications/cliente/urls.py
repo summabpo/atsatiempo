@@ -14,8 +14,13 @@ urlpatterns = [
     path( url_principal+'ajax/obtener_cliente/', ClienteView.obtener_cliente_view, name='ajax_obtener_cliente'),
 
     # Administrador ATS
-        # Detalles Cliente
+        # Modulos Globales
     path( url_principal+'listar', ClienteAdminView.cliente_listar, name='cliente_listar'),
+    path( url_principal+'reclutado_todos', ClienteAdminView.reclutados_todos, name='cliente_vacante_reclutado_todos'),
+    path( url_principal+'cliente_todos/', ClienteAdminView.vacantes_todos, name='vacantes_cliente_todas'),
+    
+        # Detalles Cliente
+    
     path( url_principal+'detalle/<int:pk>/', ClienteAdminView.cliente_detalle, name='cliente_detalle'),
     path( url_principal+'vacante/<int:pk>/', ClienteAdminView.cliente_vacante, name='cliente_vacante'),
     path( url_principal+'grupo_trabajo/<int:pk>/', ClienteAdminView.cliente_grupo_trabajo, name='cliente_grupo_trabajo'),

@@ -226,17 +226,7 @@ def vacante_cliente_mostrar(request, pk=None):
             'form_errors': form_errors,
         })    
 
-# Ver todas las vacantes activas
-@login_required
-@validar_permisos(*Permiso.obtener_nombres())
-def ver_vacante_cliente_todos(request):
-    
-    vacantes = Cli052Vacante.objects.filter(estado_id_001=1).order_by('-id')
 
-    return render(request, 'vacante/listado_vacantes_todos.html',
-        { 
-            'vacantes': vacantes,
-        })
 
 #Ver Gestión de la vacante
 @login_required
@@ -324,14 +314,22 @@ def vacante_detalle(request, pk):
         asignacion_vacante = Cli056AplicacionVacante.objects.get(
             candidato_101=candidato.id, vacante_id_052=vacante.id
         )
-        asignacion_entrevista = Cli057AsignacionEntrevista.objects.get(
-            asignacion_vacante=asignacion_vacante.id
-        )
+        
     except Cli056AplicacionVacante.DoesNotExist:
         asignacion_vacante = None
         asignacion_entrevista = None
-
+    
+    # Ajuste validación entrevista.
+    asignacion_entrevista = None
+    if asignacion_vacante:
+        try:
+            asignacion_entrevista = Cli057AsignacionEntrevista.objects.get(
+                asignacion_vacante=asignacion_vacante.id
+            )
+        except Cli057AsignacionEntrevista.DoesNotExist:
+            asignacion_entrevista = None
     user_id = request.session.get('_auth_user_id')
+
     print(user_id)
 
     contexto = {

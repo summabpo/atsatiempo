@@ -45,7 +45,6 @@ def ver_entrevista_todos(request):
         segundo_nombre=F('asignacion_vacante__candidato_101__segundo_nombre'),
         primer_apellido=F('asignacion_vacante__candidato_101__primer_apellido'),
         segundo_apellido=F('asignacion_vacante__candidato_101__segundo_apellido'),
-
     )
     
     contexto = {
