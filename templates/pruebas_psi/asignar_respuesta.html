@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Asignar Respuesta a Pregunta</title>
+</head>
+<body>
+    <h1>Asignar Respuesta a Candidato: {{ candidato }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar Respuesta</button>
+    </form>
+</body>
+</html>
