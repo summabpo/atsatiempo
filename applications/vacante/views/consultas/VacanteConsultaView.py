@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
-from django.db.models import F, Q, Case, When, Value, CharField, Count
+from django.db.models import F, Q, Case, When, Value, CharField, Count, Exists, OuterRef
 from django.db.models.functions import Concat
 
 #model
@@ -76,5 +76,36 @@ def consulta_vacantes_todas():
             filter=Q(aplicaciones__estado_aplicacion=11)
         )
     ).filter(estado_id_001=1).order_by('-id')
+
+    return vacantes
+
+def consulta_vacantes_disponibles(candidato_id):
+    # Subquery que verifica si existe una aplicación para el candidato actual y la vacante
+    subquery = Cli056AplicacionVacante.objects.filter(
+        candidato_101_id=candidato_id,
+        vacante_id_052=OuterRef('pk')
+    )
+
+    vacantes = Cli052Vacante.objects.select_related(
+            'cliente_id_051',
+            'ciudad',
+            'profesion_estudio_id_055',
+        ).annotate(
+            aplicada=Exists(subquery)  # Campo booleano que indica si ya se ha aplicado
+        ).values(
+            'id',
+            'fecha_creacion',
+            'titulo',
+            'numero_posiciones',
+            'ciudad__nombre',
+            'profesion_estudio_id_055__nombre',
+            'funciones_responsabilidades',
+            'salario',
+            'cliente_id_051__razon_social',
+            'aplicada',  # Incluye el campo que indica si ya se aplicó
+        ).filter(
+            estado_id_001 = 1,  # Filtra vacantes activas
+            estado_vacante=1  # Filtra vacantes activas
+        ).order_by('-aplicada', '-id').all()  # Ordenar por aplicación y luego por ID
 
     return vacantes

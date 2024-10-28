@@ -1,0 +1,117 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} ATS Listado Vacantes Disponibles{% endblock title %}
+
+{% block titulo_pagina %} Listado Vacantes Disponibles {% endblock titulo_pagina %}
+
+{% block titulo-pagina %}
+    Listado de Vacantes
+{% endblock titulo-pagina %}
+
+{% block navegacion %}
+    <li class="breadcrumb-item text-white opacity-75">Listado Vacantes Disponibles</li>
+    
+    <!-- <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Multipurpose</li> -->
+{% endblock navegacion %}
+
+
+			
+    {% block css %}
+    .asteriskField {
+            color: red !important;
+            }
+    {% endblock css %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header border-0 pt-6">
+        <div class="card-title">
+            <h2>Vacantes Disponibles</h2>
+        </div>
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-body py-4">
+        <table id="kt_prueba" class="table align-middle table-row-dashed fs-6 gy-5">
+            <thead>
+                <tr class="fw-bold fs-6 text-gray-800 px-7">
+                    <th style="text-align: center">ID VACANTE</th>
+                    <th style="text-align: center">CLIENTE</th>
+                    <th style="text-align: center">TITULO VACANTE</th>
+                    <th style="text-align: center">FECHA VACANTE</th>
+                    <th style="text-align: center">CIUDAD</th>
+                    <th style="text-align: center"># VACANTES</th>
+                    <th style="text-align: center">SALARIO</th>
+                    <th style="text-align: center">ESTADO</th>
+                    <th style="text-align: center">VER DETALLE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in vacantes %}
+                <tr class="bg-light rounded p-10 hover-elevate-up">
+                    <td style="text-align: center">{{e.id}}</td>
+                    <td style="text-align: center">{{e.cliente_id_051__razon_social}}</td>
+                    <td style="text-align: center">{{e.titulo}}</td>
+                    <td style="text-align: center">{{e.fecha_creacion | date:"Y/m/d" }}</td>
+                    <td style="text-align: center">{{e.ciudad__nombre}}</td>
+                    <td style="text-align: center">{{e.numero_posiciones}}</td>
+                    <td style="text-align: center">{{e.salario}}</td>
+                    <td style="text-align: center">
+                        {% if e.aplicada  %}
+                            <span class="badge badge-light-success">Aplicada</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center">
+                        {% if e.aplicada == 0 %}
+                            <a href="{% url 'clientes:cliente_vacante_detalle' e.id  %}" class="btn btn-light-primary btn-xs">
+                                <i class="fas    fa-search fs-4"></i>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extrajs %}
+<script>
+
+    $("#kt_prueba").DataTable({
+        "language": {
+            "lengthMenu": "Show _MENU_",
+        },
+        "dom":
+            "<'row mb-2'" +
+            "<'col-sm-6 d-flex align-items-center justify-conten-start dt-toolbar'l>" +
+            "<'col-sm-6 d-flex align-items-center justify-content-end dt-toolbar'f>" +
+            ">" +
+    
+            "<'table-responsive'tr>" +
+    
+            "<'row'" +
+            "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+            "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+            ">"
+    });
+
+    var input1 = document.querySelector("#soft_skills");
+    new Tagify(input1);
+    
+    var input2 = document.querySelector("#hard_skills");
+    new Tagify(input2);
+
+</script>
+{% endblock extrajs %}
