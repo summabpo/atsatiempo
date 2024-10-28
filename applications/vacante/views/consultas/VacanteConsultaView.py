@@ -92,6 +92,11 @@ def consulta_vacantes_disponibles(candidato_id):
             'profesion_estudio_id_055',
         ).annotate(
             aplicada=Exists(subquery)  # Campo booleano que indica si ya se ha aplicado
+        ).filter(
+            estado_id_001 = 1,  # Filtra vacantes activas
+            estado_vacante=1  # Filtra vacantes activas
+        ).order_by(
+            '-aplicada', '-id' # Ordenar por aplicación y luego por ID
         ).values(
             'id',
             'fecha_creacion',
@@ -103,9 +108,6 @@ def consulta_vacantes_disponibles(candidato_id):
             'salario',
             'cliente_id_051__razon_social',
             'aplicada',  # Incluye el campo que indica si ya se aplicó
-        ).filter(
-            estado_id_001 = 1,  # Filtra vacantes activas
-            estado_vacante=1  # Filtra vacantes activas
-        ).order_by('-aplicada', '-id').all()  # Ordenar por aplicación y luego por ID
+        )  
 
     return vacantes

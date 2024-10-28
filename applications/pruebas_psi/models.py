@@ -44,7 +44,8 @@ class Psi201Pregunta(models.Model):
         ('Inusualidad', 'Inusualidad'),
     ]
     
-    id_pregunta = models.IntegerField(primary_key=True)
+    # id_pregunta = models.IntegerField(primary_key=True)
+    id_pregunta = models.AutoField(primary_key=True)
     texto = models.CharField(max_length=255, blank=True, null=True)
     es_invertida = models.BooleanField(blank=True, null=True)
     factor = models.CharField(max_length=1, blank=True, null=True)
@@ -59,7 +60,7 @@ class Psi201Pregunta(models.Model):
 
 
 class Psi202Respuesta(models.Model):
-    id_respuesta = models.IntegerField(primary_key=True)
+    id_respuesta = models.AutoField(primary_key=True)
     candidato = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column=id, blank=True, null=True)
     id_pregunta = models.ForeignKey(Psi201Pregunta, models.DO_NOTHING, db_column='id_pregunta', blank=True, null=True)
     respuesta = models.SmallIntegerField(blank=True, null=True)

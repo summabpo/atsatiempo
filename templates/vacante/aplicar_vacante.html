@@ -7,7 +7,7 @@
 {% block titulo_pagina %} Aplicación vacante {% endblock titulo_pagina %}
 
 {% block navegacion %}
-    <a href="{% url 'vacantes:vacantes_cliente_todas' %}" class="text-white text-hover-primary"> Listado Vacantes</a>
+    <a href="{% url 'vacantes:ver_vacantes_disponibles' %}" class="breadcrumb-item text-white opacity-75"> Listado Vacantes</a>
     
     <li class="breadcrumb-item">
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
@@ -41,7 +41,7 @@
                         <h1 class="fw-bold fs-2qx text-gray-800 mb-7">Felicitaciones se ha aplicado su vacante</h1>
                         <div class="fw-semibold fs-3 text-muted mb-15">Vacante: {{ vacantes.titulo }}</div>
                         <div class="text-center">
-                            <a href="{% url 'vacantes:vacantes_cliente_todas' %}" class="btn btn-lg btn-primary fw-bold">Volver</a>
+                            <a href="{% url 'vacantes:ver_vacantes_disponibles' %}" class="btn btn-lg btn-primary fw-bold">Volver</a>
                         </div>
                     {% endif %}
                         
