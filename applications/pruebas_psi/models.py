@@ -10,7 +10,7 @@ class Psi201Pregunta(models.Model):
         ('C', 'Escrupulosidad'),
         ('O', 'Apertura a la Experiencia'),
     ]
-    
+
     SUBFACTOR_CHOICES = [
         # Subfactores de Honestidad-Humildad
         ('Sinceridad', 'Sinceridad'),
@@ -50,7 +50,7 @@ class Psi201Pregunta(models.Model):
     es_invertida = models.BooleanField(blank=True, null=True)
     factor = models.CharField(max_length=1, blank=True, null=True)
     subfactor = models.CharField(max_length=50, blank=True, null=True)
-    
+
     def __str__(self):
         return self.texto
 
@@ -58,17 +58,15 @@ class Psi201Pregunta(models.Model):
         managed = False
         db_table = 'psi_201_pregunta'
 
-
 class Psi202Respuesta(models.Model):
     id_respuesta = models.AutoField(primary_key=True)
     candidato = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column=id, blank=True, null=True)
     id_pregunta = models.ForeignKey(Psi201Pregunta, models.DO_NOTHING, db_column='id_pregunta', blank=True, null=True)
     respuesta = models.SmallIntegerField(blank=True, null=True)
-    
+
     def __str__(self):
         return f"{self.candidato} - {self.id_pregunta.texto}: {self.respuesta}"
 
     class Meta:
         managed = False
         db_table = 'psi_202_respuesta'
-
