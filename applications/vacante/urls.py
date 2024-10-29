@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import VacanteViews, EntrevistaView
 from applications.vacante.views.usuario_candidato import VacanteCandidatoView
-
+from applications.vacante.views.usuario_cliente import VacanteClienteView
 
 
 url_principal = 'vacante/'
@@ -9,7 +9,7 @@ url_principal = 'vacante/'
 urlpatterns = [
     path( url_principal+'api/', VacanteViews.vacante_api, name='vacante_api'),
     path( url_principal+'cliente/<int:pk>/', VacanteViews.vacante_cliente_mostrar, name='vacantes_cliente'),
-    path( url_principal+'cliente/', VacanteViews.ver_vacante_cliente, name='vacantes'),
+    
     path( url_principal+'detalle_vacante/<int:pk>/', VacanteViews.vacante_detalle, name='vacante_detalle'),
     path( url_principal+'aplicacion_vacante/<int:pk>/', VacanteViews.vacante_aplicada, name='vacante_aplicada'),
     
@@ -24,4 +24,10 @@ urlpatterns = [
     #Candidato
     path( url_principal+'disponibles/', VacanteCandidatoView.ver_vacante_disponibles, name='ver_vacantes_disponibles'),
     path( url_principal+'vacante_aplicadas/', VacanteViews.ver_vacante_candidato_aplicadas, name='vacante_candidato'),
+
+
+    #Cliente
+    #path( url_principal+'cliente/', VacanteViews.ver_vacante_cliente, name='vacantes'), #por suprimir
+    path( url_principal+'cliente/', VacanteClienteView.vacantes_cliente, name='vacantes_cliente_todas'),
+    
 ]

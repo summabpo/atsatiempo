@@ -19,7 +19,7 @@ from applications.candidato.models import Can101Candidato
 #consultas
 from applications.vacante.views.consultas.VacanteConsultaView import consulta_vacantes_disponibles
 
-# Ver entrevistas generadas por cliente
+# Ver vacantes disponibles para aplicar
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def ver_vacante_disponibles(request):
