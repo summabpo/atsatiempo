@@ -14,7 +14,7 @@ def asignar_respuesta(request, candidato_id):
             respuesta = form.save(commit=False)
             respuesta.candidato = candidato
             respuesta.save()
-            return redirect('nombre_de_la_vista_o_url_a_redirigir')
+            return redirect('asignar_respuesta')
     else:
         form = Psi202RespuestaForm()
 

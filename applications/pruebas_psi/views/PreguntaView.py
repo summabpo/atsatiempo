@@ -7,7 +7,7 @@ def crear_pregunta(request):
         form = Psi201PreguntaForm(request.POST)
         if form.is_valid():
             form.save()  # Guarda la nueva pregunta en la base de datos
-            return redirect('lista_preguntas')  # Redirigir a alguna vista donde se muestren las preguntas
+            return redirect('crear_pregunta')  # Redirigir a alguna vista donde se muestren las preguntas
     else:
         form = Psi201PreguntaForm()
     
