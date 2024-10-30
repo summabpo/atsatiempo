@@ -16,6 +16,8 @@ from applications.usuarios.models import UsuarioBase
 from applications.common.models import Cat001Estado
 from applications.candidato.models import Can101Candidato
 
+from components.RegistrarHistorialVacante import crear_historial_aplicacion
+
 # Create your views here.
 
 
@@ -129,7 +131,6 @@ def crear_entrevista(request, asignacion_id):
     cliente_id = request.session.get('cliente_id')
     grupo_id = request.session.get('grupo_id')
     
-
     aplicacion_entrevista = get_object_or_404(Cli056AplicacionVacante, pk=asignacion_id)
     vacante = get_object_or_404(Cli052Vacante, id=aplicacion_entrevista.vacante_id_052.id)
     cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
@@ -137,8 +138,7 @@ def crear_entrevista(request, asignacion_id):
     
     asignacion_vacante = Cli056AplicacionVacante.objects.get(id=asignacion_id)
     info_candidato = Can101Candidato.objects.get(id= asignacion_vacante.candidato_101.id)
-    
-    
+
     entrevista_existente = Cli057AsignacionEntrevista.objects.filter(asignacion_vacante=asignacion_vacante)
 
     if entrevista_existente:
@@ -176,6 +176,8 @@ def crear_entrevista(request, asignacion_id):
                 estado=estado_default,
             )
 
+            #funcion para crear registro en el historial y actualizar estado de la aplicacion de la vcatente
+            crear_historial_aplicacion(asignacion_vacante, 2, request.session.get('_auth_user_id'), 'Entrevista Asignada')
             
             contexto_email_1 = {
                 'entrevistador' : f'{usuario_asignado.primer_nombre} {usuario_asignado.segundo_nombre} {usuario_asignado.primer_apellido}',

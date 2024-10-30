@@ -22,3 +22,16 @@ class Psi202RespuestaForm(forms.ModelForm):
             'id_pregunta': 'Pregunta',
             'respuesta': 'Respuesta (1-5)',
         }
+class CalificarPreguntaForm(forms.Form):
+    pregunta = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    calificacion = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'type': 'range', 'min': 1, 'max': 5, 'step': 1}),
+        label="Calificación"
+    )
+
+    def __init__(self, *args, **kwargs):
+        pregunta_obj = kwargs.pop('pregunta_obj', None)
+        super().__init__(*args, **kwargs)
+        if pregunta_obj:
+            self.fields['pregunta'].initial = pregunta_obj.texto
+            self.fields['pregunta'].label = f"Pregunta: {pregunta_obj.texto}"

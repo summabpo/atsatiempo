@@ -17,7 +17,7 @@ urlpatterns = [
         # Modulos Globales
     path( url_principal+'listar', ClienteAdminView.cliente_listar, name='cliente_listar'),
     path( url_principal+'reclutado_todos', ClienteAdminView.reclutados_todos, name='cliente_vacante_reclutado_todos'),
-    path( url_principal+'cliente_todos/', ClienteAdminView.vacantes_todos, name='vacantes_cliente_todas'),
+    path( url_principal+'vacantes_todos/', ClienteAdminView.vacantes_todos, name='vacantes_cliente_todas'),
     
         # Detalles Cliente
     

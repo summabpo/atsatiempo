@@ -7,7 +7,7 @@
 {% block titulo_pagina %} Detalle vacante: {{ vacante.titulo }} {% endblock titulo_pagina %}
 
 {% block navegacion %}
-    <a href="{% url 'vacantes:vacantes' %}" class="text-white text-hover-primary"> Mis Vacantes</a>
+    <a href="{% url 'vacantes:vacantes_cliente_todas' %}" class="breadcrumb-item text-white opacity-75"> Listado Vacantes</a>
     
     <li class="breadcrumb-item">
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
@@ -25,7 +25,9 @@
     {% endblock css %}
 
 {% block content %}
+{% include 'vacante/common/cliente_menu_vacante.html' %}
 <div class="row">
+    
     <div class="col-lg-4">
         <div class="card shadow-sm">
             <div class="card-body">
@@ -132,7 +134,7 @@
                                 <td> {{e.candidato_101.email}} </td>
                                 <td> {{e.fecha_aplicacion|date:"Y-m-d"}} </td>
                                 <td>0%</td>
-                                <td>Ver</td>|
+                                <td>Ver</td>
                                 <td>
                                     <a href="{% url 'vacantes:crear_entrevista' e.id %}" class="btn btn-primary">
                                         <i class="ki-duotone ki-book  fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>

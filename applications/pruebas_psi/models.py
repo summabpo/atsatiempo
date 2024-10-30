@@ -60,7 +60,7 @@ class Psi201Pregunta(models.Model):
 
 class Psi202Respuesta(models.Model):
     id_respuesta = models.AutoField(primary_key=True)
-    candidato = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column=id, blank=True, null=True)
+    candidato = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato', blank=True, null=True)
     id_pregunta = models.ForeignKey(Psi201Pregunta, models.DO_NOTHING, db_column='id_pregunta', blank=True, null=True)
     respuesta = models.SmallIntegerField(blank=True, null=True)
 

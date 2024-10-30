@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calificar Pregunta</title>
+</head>
+<body>
+    <h1>Calificar Prueba</h1>
+    <h2>Candidato: {{ candidato }}</h2>
+    <h3>{{ pregunta.texto }}</h3>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Calificar y Siguiente</button>
+    </form>
+</body>
+</html>

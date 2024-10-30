@@ -7,13 +7,13 @@
 {% block titulo_pagina %} Detalle vacante: {{ vacante.titulo }} {% endblock titulo_pagina %}
 
 {% block navegacion %}
-    <a href="{% url 'vacantes:vacantes' %}" class="text-white text-hover-primary"> Mis Vacantes</a>
+    <a href="{% url 'vacantes:vacantes_cliente_todas' %}" class="text-white text-hover-primary"> Mis Vacantes</a>
     
     <li class="breadcrumb-item">
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
     </li>
     
-    <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="text-white text-hover-primary"> Detalle Vacante {{ vacante.titulo }}</a>
+    <a href="{% url 'vacantes:gestion_vacante_reclutados' vacante.id %}" class="text-white text-hover-primary"> Detalle Vacante {{ vacante.titulo }}</a>
 
     <li class="breadcrumb-item">
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
@@ -39,7 +39,7 @@
             <div class="card-header">
                 <h3 class="card-title">Asignación de Entrevista</h3>
                 <div class="card-toolbar">
-                    <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                    <a href="{% url 'vacantes:gestion_vacante_reclutados' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
                 </div>
             </div>
             <div class="card-body">
