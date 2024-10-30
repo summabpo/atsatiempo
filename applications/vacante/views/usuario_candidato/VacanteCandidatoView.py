@@ -31,3 +31,4 @@ def ver_vacante_disponibles(request):
     }
     
     return render(request, 'vacante/ver_vacantes_disponibles.html', contexto)
+
