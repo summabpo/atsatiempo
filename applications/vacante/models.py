@@ -145,7 +145,8 @@ class Cli057AsignacionEntrevista(models.Model):
         (1, 'Pendiente'),
         (2, 'Apto'),
         (3, 'No Apto'),
-        (4, 'Cancelado'),
+        (4, 'Seleccionado'),
+        (5, 'Cancelado'),
     ]
 
     asignacion_vacante = models.ForeignKey(Cli056AplicacionVacante, on_delete=models.CASCADE, related_name='asignaciones_entrevista')
@@ -158,6 +159,10 @@ class Cli057AsignacionEntrevista(models.Model):
     lugar_enlace = models.CharField(max_length=255)
     estado_asignacion = models.IntegerField(choices=ESTADO_ASIGNACION, default=1)
     estado = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
+
+    # campos post asignacion
+    observacion = models.TextField(null=True, blank=True, verbose_name="Observación")
+    fecha_gestion = models.DateField(auto_now=True)
 
     def __str__(self):
         return str(self.id)

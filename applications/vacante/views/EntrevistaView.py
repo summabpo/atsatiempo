@@ -141,12 +141,12 @@ def crear_entrevista(request, asignacion_id):
 
     entrevista_existente = Cli057AsignacionEntrevista.objects.filter(asignacion_vacante=asignacion_vacante)
 
-    if entrevista_existente:
-        validar_registro = True
-        entrevista = Cli057AsignacionEntrevista.objects.get(asignacion_vacante=asignacion_vacante)
-        messages.success(request, 'Ya se ha asignado una entrevista')
-    else:
-        entrevista = None    
+    # if entrevista_existente:
+    #     validar_registro = True
+    #     entrevista = Cli057AsignacionEntrevista.objects.get(asignacion_vacante=asignacion_vacante)
+    #     messages.success(request, 'Ya se ha asignado una entrevista')
+    # else:
+    #     entrevista = None    
 
     if request.method == 'POST':
         form = EntrevistaCrearForm(request.POST, grupo_id=4, cliente_id=cliente_id)
@@ -213,7 +213,7 @@ def crear_entrevista(request, asignacion_id):
         'aplicacion_entrevista': aplicacion_entrevista,
         'vacante': vacante,
         'validar_registro' : validar_registro,
-        'entrevista' : entrevista,
+        # 'entrevista' : entrevista,
     }
 
     return render(request, 'vacante/crear_entrevista.html', contexto)

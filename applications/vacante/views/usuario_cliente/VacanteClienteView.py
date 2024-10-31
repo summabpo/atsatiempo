@@ -22,6 +22,7 @@ from applications.candidato.models import Can101Candidato
 #consultas
 from applications.vacante.views.consultas.VacanteConsultaView import consulta_vacantes_cliente
 from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante_cliente
+from applications.vacante.views.consultas.AsignacionEntrevistaConsultaView import consulta_asignacion_entrevista_cliente
 
 #utils
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
@@ -151,3 +152,22 @@ def gestion_vacante_reclutados(request, pk):
     }
 
     return render(request, 'vacante/gestion_vacante_reclutados.html', contexto)
+
+# Ver vacantes por id cliente para ver todas las vacantes que ha creado
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def gestion_vacante_entrevistas(request, pk):
+    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    cliente_id = request.session.get('cliente_id')
+    # Obtener el cliente usando el id de la sesión
+    cliente = get_object_or_404(Cli051Cliente, pk=cliente_id)
+
+    asignacion_entrevista = consulta_asignacion_entrevista_cliente(cliente_id)
+
+    contexto = {
+        'vacante' : vacante,
+        'cliente' : cliente,
+        'asignacion_entrevista' : asignacion_entrevista,
+    }
+
+    return render(request, 'vacante/gestion_vacante_entrevistas.html', contexto)
