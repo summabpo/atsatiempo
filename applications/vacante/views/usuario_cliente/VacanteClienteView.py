@@ -6,6 +6,7 @@ from applications.common.views.EnvioCorreo import enviar_correo, generate_token
 from django.db.models import F
 from django.http import JsonResponse
 import json
+from django.utils.timezone import now
 
 #formularios
 from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm
@@ -163,7 +164,7 @@ def gestion_vacante_entrevistas(request, pk):
     # Obtener el cliente usando el id de la sesión
     cliente = get_object_or_404(Cli051Cliente, pk=cliente_id)
 
-    asignacion_entrevista = consulta_asignacion_entrevista_cliente(cliente_id)
+    asignacion_entrevista = consulta_asignacion_entrevista_cliente(vacante.id)
 
     contexto = {
         'vacante' : vacante,
@@ -178,21 +179,64 @@ def gestion_vacante_entrevistas(request, pk):
 @validar_permisos(*Permiso.obtener_nombres())
 def gestion_entrevista(request, pk):
     entrevista = get_object_or_404(Cli057AsignacionEntrevista, pk=pk)
+    
+    reclutamiento = entrevista.asignacion_vacante
+
+    vacante = get_object_or_404(Cli052Vacante, id = reclutamiento.vacante_id_052.id)
+    candidato = get_object_or_404(Can101Candidato, id = reclutamiento.candidato_101.id)
         # Formulario Vacantes
     if request.method == 'POST': 
         form = EntrevistaGestionForm(request.POST)
         if form.is_valid():
-            titulo = form.cleaned_data['titulo']
-            numero_posiciones = form.cleaned_data['numero_posiciones']
+            observacion = form.cleaned_data['observacion']
+            estado_asignacion = int(form.cleaned_data['estado_asignacion'])
+            
+            
+            estado_vacante = None
+            observacion_historial = None
+
+            print(estado_asignacion)
+            print(observacion)
+            #validación estados.
+            if estado_asignacion == 2:
+                estado_vacante = 1 # Pasa entrevista y queda en estado entrevista aprobada
+                observacion_historial = 'Se aprueba el candidato, siguen en proceso.'
+            if estado_asignacion == 3:
+                estado_vacante = 12  # No Apto Entrevista No Aprobada
+                observacion_historial = 'Candidato No Apto en Entrevista'
+                #crea el historial y actualiza el estado de la aplicacion de la vacante
+                crear_historial_aplicacion(reclutamiento, 4, request.session.get('_auth_user_id'), 'No aprobo la entrevista el candidato')
+            if estado_asignacion == 4:
+                estado_vacante = 8 # Se cambia estado de la vacante a seleccionado
+                observacion_historial = 'Se selecciona candidato.'
+            if estado_asignacion == 5:
+                estado_vacante = 10 # Se cambia estado de la vacante a cancelado
+                observacion_historial = 'Se cancela la postulación del candidato.'
+            
+            #crea el historial y actualiza el estado de la aplicacion de la vacante
+            crear_historial_aplicacion(reclutamiento, estado_vacante, request.session.get('_auth_user_id'), observacion_historial)
+            print(estado_asignacion)
+            print(observacion)
+            
+            #actualizacion de gestión de entrevista
+            entrevista.observacion = observacion
+            entrevista.estado_asignacion = estado_asignacion
+            entrevista.fecha_gestion = now()
+            entrevista.save()
+
+            messages.success(request, 'Se ha actualizado la entrevista.')
+            return redirect('vacantes:gestion_vacante_entrevistas', pk=vacante.id)
         else:
             messages.error(request, form.errors)
     else:
         # Formulario Entrevista
-        form = EntrevistaGestionForm(request.POST)
+        form = EntrevistaGestionForm()
         entrevista = get_object_or_404(Cli057AsignacionEntrevista, pk=pk)
     contexto = {
         'form' : form,
-        'entrevista' : entrevista
+        'entrevista' : entrevista,
+        'vacante' : vacante,
+        'candidato' : candidato,
     }
 
-    return render(request, 'vacante/gestion_entrevista.html', contexto)
+    return render(request, 'vacante/gestionar_entrevista.html', contexto)

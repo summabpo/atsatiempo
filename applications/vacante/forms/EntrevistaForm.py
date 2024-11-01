@@ -144,7 +144,7 @@ class EntrevistaGestionForm(forms.Form):
     )
 
     estado_asignacion = forms.ChoiceField(
-        choices=Cli057AsignacionEntrevista.ESTADO_ASIGNACION,
+        choices=[('', 'Seleccione...')] + list(ESTADO_ASIGNACION),
         label='Calificar',
         required=True,
         widget=forms.Select(attrs={
@@ -159,7 +159,7 @@ class EntrevistaGestionForm(forms.Form):
         # Configuración de Crispy Forms
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.form_id = 'form_crear_entrevista'
+        self.helper.form_id = 'form_gestion_entrevista' 
         self.helper.form_class = 'w-200'
     
         self.helper.layout = Layout(
@@ -177,5 +177,12 @@ class EntrevistaGestionForm(forms.Form):
         cleaned_data = super().clean()
 
         observacion = cleaned_data.get('observacion')
+        estado_asignacion = cleaned_data.get('estado_asignacion')
+
+        if not observacion:
+            self.add_error('observacion', 'La observación no puede estar vacía.')
+
+        if estado_asignacion == '':
+            self.add_error('estado_asignacion', 'Debe seleccionar un estado.')
 
         return cleaned_data

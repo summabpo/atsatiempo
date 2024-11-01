@@ -26,7 +26,8 @@ def consulta_asignacion_entrevista_todos():
     entrevista = 1
     return entrevista
 
-def consulta_asignacion_entrevista_cliente(cliente_id):
+def consulta_asignacion_entrevista_cliente(vacante_id):
+
     asignacion_entrevista = Cli057AsignacionEntrevista.objects.select_related(
         'asignacion_vacante',
         'asignacion_vacante__candidato_101',
@@ -50,8 +51,8 @@ def consulta_asignacion_entrevista_cliente(cliente_id):
             When(estado_asignacion=5, then=Value('Cancelado')),
         ),
         tipo_entrevista = Case(
-            When(tipo_entrevista=1, then=Value('Virtual')),
-            When(tipo_entrevista=2, then=Value('Presencial')),
+            When(tipo_entrevista='V', then=Value('Virtual')),
+            When(tipo_entrevista='P', then=Value('Presencial')),
         ),
         candidato_nombre = Concat(
             F('asignacion_vacante__candidato_101__primer_nombre'),
@@ -82,7 +83,7 @@ def consulta_asignacion_entrevista_cliente(cliente_id):
         ),
     ).order_by(
         '-id'
-    ).filter(asignacion_vacante__vacante_id_052__cliente_id_051=cliente_id)
+    ).filter(asignacion_vacante__vacante_id_052=vacante_id)
 
     return asignacion_entrevista
 
