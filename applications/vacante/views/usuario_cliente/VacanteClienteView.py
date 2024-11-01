@@ -10,6 +10,7 @@ import json
 #formularios
 from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm
 from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit
+from applications.vacante.forms.EntrevistaForm import EntrevistaGestionForm
 
 #modelos
 from applications.vacante.models import Cli057AsignacionEntrevista, Cli056AplicacionVacante, Cli052Vacante, Cli055ProfesionEstudio, Cli054HardSkill, Cli051Cliente, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli053SoftSkill
@@ -171,3 +172,27 @@ def gestion_vacante_entrevistas(request, pk):
     }
 
     return render(request, 'vacante/gestion_vacante_entrevistas.html', contexto)
+
+# Ver vacantes por id cliente para ver todas las vacantes que ha creado
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def gestion_entrevista(request, pk):
+    entrevista = get_object_or_404(Cli057AsignacionEntrevista, pk=pk)
+        # Formulario Vacantes
+    if request.method == 'POST': 
+        form = EntrevistaGestionForm(request.POST)
+        if form.is_valid():
+            titulo = form.cleaned_data['titulo']
+            numero_posiciones = form.cleaned_data['numero_posiciones']
+        else:
+            messages.error(request, form.errors)
+    else:
+        # Formulario Entrevista
+        form = EntrevistaGestionForm(request.POST)
+        entrevista = get_object_or_404(Cli057AsignacionEntrevista, pk=pk)
+    contexto = {
+        'form' : form,
+        'entrevista' : entrevista
+    }
+
+    return render(request, 'vacante/gestion_entrevista.html', contexto)
