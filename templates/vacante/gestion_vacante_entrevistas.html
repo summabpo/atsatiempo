@@ -35,44 +35,41 @@
 <div class="row">
     <div class="card shadow-sm">
         <div class="card-body">
-            <table id="kt_listado_reclutados" class="table align-middle table-row-dashed fs-6 gy-5">
+            <table id="kt_listado_entrevistados" class="table align-middle table-row-dashed fs-6 gy-5">
                 <thead>
                     <tr class="fw-bold fs-6 text-gray-800 px-7">
-                        <th style="text-align: center">DETALLE</th>
                         <th style="text-align: center">ID</th>
-                        <th style="text-align: center">CANDIDATO ID</th>
                         <th style="text-align: center">CANDIDATO</th>
-                        <th style="text-align: center">FECHA APLICACIÓN</th>
-                        <th style="text-align: center">ESTADO RECLUTAMIENTO</th>
-                        <th style="text-align: center">Entrevista</th>
-                        <th style="text-align: center">Pruebas</th>
-                        <th style="text-align: center">Calificar</th>
+                        <th style="text-align: center">FECHA ENTREVISTA</th>
+                        <th style="text-align: center">HORA ENTREVISTA</th>
+                        <th style="text-align: center">TIPO ENTREVISTA</th>
+                        <th style="text-align: center">LUGAR ENLACE</th>
+                        <th style="text-align: center">ESTADO ASIGNACIÓN</th>
+                        <th style="text-align: center">FECHA ASIGNACION</th>
+                        
+                        <th style="text-align: center">ASIGNADO A</th>
+                        <th style="text-align: center">Gestionar</th>
+                        <th style="text-align: center">Cancelar</th>
                     </tr>
                 </thead>
                 <tbody>
                     
-                    {% for e in asignacion_vacante %}
+                    {% for e in asignacion_entrevista %}
                     <tr>
-                        <td style="text-align: center">
-                            <a href="#" class="btn btn-light-warning btn-sm">
-                                <i class="bi bi-person-lines-fill"></i>
-                            </a>
-                        </td>
                         <td style="text-align: center">{{e.id}}</td>
-                        <td style="text-align: center">{{e.candidato_id}}</td>
                         <td style="text-align: center"><b>{{e.candidato_nombre}}</b></td>
-                        <td style="text-align: center">{{e.fecha_aplicacion | date:"Y/m/d"}}</td>
-                        <td style="text-align: center">{{e.aplicacion_vacante_estado}}</td>
+                        <td style="text-align: center"><b>{{e.fecha_entrevista | date:"Y/m/d"}}</b></td>
+                        <td style="text-align: center">{{e.hora_entrevista}}</td>
+                        <td style="text-align: center">{{e.tipo_entrevista}}</td>
+                        <td style="text-align: center">{{e.lugar_enlace}}</td>
+                        <td style="text-align: center">{{e.estado_asignacion_entrevista}}</td>
+                        <td style="text-align: center">{{e.fecha_asignacion | date:"Y/m/d"}}</td>
+                        <td style="text-align: center">{{e.usuario_asignado}}</td>
                         <td style="text-align: center">
-                            <a href="{% url 'vacantes:crear_entrevista' e.id %}" class="btn btn-light-primary btn-sm">
-                                Crear
-                            </a>
+                            <a href="#" class="btn btn-light-primary btn-sm">Gestionar</a>
                         </td>
                         <td style="text-align: center">
-                            <a href="#" class="btn btn-light-primary btn-sm">Crear</a>
-                        </td>
-                        <td style="text-align: center">
-                            <a href="#" class="btn btn-light-primary btn-sm">Crear</a>
+                            <a href="#" class="btn btn-light-danger btn-sm">Cancelar</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -81,12 +78,12 @@
         </div>
     </div>
 </div>
-{% endblock content %}
+{% endblock content %} 
 
 {% block extrajs %}
 <script>
     $(document).ready(function() {
-        $("#kt_listado_reclutados").DataTable({
+        $("#kt_listado_entrevistados").DataTable({
             "language": {
                 "lengthMenu": "Mostrar _MENU_ ",
                 "zeroRecords": "No se encontraron resultados",
@@ -121,40 +118,6 @@
                 "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
                 "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
                 ">"
-        });
-
-        // Checkbox del encabezado para seleccionar/deseleccionar todos
-        $('#selectAll').change(function() {
-            $('.row-checkbox').prop('checked', $(this).is(':checked'));
-            updateEnviarEntrevistaButton();
-        });
-
-        // Checkboxes individuales
-        $('#vacantes_aplicadas').on('change', '.row-checkbox', function() {
-            updateSelectAll();
-            updateEnviarEntrevistaButton();
-        });
-
-        function updateSelectAll() {
-            $('#selectAll').prop('checked', $('.row-checkbox:checked').length === $('.row-checkbox').length);
-        }
-
-        function updateEnviarEntrevistaButton() {
-            $('#enviarEntrevista').prop('disabled', $('.row-checkbox:checked').length === 0);
-        }
-
-        // Inicializar el estado del botón
-        updateEnviarEntrevistaButton();
-
-        // Manejar clic en el botón "Enviar a Entrevista"
-        $('#enviarEntrevista').click(function() {
-            var selectedIds = $('.row-checkbox:checked').map(function() {
-                return $(this).val();
-            }).get();
-            
-            // Aquí puedes enviar los IDs seleccionados al servidor
-            console.log("IDs seleccionados:", selectedIds);
-            // Implementa aquí la lógica para enviar a entrevista
         });
     });
 </script>
