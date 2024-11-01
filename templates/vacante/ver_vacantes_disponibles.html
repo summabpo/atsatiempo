@@ -2,16 +2,16 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block title %} ATS Listado Vacantes {% endblock title %}
+{% block title %} ATS Listado Vacantes Disponibles{% endblock title %}
 
-{% block titulo_pagina %} Listado Vacantes {% endblock titulo_pagina %}
+{% block titulo_pagina %} Listado Vacantes Disponibles {% endblock titulo_pagina %}
 
 {% block titulo-pagina %}
     Listado de Vacantes
 {% endblock titulo-pagina %}
 
 {% block navegacion %}
-    <li class="breadcrumb-item text-white opacity-75">Listado Vacantes</li>
+    <li class="breadcrumb-item text-white opacity-75">Listado Vacantes Disponibles</li>
     
     <!-- <li class="breadcrumb-item">
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
@@ -32,7 +32,7 @@
 <div class="card">
     <div class="card-header border-0 pt-6">
         <div class="card-title">
-            <h2>Vacantes {{ cliente.razon_social}}</h2>
+            <h2>Vacantes Disponibles</h2>
         </div>
         <div class="card-toolbar">
             <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
@@ -52,12 +52,6 @@
                     <th style="text-align: center">CIUDAD</th>
                     <th style="text-align: center"># VACANTES</th>
                     <th style="text-align: center">SALARIO</th>
-                    <th style="text-align: center">EN PROCESO</th>
-                    <th style="text-align: center">SELECCIONADO</th>
-                    <th style="text-align: center">NO APTO</th>
-                    <th style="text-align: center">CANCELADO</th>
-                    <th style="text-align: center">DESISTIDO</th>
-                    <th style="text-align: center">TOTAL APLICADOS</th>
                     <th style="text-align: center">ESTADO</th>
                     <th style="text-align: center">VER DETALLE</th>
                 </tr>
@@ -72,27 +66,17 @@
                     <td style="text-align: center">{{e.ciudad__nombre}}</td>
                     <td style="text-align: center">{{e.numero_posiciones}}</td>
                     <td style="text-align: center">{{e.salario}}</td>
-                    <td style="text-align: center" class="bg-light-primary text-primary">{{e.aplicados}}</td>
-                    <td style="text-align: center" class="bg-light-success text-success">{{e.seleccionados}}</td>
-                    <td style="text-align: center" class="bg-light-danger text-danger">{{e.no_apto}}</td>
-                    <td style="text-align: center" class="bg-light-dark text-dark">{{e.canceladas}}</td>
-                    <td style="text-align: center" class="bg-light-warning text-warning">{{e.desistidos}}</td>
-                    <td style="text-align: center">{{e.vacante_aplicados}}</td>
                     <td style="text-align: center">
-                        {% if e.estado_vacante == 1 %}
-                            <span class="badge badge-light-secondary">Activa</span>
-                        {% elif e.estado_vacante == 2 %}
-                            <span class="badge badge-light-primary">En Proceso</span>
-                        {% elif e.estado_vacante == 3 %}
-                            <span class="badge badge-light-success">Finalizada</span>
-                        {% elif e.estado_vacante == 4 %}
-                            <span class="badge badge-light-danger">Cancelada</span>
+                        {% if e.aplicada  %}
+                            <span class="badge badge-light-success">Aplicada</span>
                         {% endif %}
                     </td>
                     <td style="text-align: center">
-                        <a href="{% url 'clientes:cliente_vacante_detalle' e.id  %}" class="btn btn-light-primary btn-xs">
-                            <i class="fas    fa-search fs-4"></i>
-                        </a>
+                        {% if e.aplicada == False %}
+                            <a href="{% url 'vacantes:vacante_detalle' e.id  %}" class="btn btn-light-primary btn-xs">
+                                <i class="fa fa-user-check fs-4"></i>
+                            </a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

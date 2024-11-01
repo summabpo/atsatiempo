@@ -1,0 +1,124 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} Detalle vacante {% endblock title %}
+
+{% block titulo_pagina %} Detalle vacante: {{ vacante.titulo }} {% endblock titulo_pagina %}
+
+{% block navegacion %}
+    <a href="{% url 'vacantes:vacantes_cliente_todas' %}" class="breadcrumb-item text-white opacity-75"> Listado Vacantes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="breadcrumb-item text-white opacity-75">Vacante: {{ vacante.titulo }}</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Reclutados</li>
+{% endblock navegacion %}
+
+
+			
+    {% block css %}
+    .asteriskField {
+        color: red !important;
+    }
+    {% endblock css %}
+
+{% block content %}
+{% include 'vacante/common/cliente_menu_vacante.html' %}
+<div class="row">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table id="kt_listado_entrevistados" class="table align-middle table-row-dashed fs-6 gy-5">
+                <thead>
+                    <tr class="fw-bold fs-6 text-gray-800 px-7">
+                        <th style="text-align: center">ID</th>
+                        <th style="text-align: center">CANDIDATO</th>
+                        <th style="text-align: center">FECHA ENTREVISTA</th>
+                        <th style="text-align: center">HORA ENTREVISTA</th>
+                        <th style="text-align: center">TIPO ENTREVISTA</th>
+                        <th style="text-align: center">LUGAR ENLACE</th>
+                        <th style="text-align: center">ESTADO ASIGNACIÓN</th>
+                        <th style="text-align: center">FECHA ASIGNACION</th>
+                        
+                        <th style="text-align: center">ASIGNADO A</th>
+                        <th style="text-align: center">Gestionar</th>
+                        <th style="text-align: center">Cancelar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    {% for e in asignacion_entrevista %}
+                    <tr>
+                        <td style="text-align: center">{{e.id}}</td>
+                        <td style="text-align: center"><b>{{e.candidato_nombre}}</b></td>
+                        <td style="text-align: center"><b>{{e.fecha_entrevista | date:"Y/m/d"}}</b></td>
+                        <td style="text-align: center">{{e.hora_entrevista}}</td>
+                        <td style="text-align: center">{{e.tipo_entrevista}}</td>
+                        <td style="text-align: center">{{e.lugar_enlace}}</td>
+                        <td style="text-align: center">{{e.estado_asignacion_entrevista}}</td>
+                        <td style="text-align: center">{{e.fecha_asignacion | date:"Y/m/d"}}</td>
+                        <td style="text-align: center">{{e.usuario_asignado}}</td>
+                        <td style="text-align: center">
+                            <a href="#" class="btn btn-light-primary btn-sm">Gestionar</a>
+                        </td>
+                        <td style="text-align: center">
+                            <a href="#" class="btn btn-light-danger btn-sm">Cancelar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %} 
+
+{% block extrajs %}
+<script>
+    $(document).ready(function() {
+        $("#kt_listado_entrevistados").DataTable({
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ ",
+                "zeroRecords": "No se encontraron resultados",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar:  ",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "emptyTable": "No hay datos disponibles en la tabla",
+                "aria": {
+                    "sortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            },
+            "order":[],
+            "dom":
+                "<'row mb-2'" +
+                "<'col-sm-6 d-flex align-items-center justify-conten-start dt-toolbar'l>" +
+                "<'col-sm-6 d-flex align-items-center justify-content-end dt-toolbar'f>" +
+                ">" +
+        
+                "<'table-responsive'tr>" +
+        
+                "<'row'" +
+                "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+                "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+                ">"
+        });
+    });
+</script>
+{% endblock extrajs %}

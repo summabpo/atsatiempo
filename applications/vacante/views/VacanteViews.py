@@ -227,7 +227,6 @@ def vacante_cliente_mostrar(request, pk=None):
         })    
 
 
-
 #Ver Gestión de la vacante
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
@@ -246,7 +245,6 @@ def vacante_gestion(request, pk):
     }
 
     return render(request, 'vacante/gestion_vacante.html', contexto)
-
 
 #CANDIDATO
 
@@ -339,8 +337,6 @@ def vacante_detalle(request, pk):
         'asignacion_entrevista': asignacion_entrevista,
     }
     return render(request, 'vacante/detalle_vacante.html', contexto)
-
-
 
 def vacante_api(request, pk=None):
     global centinela

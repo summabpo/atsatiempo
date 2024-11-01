@@ -145,7 +145,8 @@ class Cli057AsignacionEntrevista(models.Model):
         (1, 'Pendiente'),
         (2, 'Apto'),
         (3, 'No Apto'),
-        (4, 'Cancelado'),
+        (4, 'Seleccionado'),
+        (5, 'Cancelado'),
     ]
 
     asignacion_vacante = models.ForeignKey(Cli056AplicacionVacante, on_delete=models.CASCADE, related_name='asignaciones_entrevista')
@@ -159,6 +160,10 @@ class Cli057AsignacionEntrevista(models.Model):
     estado_asignacion = models.IntegerField(choices=ESTADO_ASIGNACION, default=1)
     estado = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
 
+    # campos post asignacion
+    observacion = models.TextField(null=True, blank=True, verbose_name="Observación")
+    fecha_gestion = models.DateField(auto_now=True)
+
     def __str__(self):
         return str(self.id)
 
@@ -166,4 +171,29 @@ class Cli057AsignacionEntrevista(models.Model):
         db_table = 'cli_057_asignacion_entrevista'
         verbose_name = 'ASIGNACIÓN DE ENTREVISTA'
         verbose_name_plural = 'ASIGNACIONES DE ENTREVISTAS'
-        unique_together = ('asignacion_vacante', 'usuario_asignado', 'fecha_entrevista', 'hora_entrevista')  # Evita asignaciones duplicadas
+        # unique_together = ('asignacion_vacante', 'usuario_asignado', 'fecha_entrevista', 'hora_entrevista')  # Evita asignaciones duplicadas
+
+    
+class Cli063AplicacionVacanteHistorial(models.Model):
+    aplicacion_vacante_056 = models.ForeignKey(
+        Cli056AplicacionVacante, 
+        on_delete=models.CASCADE, 
+        related_name='historial'
+    )
+    fecha = models.DateTimeField(auto_now_add=True)
+    usuario_id_genero = models.ForeignKey(
+        UsuarioBase,  # Cambia esto si usas otro modelo de usuario
+        on_delete=models.SET_NULL,
+        null=True, 
+        blank=True
+    )
+    estado = models.IntegerField(choices=Cli056AplicacionVacante.ESTADO_APLICACION)
+    descripcion = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Historial {self.id} - Aplicación {self.aplicacion_vacante_056.id}"
+
+    class Meta:
+        db_table = 'cli_063_aplicacion_vacante_historial'
+        verbose_name = 'Historial de Aplicación a Vacante'
+        verbose_name_plural = 'Historiales de Aplicaciones a Vacantes'
