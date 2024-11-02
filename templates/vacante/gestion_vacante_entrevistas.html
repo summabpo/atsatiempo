@@ -19,11 +19,8 @@
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
     </li>
     
-    <li class="breadcrumb-item text-white opacity-75">Reclutados</li>
+    <li class="breadcrumb-item text-white opacity-75">Entrevistas</li>
 {% endblock navegacion %}
-
-
-			
     {% block css %}
     .asteriskField {
         color: red !important;
@@ -44,12 +41,11 @@
                         <th style="text-align: center">HORA ENTREVISTA</th>
                         <th style="text-align: center">TIPO ENTREVISTA</th>
                         <th style="text-align: center">LUGAR ENLACE</th>
-                        <th style="text-align: center">ESTADO ASIGNACIÓN</th>
+                        <th style="text-align: center">ESTADO ENTREVISTA</th>
                         <th style="text-align: center">FECHA ASIGNACION</th>
                         
                         <th style="text-align: center">ASIGNADO A</th>
                         <th style="text-align: center">Gestionar</th>
-                        <th style="text-align: center">Cancelar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,14 +58,27 @@
                         <td style="text-align: center">{{e.hora_entrevista}}</td>
                         <td style="text-align: center">{{e.tipo_entrevista}}</td>
                         <td style="text-align: center">{{e.lugar_enlace}}</td>
-                        <td style="text-align: center">{{e.estado_asignacion_entrevista}}</td>
+                        <td style="text-align: center">
+                            {% if e.estado_asignacion_entrevista == 'Pendiente' %}
+                                <span class="badge badge-light-primary">Pendiente</span>
+                            {% elif e.estado_asignacion_entrevista == 'Apto' %}
+                                <span class="badge badge-light-warning">Apto</span>
+                            {% elif e.estado_asignacion_entrevista == 'No Apto' %}
+                                <span class="badge badge-light-danger">No Apto</span>
+                            {% elif e.estado_asignacion_entrevista == 'Seleccionado' %}
+                                <span class="badge badge-light-success">Seleccionado</span>
+                            {% elif e.estado_asignacion_entrevista == 'Cancelado' %}
+                            <span class="badge badge-light-dark">Cancelado</span>
+                            {% endif %}
+                        </td>
                         <td style="text-align: center">{{e.fecha_asignacion | date:"Y/m/d"}}</td>
                         <td style="text-align: center">{{e.usuario_asignado}}</td>
                         <td style="text-align: center">
-                            <a href="#" class="btn btn-light-primary btn-sm">Gestionar</a>
-                        </td>
-                        <td style="text-align: center">
-                            <a href="#" class="btn btn-light-danger btn-sm">Cancelar</a>
+                            {% if e.estado_asignacion_entrevista == 'Pendiente' %}
+                                <a href="{% url 'vacantes:gestion_entrevista' e.id %}" class="btn btn-light-primary btn-sm">Gestionar</a>
+                            {% else %}
+                                -
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

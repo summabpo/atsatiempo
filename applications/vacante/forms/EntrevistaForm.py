@@ -120,3 +120,69 @@ class EntrevistaCrearForm(forms.Form):
                 self.add_error('fecha_entrevista', 'La fecha de la entrevista no puede ser anterior a la fecha actual.')
 
         return cleaned_data
+    
+class EntrevistaGestionForm(forms.Form):
+    ESTADO_ASIGNACION = [
+        (0, '----'),
+        (2, 'Apto'),
+        (3, 'No Apto'),
+        (4, 'Seleccionado'),
+        (5, 'Cancelado'),
+    ]
+
+    observacion = forms.CharField(
+        label='Observaciones',
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Describa el motivo de su califiación',
+                'rows': 5,  
+                'cols': 30,  
+                'class': 'fixed-size-textarea form-control-solid'
+            }
+        )
+    )
+
+    estado_asignacion = forms.ChoiceField(
+        choices=[('', 'Seleccione...')] + list(ESTADO_ASIGNACION),
+        label='Calificar',
+        required=True,
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+        })
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Configuración de Crispy Forms
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_gestion_entrevista' 
+        self.helper.form_class = 'w-200'
+    
+        self.helper.layout = Layout(
+            Row(
+                Column('estado_asignacion', css_class='form-group mb-0'),
+                css_class='fw-semibold fs-6 mb-2'
+            ),
+            Row(
+                Column('observacion', css_class='form-group mb-0'),
+                css_class='fw-semibold fs-6 mb-2'
+            ),
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        observacion = cleaned_data.get('observacion')
+        estado_asignacion = cleaned_data.get('estado_asignacion')
+
+        if not observacion:
+            self.add_error('observacion', 'La observación no puede estar vacía.')
+
+        if estado_asignacion == '':
+            self.add_error('estado_asignacion', 'Debe seleccionar un estado.')
+
+        return cleaned_data

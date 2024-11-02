@@ -1,0 +1,117 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} Detalle vacante {% endblock title %}
+
+{% block titulo_pagina %} Detalle vacante: {{ vacante.titulo }} {% endblock titulo_pagina %}
+
+{% block navegacion %}
+    <a href="{% url 'vacantes:vacantes_cliente_todas' %}" class="breadcrumb-item text-white opacity-75"> Listado Vacantes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="breadcrumb-item text-white opacity-75">Vacante: {{ vacante.titulo }}</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <a href="{% url 'vacantes:gestion_vacante_entrevistas' vacante.id %}" class="breadcrumb-item text-white opacity-75">Entrevistas</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Gestionar Entrevista</li>
+{% endblock navegacion %}
+    {% block css %}
+    .asteriskField {
+        color: red !important;
+    }
+    {% endblock css %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h3 class="card-title">Información Entrevista</h3>
+                <div class="card-toolbar">
+                    
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-7">
+                    <label class="col-lg-4 fw-semibold text-muted">Candidato</label>
+                    <div class="col-lg-8">
+                        <span class="fw-bold fs-6 text-gray-900">{{candidato.primer_nombre}} {{candidato.segundo_nombre}} {{candidato.primero_apellido}} {{candidato.segundo_apellido}}</span>
+                    </div>
+                </div>
+                <div class="row mb-7">
+                    <label class="col-lg-4 fw-semibold text-muted">Vacante</label>
+                    <div class="col-lg-8">
+                        <span class="fw-bold fs-6 text-gray-900">{{vacante.titulo}}</span>
+                    </div>
+                </div>
+                <div class="row mb-7">
+                    <label class="col-lg-4 fw-semibold text-muted">Fecha Entrevista</label>
+                    <div class="col-lg-8">
+                        <span class="fw-bold fs-6 text-gray-900">{{entrevista.fecha_entrevista}}</span>
+                    </div>
+                </div>
+                <div class="row mb-7">
+                    <label class="col-lg-4 fw-semibold text-muted">Hora Entrevista</label>
+                    <div class="col-lg-8">
+                        <span class="fw-bold fs-6 text-gray-900">{{entrevista.hora_entrevista}}</span>
+                    </div>
+                </div>
+                <div class="row mb-7">
+                    <label class="col-lg-4 fw-semibold text-muted">Tipo Entrevista</label>
+                    <div class="col-lg-8">
+                        <span class="fw-bold fs-6 text-gray-900">
+                            
+                            {% if entrevista.tipo_entrevista == 'V' %}
+                                VIRTUAL
+                            {% else %}
+                                PRESENCIAL
+                            {% endif %}
+                                
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-7">
+                    <label class="col-lg-4 fw-semibold text-muted">Lugar o Enlace</label>
+                    <div class="col-lg-8">
+                        <span class="fw-bold fs-6 text-gray-900">{{entrevista.lugar_enlace}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h3 class="card-title">Gestionar Entrevista ID: {{entrevista.id}}</h3>
+                <div class="card-toolbar">
+                    <a href="{% url 'vacantes:gestion_vacante_entrevistas' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                </div>
+            </div>
+            <div class="card-body">
+                
+                {% crispy form %}
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-light-success" form="form_gestion_entrevista">GUARDAR</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4"></div>
+</div>
+{% endblock content %} 
+
+{% block extrajs %}
+
+{% endblock extrajs %}

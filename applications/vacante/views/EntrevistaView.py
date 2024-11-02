@@ -201,7 +201,7 @@ def crear_entrevista(request, asignacion_id):
             frase_aleatoria = 'Se ha asignado entrevista correctamente.'
             messages.success(request, frase_aleatoria)
             print('Llegamos bien!')
-            return redirect('vacantes:vacante_gestion', pk=vacante.id)
+            return redirect('vacantes:gestion_vacante_reclutados', pk=vacante.id)
             
         else:
             messages.error(request, 'Error al crear la asignación')

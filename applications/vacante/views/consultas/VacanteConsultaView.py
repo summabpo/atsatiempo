@@ -151,7 +151,7 @@ def consulta_vacantes_cliente(cliente_id):
         ),
         no_apto=Count(
             'aplicaciones',
-            filter=Q(aplicaciones__estado_aplicacion=4) | Q(aplicaciones__estado_aplicacion=7)
+            filter=Q(aplicaciones__estado_aplicacion=4) | Q(aplicaciones__estado_aplicacion=7) | Q(aplicaciones__estado_aplicacion=12)
         ),
         seleccionados=Count(
             'aplicaciones',

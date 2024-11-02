@@ -62,17 +62,56 @@
                         <td style="text-align: center">{{e.candidato_id}}</td>
                         <td style="text-align: center"><b>{{e.candidato_nombre}}</b></td>
                         <td style="text-align: center">{{e.fecha_aplicacion | date:"Y/m/d"}}</td>
-                        <td style="text-align: center">{{e.aplicacion_vacante_estado}}</td>
                         <td style="text-align: center">
+                            {% if e.estado_aplicacion == 1 %}
+                                <span class="badge badge-light-primary">{{e.aplicacion_vacante_estado}}</span>
+                            {% elif e.estado_aplicacion == 2 %}
+                                <span class="badge badge-light-warning">{{e.aplicacion_vacante_estado}}</span>
+                            {% elif e.estado_aplicacion == 3 %}
+                                <span class="badge badge-light-success">{{e.aplicacion_vacante_estado}}</span>
+                            {% elif e.estado_aplicacion == 4 %}
+                                <span class="badge badge-light-danger">{{e.aplicacion_vacante_estado}}</span>
+                            {% elif e.estado_aplicacion == 5 %}
+                                <span class="badge badge-light-primary">{{e.aplicacion_vacante_estado}}</span>
+                            {% elif e.estado_aplicacion == 6 %}
+                                <span class="badge badge-light-success">{{e.aplicacion_vacante_estado}}</span>
+                            {% elif e.estado_aplicacion == 7 %}
+                                <span class="badge badge-light-danger">{{e.aplicacion_vacante_estado}}</span>
+                            {% elif e.estado_aplicacion == 8 %}
+                                <span class="badge badge-light-success">{{e.aplicacion_vacante_estado}}</span>
+                            {% elif e.estado_aplicacion == 9 %}
+                                <span class="badge badge-light-secondary">{{e.aplicacion_vacante_estado}}</span>
+                            {% elif e.estado_aplicacion == 10 %}
+                                <span class="badge badge-light-secondary">{{e.aplicacion_vacante_estado}}</span>
+                            {% elif e.estado_aplicacion == 11 %}
+                                <span class="badge badge-light-secondary">{{e.aplicacion_vacante_estado}}</span>
+                            {% elif e.estado_aplicacion == 12 %}
+                                <span class="badge badge-light-danger">{{e.aplicacion_vacante_estado}}</span>
+                            {% endif %}
+                                
+                        </td>
+                        <td style="text-align: center">
+                            {% if e.estado_aplicacion == 8 or e.estado_aplicacion == 12 %}
+                                -
+                            {% else %}
                             <a href="{% url 'vacantes:crear_entrevista' e.id %}" class="btn btn-light-primary btn-sm">
                                 Crear
                             </a>
+                            {% endif %}
                         </td>
                         <td style="text-align: center">
-                            <a href="#" class="btn btn-light-primary btn-sm">Crear</a>
+                            {% if e.estado_aplicacion == 8 or e.estado_aplicacion == 12 %}
+                                -
+                            {% else %}
+                                <a href="#" class="btn btn-light-primary btn-sm">Crear</a>
+                            {% endif %}
                         </td>
                         <td style="text-align: center">
-                            <a href="#" class="btn btn-light-primary btn-sm">Crear</a>
+                            {% if e.estado_aplicacion == 8 or e.estado_aplicacion == 12 %}
+                                -
+                            {% else %}
+                                <a href="#" class="btn btn-light-primary btn-sm">Crear</a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
