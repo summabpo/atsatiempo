@@ -32,5 +32,6 @@ urlpatterns = [
     path( url_principal+'gestion/<int:pk>/', VacanteViews.vacante_gestion, name='vacante_gestion'),
     path( url_principal+'gestion/reclutados/<int:pk>/', VacanteClienteView.gestion_vacante_reclutados, name='gestion_vacante_reclutados'),
     path( url_principal+'gestion/entrevistas/<int:pk>/', VacanteClienteView.gestion_vacante_entrevistas, name='gestion_vacante_entrevistas'),
+    path( url_principal+'gestion/entrevistas/calificar<int:pk>/', VacanteClienteView.gestion_entrevista, name='gestion_entrevista'),
     
 ]

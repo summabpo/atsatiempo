@@ -103,6 +103,7 @@ def consulta_asignacion_vacante_cliente(cliente_id, vacante_id):
         'id',
         'fecha_aplicacion',
         'fecha_actualizacion',
+        'estado_aplicacion',
         vacante_id = F('vacante_id_052__id'),
         vacante_titulo = F('vacante_id_052__titulo'),
         vacante_numero_posiciones = F('vacante_id_052__numero_posiciones'),
@@ -113,7 +114,7 @@ def consulta_asignacion_vacante_cliente(cliente_id, vacante_id):
         cliente_id = F('vacante_id_052__cliente_id_051__id'),
         cliente_nit = F('vacante_id_052__cliente_id_051__nit'),
         cliente_razon_social = F('vacante_id_052__cliente_id_051__razon_social'),
-        candidato_id = F('candidato_101__id'),        
+        candidato_id = F('candidato_101__id'),       
     ).annotate(
         vacante_estado = Case(
             When(vacante_id_052__estado_vacante=1, then=Value('Activa')),
@@ -134,6 +135,7 @@ def consulta_asignacion_vacante_cliente(cliente_id, vacante_id):
             When(estado_aplicacion=9,  then=Value('Finalizada')),
             When(estado_aplicacion=10, then=Value('Cancelada')),
             When(estado_aplicacion=11, then=Value('Desiste')),
+            When(estado_aplicacion=12, then=Value('No Apto')),
             default=Value('Estado desconocido'),
             output_field=CharField()
         ),

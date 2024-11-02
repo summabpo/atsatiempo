@@ -115,6 +115,7 @@ class Cli056AplicacionVacante(models.Model):
         (9, 'Finalizada'),
         (10, 'Cancelada'),
         (11, 'Desiste'),
+        (12, 'No Apto'),
     ]
 
     candidato_101 = models.ForeignKey(Can101Candidato, on_delete=models.CASCADE, related_name='aplicaciones')
