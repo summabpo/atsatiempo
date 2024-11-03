@@ -216,8 +216,6 @@ def gestion_entrevista(request, pk):
             
             #crea el historial y actualiza el estado de la aplicacion de la vacante
             crear_historial_aplicacion(reclutamiento, estado_vacante, request.session.get('_auth_user_id'), observacion_historial)
-            print(estado_asignacion)
-            print(observacion)
             
             #actualizacion de gestión de entrevista
             entrevista.observacion = observacion

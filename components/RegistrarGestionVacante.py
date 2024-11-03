@@ -43,6 +43,8 @@ def validar_vacante_cancelar(vacante, url_actual):
         candidato = aplicacion.candidato_101
         email_candidato = candidato.email
 
+        
+
         contexto_email_1 = {
             'nombre_candidato' : f'{candidato.primer_nombre} {candidato.segundo_nombre} {candidato.primer_apellido} {candidato.segundo_apellido}' ,
             'cliente' : vacante.cliente_id_051.razon_social,

@@ -17,10 +17,6 @@ def crear_historial_aplicacion(aplicacion_vacante, estado, usuario=None, descrip
     # Trae el nombre del estado.
     estado_actual = obtener_nombre_estado_aplicacion(aplicacion_vacante.estado_aplicacion)
 
-    # # Trae el nombre del estado.
-    # diccionario_estados = dict(Cli056AplicacionVacante.ESTADO_APLICACION)
-    # estado_actual = diccionario_estados.get(estado, "Estado no válido")
-
     # Trae el nombre del estado.
     estado_nuevo = obtener_nombre_estado_aplicacion(estado)
     descripcion = f'{descripcion}, Cambio de estado de {estado_actual} a {estado_nuevo}'
