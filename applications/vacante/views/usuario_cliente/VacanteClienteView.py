@@ -250,7 +250,7 @@ def gestion_vacante_cancelar(request, pk):
     
     #valida candidatos en estados pendientes por gestionar y los cancela
     validar_vacante_cancelar(vacante, url_actual)
-
+    
     #cambia el estado de la vacante a cancelada
     vacante.estado_vacante = 4
     vacante.save()
