@@ -14,13 +14,14 @@ def enviar_correo(tipo_correo, contexto, asunto, lista_destinatarios, correo_rem
         'token': 'authentication/token_generado.html',
         'creacion_usuario_cliente': 'cliente/creacion_usuario.html',
         'asignacion_entrevista_entrevista' : 'vacante/asignacion_entrevista_correo.html',
+        'cancelacion_vacante_correo' : 'vacante/plantilla_correo/cancelacion_vacante_correo.html',
     }
 
     nombre_plantilla = plantilla_correo.get(tipo_correo)
 
     if not plantilla_correo:
         raise ValueError(f"Tipo de correo no reconocido: {tipo_correo}")
-    
+
     mensaje = render_to_string(nombre_plantilla, contexto)
 
     email = EmailMessage(
@@ -37,9 +38,6 @@ def enviar_correo(tipo_correo, contexto, asunto, lista_destinatarios, correo_rem
     except Exception as e:
         print(f"Error el enviar el correo: {e}")
         return False
-    
-
-
 
 def generate_token(length=100):
     # Definimos los caracteres que queremos usar en nuestro token
