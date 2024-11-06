@@ -12,6 +12,9 @@ import json
 from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 
+# utils
+from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante_candidato
+
 centinela = None
 
 #ADMIN
@@ -254,9 +257,9 @@ def vacante_gestion(request, pk):
 def ver_vacante_candidato_aplicadas(request):
     candidato_id = request.session.get('candidato_id')
     candidato = get_object_or_404(Can101Candidato, id=candidato_id)
-    vacante_aplicada = Cli056AplicacionVacante.objects.filter(candidato_101=candidato.id)
+    # vacante_aplicada = Cli056AplicacionVacante.objects.filter(candidato_101=candidato.id)
     # vacante = get_object_or_404(Cli052Vacante, id=vacante_aplicada.vacante_id_052)
-
+    vacante_aplicada = consulta_asignacion_vacante_candidato(candidato.id)
     contexto = {
         # 'vacante': vacante,
         'vacante_aplicada' : vacante_aplicada,

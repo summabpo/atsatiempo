@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'applications.pruebas_psi',
     'applications.usuarios',
     'applications.vacante',
+    'django.contrib.humanize',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
