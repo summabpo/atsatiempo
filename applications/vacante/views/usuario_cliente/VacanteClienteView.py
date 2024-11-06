@@ -28,6 +28,7 @@ from applications.vacante.views.consultas.AsignacionEntrevistaConsultaView impor
 
 #utils
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
+from components.RegistrarGestionVacante import validar_vacante_cancelar
 
 # Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
@@ -119,7 +120,7 @@ def vacantes_cliente(request):
                 )
 
             messages.success(request, 'El registro de la vacante ha sido creado con éxito.')
-            return redirect('vacantes:vacantes')
+            return redirect('vacantes:vacantes_cliente_todas')
         else:
             form_errors = True
             messages.error(request, form.errors)
@@ -199,7 +200,7 @@ def gestion_entrevista(request, pk):
             print(observacion)
             #validación estados.
             if estado_asignacion == 2:
-                estado_vacante = 1 # Pasa entrevista y queda en estado entrevista aprobada
+                estado_vacante = 3 # Pasa entrevista y queda en estado entrevista aprobada
                 observacion_historial = 'Se aprueba el candidato, siguen en proceso.'
             if estado_asignacion == 3:
                 estado_vacante = 12  # No Apto Entrevista No Aprobada
@@ -215,8 +216,6 @@ def gestion_entrevista(request, pk):
             
             #crea el historial y actualiza el estado de la aplicacion de la vacante
             crear_historial_aplicacion(reclutamiento, estado_vacante, request.session.get('_auth_user_id'), observacion_historial)
-            print(estado_asignacion)
-            print(observacion)
             
             #actualizacion de gestión de entrevista
             entrevista.observacion = observacion
@@ -240,3 +239,27 @@ def gestion_entrevista(request, pk):
     }
 
     return render(request, 'vacante/gestionar_entrevista.html', contexto)
+
+# Ver vacantes por id cliente para ver todas las vacantes que ha creado
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def gestion_vacante_cancelar(request, pk):
+    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
+    url_actual =  f"{request.scheme}://{request.get_host()}"
+    
+    #valida candidatos en estados pendientes por gestionar y los cancela
+    validar_vacante_cancelar(vacante, url_actual)
+    
+    #cambia el estado de la vacante a cancelada
+    vacante.estado_vacante = 4
+    vacante.save()
+    
+    messages.success(request, 'Se ha cancelado la vacante.')
+
+    contexto = {
+        'vacante': vacante,
+        'cliente': cliente,
+    }
+
+    return render(request, 'vacante/gestion_vacante_cancelar.html', contexto)
