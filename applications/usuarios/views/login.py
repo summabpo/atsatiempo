@@ -21,6 +21,9 @@ from ..decorators  import validar_permisos
 
 from applications.common.views.PanelView import info_vacantes_pendientes, info_entrevistas_candidato
 
+# consultas
+from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante_candidato
+
 ## login 
 frases_falla_login = [
     "¡Parece que el nombre de usuario o la contraseña están jugando a las escondidas! Revisa y vuelve a intentarlo.",
