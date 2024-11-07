@@ -263,3 +263,35 @@ def gestion_vacante_cancelar(request, pk):
     }
 
     return render(request, 'vacante/gestion_vacante_cancelar.html', contexto)
+
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def gestion_vacante_editar(request, pk):
+
+    # Se obtiene información de la vacante
+    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+
+    # Define los datos iniciales que quieres pasar al formulario
+    initial_data = {
+        'titulo': vacante.titulo,
+        'numero_posiciones': vacante.numero_posiciones,
+        'profesion_estudio_id_055': vacante.profesion_estudio_id_055,
+        'experiencia_requerida': vacante.experiencia_requerida,
+        'soft_skills_id_053': vacante.soft_skills_id_053,
+        'hard_skills_id_054': vacante.hard_skills_id_054,
+        'funciones_responsabilidades': vacante.funciones_responsabilidades,
+        'ciudad': vacante.ciudad.id if vacante.ciudad else '',
+        'salario': vacante.salario,
+    }
+
+    
+
+    form_vacante = VacanteFormEdit()
+
+    # form_vacante = VacanteFormEdit(initial=initial_data)
+    contexto = {
+        'vacante': vacante,
+        'form_vacante': form_vacante,
+    }
+
+    return render(request, 'vacante/gestionar_editar_vacante.html', contexto)
