@@ -32,12 +32,17 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <div class="row">
-                    <div class="col"></div>    
-                    <div class="col">
+                    <div class="col-2"></div>    
+                    <div class="col-8">
+                        <h3 class="card-title">Detalles de la Vacante</h3>
+                        <hr>
                         {% crispy form_vacante %}
-                        <button type="button" class="btn btn-primary" form="form_vacante_edit">Actualizar</button>
+                        <hr>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary text-center" form="form_vacante_edit">Actualizar</button>
+                        </div>
                     </div>    
-                    <div class="col"></div>
+                    <div class="col-2"></div>
                 </div>
             </div>
         </div>
@@ -47,56 +52,10 @@
 
 {% block extrajs %}
 <script>
-    $(document).ready(function() {
-        var table = $("#vacantes_aplicadas").DataTable({
-            "language": {
-                "lengthMenu": "Show _MENU_",
-            },
-            "dom":
-                "<'row mb-2'" +
-                "<'col-sm-6 d-flex align-items-center justify-conten-start dt-toolbar'l>" +
-                "<'col-sm-6 d-flex align-items-center justify-content-end dt-toolbar'f>" +
-                ">" +
-                "<'table-responsive'tr>" +
-                "<'row'" +
-                "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
-                "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
-                ">"
-        });
-
-        // Checkbox del encabezado para seleccionar/deseleccionar todos
-        $('#selectAll').change(function() {
-            $('.row-checkbox').prop('checked', $(this).is(':checked'));
-            updateEnviarEntrevistaButton();
-        });
-
-        // Checkboxes individuales
-        $('#vacantes_aplicadas').on('change', '.row-checkbox', function() {
-            updateSelectAll();
-            updateEnviarEntrevistaButton();
-        });
-
-        function updateSelectAll() {
-            $('#selectAll').prop('checked', $('.row-checkbox:checked').length === $('.row-checkbox').length);
-        }
-
-        function updateEnviarEntrevistaButton() {
-            $('#enviarEntrevista').prop('disabled', $('.row-checkbox:checked').length === 0);
-        }
-
-        // Inicializar el estado del botón
-        updateEnviarEntrevistaButton();
-
-        // Manejar clic en el botón "Enviar a Entrevista"
-        $('#enviarEntrevista').click(function() {
-            var selectedIds = $('.row-checkbox:checked').map(function() {
-                return $(this).val();
-            }).get();
-            
-            // Aquí puedes enviar los IDs seleccionados al servidor
-            console.log("IDs seleccionados:", selectedIds);
-            // Implementa aquí la lógica para enviar a entrevista
-        });
-    });
+    var input1 = document.querySelector("#soft_skills");
+    new Tagify(input1);
+    
+    var input2 = document.querySelector("#hard_skills");
+    new Tagify(input2);
 </script>
 {% endblock extrajs %}
