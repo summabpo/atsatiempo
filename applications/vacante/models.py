@@ -33,7 +33,7 @@ class Cli054HardSkill(models.Model):
 
 class Cli055ProfesionEstudio(models.Model):
     nombre = models.CharField(max_length=200)
-    estado_id_001 = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE)
+    estado_id_001 = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
 
     class Meta:
         #managed = False

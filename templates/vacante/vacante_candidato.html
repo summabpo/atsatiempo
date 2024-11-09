@@ -7,10 +7,6 @@
 {% block titulo_pagina %} Vacantes Aplicadas {% endblock titulo_pagina %}
 
 {% block navegacion %}
-    <li class="breadcrumb-item">
-        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
-    </li>
-    
     <li class="breadcrumb-item text-white opacity-75">Vacantes Aplicadas</li>
 {% endblock navegacion %}
 
@@ -19,6 +15,10 @@
     color: red !important;
 }
 {% endblock css %}
+
+{% block boton_regreso %}
+    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary my-2" tooltip="New App" data-bs-toggle="modal" data-bs-target="#kt_modal_create_campaign">Volver</a>
+{% endblock boton_regreso %}
 
 {% block content %}
 <div class="card">

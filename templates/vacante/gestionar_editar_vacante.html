@@ -1,0 +1,61 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} Detalle vacante {% endblock title %}
+
+{% block titulo_pagina %} Detalle vacante: {{ vacante.titulo }} {% endblock titulo_pagina %}
+
+{% block navegacion %}
+    <a href="{% url 'vacantes:vacantes_cliente_todas' %}" class="breadcrumb-item text-white opacity-75"> Listado Vacantes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Editar Vacante {{ vacante.titulo }}</li>
+{% endblock navegacion %}
+
+
+			
+    {% block css %}
+    .asteriskField {
+        color: red !important;
+    }
+    {% endblock css %}
+
+{% block content %}
+{% include 'vacante/common/cliente_menu_vacante.html' %}
+<div class="row">
+    
+    <div class="col-lg-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-2"></div>    
+                    <div class="col-8">
+                        <h3 class="card-title">Detalles de la Vacante</h3>
+                        <hr>
+                        {% crispy form_vacante %}
+                        <hr>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary text-center" form="form_vacante_edit">Actualizar</button>
+                        </div>
+                    </div>    
+                    <div class="col-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extrajs %}
+<script>
+    var input1 = document.querySelector("#soft_skills");
+    new Tagify(input1);
+    
+    var input2 = document.querySelector("#hard_skills");
+    new Tagify(input2);
+</script>
+{% endblock extrajs %}

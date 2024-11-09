@@ -190,8 +190,10 @@ def inicio_app(request):
         print('Sesion Candidato')
         candidato_id = request.session.get('candidato_id')
         entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
+        asignacion_vacante = consulta_asignacion_vacante_candidato(candidato_id)
     else:
         entrevistas_pendiente_candidato = None
+        asignacion_vacante = None
 
     print(entrevistas_pendiente_candidato)
 
@@ -201,6 +203,7 @@ def inicio_app(request):
         'permisos' : permisos_usuario,
         'vacantes_pendiente_cliente': vacantes_pendiente_cliente,
         'entrevistas_pendiente_candidato': entrevistas_pendiente_candidato,
+        'asignacion_vacante': asignacion_vacante,
     }
     
     return render(request, 'base/index.html', context)

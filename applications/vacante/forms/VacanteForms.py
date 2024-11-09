@@ -290,7 +290,6 @@ class VacanteFormEdit(forms.Form):
                     'class': 'form-select form-select-solid',  # Clases CSS del campo  
                     'data-control': 'select2',
                     'data-placeholder': 'Seleccion una opción',
-                    'data-dropdown-parent': '#modal_vacante',
                     }
         ), required=True)
 
