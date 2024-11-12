@@ -42,12 +42,9 @@
     {% endblock css %}
 
 {% block content %}
+{% include 'cliente/common/cliente_vacante_elemento_fijo.html' %}
 <div class="row">
-    <div class="col-md-4">
-        {% include 'cliente/common/cliente_vacante_elemento_fijo.html' %}
-    </div>
-    <div class="col-md-8">
-        {% include 'cliente/common/cliente_menu_vacantes.html' %}
+    <div class="col-md-12">
         <div class="card shadow-sm">
             <div class="card-header">
                 <h3 class="card-title">Personal Reclutado</h3>

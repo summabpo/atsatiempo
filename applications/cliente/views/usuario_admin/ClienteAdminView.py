@@ -145,7 +145,7 @@ def cliente_grupo_trabajo(request, pk):
 @validar_permisos(*Permiso.obtener_nombres())
 def cliente_vacante(request, pk):
 
-    vacante = Cli052Vacante.objects.filter(cliente_id_051= pk)
+    vacante = Cli052Vacante.objects.filter(cliente_id_051= pk).order_by('-id')
 
     estado = Cat001Estado.objects.get(id=1)
     form_errors = False
@@ -262,27 +262,6 @@ def cliente_vacante_detalle(request, pk):
     
     return render(request, 'cliente/cliente_vacante_detalle.html', contexto)
 
-# Mostrar detalle de cada vacante
-@login_required
-@validar_permisos(*Permiso.obtener_nombres())
-def cliente_vacante_detalle(request, pk):
-    vacante = get_object_or_404(Cli052Vacante, pk=pk)
-    cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
-    candidato_aplicante = Cli056AplicacionVacante.objects.select_related(
-        'vacante_id_052',
-        'candidato_101'
-    ).filter(
-        vacante_id_052__id=vacante.id
-    ).order_by('fecha_aplicacion')
-
-
-    contexto = {
-        'cliente' : cliente,
-        'vacante' : vacante,
-        'candidato_aplicante' : candidato_aplicante,
-    }        
-    
-    return render(request, 'cliente/cliente_vacante_detalle.html', contexto)
 
 # Mostrar reclutamiento de la vacante_seleccionada vacante
 @login_required

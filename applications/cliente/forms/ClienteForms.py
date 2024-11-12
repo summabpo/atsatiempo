@@ -50,7 +50,7 @@ class ClienteForm(forms.Form):
         self.fields['ciudad_id_004'].widget.attrs.update({
             'data-control': 'select2',
             'data-tags':'true',
-            'data-dropdown-parent': '#kt_modal_edit_client,#kt_modal_add_user',
+            'data-dropdown-parent': '#modal1',
             'class': 'form-select form-select-solid fw-bold',
             
         })

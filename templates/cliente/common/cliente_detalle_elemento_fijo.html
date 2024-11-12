@@ -34,10 +34,18 @@
     <div class="card-body">
         <div class="d-flex flex-center flex-column mb-5">
             <div class="symbol symbol-100px symbol-circle mb-7">
-                <img src="{% static 'media/avatars/300-1.jpg' %}" alt="image" />
+                {% if cliente.logo %}
+                    <img src="{{cliente.logo.url}}" alt="image" />
+                {% else %}
+                    <img src="{% static 'media/avatars/300-1.jpg' %}" alt="image" />
+                {% endif %}
+                    
+                
             </div>
             <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">{{cliente.razon_social}}</a>
             <div class="fs-5 fw-semibold text-muted mb-6">{{cliente.ciudad_id_004.nombre}}</div>
+            <hr>
+            <div class="fs-5 fw-semibold text-muted mb-6">Vacantes</div>
             <div class="d-flex flex-wrap flex-center">
                 <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
                     <div class="fs-4 fw-bold text-gray-700">
@@ -47,7 +55,7 @@
                             <span class="path2"></span>
                         </i>
                     </div>
-                    <div class="fw-semibold text-muted">Vacantes Completadas</div>
+                    <div class="fw-semibold text-muted">Completadas</div>
                 </div>
                 <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
                     <div class="fs-4 fw-bold text-gray-700">
@@ -57,7 +65,7 @@
                             <span class="path2"></span>
                         </i>
                     </div>
-                    <div class="fw-semibold text-muted">Vacantes Canceladas</div>
+                    <div class="fw-semibold text-muted">Canceladas</div>
                 </div>
                 <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
                     <div class="fs-4 fw-bold text-gray-700">
@@ -67,12 +75,12 @@
                             <span class="path2"></span>
                         </i>
                     </div>
-                    <div class="fw-semibold text-muted">Vacantes Pendientes</div>
+                    <div class="fw-semibold text-muted">Pendientes</div>
                 </div>
             </div>
         </div>
         <div class="d-flex flex-stack fs-4 py-3">
-            <div class="fw-bold rotate collapsible" data-bs-toggle="collapse" href="#kt_customer_view_details" role="button" aria-expanded="false" aria-controls="kt_customer_view_details">Detalles 
+            <div class="fw-bold rotate collapsible collapsed" data-bs-toggle="collapse" href="#kt_customer_view_details" role="button" aria-expanded="false" aria-controls="kt_customer_view_details">Detalles 
             <span class="ms-2 rotate-180">
                 <i class="ki-duotone ki-down fs-3"></i>
             </span></div>

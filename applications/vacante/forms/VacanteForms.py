@@ -68,12 +68,14 @@ class VacanteForm(forms.Form):
     #             'data-dropdown-parent': '#modal_vacante',
     #             }
     #     ), queryset=Cat004Ciudad.objects.all(), required=True)
-    salario = forms.IntegerField(label="SALARIO",
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control form-control-solid',  # Clases CSS del campo  
-            }
-        ), required=False)
+    salario = forms.CharField(
+        label="SALARIO",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-solid',
+            'placeholder': 'Ingrese el salario, ej: 3.890.000'
+        }),
+        required=False
+    )
     # estado_vacante 
     # estado_id_004
     # cliente_id_051 
@@ -182,16 +184,22 @@ class VacanteForm(forms.Form):
             self.add_error('ciudad', 'La ciudad es obligatoria.')
 
         # Si salario es un valor vacío (None o ''), lo asignamos como None
-        salario = cleaned_data.get('salario')
-        if salario in [None, '']:
-            self.cleaned_data['salario'] = None
-        else:
+        # Validate salario
+        salario = self.cleaned_data.get('salario')
+    
+        if salario:
+            # Eliminar puntos y espacios si están presentes
+            salario = salario.replace('.', '').replace(' ', '')
             
-            if salario <= 0:
-                self.add_error('salario', 'El salario debe ser un número positivo.')
-            else:
-                salario = float(str(salario).replace('.', '').replace(',', ''))
-                self.cleaned_data['salario'] = salario  # Asignamos el valor limpio
+            # Verificar si el salario es un número válido
+            if not salario.isdigit():
+                raise forms.ValidationError("Ingrese un número válido para el salario.")
+
+            # Convertir el salario a un entero
+            cleaned_data['salario'] =  int(salario)
+        
+        else:
+            cleaned_data['salario'] = None
             
                 
 
@@ -261,12 +269,14 @@ class VacanteFormEdit(forms.Form):
     #             'data-dropdown-parent': '#modal_vacante',
     #             }
     #     ), queryset=Cat004Ciudad.objects.all(), required=True)
-    salario = forms.IntegerField(label="SALARIO",
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control form-control-solid',  # Clases CSS del campo  
-            }
-        ), required=False)
+    salario = forms.CharField(
+        label="SALARIO",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-solid',
+            'placeholder': 'Ingrese el salario, ej: 3.890.000'
+        }),
+        required=False
+    )
     # estado_vacante 
     # estado_id_004
     # cliente_id_051 
@@ -374,13 +384,21 @@ class VacanteFormEdit(forms.Form):
             self.add_error('ciudad', 'La ciudad es obligatoria.')
 
         # Validate salario
-        salario = cleaned_data.get('salario')
-        # Si salario es un valor vacío (None o ''), lo asignamos como None
-        if salario in [None, '']:
+        salario = self.cleaned_data.get('salario')
+    
+        if salario:
+            # Eliminar puntos y espacios si están presentes
+            salario = salario.replace('.', '').replace(' ', '')
+            
+            # Verificar si el salario es un número válido
+            if not salario.isdigit():
+                raise forms.ValidationError("Ingrese un número válido para el salario.")
+
+            # Convertir el salario a un entero
+            cleaned_data['salario'] =  int(salario)
+        
+        else:
             cleaned_data['salario'] = None
-        # Si tiene un valor, validamos que sea un número positivo
-        elif not isinstance(salario, (int, float)) or salario <= 0:
-            self.add_error('salario', 'El salario debe ser un número positivo.')
         
 
         return cleaned_data
