@@ -39,7 +39,13 @@
             <div class="card-header">
                 <h3 class="card-title">Asignación de Entrevista</h3>
                 <div class="card-toolbar">
-                    <a href="{% url 'vacantes:gestion_vacante_reclutados' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                    {% if request.session.cliente_id %}
+                        <!-- Mostrar contenido si cliente_id está activo -->
+                        <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                    {% else %}
+                        <!-- Mostrar contenido si cliente_id no está activo -->
+                        <a href="{% url 'clientes:cliente_vacante_reclutado' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                    {% endif %}
                 </div>
             </div>
             <div class="card-body">
@@ -52,7 +58,14 @@
             <div class="card-header">
                 <h3 class="card-title">Datos Entrevista</h3>
                 <div class="card-toolbar">
-                    <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                    {% if request.session.cliente_id %}
+                        <!-- Mostrar contenido si cliente_id está activo -->
+                        <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                    {% else %}
+                        <!-- Mostrar contenido si cliente_id no está activo -->
+                        <a href="{% url 'clientes:cliente_vacante_reclutado' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                    {% endif %}
+                    
                 </div>
             </div>
             <div class="card-body">

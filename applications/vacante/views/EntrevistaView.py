@@ -128,19 +128,25 @@ def crear_entrevista(request, asignacion_id):
     url_actual = f"{request.scheme}://{request.get_host()}"
     validar_registro = False
     usuario_id = request.session.get('_auth_user_id')
-    cliente_id = request.session.get('cliente_id')
-    grupo_id = request.session.get('grupo_id')
-    
     aplicacion_entrevista = get_object_or_404(Cli056AplicacionVacante, pk=asignacion_id)
+
+    # Valida si esta valido la variable de sesion cliente
+    cliente_id = request.session.get('cliente_id')
+    if cliente_id:
+        cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+    else:
+        cliente = get_object_or_404(Cli051Cliente, id=aplicacion_entrevista.vacante_id_052.cliente_id_051.id)
+
+    grupo_id = request.session.get('grupo_id')
+
     vacante = get_object_or_404(Cli052Vacante, id=aplicacion_entrevista.vacante_id_052.id)
-    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+    
     usuario = get_object_or_404(UsuarioBase, id=usuario_id)
     
     asignacion_vacante = Cli056AplicacionVacante.objects.get(id=asignacion_id)
     info_candidato = Can101Candidato.objects.get(id= asignacion_vacante.candidato_101.id)
 
     entrevista_existente = Cli057AsignacionEntrevista.objects.filter(asignacion_vacante=asignacion_vacante)
-
     # if entrevista_existente:
     #     validar_registro = True
     #     entrevista = Cli057AsignacionEntrevista.objects.get(asignacion_vacante=asignacion_vacante)
@@ -149,7 +155,8 @@ def crear_entrevista(request, asignacion_id):
     #     entrevista = None    
 
     if request.method == 'POST':
-        form = EntrevistaCrearForm(request.POST, grupo_id=4, cliente_id=cliente_id)
+
+        form = EntrevistaCrearForm(request.POST, grupo_id=4, cliente_id=cliente.id)
         if form.is_valid():
             
             fecha_entrevista = form.cleaned_data['fecha_entrevista']
@@ -200,13 +207,15 @@ def crear_entrevista(request, asignacion_id):
 
             frase_aleatoria = 'Se ha asignado entrevista correctamente.'
             messages.success(request, frase_aleatoria)
-            print('Llegamos bien!')
-            return redirect('vacantes:gestion_vacante_reclutados', pk=vacante.id)
             
+            if cliente_id:
+                return redirect('vacantes:gestion_vacante_reclutados', pk=vacante.id)
+            else:
+                return redirect('clientes:cliente_vacante_reclutado', pk=vacante.id)
         else:
             messages.error(request, 'Error al crear la asignación')
     else:
-        form = EntrevistaCrearForm(grupo_id=4, cliente_id=cliente_id)
+        form = EntrevistaCrearForm(grupo_id=4, cliente_id=cliente.id)
 
     contexto = {
         'form' : form,

@@ -33,7 +33,7 @@ urlpatterns = [
     path( url_principal+'gestion/reclutados/<int:pk>/', VacanteClienteView.gestion_vacante_reclutados, name='gestion_vacante_reclutados'),
     path( url_principal+'gestion/entrevistas/<int:pk>/', VacanteClienteView.gestion_vacante_entrevistas, name='gestion_vacante_entrevistas'),
     path( url_principal+'gestion/cancelar/<int:pk>/', VacanteClienteView.gestion_vacante_cancelar, name='gestion_vacante_cancelar'),
-    path( url_principal+'gestion/entrevistas/calificar<int:pk>/', VacanteClienteView.gestion_entrevista, name='gestion_entrevista'),
+    path( url_principal+'gestion/entrevistas/calificar/<int:pk>/', VacanteClienteView.gestion_entrevista, name='gestion_entrevista'),
     path( url_principal+'gestion/editar/<int:pk>/', VacanteClienteView.gestion_vacante_editar, name='gestion_vacante_editar'),
     
 ]
