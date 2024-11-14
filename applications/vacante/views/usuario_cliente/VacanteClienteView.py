@@ -179,6 +179,13 @@ def gestion_vacante_entrevistas(request, pk):
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def gestion_entrevista(request, pk):
+
+    cliente_id = request.session.get('cliente_id')
+    grupo_id =  request.session.get('grupo_id')
+
+    print(cliente_id)
+    print(grupo_id)
+
     entrevista = get_object_or_404(Cli057AsignacionEntrevista, pk=pk)
     
     reclutamiento = entrevista.asignacion_vacante
@@ -196,8 +203,6 @@ def gestion_entrevista(request, pk):
             estado_vacante = None
             observacion_historial = None
 
-            print(estado_asignacion)
-            print(observacion)
             #validación estados.
             if estado_asignacion == 2:
                 estado_vacante = 3 # Pasa entrevista y queda en estado entrevista aprobada
@@ -225,7 +230,8 @@ def gestion_entrevista(request, pk):
 
             messages.success(request, 'Se ha actualizado la entrevista.')
 
-            cliente_id = request.session.get('cliente_id')
+            
+            
             if cliente_id:
                 return redirect('vacantes:gestion_vacante_entrevistas', pk=vacante.id)
             else:

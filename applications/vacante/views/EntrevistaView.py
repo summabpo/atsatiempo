@@ -18,7 +18,8 @@ from applications.candidato.models import Can101Candidato
 
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
-# Create your views here.
+#consultas
+from applications.vacante.views.consultas.AsignacionEntrevistaConsultaView import consulta_asignacion_entrevista_entrevistador
 
 
 #CLIENTE
@@ -94,6 +95,8 @@ def ver_entrevista_candidato(request):
 def ver_entrevista_entrevistador(request):    
     usuario_id = request.session.get('_auth_user_id')
 
+    usuario_id = int(usuario_id)
+
     asignaciones = Cli057AsignacionEntrevista.objects.select_related(
         'asignacion_vacante__vacante_id_052__cliente_id_051', 
         'asignacion_vacante__vacante_id_052', 
@@ -115,8 +118,11 @@ def ver_entrevista_entrevistador(request):
         segundo_apellido=F('asignacion_vacante__candidato_101__segundo_apellido'),
     )
 
+    asignacion_entrevista = consulta_asignacion_entrevista_entrevistador(usuario_id)
+    print(asignacion_entrevista)
     contexto = {
-        'asignaciones': asignaciones
+        'asignaciones': asignaciones,
+        'asignacion_entrevista': asignacion_entrevista,
     }
 
     return render(request, 'vacante/ver_entrevista_todos.html', contexto)

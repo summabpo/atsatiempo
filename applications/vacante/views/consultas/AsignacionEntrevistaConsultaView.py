@@ -87,3 +87,65 @@ def consulta_asignacion_entrevista_cliente(vacante_id):
 
     return asignacion_entrevista
 
+# Entrevistas asignadas por usuario
+def consulta_asignacion_entrevista_entrevistador(usuario_id):
+
+    asignacion_entrevista = Cli057AsignacionEntrevista.objects.select_related(
+        'asignacion_vacante',
+        'asignacion_vacante__candidato_101',
+        'asignacion_vacante__vacante_id_052',
+        'asignacion_vacante__vacante_id_052__cliente_id_051',
+    ).values(
+        'id',
+        'fecha_asignacion',
+        'fecha_entrevista',
+        'hora_entrevista',
+        'lugar_enlace',
+        fecha_asignacion_vacante = F('asignacion_vacante__fecha_aplicacion'),
+        vacante_titulo = F('asignacion_vacante__vacante_id_052__titulo'),
+        vacante_fecha_creacion = F('asignacion_vacante__vacante_id_052__fecha_creacion'),
+    ).annotate(
+        estado_asignacion_entrevista = Case(
+            When(estado_asignacion=1, then=Value('Pendiente')),
+            When(estado_asignacion=2, then=Value('Apto')),
+            When(estado_asignacion=3, then=Value('No Apto')),
+            When(estado_asignacion=4, then=Value('Seleccionado')),
+            When(estado_asignacion=5, then=Value('Cancelado')),
+        ),
+        tipo_entrevista = Case(
+            When(tipo_entrevista='V', then=Value('Virtual')),
+            When(tipo_entrevista='P', then=Value('Presencial')),
+        ),
+        candidato_nombre = Concat(
+            F('asignacion_vacante__candidato_101__primer_nombre'),
+            Value(' '),
+            F('asignacion_vacante__candidato_101__segundo_nombre'),
+            Value(' '),
+            F('asignacion_vacante__candidato_101__primer_apellido'),
+            Value(' '),
+            F('asignacion_vacante__candidato_101__segundo_apellido'),
+        ),
+        usuario_asigno_nombre = Concat(
+            F('usuario_asigno__primer_nombre'),
+            Value(' '),
+            F('usuario_asigno__segundo_nombre'),
+            Value(' '),
+            F('usuario_asigno__primer_apellido'),
+            Value(' '),
+            F('usuario_asigno__segundo_apellido'),
+        ),
+        usuario_asignado_nombre = Concat(
+            F('usuario_asignado__primer_nombre'),
+            Value(' '),
+            F('usuario_asignado__segundo_nombre'),
+            Value(' '),
+            F('usuario_asignado__primer_apellido'),
+            Value(' '),
+            F('usuario_asignado__segundo_apellido'),
+        ),
+    ).order_by(
+        '-fecha_entrevista'
+    ).filter(usuario_asignado=usuario_id, estado=1)
+
+    return asignacion_entrevista
+

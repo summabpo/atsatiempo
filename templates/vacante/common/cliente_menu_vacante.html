@@ -101,9 +101,6 @@
                     <li class="nav-item mt-2">
                         <a class="nav-link text-active-primary ms-0 me-10 py-5" href="#">PRUEBAS</a>
                     </li>
-                    <li class="nav-item mt-2">
-                        <a class="nav-link text-active-primary ms-0 me-10 py-5" href="#">GRUPO TRABAJO</a>
-                    </li>
                     <li class="nav-item mt-2"> 
                         <a class="nav-link text-active-primary ms-0 me-10 py-5 {% if request.resolver_match.url_name == 'gestion_vacante_editar' %}active{% endif %}" href="{% url 'vacantes:gestion_vacante_editar' vacante.id %}">EDITAR VACANTE</a>
                     </li>

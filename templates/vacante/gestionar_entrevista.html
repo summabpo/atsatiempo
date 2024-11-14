@@ -96,7 +96,15 @@
             <div class="card-header">
                 <h3 class="card-title">Gestionar Entrevista ID: {{entrevista.id}}</h3>
                 <div class="card-toolbar">
-                    <a href="{% url 'vacantes:gestion_vacante_entrevistas' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                    {% if request.session.cliente_id %}
+                        {% if request.session.grupo_id == 4 %}
+                            <a href="{% url 'vacantes:ver_entrevista_entrevistador' %}" class="btn btn-light-danger">VOLVER</a>
+                        {% else %}
+                            <a href="{% url 'vacantes:gestion_vacante_entrevistas' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                        {% endif %}
+                    {% else %}
+                    <a href="{% url 'clientes:cliente_vacante_entrevista' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                    {% endif %}
                 </div>
             </div>
             <div class="card-body">
