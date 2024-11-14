@@ -28,33 +28,23 @@
         </div>
     </div>
     <div class="card-body py-4">
-        <table id="kt_datatable_cliente" class="table align-middle table-row-dashed fs-5 gy-5">
+        <table id="kt_datatable_cliente" class="table align-middle table-row-dashed fs-6 gy-5">
             <thead>
-                <tr class="text-start  fw-bold fs-7 text-uppercase gs-0">
-                    <th class="min-w-125px">Detalle</th>
-                    <th style="text-align: left;" class="min-w-125px">Cliente</th>
-                    <th style="text-align: left;" class="min-w-125px">Nit</th>
-                    <th style="text-align: left;" class="min-w-125px">Email</th>
-                    <th style="text-align: left;" class="min-w-125px">Teléfono</th>
-                    <th style="text-align: left;" class="min-w-125px">Ciudad</th>
-                    <th style="text-align: left;" class="text-end min-w-100px">Acciones</th>
+                <tr class="fw-bold fs-6 text-gray-800 px-7">
+                    <th style="text-align: center;" class="min-w-125px">ID</th>
+                    <th style="text-align: center;" class="min-w-125px">CLIENTE</th>
+                    <th style="text-align: center;" class="min-w-125px">NIT</th>
+                    <th style="text-align: center;" class="min-w-125px">EMAIL</th>
+                    <th style="text-align: center;" class="min-w-125px">TELÉFONO</th>
+                    <th style="text-align: center;" class="min-w-125px">CIUDAD</th>
+                    <th style="text-align: center;" class="min-w-125px">ACCIONES</th>
                 </tr>
             </thead>
             <tbody>
                 {% for e in clientes %}
                 <tr>
-                    <td class="align-items-left">
-
-                        <!-- Detalle -->
-                        <a class="btn btn-light-primary" href="{% url 'clientes:cliente_detalle' e.id  %}"  >
-                            <i class="ki-duotone ki-element-8                        ">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
-                        </a>
-
-                    </td>
-                    <td class="d-flex align-items-left">
+                    <td style="text-align: center;">{{ e.id }}</td>
+                    <td class="d-flex align-items-center">
                         
                         <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                             <div class="symbol-label">
@@ -72,19 +62,26 @@
                         </div>
                     
                     </td>
-                    <td style="text-align: left;">{{ e.nit }}</td>
-                    <td style="text-align: left;">{{ e.email }}</td>
-                    <td style="text-align: left;">{{ e.telefono }}</td>
-                    <td style="text-align: left;">{{ e.ciudad_id_004.nombre }}</td>
-                    <td style="text-align: left;" class="text-end min-w-100px">
+                    <td style="text-align: center;">{{ e.nit }}</td>
+                    <td style="text-align: center;">{{ e.email }}</td>
+                    <td style="text-align: center;">{{ e.telefono }}</td>
+                    <td style="text-align: center;">{{ e.ciudad_id_004.nombre }}</td>
+                    <td style="text-align: center;" class="min-w-100px">
                         <!-- Botón 1 -->
-                        <button type="button" class="btn btn-icon btn-primary text-center" data-bs-toggle="modal" data-bs-target="#modal2" data-cliente_id="{{ e.id }}">
+                        <button type="button" class="btn btn-light-primary" data-bs-toggle="modal" data-bs-target="#modal2" data-cliente_id="{{ e.id }}">
                             <i class="fa-solid fa-file-pen fs-4"></i>
                         </button>
 
                         <!-- Botón 2 -->
-                        <a class="btn btn-icon btn-primary" href="{% url 'vacantes:vacantes_cliente' e.id  %}"  >
+                        <a class="btn btn-light-primary" href="{% url 'vacantes:vacantes_cliente' e.id  %}"  >
                             <i class="fa-solid fa-user fs-4"></i>
+                        </a>
+                        <!-- Detalle -->
+                        <a class="btn btn-light-primary" href="{% url 'clientes:cliente_detalle' e.id  %}" title="Gestión Cliente" >
+                            <i class="ki-duotone ki-element-8">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
                         </a>
                     </td>
                 </tr>
@@ -123,11 +120,9 @@
             <div class="modal-header">
                 <h3 class="modal-title"> Editar Cliente </h3>
     
-                <!--begin::Close-->
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
                     <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
                 </div>
-                <!--end::Close-->
             </div>
     
             <div class="modal-body">

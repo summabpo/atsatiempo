@@ -224,7 +224,12 @@ def gestion_entrevista(request, pk):
             entrevista.save()
 
             messages.success(request, 'Se ha actualizado la entrevista.')
-            return redirect('vacantes:gestion_vacante_entrevistas', pk=vacante.id)
+
+            cliente_id = request.session.get('cliente_id')
+            if cliente_id:
+                return redirect('vacantes:gestion_vacante_entrevistas', pk=vacante.id)
+            else:
+                return redirect('clientes:cliente_vacante_entrevista', pk=vacante.id)
         else:
             messages.error(request, form.errors)
     else:
@@ -354,6 +359,13 @@ def gestion_vacante_editar(request, pk):
 
             messages.success(request, 'El registro de la vacante ha sido actualizado con éxito.')
             return redirect('vacantes:gestion_vacante_editar', pk=vacante.id)
+        
+            # Valida si esta valido la variable de sesion cliente
+            # cliente_id = request.session.get('cliente_id')
+            # if cliente_id:
+            #     return redirect('vacantes:gestion_vacante_editar', pk=vacante.id)
+            # else:
+            #     return redirect('clientes:gestion_vacante_editar', pk=vacante.id)
         else:
             messages.error(request, form_vacante.errors)    
     else:

@@ -42,12 +42,9 @@
     {% endblock css %}
 
 {% block content %}
+{% include 'cliente/common/cliente_vacante_elemento_fijo.html' %}
 <div class="row">
-    <div class="col-md-3">
-        {% include 'cliente/common/cliente_vacante_elemento_fijo.html' %}
-    </div>
-    <div class="col-md-9">
-        {% include 'cliente/common/cliente_menu_vacantes.html' %}
+    <div class="col-md-12">
         <div class="card shadow-sm">
             <div class="card-header">
                 <h3 class="card-title">Listado Entrevistas</h3>
@@ -58,51 +55,58 @@
                 </div>
             </div>
             <div class="card-body">
-                <table id="kt_listado_entrevistas" class="table table-striped table-row-bordered gy-5 gs-7 border rounded">
+                <table id="kt_listado_entrevistados" class="table align-middle table-row-dashed fs-6 gy-5">
                     <thead>
                         <tr class="fw-bold fs-6 text-gray-800 px-7">
-                            <th style="text-align: center;">ID</th>
-                            <th style="text-align: center;">FECHA ASIGNACION</th>
-                            <th style="text-align: center;">CLIENTE</th>
-                            <th style="text-align: center;">VACANTE</th>
-                            <th style="text-align: center;">ASIGNO</th>
-                            <th style="text-align: center;">ASIGNADO</th>
-                            <th style="text-align: center;">FECHA ENTREVISTA</th>
-                            <th style="text-align: center;">HORA ENTREVISTA</th>
-                            <th style="text-align: center;">CANDIDATO</th>
-                            <th style="text-align: center;">VER</th>
+                            <th style="text-align: center">ID</th>
+                            <th style="text-align: center">CANDIDATO</th>
+                            <th style="text-align: center">FECHA ENTREVISTA</th>
+                            <th style="text-align: center">HORA ENTREVISTA</th>
+                            <th style="text-align: center">TIPO ENTREVISTA</th>
+                            <th style="text-align: center">LUGAR ENLACE</th>
+                            <th style="text-align: center">ESTADO ENTREVISTA</th>
+                            <th style="text-align: center">FECHA ASIGNACION</th>
+                            
+                            <th style="text-align: center">ASIGNADO A</th>
+                            <th style="text-align: center">Gestionar</th>
                         </tr>
                     </thead>
                     <tbody>
                         
-                        {% for e in entrevista %}
+                        {% for e in asignacion_entrevista %}
                         <tr>
-                            <td style="text-align: center;">{{e.id}}</td>
-                            <td style="text-align: center;">{{e.fecha_asignacion| date:"j/n/Y"}}</td>
-                            <td style="text-align: center;">{{e.razon_social}}</td>
-                            <td style="text-align: center;">{{e.titulo_vacante}}</td>
-                            <td style="text-align: center;">{{e.nombre_asigno}}</td>
-                            <td style="text-align: center;">{{e.nombre_asignado}}</td>
-                            <td style="text-align: center;">{{e.fecha_entrevista| date:"j/n/Y"}}</td>
-                            <td style="text-align: center;">{{e.hora_entrevista}}</td>
-                            <td style="text-align: center;">{{e.nombre_candidato}}</td>
-                            
-                            <td style="text-align: center;">
-                                <a href="#" class="btn btn-light-primary">
-                                    <i class="ki-duotone ki-profile-user fs-1">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i>
-                                </a>
+                            <td style="text-align: center">{{e.id}}</td>
+                            <td style="text-align: center"><b>{{e.candidato_nombre}}</b></td>
+                            <td style="text-align: center"><b>{{e.fecha_entrevista | date:"Y/m/d"}}</b></td>
+                            <td style="text-align: center">{{e.hora_entrevista}}</td>
+                            <td style="text-align: center">{{e.tipo_entrevista}}</td>
+                            <td style="text-align: center">{{e.lugar_enlace}}</td>
+                            <td style="text-align: center">
+                                {% if e.estado_asignacion_entrevista == 'Pendiente' %}
+                                    <span class="badge badge-light-primary">Pendiente</span>
+                                {% elif e.estado_asignacion_entrevista == 'Apto' %}
+                                    <span class="badge badge-light-warning">Apto</span>
+                                {% elif e.estado_asignacion_entrevista == 'No Apto' %}
+                                    <span class="badge badge-light-danger">No Apto</span>
+                                {% elif e.estado_asignacion_entrevista == 'Seleccionado' %}
+                                    <span class="badge badge-light-success">Seleccionado</span>
+                                {% elif e.estado_asignacion_entrevista == 'Cancelado' %}
+                                <span class="badge badge-light-dark">Cancelado</span>
+                                {% endif %}
                             </td>
-                        </tr> 
+                            <td style="text-align: center">{{e.fecha_asignacion | date:"Y/m/d"}}</td>
+                            <td style="text-align: center">{{e.usuario_asignado}}</td>
+                            <td style="text-align: center">
+                                {% if e.estado_asignacion_entrevista == 'Pendiente' %}
+                                    <a href="{% url 'vacantes:gestion_entrevista' e.id %}" class="btn btn-light-primary btn-sm">Gestionar</a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-            </div>
-            <div class="card-footer">
-                Footer
             </div>
         </div> 
     </div>
@@ -111,7 +115,7 @@
 
 {% block extrajs %}
 <script>
-    $("#kt_listado_entrevistas").DataTable({
+    $("#kt_listado_entrevistados").DataTable({
         "language": {
             "lengthMenu": "Mostrar _MENU_ ",
             "zeroRecords": "No se encontraron resultados",

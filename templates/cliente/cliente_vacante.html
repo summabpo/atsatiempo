@@ -82,6 +82,7 @@
                     <thead>
                         <tr class="fw-bold fs-6 text-gray-800 px-7"> 
                             <th style="text-align: center;">GESTIONAR</th>
+                            <th style="text-align: left;">ID</th>
                             <th style="text-align: left;">TITULO VACANTE</th>
                             <th style="text-align: left;">FECHA VACANTE</th>
                             <th style="text-align: left;">CIUDAD</th>
@@ -102,6 +103,7 @@
                                     </i>
                                 </a>
                             </td>
+                            <td style="text-align: left;">{{e.id}}</td>
                             <td style="text-align: left;">{{e.titulo}}</td>
                             <td style="text-align: left;">{{e.fecha_creacion | date:"Y/m/d" }}</td>
                             <td style="text-align: left;">{{e.ciudad.nombre}}</td>

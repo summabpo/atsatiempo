@@ -2,27 +2,48 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block title %} Detalle vacante {% endblock title %}
+{% block title %} ATS | Cliente {{cliente.razon_social}}  {% endblock title %}
 
-{% block titulo_pagina %} Detalle vacante: {{ vacante.titulo }} {% endblock titulo_pagina %}
+{% block titulo_pagina %} Vacante: {{vacante.titulo}} | Entrevistas {% endblock titulo_pagina %}
 
 {% block navegacion %}
-    <a href="{% url 'vacantes:vacantes_cliente_todas' %}" class="breadcrumb-item text-white opacity-75"> Listado Vacantes</a>
+    <a href="{% url 'clientes:cliente_listar' %}" class="breadcrumb-item text-white text-hover-primary"> Listado Clientes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <a href="{% url 'clientes:cliente_detalle' cliente.id %}" class="breadcrumb-item text-white text-hover-primary"> Cliente: {{cliente.razon_social}}</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <a href="{% url 'clientes:cliente_vacante' cliente.id %}" class="breadcrumb-item text-white text-hover-primary"> Listado Vacantes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <a href="{% url 'clientes:cliente_vacante_detalle' vacante.id %}" class="breadcrumb-item text-white text-hover-primary"> Vacante: {{vacante.titulo}}</a>
     
     <li class="breadcrumb-item">
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
     </li>
     
-    <li class="breadcrumb-item text-white opacity-75">Editar Vacante {{ vacante.titulo }}</li>
+    <li class="breadcrumb-item text-white opacity-75">Entrevistas</li>
 {% endblock navegacion %}
-    {% block css %}
+
+
+{% block css %}
     .asteriskField {
         color: red !important;
     }
     {% endblock css %}
 
 {% block content %}
-{% include 'vacante/common/cliente_menu_vacante.html' %}
+
+{% include 'cliente/common/cliente_vacante_elemento_fijo.html' %}
 <div class="row">
     
     <div class="col-lg-12">
