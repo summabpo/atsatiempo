@@ -7,6 +7,7 @@
 		<link rel="shortcut icon" href=" {% static 'media/logos/favicon.ico' %}" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
 		<link href="{% static 'plugins/custom/fullcalendar/fullcalendar.bundle.css' %}" rel="stylesheet" type="text/css" />
+		
 		<link href="{% static 'plugins/custom/datatables/datatables.bundle.css' %}" rel="stylesheet" type="text/css" />
 		<link href="{% static 'plugins/global/plugins.bundle.css' %}" rel="stylesheet" type="text/css" />
 		<link href="{% static 'css/style.bundle.css' %}" rel="stylesheet" type="text/css" />
@@ -112,18 +113,19 @@
 		
         <script src="{% static 'plugins/custom/datatables/datatables.bundle.js' %}"></script>
 		
-		<script src="{% static 'js/custom/apps/user-management/users/list/table.js' %}"></script>
+		{% comment %} <script src="{% static 'js/custom/apps/user-management/users/list/table.js' %}"></script>
 		<script src="{% static 'js/custom/apps/user-management/users/list/export-users.js' %}"></script>
-		<script src="{% static 'js/custom/apps/user-management/users/list/add.js' %}"></script>
+		<script src="{% static 'js/custom/apps/user-management/users/list/add.js' %}"></script> {% endcomment %}
 
-		<script src="{% static 'js/custom/apps/ecommerce/settings/settings.js' %}"></script>
+		{% comment %} <script src="{% static 'js/custom/apps/ecommerce/settings/settings.js' %}"></script> {% endcomment %}
         <script src="{% static 'js/widgets.bundle.js' %}"></script>
-		<script src="{% static 'js/custom/widgets.js' %}"></script>
+		{% comment %} <script src="{% static 'js/custom/widgets.js' %}"></script>
 		<script src="{% static 'js/custom/apps/chat/chat.js' %}"></script>
 		<script src="{% static 'js/custom/utilities/modals/upgrade-plan.js' %}"></script>
 		<script src="{% static 'js/custom/utilities/modals/create-campaign.js' %}"></script>
 		<script src="{% static 'js/custom/utilities/modals/new-target.js' %}"></script>
-		<script src="{% static 'js/custom/utilities/modals/users-search.js' %}"></script>
+		<script src="{% static 'js/custom/utilities/modals/users-search.js' %}"></script> {% endcomment %}
+		
 
 		{% if messages %}
         {% for message in messages %}

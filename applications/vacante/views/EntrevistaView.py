@@ -4,6 +4,7 @@ from applications.usuarios.decorators  import validar_permisos
 from django.contrib import messages
 from applications.common.views.EnvioCorreo import enviar_correo, generate_token
 from django.db.models import F
+from django.http import JsonResponse
 
 #formularios
 from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm
@@ -18,7 +19,8 @@ from applications.candidato.models import Can101Candidato
 
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
-# Create your views here.
+#consultas
+from applications.vacante.views.consultas.AsignacionEntrevistaConsultaView import consulta_asignacion_entrevista_entrevistador, consulta_asignacion_entrevista_candidato
 
 
 #CLIENTE
@@ -58,7 +60,7 @@ def ver_entrevista_todos(request):
 # Ver entrevistas generadas por candidato
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
-def ver_entrevista_candidato(request):    
+def ver_entrevista_candidato(request): 
     candidato_id = request.session.get('candidato_id')
 
     asignaciones = Cli057AsignacionEntrevista.objects.select_related(
@@ -82,17 +84,21 @@ def ver_entrevista_candidato(request):
         segundo_apellido=F('asignacion_vacante__candidato_101__segundo_apellido'),
     )
 
+    asignacion_entrevista = consulta_asignacion_entrevista_candidato(candidato_id)
     contexto = {
-        'asignaciones': asignaciones
+        'asignaciones': asignaciones,
+        'asignacion_entrevista': asignacion_entrevista,
     }
 
-    return render(request, 'vacante/ver_entrevista_todos.html', contexto)
+    return render(request, 'vacante/ver_entrevista_candidato.html', contexto)
 
 # Ver entrevistas generadas por entrevistador
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def ver_entrevista_entrevistador(request):    
     usuario_id = request.session.get('_auth_user_id')
+
+    usuario_id = int(usuario_id)
 
     asignaciones = Cli057AsignacionEntrevista.objects.select_related(
         'asignacion_vacante__vacante_id_052__cliente_id_051', 
@@ -115,8 +121,11 @@ def ver_entrevista_entrevistador(request):
         segundo_apellido=F('asignacion_vacante__candidato_101__segundo_apellido'),
     )
 
+    asignacion_entrevista = consulta_asignacion_entrevista_entrevistador(usuario_id)
+    print(asignacion_entrevista)
     contexto = {
-        'asignaciones': asignaciones
+        'asignaciones': asignaciones,
+        'asignacion_entrevista': asignacion_entrevista,
     }
 
     return render(request, 'vacante/ver_entrevista_todos.html', contexto)
@@ -226,3 +235,18 @@ def crear_entrevista(request, asignacion_id):
     }
 
     return render(request, 'vacante/crear_entrevista.html', contexto)
+
+def obtener_entrevistas(request):
+    entrevistas = Cli057AsignacionEntrevista.objects.filter(estado=1)
+
+    eventos_json = [
+        {
+            "title": f"ID {evento.id} Entrevista: {evento.asignacion_vacante.vacante_id_052.titulo}",
+            "start": evento.fecha_entrevista.isoformat(),
+            "end": evento.fecha_entrevista.isoformat(),
+            "description": f"Entrevista tipo: {evento.obtener_tipo_entrevista()}, lugar o enlace: {evento.lugar_enlace}",
+            "color": evento.obtener_color()  # Incluir el color
+        }
+        for evento in entrevistas
+    ]
+    return JsonResponse(eventos_json, safe=False)

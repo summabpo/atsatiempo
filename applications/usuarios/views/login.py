@@ -228,7 +228,7 @@ def login_view(request):
                         request.session['email'] = usuario.username
                         
                         # Valida el usuario es de grupo cliente para mostrar el id cliente. 
-                        if usuario.group.id == 3:
+                        if usuario.group.id == 4:
                             request.session['cliente_id'] = usuario.cliente_id_051.id
 
                         if usuario.group.id == 3:

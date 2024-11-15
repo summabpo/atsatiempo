@@ -1,0 +1,48 @@
+{% load static %}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Entrevistas </h3>
+        <div class="card-toolbar">
+            <button type="button" class="btn btn-sm btn-light">
+                Pendiente
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div id="calendar"></div>
+    </div>
+    <div class="card-footer">
+        Actualización a la Fecha
+    </div>
+</div>
+
+<script src="{% static 'plugins/custom/fullcalendar/fullcalendar.bundle.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+
+        var todayDate = moment().startOf('day');
+        var YM = todayDate.format('YYYY-MM');
+        var YESTERDAY = todayDate.clone().subtract(1, 'day').format('YYYY-MM-DD');
+        var TODAY = todayDate.format('YYYY-MM-DD');
+        var TOMORROW = todayDate.clone().add(1, 'day').format('YYYY-MM-DD');
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+            },
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            events: 'vacante/api/mostrar_entrevistas_calendario/',
+            eventClick: function(info) {
+                alert(info.event.title + '\n' + info.event.extendedProps.description);
+            },
+            EventColor: "#28a745"
+        });
+        calendar.render();
+    });
+    
+</script>
