@@ -168,7 +168,20 @@ class Cli057AsignacionEntrevista(models.Model):
 
     def __str__(self):
         return str(self.id)
+    
+    def obtener_tipo_entrevista(self):
+        return "Presencial" if self.tipo_entrevista == 'P' else "Virtual"
 
+    def obtener_color(self):
+        # Asignar un color según el estado
+        if self.estado_asignacion == 1:
+            return '#f39c12'  # Color naranja
+        elif self.estado_asignacion == 2 or self.estado == 3 or self.estado == 4:
+            return '#28a745'  # Color verde
+        elif self.estado_asignacion == 'cancelado':
+            return '#dc3545'  # Color rojo
+        return '#007bff'  # Color por defecto (azul)
+    
     class Meta:
         db_table = 'cli_057_asignacion_entrevista'
         verbose_name = 'ASIGNACIÓN DE ENTREVISTA'

@@ -233,7 +233,10 @@ def gestion_entrevista(request, pk):
             
             
             if cliente_id:
-                return redirect('vacantes:gestion_vacante_entrevistas', pk=vacante.id)
+                if grupo_id == 4:
+                    return redirect('vacantes:ver_entrevista_entrevistador', pk=vacante.id)
+                else:
+                    return redirect('vacantes:gestion_vacante_entrevistas', pk=vacante.id)
             else:
                 return redirect('clientes:cliente_vacante_entrevista', pk=vacante.id)
         else:

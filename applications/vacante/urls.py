@@ -36,4 +36,7 @@ urlpatterns = [
     path( url_principal+'gestion/entrevistas/calificar/<int:pk>/', VacanteClienteView.gestion_entrevista, name='gestion_entrevista'),
     path( url_principal+'gestion/editar/<int:pk>/', VacanteClienteView.gestion_vacante_editar, name='gestion_vacante_editar'),
     
+
+    #api
+    path( url_principal+'api/mostrar_entrevistas_calendario/', EntrevistaView.obtener_entrevistas, name='gestion_vacante_editar'),
 ]
