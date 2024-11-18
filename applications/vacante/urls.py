@@ -7,6 +7,7 @@ from applications.vacante.views.usuario_cliente import VacanteClienteView
 url_principal = 'vacante/'
 
 urlpatterns = [
+    path( url_principal+'', VacanteViews.buscar_vacante, name='buscar_vacante'),
     path( url_principal+'api/', VacanteViews.vacante_api, name='vacante_api'),
     path( url_principal+'cliente/<int:pk>/', VacanteViews.vacante_cliente_mostrar, name='vacantes_cliente'),
     

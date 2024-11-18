@@ -15,6 +15,9 @@ from applications.usuarios.decorators  import validar_permisos
 # utils
 from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante_candidato
 
+# forms
+from applications.vacante.forms.VacanteFilterForm import VacanteFilterForm
+
 centinela = None
 
 #ADMIN
@@ -371,3 +374,42 @@ def vacante_api(request, pk=None):
 
         print(response_data);
         return JsonResponse(response_data)
+
+# Listado de Vacantes Activas
+def buscar_vacante(request):
+    vacantes = Cli052Vacante.objects.all()
+    form = VacanteFilterForm(request.GET or None)
+
+    if form.is_valid():
+        ciudad = form.cleaned_data.get('ciudad')
+        salario_min = form.cleaned_data.get('salario_min')
+        salario_max = form.cleaned_data.get('salario_max')
+        experiencia = form.cleaned_data.get('experiencia_requerida')
+        soft_skills = form.cleaned_data.get('soft_skills')
+        hard_skills = form.cleaned_data.get('hard_skills')
+        profesion = form.cleaned_data.get('profesion_estudio')
+
+        if ciudad:
+            vacantes = vacantes.filter(ciudad_id=ciudad)
+        if salario_min:
+            try:
+                salario_min = int(salario_min.replace('.', '').strip())
+                vacantes = vacantes.filter(salario__gte=salario_min)
+            except ValueError:
+                pass  # Ignorar si el valor no es válido
+        if salario_max:
+            try:
+                salario_max = int(salario_max.replace('.', '').strip())
+                vacantes = vacantes.filter(salario__lte=salario_max)
+            except ValueError:
+                pass  # Ignorar si el valor no es válido
+        if experiencia:
+            vacantes = vacantes.filter(experiencia_requerida=experiencia)
+        if soft_skills:
+            vacantes = vacantes.filter(soft_skills_id_053__in=soft_skills).distinct()
+        if hard_skills:
+            vacantes = vacantes.filter(hard_skills_id_054__in=hard_skills).distinct()
+        if profesion:
+            vacantes = vacantes.filter(profesion_estudio_id_055=profesion)
+
+    return render(request, 'vacante/buscar_vacante.html', {'vacantes': vacantes, 'form': form})

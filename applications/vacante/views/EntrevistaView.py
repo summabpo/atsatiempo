@@ -241,11 +241,15 @@ def obtener_entrevistas(request):
 
     eventos_json = [
         {
-            "title": f"ID {evento.id} Entrevista: {evento.asignacion_vacante.vacante_id_052.titulo}",
-            "start": evento.fecha_entrevista.isoformat(),
+            "title": f"Entrevista ID {evento.id}",
+            "start": f"{evento.fecha_entrevista.isoformat()}T{evento.hora_entrevista}",
             "end": evento.fecha_entrevista.isoformat(),
-            "description": f"Entrevista tipo: {evento.obtener_tipo_entrevista()}, lugar o enlace: {evento.lugar_enlace}",
-            "color": evento.obtener_color()  # Incluir el color
+            "description": f"Entrevista tipo: {evento.obtener_tipo_entrevista()} programada.",
+            "color": evento.obtener_color(),  # Incluir el color
+            "lugar_enlace": evento.lugar_enlace,  # Lugar Enlace
+            "nombre_vacante": evento.asignacion_vacante.vacante_id_052.titulo,  # Nombre Vacante
+            "nombre_cliente": evento.asignacion_vacante.vacante_id_052.cliente_id_051.razon_social,  # Nombre Vacante
+            "estado_asignacion": evento.mostrar_estado_asignacion(),  # Nombre Vacante
         }
         for evento in entrevistas
     ]
