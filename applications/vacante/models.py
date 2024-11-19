@@ -35,6 +35,8 @@ class Cli055ProfesionEstudio(models.Model):
     nombre = models.CharField(max_length=200)
     estado_id_001 = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
 
+    def __str__(self):
+        return str(self.id)
     class Meta:
         #managed = False
         db_table = 'cli_055_profesion_estudio'

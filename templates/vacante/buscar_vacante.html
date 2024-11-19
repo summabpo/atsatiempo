@@ -30,18 +30,14 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <form method="get">
             <div class="card shadow-sm">
-                <div class="card-header">
-                    <h3 class="card-title">Filtros</h3>
-                    
-                </div>
                 <div class="card-body">
-                    {{ form }}
+                    {% crispy form %}
                 </div>
-                <div class="footer">
-                    <div class="card-toolbar">
+                <div class="card-footer">
+                    <div style="text-align: center;" class="card-toolbar">
                         <button type="submit" id="form_filtros" class="btn btn-primary">Filtrar</button>
                         <a href="{% url 'vacantes:buscar_vacante' %}" class="btn btn-secondary">Limpiar Filtros</a>
                     </div>
@@ -49,7 +45,7 @@
             </div>
         </form>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-9">
         {% for vacante in vacantes %}
         <div class="card mb-3">
             <div class="card-body">
