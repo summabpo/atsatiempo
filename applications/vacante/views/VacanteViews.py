@@ -377,7 +377,12 @@ def vacante_api(request, pk=None):
 
 # Listado de Vacantes Activas
 def buscar_vacante(request):
-    vacantes = Cli052Vacante.objects.all()
+
+    vacantes = Cli052Vacante.objects.filter(
+        estado_id_001=1,
+        estado_vacante__in=[1, 2]
+    )
+
     form = VacanteFilterForm(request.GET or None)
 
     if form.is_valid():
@@ -389,6 +394,7 @@ def buscar_vacante(request):
         hard_skills = form.cleaned_data.get('hard_skills')
         profesion = form.cleaned_data.get('profesion_estudio')
 
+        #valida filtro ciudad
         if ciudad:
             vacantes = vacantes.filter(ciudad_id=ciudad)
         if salario_min:
@@ -411,5 +417,8 @@ def buscar_vacante(request):
             vacantes = vacantes.filter(hard_skills_id_054__in=hard_skills).distinct()
         if profesion:
             vacantes = vacantes.filter(profesion_estudio_id_055=profesion)
+    else:
+        # Si no se aplican filtros, limitar a los primeros 10 registros
+        vacantes = vacantes[:10]
 
     return render(request, 'vacante/buscar_vacante.html', {'vacantes': vacantes, 'form': form})
