@@ -28,6 +28,10 @@
             }
     {% endblock css %}
 
+{% block boton_volver %}
+    <a href="{% url 'accesses:inicio' %}" class="btn btn-primary my-2"">Volver</a>
+{% endblock boton_volver %}
+
 {% block content %}
 <div class="card shadow-sm">
     <div class="card-header">

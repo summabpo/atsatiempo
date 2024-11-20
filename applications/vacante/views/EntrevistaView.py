@@ -20,7 +20,7 @@ from applications.candidato.models import Can101Candidato
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
 #consultas
-from applications.vacante.views.consultas.AsignacionEntrevistaConsultaView import consulta_asignacion_entrevista_entrevistador, consulta_asignacion_entrevista_candidato
+from applications.vacante.views.consultas.AsignacionEntrevistaConsultaView import consulta_asignacion_entrevista_entrevistador, consulta_asignacion_entrevista_candidato, consulta_asignacion_entrevista_cliente_todas
 
 
 #CLIENTE
@@ -30,29 +30,10 @@ from applications.vacante.views.consultas.AsignacionEntrevistaConsultaView impor
 @validar_permisos(*Permiso.obtener_nombres())
 def ver_entrevista_todos(request):    
     cliente_id = request.session.get('cliente_id')
-    asignaciones = Cli057AsignacionEntrevista.objects.select_related(
-        'asignacion_vacante__vacante_id_052__cliente_id_051', 
-        'asignacion_vacante__vacante_id_052', 
-        'asignacion_vacante__candidato_101'
-    ).filter(
-        asignacion_vacante__vacante_id_052__cliente_id_051_id=cliente_id
-    ).order_by('-fecha_entrevista').values(
-        # Campos del modelo principal (Cli057AsignacionEntrevista)
-        'id',
-        'fecha_entrevista',
-        'hora_entrevista',
-        'lugar_enlace',
-        # Resto de clientes pendientes
-        razon_social=F('asignacion_vacante__vacante_id_052__cliente_id_051__razon_social'),
-        titulo_vacante=F('asignacion_vacante__vacante_id_052__titulo'),
-        primer_nombre=F('asignacion_vacante__candidato_101__primer_nombre'),
-        segundo_nombre=F('asignacion_vacante__candidato_101__segundo_nombre'),
-        primer_apellido=F('asignacion_vacante__candidato_101__primer_apellido'),
-        segundo_apellido=F('asignacion_vacante__candidato_101__segundo_apellido'),
-    )
-    
+
+    asignacion_entrevista = consulta_asignacion_entrevista_cliente_todas(cliente_id)
     contexto = {
-        'asignaciones': asignaciones
+        'asignacion_entrevista': asignacion_entrevista
     }
 
     return render(request, 'vacante/ver_entrevista_todos.html', contexto)
