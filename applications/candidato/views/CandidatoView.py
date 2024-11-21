@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from applications.candidato.models import Can101Candidato, Can102Experiencia, Can103Educacion, Can101CandidatoSkill, Can104Skill
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.candidato.forms.CandidatoForms import CandidatoForm
+from applications.candidato.forms.CandidatoForms import CandidatoForm, CandidatoFormAdmin
 from applications.candidato.forms.ExperienciaForms import ExperienciaCandidatoForm
 from applications.candidato.forms.HabilidadForms import HabilidadCandidatoForm
 from applications.candidato.forms.EstudioForms import EstudioCandidatoForm
@@ -19,11 +19,13 @@ def candidato_mostrar(request, pk=None):
     # Valida si se pasa un parametro pk o ID del candidato
     if pk:
         candidato = get_object_or_404(Can101Candidato, pk=pk)
+        candidato_porcentaje = candidato.calcular_porcentaje()
         accion = 'Editar'
     
     else:
         candidato = None
         accion = 'Crear'
+
 
     if request.method == 'POST':
 
@@ -45,11 +47,11 @@ def candidato_mostrar(request, pk=None):
     else:
         form = CandidatoForm(instance=candidato)
         
-
     return render(request, 'candidato/form_candidato_edit.html', {
         'form': form,
         'candidato': candidato,
         'accion': accion, 
+        'candidato_porcentaje': candidato_porcentaje,
         })
 
 global_dato = None 
@@ -242,3 +244,60 @@ def habilidades_crear(request):
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
+        
+
+#listado de candidatos
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def candidatos_listar(request):
+    form_errors = False
+    candidatos = Can101Candidato.objects.filter(estado_id_001 = 1).order_by('primer_apellido')
+    
+
+    if request.method == 'POST':
+        form = CandidatoFormAdmin(request.POST)
+
+
+        if form.is_valid():
+            primer_nombre=form.cleaned_data.get('primer_nombre')
+            segundo_nombre=form.cleaned_data.get('segundo_nombre')
+            primer_apellido=form.cleaned_data.get('primer_apellido')
+            segundo_apellido=form.cleaned_data.get('segundo_apellido')
+            email=form.cleaned_data.get('email')
+            telefono=form.cleaned_data.get('telefono')
+            sexo=form.cleaned_data.get('sexo')
+            fecha_nacimiento=form.cleaned_data.get('fecha_nacimiento')
+            ciudad=form.cleaned_data.get('ciudad')
+
+            # Obtén la instancia del modelo `Cat004Ciudad`
+            ciudad = Cat004Ciudad.objects.get(id=ciudad)
+            estado = Cat001Estado.objects.get(id=1)
+            # Crear el objeto Candidato
+            candidato = Can101Candidato.objects.create(
+                primer_nombre=primer_nombre,
+                segundo_nombre=segundo_nombre,
+                primer_apellido=primer_apellido,
+                segundo_apellido=segundo_apellido,
+                email=email,
+                telefono=telefono,
+                sexo=sexo,
+                fecha_nacimiento=fecha_nacimiento,
+                ciudad_id_004=ciudad,
+                estado_id_001=estado
+            )
+
+            messages.success(request, 'El candidato ha sido creado con éxito.')
+            return redirect('candidatos:candidato_listar')
+        else:
+            form_errors = True
+            messages.error(request, f'Validar Errores: {form.errors}') 
+    else:
+        form = CandidatoFormAdmin()
+    
+    contexto = {
+        'candidatos': candidatos,
+        'form_errors': form_errors,
+        'form': form,
+    }
+
+    return render(request, 'candidato/listado_candidatos.html', contexto)

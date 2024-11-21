@@ -10,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 
 # Create your views here.
-
 class ListadoCandidato(ListView):
     template_name = 'candidato/listado_candidatos.html'
     model = Can101Candidato

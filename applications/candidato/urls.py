@@ -6,7 +6,8 @@ url_principal = 'candidato/'
 
 urlpatterns = [
     path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),
-    path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),
+    # path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),
+    path( url_principal+'listar', CandidatoView.candidatos_listar, name='candidato_listar'),
     
     path( url_principal+'academica/<int:pk>/', EstudioView.estudio_mostrar, name='candidato_academica'),
     path( url_principal+'academica/api/', EstudioView.estudio_api,name='estudio_api'),
