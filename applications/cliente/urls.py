@@ -28,6 +28,7 @@ urlpatterns = [
     path( url_principal+'vacante/reclutado/<int:pk>/', ClienteAdminView.cliente_vacante_reclutado, name='cliente_vacante_reclutado'),
     path( url_principal+'vacante/entrevista/<int:pk>/', ClienteAdminView.cliente_vacante_entrevista, name='cliente_vacante_entrevista'),
     path( url_principal+'vacante/editar/<int:pk>/', ClienteAdminView.cliente_vacante_editar, name='cliente_vacante_editar'),
+    path( url_principal+'vacante/emparejamiento/<int:pk>/', ClienteAdminView.cliente_vacante_emparejamiento_vacante, name='cliente_vacante_emparejamiento_vacante'),
 
     # Preguntas Cuestionario
     path( url_principal+'ver_preguntas/', PreguntasView.ver_preguntas_cliente, name='ver_preguntas_cliente'),

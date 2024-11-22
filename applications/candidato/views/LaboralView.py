@@ -15,11 +15,12 @@ from applications.usuarios.decorators  import validar_permisos
 global_id = None 
 
 @login_required
-#@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos(*Permiso.obtener_nombres())
 def laboral_mostrar(request, pk=None):
     form_errors = False
     candidato = get_object_or_404(Can101Candidato, pk=pk)
     experiencias = Can102Experiencia.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')
+    candidato_porcentaje = candidato.calcular_porcentaje()
     if request.method == 'POST': 
         form = ExperienciaCandidatoForm(request.POST)
         if form.is_valid():
@@ -38,6 +39,7 @@ def laboral_mostrar(request, pk=None):
         'candidato': candidato,
         'experiencias': experiencias,
         'form_errors': form_errors,
+        'candidato_porcentaje': candidato_porcentaje,
     }
 
     return render(request, 'candidato/form_experiencia.html', context)
@@ -45,7 +47,7 @@ def laboral_mostrar(request, pk=None):
 
 
 @login_required
-#@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos(*Permiso.obtener_nombres())
 def laboral_api(request):
     global global_id
 

@@ -11,12 +11,12 @@ from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 
 @login_required
-#@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos(*Permiso.obtener_nombres())
 def habilidad_obtener(request, pk=None):
     candidato = get_object_or_404(Can101Candidato, pk=pk)
     data = Cat001Estado.objects.get(id=1)
     habilidades = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato.id).order_by('-id')
-
+    candidato_porcentaje = candidato.calcular_porcentaje()
     if request.method == 'POST':
         form = HabilidadCandidatoForm(request.POST)
 
@@ -53,6 +53,7 @@ def habilidad_obtener(request, pk=None):
             'form': form,
             'habilidades': habilidades,
             'candidato': candidato,
+            'candidato_porcentaje': candidato_porcentaje,
         })
     
     

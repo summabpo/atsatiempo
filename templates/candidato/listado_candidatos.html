@@ -75,6 +75,7 @@
                     <th style="text-align: center">EMAIL</th>
                     <th style="text-align: center">TELEFONO</th>
                     <th style="text-align: center">FECHA NACIMIENTO</th>
+                    <th style="text-align: center">PERFIL COMPLETO</th>
                     <th style="text-align: center">EDITAR</th>
                     <th style="text-align: center">RESUMEN</th>
                 </tr>
@@ -89,6 +90,15 @@
                     <td style="text-align: center;">{{ e.email }}</td>
                     <td style="text-align: center;">{{ e.telefono |default:"-" }}</td>
                     <td style="text-align: center;">{{ e.fecha_nacimiento | date:"d/m/Y" }}</td>
+                    <td style="text-align: center;">
+                        {% if e.calcular_porcentaje < 50 %}
+                            <span class="badge badge-light-danger">{{ e.calcular_porcentaje }} %</span>
+                        {% elif e.calcular_porcentaje < 80 %}
+                            <span class="badge badge-light-warning">{{ e.calcular_porcentaje }} %</span>
+                        {% else %}
+                            <span class="badge badge-light-success">{{ e.calcular_porcentaje }} %</span>
+                        {% endif %}
+                    </td>
                     <td style="text-align: center;">
                         <a href="{% url 'candidatos:candidato_editar' e.id  %}" class="btn btn-light-primary" title="Editar Candidato">
                             <i class="fa-solid fa-file-pen"></i>

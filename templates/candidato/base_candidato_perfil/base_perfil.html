@@ -6,11 +6,30 @@
         </div>
         <a href="#" class="fs-2 text-gray-800 text-hover-primary fw-bold mb-1">{{ candidato.primer_nombre }} {{ candidato.segundo_nombre }}</a>
         <div class="fs-6 fw-semibold text-gray-500 mb-2">{{ candidato.primer_apellido }} {{ candidato.segundo_apellido }}</div>
+        <div class="d-flex flex-column w-100 me-2 mt-2">
+
+            <span class="text-gray-500 me-2 fw-bolder mb-2">Información Registrada al {{candidato_porcentaje}}%</span>
+            
+            {% if candidato_porcentaje < 50 %}
+                <div class="progress bg-light-danger w-100 h-5px">
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: {{candidato_porcentaje}}%"></div>
+                </div>
+            {% elif candidato_porcentaje < 80 %}
+                <div class="progress bg-light-warning w-100 h-5px">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{candidato_porcentaje}}%"></div>
+                </div>
+
+            {% else %}
+            <div class="progress bg-light-success w-100 h-5px">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{candidato_porcentaje}}%"></div>
+            </div>
+            {% endif %}
+        </div>
     </div>
     
     <ul class="menu menu-column menu-pill menu-title-gray-700 menu-bullet-gray-300 menu-state-bg menu-state-bullet-primary fw-bold fs-5 mb-10">
         <li class="menu-item mb-1">
-            <a class="menu-link px-6 py-4 active" href="{% url 'candidatos:candidato_editar' candidato.id  %}">
+            <a class="menu-link px-6 py-4 {% if request.resolver_match.url_name == 'candidato_editar' %}active{% endif %}" href="{% url 'candidatos:candidato_editar' candidato.id  %}">
                 <span class="menu-bullet">
                     <span class="bullet"></span>
                 </span>
@@ -18,7 +37,7 @@
             </a>
         </li>
         <li class="menu-item mb-1">
-            <a class="menu-link px-6 py-4" href="{% url 'candidatos:candidato_academica' candidato.id  %}">
+            <a class="menu-link px-6 py-4 {% if request.resolver_match.url_name == 'candidato_academica' %}active{% endif %}" href="{% url 'candidatos:candidato_academica' candidato.id  %}">
                 <span class="menu-bullet">
                     <span class="bullet"></span>
                 </span>
@@ -26,7 +45,7 @@
             </a>
         </li>
         <li class="menu-item mb-1">
-            <a class="menu-link px-6 py-4" href="{% url 'candidatos:candidato_laboral' candidato.id  %}">
+            <a class="menu-link px-6 py-4 {% if request.resolver_match.url_name == 'candidato_laboral' %}active{% endif %}" href="{% url 'candidatos:candidato_laboral' candidato.id  %}">
                 <span class="menu-bullet">
                     <span class="bullet"></span>
                 </span>
@@ -34,7 +53,7 @@
             </a>
         </li>
         <li class="menu-item mb-1">
-            <a class="menu-link px-6 py-4" href="{% url 'candidatos:candidato_habilidad' candidato.id  %}">
+            <a class="menu-link px-6 py-4 {% if request.resolver_match.url_name == 'candidato_habilidad' %}active{% endif %}" href="{% url 'candidatos:candidato_habilidad' candidato.id  %}">
                 <span class="menu-bullet">
                     <span class="bullet"></span>
                 </span>

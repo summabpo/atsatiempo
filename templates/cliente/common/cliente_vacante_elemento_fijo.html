@@ -167,6 +167,9 @@
                     <li class="nav-item mt-2"> 
                         <a class="nav-link text-active-primary ms-0 me-10 py-5 {% if request.resolver_match.url_name == 'cliente_vacante_editar' %}active{% endif %}" href="{% url 'clientes:cliente_vacante_editar' vacante.id %}">EDITAR VACANTE</a>
                     </li>
+                    <li class="nav-item mt-2"> 
+                        <a class="nav-link text-active-primary ms-0 me-10 py-5 {% if request.resolver_match.url_name == 'cliente_vacante_emparejamiento_vacante' %}active{% endif %}" href="{% url 'clientes:cliente_vacante_emparejamiento_vacante' vacante.id %}">EMPAREJAMIENTO</a>
+                    </li>
                 </ul>
             </div>
         </div>

@@ -16,6 +16,7 @@ from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.models import Permiso
 from applications.cliente.models import Cli051Cliente
 from applications.usuarios.models import UsuarioBase, Grupo
+from applications.candidato.models import Can101Candidato, Can101CandidatoSkill, Can102Experiencia, Can103Educacion, Can104Skill
 
 #form
 from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit
@@ -27,6 +28,7 @@ from applications.common.views.EnvioCorreo import enviar_correo, generate_token
 from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante, consulta_asignacion_vacante_id
 from applications.vacante.views.consultas.AsignacionEntrevistaConsultaView import consulta_asignacion_entrevista_cliente
 from applications.vacante.views.consultas.VacanteConsultaView import consulta_vacantes_todas, consulta_vacantes_cliente
+from components.EmparejamientoVacantesCandidato import calcular_match
 
 def generate_random_password(length=12):
     characters = string.ascii_letters + string.digits
@@ -455,6 +457,28 @@ def cliente_vacante_editar(request, pk):
         
     }
     return render(request, 'cliente/cliente_vacante_editar.html', contexto)
+
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def cliente_vacante_emparejamiento_vacante(request, pk):
+
+    candidatos = Can101Candidato.objects.filter(estado_id_001=1)
+    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
+
+    matches = []
+    for candidato in candidatos:
+        porcentaje_match = calcular_match(candidato, vacante)
+        # if porcentaje_match >= 60:
+        #     matches.append({'candidato': candidato, 'porcentaje': porcentaje_match})
+        matches.append({'candidato': candidato, 'porcentaje': porcentaje_match})
+    contexto = {
+        'cliente' : cliente,
+        'vacante' : vacante,
+        'matches': matches
+    }
+
+    return render(request, 'cliente/cliente_vacante_emparejamiento.html', contexto)
 
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())

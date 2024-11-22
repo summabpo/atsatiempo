@@ -15,12 +15,12 @@ from applications.usuarios.decorators  import validar_permisos
 global_id = None 
 
 @login_required
-#@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos(*Permiso.obtener_nombres())
 def estudio_mostrar(request, pk=None):
     form_errors = False
     candidato = get_object_or_404(Can101Candidato, pk=pk)
     estudios = Can103Educacion.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')
-
+    candidato_porcentaje = candidato.calcular_porcentaje()
     # Formulario Estudios
     if request.method == 'POST': 
         form = EstudioCandidatoForm(request.POST)
@@ -40,6 +40,7 @@ def estudio_mostrar(request, pk=None):
         'candidato': candidato,
         'estudios': estudios,
         'form_errors': form_errors,
+        'candidato_porcentaje': candidato_porcentaje,
         
     }
 
@@ -48,7 +49,7 @@ def estudio_mostrar(request, pk=None):
 
 
 @login_required
-#@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos(*Permiso.obtener_nombres())
 def estudio_api(request):
     global global_id
 
