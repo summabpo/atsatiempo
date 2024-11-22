@@ -28,6 +28,34 @@ class Can101Candidato(models.Model):
 
         verbose_name = 'CANDIDATO'
         verbose_name_plural = 'CANDIDATOS'
+    
+    def calcular_porcentaje(self):
+        # Porcentajes individuales
+        porcentaje_academico = 40
+        porcentaje_laboral = 40
+        porcentaje_habilidades = 10
+
+        # Variables de cálculo
+        tiene_academico = Can103Educacion.objects.filter(candidato_id_101=self.pk).exists()
+        tiene_laboral = Can102Experiencia.objects.filter(candidato_id_101=self.pk).exists()
+        tiene_habilidades = Can101CandidatoSkill.objects.filter(candidato_id_101=self.pk).exists()
+
+        # Calcular porcentaje acumulado
+        porcentaje = 0
+        if tiene_academico:
+            porcentaje += porcentaje_academico
+        if tiene_laboral:
+            porcentaje += porcentaje_laboral
+        if tiene_habilidades:
+            porcentaje += porcentaje_habilidades
+
+        
+        return porcentaje
+    
+    def puede_aplicar(self):
+        # Definir el porcentaje mínimo para aplicar
+        porcentaje_minimo = 70
+        return self.calcular_porcentaje() >= porcentaje_minimo
 
 class Can102Experiencia(models.Model):
 
@@ -48,7 +76,6 @@ class Can102Experiencia(models.Model):
 
         verbose_name = 'EXPERIENCIA'
         verbose_name_plural = 'EXPERIENCIAS'
-
 
 class Can103Educacion(models.Model):
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')

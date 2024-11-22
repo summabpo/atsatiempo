@@ -29,6 +29,10 @@
         color: red !important;
     }
     {% endblock css %}
+    
+{% block boton_volver %}
+    <a href="{% url 'vacantes:vacantes_cliente_todas' %}" class="btn btn-primary my-2"">Volver</a>
+{% endblock boton_volver %}  
 
 {% block content %}
 {% include 'vacante/common/cliente_menu_vacante.html' %}

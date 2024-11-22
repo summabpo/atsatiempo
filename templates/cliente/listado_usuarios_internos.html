@@ -24,6 +24,10 @@
     }
 {% endblock css %}
 
+{% block boton_volver %}
+    <a href="{% url 'accesses:inicio' %}" class="btn btn-primary my-2"">Volver</a>
+{% endblock boton_volver %}
+
 {% block content %}
 <div class="card shadow-sm">
     <div class="card-header">
@@ -64,7 +68,6 @@
                     <th>Nombre</th>
                     <th>Correo</th>
                     <th>Grupo</th>
-                    <th>Editar</th>
                 </tr>
             </thead>
             <tbody>
@@ -75,7 +78,6 @@
                     <td>{{ e.primer_nombre }} {{ e.segundo_nombre }} {{ e.primer_apellido }}</td>
                     <td>{{ e.email}}</td>
                     <td>{{ e.group.name }}</td>
-                    <td>Editar</td>
                 </tr>
                 {% endfor %}
                     
@@ -93,7 +95,7 @@
 <script>
     $(document).ready(function() {
         {% if form_errores %}
-            $('#crear_usuario').modal('show');
+            $('#modal_grupo_trabajo').modal('show');
         {% endif %}
     });
 
@@ -114,5 +116,8 @@
             "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
             ">"
     });
+
+
+    form_errores
 </script>
 {% endblock extrajs %}

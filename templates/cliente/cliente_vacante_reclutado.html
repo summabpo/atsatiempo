@@ -39,7 +39,11 @@
     .asteriskField {
         color: red !important;
     }
-    {% endblock css %}
+{% endblock css %}
+
+{% block boton_volver %}
+    <a href="{% url 'clientes:cliente_vacante' cliente.id %}" class="btn btn-primary my-2"">Volver</a>
+{% endblock boton_volver %}
 
 {% block content %}
 {% include 'cliente/common/cliente_vacante_elemento_fijo.html' %}

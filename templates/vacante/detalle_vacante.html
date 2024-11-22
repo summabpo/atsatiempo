@@ -23,6 +23,10 @@
         color: red !important;
     }
     {% endblock css %}
+    
+{% block boton_volver %}
+    <a href="{% url 'vacantes:ver_vacantes_disponibles' %}" class="btn btn-primary my-2"">Volver</a>
+{% endblock boton_volver %}
 
 {% block content %}
 <div class="card shadow-sm">
@@ -32,7 +36,7 @@
             <div class="me-7 mb-4">
                 <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
                     {% if cliente.logo %}
-                        <img src="{{ cliente.logo.url }}" title="{{cliente.logo}} />
+                        <img src="{{ cliente.logo.url }}" title="{{cliente.logo}}" />
                     {% else %}  
                         <img src="{% static 'media/avatars/blank.png' %}" title="{{cliente.logo}}" />
                     {% endif %}

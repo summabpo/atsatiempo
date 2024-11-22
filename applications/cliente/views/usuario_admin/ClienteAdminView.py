@@ -26,7 +26,7 @@ from applications.cliente.forms.CreacionUsuariosForm import CrearUsuarioInternoF
 from applications.common.views.EnvioCorreo import enviar_correo, generate_token
 from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante, consulta_asignacion_vacante_id
 from applications.vacante.views.consultas.AsignacionEntrevistaConsultaView import consulta_asignacion_entrevista_cliente
-from applications.vacante.views.consultas.VacanteConsultaView import consulta_vacantes_todas
+from applications.vacante.views.consultas.VacanteConsultaView import consulta_vacantes_todas, consulta_vacantes_cliente
 
 def generate_random_password(length=12):
     characters = string.ascii_letters + string.digits
@@ -148,6 +148,8 @@ def cliente_vacante(request, pk):
 
     vacante = Cli052Vacante.objects.filter(cliente_id_051= pk).order_by('-id')
 
+    listado_vacante = consulta_vacantes_cliente(pk)
+
     estado = Cat001Estado.objects.get(id=1)
     form_errors = False
     cliente = get_object_or_404(Cli051Cliente, pk=pk)
@@ -235,6 +237,7 @@ def cliente_vacante(request, pk):
         'form' : form,
         'cliente' : cliente,
         'vacante' : vacante,
+        'listado_vacante' : listado_vacante,
         'form_errors' : form_errors
     }        
     

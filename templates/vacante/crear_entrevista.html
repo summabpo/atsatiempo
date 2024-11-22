@@ -41,7 +41,7 @@
                 <div class="card-toolbar">
                     {% if request.session.cliente_id %}
                         <!-- Mostrar contenido si cliente_id está activo -->
-                        <a href="{% url 'vacantes:vacante_gestion' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
+                        <a href="{% url 'vacantes:gestion_vacante_reclutados' vacante.id %}" class="btn btn-light-danger">VOLVER</a>
                     {% else %}
                         <!-- Mostrar contenido si cliente_id no está activo -->
                         <a href="{% url 'clientes:cliente_vacante_reclutado' vacante.id %}" class="btn btn-light-danger">VOLVER</a>

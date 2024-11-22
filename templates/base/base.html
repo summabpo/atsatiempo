@@ -79,6 +79,7 @@
 									
 									
 									{% block navegacion %}
+									
 										
 									{% endblock navegacion %}
 										
@@ -86,7 +87,15 @@
 								</ul>
 							
 							</div>
-							{% include 'base/accionesTitulo.html' %}
+							<div class="d-flex align-items-center flex-wrap py-2">
+								<div id="kt_header_search" class="header-search d-flex align-items-center w-200px w-md-300px me-2 me-lg-6" data-kt-search-keypress="true" data-kt-search-min-length="2" data-kt-search-enter="enter" data-kt-search-layout="menu" data-kt-search-responsive="" data-kt-menu-trigger="auto" data-kt-menu-permanent="true" data-kt-menu-placement="bottom-end">
+									
+								</div>
+								{% block boton_volver %}
+									
+								{% endblock boton_volver %}
+								
+							</div>
 						</div>
 					</div>
 					
