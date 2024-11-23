@@ -253,7 +253,7 @@ def candidatos_listar(request):
     form_errors = False
     candidatos = Can101Candidato.objects.filter(estado_id_001 = 1).order_by('primer_apellido')
     
-
+    
     if request.method == 'POST':
         form = CandidatoFormAdmin(request.POST)
 

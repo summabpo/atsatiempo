@@ -31,9 +31,9 @@ class Can101Candidato(models.Model):
     
     def calcular_porcentaje(self):
         # Porcentajes individuales
-        porcentaje_academico = 40
-        porcentaje_laboral = 40
-        porcentaje_habilidades = 10
+        porcentaje_academico = 35
+        porcentaje_laboral = 35
+        porcentaje_habilidades = 30
 
         # Variables de cálculo
         tiene_academico = Can103Educacion.objects.filter(candidato_id_101=self.pk).exists()
@@ -54,7 +54,7 @@ class Can101Candidato(models.Model):
     
     def puede_aplicar(self):
         # Definir el porcentaje mínimo para aplicar
-        porcentaje_minimo = 70
+        porcentaje_minimo = 80
         return self.calcular_porcentaje() >= porcentaje_minimo
 
 class Can102Experiencia(models.Model):

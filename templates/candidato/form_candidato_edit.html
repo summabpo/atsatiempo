@@ -51,17 +51,24 @@
     <div class="flex-lg-row-fluid ms-lg-10">
         <div class="row g-xxl-9">
             <div class="col-xxl-12">
-
-                <div class="alert alert-dismissible bg-light-danger border border-primary d-flex flex-column flex-sm-row p-5 mb-10">
-                    <i class="fas fa-alert"></i>
+                
+                {% if candidato_porcentaje < 80 %}
+                <div class="alert alert-dismissible bg-light-warning border border-primary d-flex flex-column flex-sm-row p-5 mb-10">
+                    <i class="ki-duotone ki-ranking">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                    </i>
                     <div class="d-flex flex-column pe-0 pe-sm-10">
-                        <h5 class="mb-1">This is an alert</h5>
-                        <span>The alert component can be used to highlight certain parts of your page for higher content visibility.</span>
+                        <h5 class="mb-1">Por favor Completar Información de su perfil.</h5>
+                        <span>Registrar información personal, académica, laboral y habilidades permite definir claramente el perfil profesional, facilitando encontrar oportunidades laborales que se ajusten a las capacidades, experiencia y estudios del candidato, maximizando su éxito profesional.</span>
                     </div>
                     <button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
-                        <i class="ki-duotone ki-cross fs-1 text-danger"><span class="path1"></span><span class="path2"></span></i>
+                        <i class="ki-duotone ki-cross fs-1 text-warning"><span class="path1"></span><span class="path2"></span></i>
                     </button>
                 </div>
+                {% endif %}
 
                 <div class="card card-xxl-stretch mb-5 mb-xxl-10">
                     <div class="card-header">

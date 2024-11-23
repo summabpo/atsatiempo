@@ -1,0 +1,126 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} ATS | Cliente {{cliente.razon_social}} {% endblock title %}
+
+{% block titulo_pagina %} Vacante: {{vacante.titulo}} {% endblock titulo_pagina %}
+
+{% block navegacion %}
+    <a href="{% url 'clientes:cliente_listar' %}" class="breadcrumb-item text-white text-hover-primary"> Listado Clientes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <a href="{% url 'clientes:cliente_detalle' cliente.id %}" class="breadcrumb-item text-white text-hover-primary"> Cliente: {{cliente.razon_social}}</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+
+    <a href="{% url 'clientes:cliente_vacante' cliente.id %}" class="breadcrumb-item text-white text-hover-primary"> Listado Vacantes</a>
+    
+    <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">{{vacante.titulo}}</li>
+{% endblock navegacion %}
+
+
+{% block css %}
+    .asteriskField {
+        color: red !important;
+    }
+{% endblock css %}
+
+{% block boton_volver %}
+    <a href="{% url 'clientes:cliente_vacante' cliente.id %}" class="btn btn-primary my-2"">Volver</a>
+{% endblock boton_volver %}
+
+{% block content %}
+{% include 'cliente/common/cliente_vacante_elemento_fijo.html' %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title"></h3>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-light">
+                        Evaluar de Nuevo
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="kt_listado_entrevistados" class="table align-middle table-row-dashed fs-6 gy-5">
+                    <thead>
+                        <tr class="fw-bold fs-6 text-gray-800 px-7">
+                            <th style="text-align: center">ID</th>
+                            <th style="text-align: center">Nombre</th>
+                            <th style="text-align: center">Porcentaje</th>
+
+                            {% comment %} <th style="text-align: center">Gestionar</th> {% endcomment %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        {% for e in matches  %}
+                        <tr>
+                            <td style="text-align: center">{{e.candidato.id}}</td>
+                            <td style="text-align: center">{{e.candidato.primer_nombre}} {{e.candidato.segundo_nombre}} {{e.candidato.primer_apellido}} {{e.candidato.segundo_apellido}}</td>
+                            <td style="text-align: center">{{ e.porcentaje }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extrajs %}
+<script>
+    $("#kt_listado_entrevistados").DataTable({
+        "language": {
+            "lengthMenu": "Mostrar _MENU_ ",
+            "zeroRecords": "No se encontraron resultados",
+            "info": "Mostrando página _PAGE_ de _PAGES_",
+            "infoEmpty": "No hay registros disponibles",
+            "infoFiltered": "(filtrado de _MAX_ registros totales)",
+            "search": "Buscar:  ",
+            "paginate": {
+                "first": "Primero",
+                "last": "Último",
+                "next": "Siguiente",
+                "previous": "Anterior"
+            },
+            "loadingRecords": "Cargando...",
+            "processing": "Procesando...",
+            "emptyTable": "No hay datos disponibles en la tabla",
+            "aria": {
+                "sortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        },
+        "pageLength": 50,
+        "order": [],
+        "dom":
+            "<'row mb-2'" +
+            "<'col-sm-6 d-flex align-items-center justify-conten-start dt-toolbar'l>" +
+            "<'col-sm-6 d-flex align-items-center justify-content-end dt-toolbar'f>" +
+            ">" +
+    
+            "<'table-responsive'tr>" +
+    
+            "<'row'" +
+            "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+            "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+            ">"
+    });
+</script>
+{% endblock extrajs %}

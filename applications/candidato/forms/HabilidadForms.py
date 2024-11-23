@@ -7,6 +7,7 @@ from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden, Div,
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato, Can104Skill, Can101CandidatoSkill
 
+
 level_Choices = [
     ('', '---------------'),
     (1, 'Básico'),
