@@ -21,7 +21,7 @@ def calcular_match(candidato, vacante):
 
     # Calcular coincidencia de Soft Skills
     soft_skills_vacante = set(vacante.soft_skills_id_053.all())  # Soft Skills de la vacante
-    soft_skills_candidato = set()  # Este dato necesita definición en el modelo del candidato
+    soft_skills_candidato = set(vacante.hard_skills_id_054.all())  # Hard Skills de la vacante
     match_soft_skills = len(soft_skills_candidato & soft_skills_vacante) / len(soft_skills_vacante) if soft_skills_vacante else 0
 
     # Calcular experiencia laboral

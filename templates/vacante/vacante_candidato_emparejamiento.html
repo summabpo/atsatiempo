@@ -1,0 +1,1062 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %} ATS Emparejamiento Vacantes {% endblock title %}
+
+{% block titulo_pagina %} Emparejamiento Vacantes {% endblock titulo_pagina %}
+
+{% block titulo-pagina %}
+    Emparejamiento Vacantes
+{% endblock titulo-pagina %}
+
+{% block navegacion %}
+    <li class="breadcrumb-item text-white opacity-75">Emparejamiento Vacantes</li>
+    
+    <!-- <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Multipurpose</li> -->
+{% endblock navegacion %}
+    {% block css %}
+    .asteriskField {
+            color: red !important;
+            }
+    {% endblock css %}
+{% block boton_volver %}
+    <a href="{% url 'accesses:inicio' %}" class="btn btn-primary my-2"">Volver</a>
+{% endblock boton_volver %}
+
+{% block content %}
+
+<div class="card card-page mb-5">
+    <div style="display: flex; justify-content: center; align-items: center;"   class="card-header bg-light-primary ">
+        <h3 style="display: flex; justify-content: center; align-items: center;"   class="card-title flex-column">
+            <span class="card-label fw-bold text-primary">AFINIDAD CANDIDATO / VACANTE</span>
+            <span class="text-primary mt-1 fw-semibold fs-7">Datos</span>
+        </h3>
+    </div>
+
+    <div class="card-body">
+        
+        <div class="row gy-5 g-xl-8">
+            <div class="col-xxl-4">
+                <div class="card card-xxl-stretch">
+                    <div style="display: flex; justify-content: center; align-items: center;" class="card-header bg-light-primary border-0 pt-5 pb-3">
+                        <h3 class="card-title text-primary fw-bold c fs-2">CANDIDATO</h3>
+                        <div class="card-toolbar">
+                            
+                        </div>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ candidato.primer_nombre }} {{ candidato.segundo_nombre }} {{ candidato.primer_apellido }} {{ candidato.segundo_apellido}}</h5>
+                                <span>Nombre</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ candidato.email }}</h5>
+                                <span>Correo</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ candidato.fecha_nacimiento }}</h5>
+                                <span>Fecha Nacimiento</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ candidato.telefono }}</h5>
+                                <span>Teléfono</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ candidato.ciudad_id_004.nombre }}</h5>
+                                <span>Ciudad</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                {% for skill in candidato.skills.all %}
+                                <span class="m-0 badge badge-light-primary fs-5">{{ skill.nombre }}</span>
+                                {% empty %}
+                                    No hay habilidades blandas asociadas.
+                                {% endfor %}
+                                <br>
+                                <span>Habilidades</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: center; align-items: center;" class="card-header bg-light-primary border-0 pt-5 pb-3">
+                        <h3 class="card-title text-primary fw-bold c fs-2">INFORMACIÓN LABORAL</h3>
+                        <div class="card-toolbar">
+                            
+                        </div>
+                    </div>
+                    <div class="card-body mb-5">
+                        {% for experiencia in candidato.can102experiencia_set.all %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ experiencia.cargo }}</h5>
+                                <span>{{ experiencia.entidad }}</span>
+                            </div>
+                            <span class="text-muted">{{ experiencia.fecha_inicial | date:"Y/m/d" }} - {{ experiencia.fecha_final | date:"Y/m/d" }} <b>(1 año)</b></span>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No tiene experiencia laboral registrada.</p>
+                        {% endfor %}
+                    </div>
+
+                    <div style="display: flex; justify-content: center; align-items: center;" class="card-header bg-light-primary border-0 pt-5 pb-3">
+                        <h3 class="card-title text-primary fw-bold c fs-2">INFORMACIÓN ACADEMICA</h3>
+                        <div class="card-toolbar">
+                            
+                        </div>
+                    </div>
+
+                    <div class="card-body mb-5">
+                        {% for educacion in candidato.can103educacion_set.all %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ educacion.titulo }}</h5>
+                                <span class="text-muted">{{ educacion.institucion }}</span>
+                            </div>
+                            <span class="text-muted">{{ educacion.fecha_inicial }} - {{ educacion.fecha_final }}</span>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No tiene educación registrada.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-4">
+                <div class="card card-xxl-stretch">
+                    <div style="display: flex; justify-content: center; align-items: center;" class="card-header bg-light-primary border-0 pt-5 pb-3">
+                        <h3 class="card-title text-primary fw-bold c fs-2">RESUMEN</h3>
+                        <div class="card-toolbar">
+                            
+                        </div>
+                    </div>
+                    <div class="card-body mb-2">
+                        <div class="table-responsive">
+                            <table class="table align-middle table-row-bordered table-row-dashed gy-5" id="kt_table_widget_1">
+                                <tbody>
+                                    
+                                    <tr class="text-start text-gray-500 fw-bolder fs-7 text-uppercase">
+                                        <th class="min-w-200px px-0">Emparejamiento</th>
+                                        <th class="min-w-125px text-center">Medición</th>
+                                        <th class="min-w-125px text-center">Resultado</th>
+                                    </tr>
+                                    
+                                    <tr>
+                                        
+                                        <td class="p-0">
+                                            <div class="d-flex align-items-center">
+                                            
+                                            <div class="symbol symbol-40px symbol-circle me-4">
+                                                <span class="symbol-label bg-light-primary">
+                                                    <i class="ki-duotone ki-user fs-1 text-primary">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                </span>
+                                            </div>
+                                            
+                                                <div class="ps-3">
+                                                    <a href="account/overview.html" class="text-gray-800 fw-bolder fs-5 text-hover-primary mb-1">Experiencia Laboral</a>
+                                                    <span class="text-gray-500 fw-semibold d-block">Medición Emparejamiento</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <td>
+                                            <div class="d-flex flex-column w-100 me-2 mt-2 text-center">
+                                                <span class="text-gray-500 me-2 fw-bolder mb-2">65%</span>
+                                                <div class="progress bg-light-danger w-100 h-5px">
+                                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 65%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="text-danger fw-bolder fs-2x">20%</div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="p-0">
+                                            <div class="d-flex align-items-center">
+                                            
+                                            <div class="symbol symbol-40px symbol-circle me-4">
+                                                <span class="symbol-label bg-light-primary">
+                                                    <i class="ki-duotone ki-user fs-1 text-primary">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                </span>
+                                            </div>
+                                            
+                                                <div class="ps-3">
+                                                    <a href="account/overview.html" class="text-gray-800 fw-bolder fs-5 text-hover-primary mb-1">Match Academico</a>
+                                                    <span class="text-gray-500 fw-semibold d-block">Medición Emparejamiento</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-column w-100 me-2 mt-2 text-center">
+                                                <span class="text-gray-500 me-2 fw-bolder mb-2">65%</span>
+                                                <div class="progress bg-light-danger w-100 h-5px">
+                                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 65%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="text-danger fw-bolder fs-2x">20%</div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="p-0">
+                                            <div class="d-flex align-items-center">
+                                            
+                                            <div class="symbol symbol-40px symbol-circle me-4">
+                                                <span class="symbol-label bg-light-primary">
+                                                    <i class="ki-duotone ki-user fs-1 text-primary">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                </span>
+                                            </div>
+                                            
+                                                <div class="ps-3">
+                                                    <a href="account/overview.html" class="text-gray-800 fw-bolder fs-5 text-hover-primary mb-1">Match Habilidades</a>
+                                                    <span class="text-gray-500 fw-semibold d-block">Medición Emparejamiento</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-column w-100 me-2 mt-2 text-center">
+                                                <span class="text-gray-500 me-2 fw-bolder mb-2">65%</span>
+                                                <div class="progress bg-light-danger w-100 h-5px">
+                                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 65%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="text-danger fw-bolder fs-2x">20%</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-0">
+                                            
+                                        </td>
+                                        <td class="text-end">
+                                            <h3 class="text-primary"> TOTAL</h3>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="text-danger fw-bolder fs-2x">20%</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-4">
+                <div class="card card-xxl-stretch">
+                    <div style="display: flex; justify-content: center; align-items: center;" class="card-header bg-light-primary border-0 pt-5 pb-3">
+                        <h3 class="card-title text-primary fw-bold c fs-2">DATOS VACANTE</h3>
+                        <div class="card-toolbar">
+                            
+                        </div>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ vacante.titulo}}</h5>
+                                <span>Titulo Vacante</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ vacante.cliente_id_051.razon_social }}</h5>
+                                <span>Cliente</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ vacante.salario|default:"No especificado" }}</h5>
+                                <span>Salario</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ vacante.numero_posiciones }}</h5>
+                                <span>Número de Vacantes</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ vacante.ciudad.nombre }}</h5>
+                                <span>Ciudad</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                {% for soft_skill in vacante.soft_skills_id_053.all %}
+                                <span class="m-0 badge badge-light-primary fs-5">{{ soft_skill.nombre }}</span>
+                                {% empty %}
+                                    No hay habilidades blandas asociadas.
+                                {% endfor %}
+                                <br>
+                                <span>Habilidades Blandas</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                {% for hard_skill in vacante.hard_skills_id_054.all %}
+                                <span class="m-0 badge badge-light-primary fs-5">{{ hard_skill.nombre }}</span>
+                                {% empty %}
+                                    No hay habilidades blandas asociadas.
+                                {% endfor %}
+                                <br>
+                                <span>Habilidades Fuertes</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ vacante.profesion_estudio_id_055.nombre }}</h5>
+                                <span>Profesión / Estudio Solicitados</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ vacante.get_experiencia_requerida_display }}</h5>
+                                <span>Tiempo Experiencia</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ vacante.funciones_responsabilidades }}</h5>
+                                <span>Funciones y Responsabilidades</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="separator border-3 my-10"></div>
+
+        <div class="row gy-5 g-xl-8">
+            <div class="col-xxl-4">
+                <div class="card card-xxl-stretch">
+                    <div style="display: flex; justify-content: center; align-items: center;" class="card-header bg-light-primary border-0 pt-5 pb-3">
+                        <h3 class="card-title text-primary fw-bold c fs-2">INFORMACIÓN LABORAL</h3>
+                        <div class="card-toolbar">
+                            
+                        </div>
+                    </div>
+                    <div class="card-body mb-5">
+                        {% for experiencia in candidato.can102experiencia_set.all %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ experiencia.cargo }}</h5>
+                                <span>{{ experiencia.entidad }}</span>
+                            </div>
+                            <span class="text-muted">{{ experiencia.fecha_inicial | date:"Y/m/d" }} - {{ experiencia.fecha_final | date:"Y/m/d" }} <b>(1 año)</b></span>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No tiene experiencia laboral registrada.</p>
+                        {% endfor %}
+                    </div>
+
+                    <div style="display: flex; justify-content: center; align-items: center;" class="card-header bg-light-primary border-0 pt-5 pb-3">
+                        <h3 class="card-title text-primary fw-bold c fs-2">INFORMACIÓN ACADEMICA</h3>
+                        <div class="card-toolbar">
+                            
+                        </div>
+                    </div>
+
+                    <div class="card-body mb-5">
+                        {% for educacion in candidato.can103educacion_set.all %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0">{{ educacion.titulo }}</h5>
+                                <span class="text-muted">{{ educacion.institucion }}</span>
+                            </div>
+                            <span class="text-muted">{{ educacion.fecha_inicial }} - {{ educacion.fecha_final }}</span>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No tiene educación registrada.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-4">
+                
+            </div>
+            <div class="col-xxl-4">
+                <div class="card card-xxl-stretch">
+                    <div style="display: flex; justify-content: center; align-items: center;" class="card-header bg-light-primary border-0 pt-5 pb-3">
+                        <h3 class="card-title text-primary fw-bold c fs-2">DETALLE VACANTE</h3>
+                        <div class="card-toolbar">
+                            
+                        </div>
+                    </div>
+                    <div class="card-body mb-5">
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ vacante.profesion_estudio_id_055.nombre }}</h5>
+                                <span>Profesión / Estudio Solicitados</span>
+                            </div>
+                            <span class="text-muted">{{ vacante.get_experiencia_requerida_display }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                            <div>
+                                <h5 class="m-0 text-primary">{{ vacante.funciones_responsabilidades }}</h5>
+                                <span>Funciones y Responsabilidades</span>
+                            </div>
+                            <span class="text-muted"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Información Candidato y Vacante -->
+<div class="row mb-5">
+    <div class="col-md-12">
+        <div class="card card-flush shadow-sm text-center">
+            <div class="card-body mb-5">
+                <div class="row mb-5">
+                    <div class="col-md-12 text-center mb-5">
+                        <h2 class="text-primary">INFORMACIÓN PRINCIPAL</h2>
+                    </div>
+                    <!-- Información del Candidato -->
+                    <div class="col-md-4 text-center align-self-center">
+                        <div class="card card-flush shadow-sm mb-5">
+                            <div class="card-header bg-light-primary  py-3">
+                                <h4 class="card-title text-primary text-center">INFORMACIÓN CANDADIDATO</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="collapse show">
+                                    <div class="pb-5 fs-6">
+                                        <div class="fw-bold mt-5 text-primary">Nombre</div>
+                                        <div class="text-gray-600">{{candidato.primer_nombre}} {{candidato.segundo_nombre}} {{candidato.primer_apellido}} {{candidato.segundo_apellido}}</div>
+
+                                        <div class="fw-bold mt-5 text-primary">Correo:</div>
+                                        <div class="text-gray-600">{{ candidato.email }}</div>
+                                        
+                                        <div class="fw-bold mt-5 text-primary">Fecha Nacimiento:</div>
+                                        <div class="text-gray-600">{{ candidato.fecha_nacimiento }}</div>
+                                        
+                                        <div class="fw-bold mt-5 text-primary">Teléfono:</div>
+                                        <div class="text-gray-600">{{ candidato.telefono }}</div>
+                                        
+                                        <div class="fw-bold mt-5 text-primary">Ciudad:</div>
+                                        <div class="text-gray-600">{{candidato.ciudad_id_004.nombre}}</div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Porcentaje de Match Total -->
+                    <div class="col-md-4 text-center align-self-center">
+                        <div class="card card-flush shadow-sm">
+                            <div class="card-header bg-light-primary py-3">
+                                <h4 class="card-title text-primary">RESULTADO FINAL</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex flex-column w-100 me-2 mt-2 text-center">
+                                    <span class="text-gray-500 me-2 fw-bolder mb-2">65%</span>
+                                    <div class="progress bg-light-danger w-100 h-5px">
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                                <span class="fs-1 fw-bold text-success">{{ candidato.calcular_porcentaje }}%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de la Vacante -->
+                    <div class="col-md-4 text-center align-self-center">
+                        <div class="card card-flush shadow-sm">
+                            <div class="card-header bg-light-primary py-3">
+                                <h4 class="card-title text-primary">INFORMACIÓN DE LA VACANTE</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="collapse show">
+                                    <div class="pb-5 fs-6">
+                                        <div class="fw-bold mt-5 text-primary">Titulo Vacante</div>
+                                        <div class="text-gray-600">{{ vacante.titulo }}</div>
+
+                                        <div class="fw-bold mt-5 text-primary">Cliente:</div>
+                                        <div class="text-gray-600">{{ vacante.cliente_id_051.razon_social }}</div>
+                                        
+                                        <div class="fw-bold mt-5 text-primary">Ciudad:</div>
+                                        <div class="text-gray-600">{{ vacante.ciudad.nombre }}</div>
+
+                                        <div class="fw-bold mt-5 text-primary">Número de Vacantes:</div>
+                                        <div class="text-gray-600">{{ vacante.numero_posiciones }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="separator border-5 my-10"></div>
+                <div class="row mb-5">
+                    <div class="col-md-12 text-center">
+                        <h2 class="text-primary">EXPERIENCIA LABORAL</h2>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="card card-flush shadow-sm mb-5">
+                            <div class="card-header bg-light-primary  py-3">
+                                <h4 class="card-title text-primary text-center">INFORMACIÓN LABORAL</h4>
+                            </div>
+                            <div class="card-body">
+                                {% for experiencia in candidato.can102experiencia_set.all %}
+                                <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                                    <div>
+                                        <h5 class="m-0 text-primary">{{ experiencia.cargo }}</h5>
+                                        <span>{{ experiencia.entidad }}</span>
+                                    </div>
+                                    <span class="text-muted">{{ experiencia.fecha_inicial | date:"Y/m/d" }} - {{ experiencia.fecha_final | date:"Y/m/d" }} </span>
+                                </div>
+                                {% empty %}
+                                <p class="text-muted">No tiene experiencia laboral registrada.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center"></div>
+                    <div class="col-md-4 text-center">
+                        <div class="card card-flush shadow-sm mb-5">
+                            <div class="card-header bg-light-primary  py-3">
+                                <h4 class="card-title text-primary text-center">DETALLES VACANTE</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                                    <div>
+                                        <h5 class="m-0 text-primary">{{ vacante.profesion_estudio_id_055.nombre }}</h5>
+                                        <span>Estudio / Profesión</span>
+                                    </div>
+                                    <span class="text-muted">-k</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                                    <div>
+                                        <h5 class="m-0 text-primary">{{ vacante.get_experiencia_requerida_display }}</h5>
+                                        <span>Tiempo de Experiencia</span>
+                                    </div>
+                                    <span class="text-muted">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                Footer
+            </div>
+        </div>
+        
+    </div> 
+</div>
+
+<!-- Comparativa Experiencia -->
+<div class="row mb-5">
+    <!-- Experiencia del Candidato -->
+    <div class="col-md-5">
+        <div class="card card-flush shadow-sm">
+            <div class="card-header bg-light">
+                <h4 class="card-title">Experiencia Laboral del Candidato</h4>
+            </div>
+            <div class="card-body">
+                {% for experiencia in candidato.can102experiencia_set.all %}
+                <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                    <div>
+                        <h5 class="m-0">{{ experiencia.cargo }}</h5>
+                        <span class="text-muted">{{ experiencia.entidad }}</span>
+                    </div>
+                    <span class="text-muted">{{ experiencia.fecha_inicial }} - {{ experiencia.fecha_final }}</span>
+                </div>
+                {% empty %}
+                <p class="text-muted">No tiene experiencia laboral registrada.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Porcentaje de Match Experiencia -->
+    <div class="col-md-2 text-center align-self-center">
+        <div class="card card-flush shadow-sm p-4">
+            <canvas id="matchExperiencia" width="150" height="150"></canvas>
+            <h5 class="mt-3">Match Experiencia</h5>
+            <span class="fs-1 fw-bold text-primary">80%</span>
+        </div>
+    </div>
+
+    <!-- Experiencia de la Vacante -->
+    <div class="col-md-5">
+        <div class="card card-flush shadow-sm">
+            <div class="card-header bg-light">
+                <h4 class="card-title">Requerimientos de la Vacante</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Años de Experiencia:</strong> 3 años</p>
+                <p><strong>Sector:</strong> Tecnología</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Comparativa Skills -->
+<div class="row">
+    <!-- Skills del Candidato -->
+    <div class="col-md-5">
+        <div class="card card-flush shadow-sm">
+            <div class="card-header bg-light">
+                <h4 class="card-title">Skills del Candidato</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for skill in candidato.skills.all %}
+                    <li class="list-group-item">{{ skill.nombre }}</li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">No tiene habilidades registradas.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Porcentaje de Match Skills -->
+    <div class="col-md-2 text-center align-self-center">
+        <div class="card card-flush shadow-sm p-4">
+            <canvas id="matchSkills" width="150" height="150"></canvas>
+            <h5 class="mt-3">Match Skills</h5>
+            <span class="fs-1 fw-bold text-warning">67%</span>
+        </div>
+    </div>
+
+    <!-- Skills de la Vacante -->
+    <div class="col-md-5">
+        <div class="card card-flush shadow-sm">
+            <div class="card-header bg-light">
+                <h4 class="card-title">Requerimientos de Skills</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Habilidades Técnicas:</strong> Python, React, SQL</p>
+                <p><strong>Habilidades Blandas:</strong> Trabajo en equipo, Comunicación</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card card-flush shadow-sm mb-5">
+        <div style="text-align: center;" class="card-header py-3">
+            <h3 class="card-title">Emparejamiento Candidato-Vacante</h3>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card shadow-lg">
+            <div class="card-header py-3 text-center">
+                <h3 class="card-title">Datos Candidato</h3>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-light">
+                        Validar Match
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="collapse show">
+                            <div class="pb-5 fs-6">
+                                <div class="fw-bold mt-5">Nombre</div>
+                                <div class="text-gray-600">{{candidato.primer_nombre}} {{candidato.segundo_nombre}} {{candidato.primer_apellido}} {{candidato.segundo_apellido}}</div>
+                                
+                                <div class="fw-bold mt-5">Ciudad</div>
+                                <div class="text-gray-600">{{candidato.ciudad_id_004.nombre}}</div>
+                                
+                                <div class="fw-bold mt-5">Teléfono:</div>
+                                <div class="text-gray-600">{{ candidato.telefono }}</div>
+                                
+                                <div class="fw-bold mt-5">Fecha Nacimiento:</div>
+                                <div class="text-gray-600">{{ candidato.fecha_nacimiento }}</div>
+                                
+                            </div>
+                            <div class="separator my-10"></div>
+                            <h5>Habilidades</h5>
+                            {% for skill in candidato.skills.all %}
+                                <span class="badge badge-light-primary"> {{ skill.nombre }}</span>
+                            {% empty %}
+                                <li class="list-group-item text-muted">No tiene habilidades registradas.</li>
+                            {% endfor %}
+                            <div class="separator my-10"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        
+
+                        <!-- Experiencia Laboral -->
+                        <div class="card card-flush shadow-sm mb-5">
+                            <div class="card-header bg-light py-3">
+                                <h4 class="card-title text-dark">Experiencia Laboral</h4>
+                            </div>
+                            <div class="card-body">
+                                {% for experiencia in candidato.can102experiencia_set.all %}
+                                <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                                    <div>
+                                        <h5 class="m-0">{{ experiencia.cargo }}</h5>
+                                        <span class="text-muted">{{ experiencia.entidad }}</span>
+                                    </div>
+                                    <span class="text-muted">{{ experiencia.fecha_inicial }} - {{ experiencia.fecha_final }}</span>
+                                </div>
+                                {% empty %}
+                                <p class="text-muted">No tiene experiencia laboral registrada.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                
+                        <!-- Educación -->
+                        <div class="card card-flush shadow-sm">
+                            <div class="card-header bg-light py-3">
+                                <h4 class="card-title text-dark">Educación</h4>
+                            </div>
+                            <div class="card-body">
+                                {% for educacion in candidato.can103educacion_set.all %}
+                                <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                                    <div>
+                                        <h5 class="m-0 text-primary">{{ educacion.titulo }}</h5>
+                                        <span class="text-muted">{{ educacion.institucion }}</span>
+                                    </div>
+                                    <span class="text-muted">{{ educacion.fecha_inicial }} - {{ educacion.fecha_final }}</span>
+                                </div>
+                                {% empty %}
+                                <p class="text-muted">No tiene educación registrada.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                Footer
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        Column
+    </div>
+</div>
+
+
+    <div class="row">
+        <div class="card card-flush shadow-sm mb-5">
+            <div class="card-header py-3 text-center">
+                <h3 class="card-title">EMparejamiento Candidato-Vacante</h3>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card card-flush shadow-sm mb-5">
+                <div class="card-header d-flex align-items-center bg-primary text-white py-4">
+                    <div class="d-flex flex-column">
+                        <h3 class="card-title m-0">Información del Candidato</h3>
+                        <span>{{ candidato.primer_nombre }} {{ candidato.primer_apellido }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5 class="fw-bold">Datos Personales</h5>
+                            <p><strong>Correo:</strong> {{ candidato.email }}</p>
+                            <p><strong>Teléfono:</strong> {{ candidato.telefono }}</p>
+                            <p><strong>Sexo:</strong> {{ candidato.get_sexo_display }}</p>
+                            <p><strong>Fecha de Nacimiento:</strong> {{ candidato.fecha_nacimiento }}</p>
+                            <p><strong>Ciudad:</strong> {{ candidato.ciudad_id_004.nombre }}</p>
+                            <p><strong>Estado:</strong> {{ candidato.estado_id_001.nombre }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="fw-bold">Habilidades</h5>
+                            <ul class="list-group">
+                                {% for skill in candidato.skills.all %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ skill.nombre }}
+                                        <span class="badge bg-primary">{{ skill.nivel }}</span>
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item text-muted">No tiene habilidades registradas.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="fw-bold">Porcentaje de Aplicación</h5>
+                            <div class="text-center">
+                                <div class="fs-1 fw-bold text-success">{{ candidato.calcular_porcentaje }}%</div>
+                                <p class="text-muted">Porcentaje acumulado basado en habilidades, experiencia y educación.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Experiencia Laboral -->
+            <div class="card card-flush shadow-sm mb-5">
+                <div class="card-header bg-light py-3">
+                    <h4 class="card-title text-dark">Experiencia Laboral</h4>
+                </div>
+                <div class="card-body">
+                    {% for experiencia in candidato.can102experiencia_set.all %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                        <div>
+                            <h5 class="m-0">{{ experiencia.cargo }}</h5>
+                            <span class="text-muted">{{ experiencia.entidad }}</span>
+                        </div>
+                        <span class="text-muted">{{ experiencia.fecha_inicial }} - {{ experiencia.fecha_final }}</span>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No tiene experiencia laboral registrada.</p>
+                    {% endfor %}
+                </div>
+            </div>
+    
+            <!-- Educación -->
+            <div class="card card-flush shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <h4 class="card-title text-dark">Educación</h4>
+                </div>
+                <div class="card-body">
+                    {% for educacion in candidato.can103educacion_set.all %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                        <div>
+                            <h5 class="m-0">{{ educacion.titulo }}</h5>
+                            <span class="text-muted">{{ educacion.institucion }}</span>
+                        </div>
+                        <span class="text-muted">{{ educacion.fecha_inicial }} - {{ educacion.fecha_final }}</span>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No tiene educación registrada.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h3 class="card-title">Title</h3>
+                    <div class="card-toolbar">
+                        <button type="button" class="btn btn-sm btn-light">
+                            Candidato
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="collapse show">
+                        <div class="pb-5 fs-6">
+                            <div class="fw-bold mt-5">Nombre</div>
+                            <div class="text-gray-600">{{candidato.primer_nombre}} {{candidato.segundo_nombre}} {{candidato.primer_apellido}} {{candidato.segundo_apellido}}</div>
+                            
+                            <div class="fw-bold mt-5">Ciudad</div>
+                            <div class="text-gray-600">{{candidato.ciudad_id_004.nombre}}</div>
+                            
+                            <div class="fw-bold mt-5">Address</div>
+                            <div class="text-gray-600">101 Collin Street, <br>Melbourne 3000 VIC<br>Australia</div>
+                            
+                            <div class="fw-bold mt-5">Language</div>
+                            <div class="text-gray-600">English</div>
+                            
+                            <div class="fw-bold mt-5">Last Login</div>
+                            <div class="text-gray-600">20 Dec 2024, 11:30 am</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    Perfil Completado al 15%%
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card card-flush shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <h4 class="card-title text-dark">Información del Candidato</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Nombre:</strong> Juan Pérez</li>
+                        <li class="list-group-item"><strong>Carrera:</strong> Ingeniería en Sistemas</li>
+                        <li class="list-group-item"><strong>Habilidades Fuertes:</strong> Python, Django, SQL</li>
+                        <li class="list-group-item"><strong>Habilidades Blandas:</strong> Trabajo en equipo, Comunicación</li>
+                        <li class="list-group-item"><strong>Experiencia:</strong> 5 años</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            Column
+        </div>
+    </div>
+
+<div class="container mt-5">
+    <!-- Encabezado -->
+    <div class="card card-flush shadow-sm mb-5">
+        <div class="card-header py-3 text-center">
+            <h3 class="card-title">Match Candidato-Vacante</h3>
+        </div>
+    </div>
+
+    <!-- Información del Candidato y Vacante en la misma fila -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <!-- Información del Candidato -->
+            <div class="card card-flush shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <h4 class="card-title text-dark">Información del Candidato</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Nombre:</strong> Juan Pérez</li>
+                        <li class="list-group-item"><strong>Carrera:</strong> Ingeniería en Sistemas</li>
+                        <li class="list-group-item"><strong>Habilidades Fuertes:</strong> Python, Django, SQL</li>
+                        <li class="list-group-item"><strong>Habilidades Blandas:</strong> Trabajo en equipo, Comunicación</li>
+                        <li class="list-group-item"><strong>Experiencia:</strong> 5 años</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <!-- Información de la Vacante -->
+            <div class="card card-flush shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <h4 class="card-title text-dark">Información de la Vacante</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Título:</strong> Desarrollador Full Stack</li>
+                        <li class="list-group-item"><strong>Requiere Carrera:</strong> Ingeniería en Sistemas</li>
+                        <li class="list-group-item"><strong>Habilidades Fuertes:</strong> Python, React, SQL</li>
+                        <li class="list-group-item"><strong>Habilidades Blandas:</strong> Liderazgo, Trabajo en equipo</li>
+                        <li class="list-group-item"><strong>Experiencia requerida:</strong> 3 años</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Match por Categorías -->
+    <div class="card card-flush shadow-sm mb-5">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="card-title">Match por Categorías</h4>
+        </div>
+        <div class="card-body text-center">
+            <div class="mb-4">
+                <p>Carrera / Profesión: <strong>100%</strong></p>
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%;"></div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <p>Habilidades Fuertes: <strong>67%</strong></p>
+                <div class="progress">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: 67%;"></div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <p>Habilidades Blandas: <strong>50%</strong></p>
+                <div class="progress">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: 50%;"></div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <p>Experiencia: <strong>100%</strong></p>
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultado Final -->
+    <div class="card card-flush shadow-sm">
+        <div class="card-body text-center py-5">
+            <h1 class="text-primary fw-bold">Resultado Final: 79%</h1>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extrajs %}
+<!-- Gráficos Semicirculares -->
+<script>
+    // Gráfico Match Total
+    const matchTotal = new Chart(document.getElementById('matchTotal'), {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [{{ candidato.calcular_porcentaje }}, 100 - {{ candidato.calcular_porcentaje }}],
+                backgroundColor: ['#28a745', '#e9ecef'],
+            }]
+        },
+        options: {
+            cutout: '70%',
+        }
+    });
+
+    // Gráfico Match Experiencia
+    const matchExperiencia = new Chart(document.getElementById('matchExperiencia'), {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [80, 20],
+                backgroundColor: ['#007bff', '#e9ecef'],
+            }]
+        },
+        options: {
+            cutout: '70%',
+        }
+    });
+
+    // Gráfico Match Skills
+    const matchSkills = new Chart(document.getElementById('matchSkills'), {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [50, 50],
+                backgroundColor: ['#ffc107', '#e9ecef'],
+            }]
+        },
+        options: {
+            cutout: '70%',
+        }
+    });
+</script>
+{% endblock extrajs %}

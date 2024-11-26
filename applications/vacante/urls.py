@@ -8,6 +8,8 @@ url_principal = 'vacante/'
 
 urlpatterns = [
     path( url_principal+'', VacanteViews.buscar_vacante, name='buscar_vacante'),
+    path( url_principal+'emparejamiento/<int:candidato_id>/<int:vacante_id>/', VacanteViews.vacante_candidato_emparejamiento, name='vacante_candidato_emparejamiento'),
+    
     path( url_principal+'api/', VacanteViews.vacante_api, name='vacante_api'),
     path( url_principal+'cliente/<int:pk>/', VacanteViews.vacante_cliente_mostrar, name='vacantes_cliente'),
     
@@ -34,7 +36,6 @@ urlpatterns = [
     path( url_principal+'gestion/cancelar/<int:pk>/', VacanteClienteView.gestion_vacante_cancelar, name='gestion_vacante_cancelar'),
     path( url_principal+'gestion/entrevistas/calificar/<int:pk>/', VacanteClienteView.gestion_entrevista, name='gestion_entrevista'),
     path( url_principal+'gestion/editar/<int:pk>/', VacanteClienteView.gestion_vacante_editar, name='gestion_vacante_editar'),
-    
 
     #api
     path( url_principal+'api/mostrar_entrevistas_calendario/', EntrevistaView.obtener_entrevistas, name='gestion_vacante_editar'),
