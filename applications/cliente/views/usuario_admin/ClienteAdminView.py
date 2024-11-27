@@ -20,7 +20,7 @@ from applications.candidato.models import Can101Candidato, Can101CandidatoSkill,
 
 #form
 from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit
-from applications.cliente.forms.ClienteForms import ClienteForm
+from applications.cliente.forms.ClienteForms import ClienteForm, ClienteFormEdit
 from applications.cliente.forms.CreacionUsuariosForm import CrearUsuarioInternoForm
 
 #utils
@@ -69,8 +69,50 @@ def cliente_detalle(request, pk):
 
     cliente = get_object_or_404(Cli051Cliente, pk=pk)
 
+    # Define los datos iniciales que quieres pasar al formulario
+    initial_data = {
+        'estado_id_001': cliente.estado_id_001.id if cliente.estado_id_001 else '',
+        'nit': cliente.nit,
+        'razon_social': cliente.razon_social,
+        'ciudad_id_004': cliente.ciudad_id_004.id if cliente.ciudad_id_004 else '',
+        'email': cliente.email,
+        'contacto': cliente.contacto,
+        'telefono': cliente.telefono,
+        'perfil_empresarial': cliente.perfil_empresarial,
+        'logo': cliente.logo.url if cliente.logo else '',
+    }
+
+    form_cliente = ClienteFormEdit(initial=initial_data)
+    #logica para mostrar el form
+    if request.method == 'POST':
+        form_cliente = ClienteFormEdit(request.POST, request.FILES)
+        if form_cliente.is_valid():
+
+            cliente.razon_social = form_cliente.cleaned_data['razon_social']
+            cliente.nit = form_cliente.cleaned_data['nit']
+            cliente.email = form_cliente.cleaned_data['email']
+            cliente.contacto = form_cliente.cleaned_data['contacto']
+            cliente.telefono = form_cliente.cleaned_data['telefono']
+            cliente.perfil_empresarial = form_cliente.cleaned_data['perfil_empresarial']
+            cliente.estado_id_001 = Cat001Estado.objects.get(id=1)
+            cliente.ciudad_id_004 = Cat004Ciudad.objects.get(id = form_cliente.cleaned_data['ciudad_id_004'])
+
+            # Manejo del campo logo (imagen)
+            if form_cliente.cleaned_data.get('logo'):
+                cliente.logo = form_cliente.cleaned_data['logo']
+
+            cliente.save()
+
+            messages.success(request, 'El cliente ha sido actualizado con éxito.')
+            return redirect('clientes:cliente_detalle', pk=cliente.id)
+            
+        else:
+            messages.error(request, form_cliente.errors)  
+    else:
+        form_cliente = ClienteFormEdit(initial=initial_data)
     contexto = {
         'cliente' : cliente,
+        'form_cliente' : form_cliente,
     }
 
     return render(request, 'cliente/cliente_detalle.html', contexto)
@@ -496,6 +538,15 @@ def vacantes_todos(request):
     vacantes = consulta_vacantes_todas() 
 
     return render(request, 'vacante/listado_vacantes_todos.html',
+        { 
+            'vacantes': vacantes,
+        })
+
+
+def vacante_candidato_emparejamiento(request):
+
+    vacantes = {}
+    return render(request, 'vacante/vacante_candidato_emparejamiento.html',
         { 
             'vacantes': vacantes,
         })

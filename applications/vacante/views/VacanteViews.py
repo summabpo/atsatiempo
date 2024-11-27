@@ -15,6 +15,7 @@ from applications.usuarios.decorators  import validar_permisos
 # utils
 from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante_candidato
 
+
 # forms
 from applications.vacante.forms.VacanteFilterForm import VacanteFilterForm
 

@@ -17,7 +17,7 @@ level_Choices = [
 ]
 
 class HabilidadCandidatoForm(forms.Form):
-    ability = forms.CharField()
+    ability = forms.CharField(label='Habilidad')
     level =  forms.ChoiceField(choices=level_Choices, label='Nivel', widget = forms.Select(attrs={ 'class': 'form-select form-select-solid fw-bold'}))
     
     def __init__(self, *args, **kwargs):

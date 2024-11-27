@@ -38,7 +38,13 @@
         </ul>
         <div class="card shadow-sm">
             <div class="card-body">
-                Aqui va el resumen del cliente
+                <h3 class="card-title">Información Cliente</h3>
+                <hr>
+                {% crispy form_cliente %}
+                <hr>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary text-center" form="form_cliente_edit">Actualizar</button>
+                </div>
             </div>  
         </div>
     </div>

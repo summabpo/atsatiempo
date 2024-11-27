@@ -72,9 +72,9 @@
                     <td style="text-align: center;">{{ e.ciudad_id_004.nombre }}</td>
                     <td style="text-align: center;" class="min-w-100px">
                         <!-- Botón 1 -->
-                        <button type="button" class="btn btn-light-primary" data-bs-toggle="modal" data-bs-target="#modal2" data-cliente_id="{{ e.id }}">
+                        {% comment %} <button type="button" class="btn btn-light-primary" data-bs-toggle="modal" data-bs-target="#modal2" data-cliente_id="{{ e.id }}">
                             <i class="fa-solid fa-file-pen fs-4"></i>
-                        </button>
+                        </button> {% endcomment %}
 
                         <!-- Detalle -->
                         <a class="btn btn-light-primary" href="{% url 'clientes:cliente_detalle' e.id  %}" title="Gestión Cliente" >

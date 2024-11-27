@@ -177,6 +177,10 @@ def inicio_app(request):
 
 
     # valida 
+    #ats portal interno
+    if session_variables['grupo_id'] == 1:
+        print('Sesion Admin')
+        
     #cliente informacion panel
     if session_variables['grupo_id'] == 3:
         print('Sesion Cliente')
