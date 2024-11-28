@@ -16,6 +16,8 @@ class CandidatoForm(forms.Form):
     sexo = forms.ChoiceField(label='GENERO', choices=[ ('', '---'), ('M', 'MASCULINO'), ('F', 'FEMENINO')], required=True)
     fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     telefono = forms.CharField(label='TELEFONO'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
+    imagen_perfil = forms.ImageField(label='IMAGEN DE PERFIL', required=False)
+    
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
@@ -32,6 +34,7 @@ class CandidatoForm(forms.Form):
             self.fields['sexo'].initial = self.instance.sexo
             self.fields['fecha_nacimiento'].initial = str(self.instance.fecha_nacimiento)
             self.fields['telefono'].initial = self.instance.telefono
+            self.fields['imagen_perfil'].initial = self.instance.imagen_perfil
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -56,10 +59,15 @@ class CandidatoForm(forms.Form):
                     Div('ciudad_id_004', css_class='col'),
                     css_class='row'
                 ),
+                Div(
+                    Div('imagen_perfil', css_class='col'),
+                    css_class='row'
+                ),
                 # Div(
                 #     Div('estado_id_001', css_class='col'),
                 #     css_class='row'
                 # ),
+
                 Submit('submit_candidato', 'Guardar Empleado', css_class='btn btn-primary mt-3'),
             )
         )
@@ -72,6 +80,7 @@ class CandidatoForm(forms.Form):
         segundo_apellido = cleaned_data.get('segundo_apellido')
         email = cleaned_data.get('email')
         telefono = cleaned_data.get('telefono')
+        imagen_perfil = cleaned_data.get('imagen_perfil') 
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', primer_nombre):
             self.add_error('primer_nombre', "El campo solo puede contener letras.")
@@ -101,8 +110,22 @@ class CandidatoForm(forms.Form):
 
         if not re.match(r'^\d{10}$', telefono):
             self.add_error('telefono','El teléfono debe contener solo números y tener 10 dígitos.')
+        # validacion imagen logo
+        tamanio_maximo = 5 * 1024 * 1024  # 5 MB
+        listado_extensiones = ['.jpg', '.jpeg', '.png']
+
+        if imagen_perfil:
+            if imagen_perfil.size > tamanio_maximo:
+                self.add_error('imagen_perfil','El tamaño del archivo supera el tamaño permitido.')
+
+            extension = os.path.splitext(imagen_perfil.name)[1].lower()
+            if extension not in listado_extensiones:
+                self.add_error('imagen_perfil','El archivo no es válido.')
+
+            if Can101Candidato.objects.filter(imagen_perfil=imagen_perfil.name).exists():
+                self.add_error('imagen_perfil','Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
         
-        return cleaned_data
+        # return cleaned_data
 
     def save(self):
         if self.instance:
@@ -120,6 +143,7 @@ class CandidatoForm(forms.Form):
         candidato.ciudad_id_004 = self.cleaned_data['ciudad_id_004']
         candidato.sexo = self.cleaned_data['sexo']
         candidato.fecha_nacimiento = self.cleaned_data['fecha_nacimiento']
+        candidato.imagen_perfil = self.cleaned_data['imagen_perfil']
 
 
         candidato.save()
@@ -134,7 +158,7 @@ class CandidatoFormAdmin(forms.Form):
     sexo = forms.ChoiceField(label='GENERO', choices=[ ('', '---'), ('M', 'MASCULINO'), ('F', 'FEMENINO')], required=True)
     fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     telefono = forms.CharField(label='TELEFONO'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
-
+    imagen_perfil = forms.ImageField(label='IMAGEN DE PERFIL', required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -183,6 +207,12 @@ class CandidatoFormAdmin(forms.Form):
                     Column('ciudad', css_class='form-group col-md-4 mb-0'),
                 )
             ),
+            Fieldset(
+                'Imagen Candidato',
+                Row(
+                    Column('imagen_perfil', css_class='form-group col-md-12 mb-0'),
+                )
+            ),
         )
 
     #metodo de validacion
@@ -204,6 +234,7 @@ class CandidatoFormAdmin(forms.Form):
         segundo_apellido = cleaned_data.get('segundo_apellido')
         email = cleaned_data.get('email')
         telefono = cleaned_data.get('telefono')
+        imagen_perfil = cleaned_data.get('imagen_perfil')
         
 
         # Validación primer nombre
@@ -246,5 +277,20 @@ class CandidatoFormAdmin(forms.Form):
         ciudad = self.cleaned_data.get('ciudad')
         if not ciudad:
             raise forms.ValidationError("Este campo es obligatorio.")
+        
+        # validacion imagen logo
+        tamanio_maximo = 5 * 1024 * 1024  # 5 MB
+        listado_extensiones = ['.jpg', '.jpeg', '.png']
+
+        if imagen_perfil:
+            if imagen_perfil.size > tamanio_maximo:
+                self.add_error('imagen_perfil','El tamaño del archivo supera el tamaño permitido.')
+
+            extension = os.path.splitext(imagen_perfil.name)[1].lower()
+            if extension not in listado_extensiones:
+                self.add_error('imagen_perfil','El archivo no es válido.')
+
+            if Can101Candidato.objects.filter(imagen_perfil=imagen_perfil.name).exists():
+                self.add_error('imagen_perfil','Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
         
         return cleaned_data

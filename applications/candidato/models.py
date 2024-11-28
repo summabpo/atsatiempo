@@ -19,6 +19,7 @@ class Can101Candidato(models.Model):
     fecha_nacimiento = models.DateField(null=True, blank=True) 
     telefono = models.CharField(max_length=10, blank=True, null=True)
     skills = models.ManyToManyField('Can104Skill', through='Can101CandidatoSkill', related_name='candidatos_skill')
+    imagen_perfil = models.ImageField(upload_to='candidato/', blank=True, null=True, verbose_name="Imagen de Perfil")
 
     def __str__(self):
         return self.email

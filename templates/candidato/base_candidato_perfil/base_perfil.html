@@ -2,7 +2,11 @@
 <div class="card-body pt-0 p-10">
     <div class="d-flex flex-center flex-column mb-10">
         <div class="symbol mb-3 symbol-100px symbol-circle">
-            <img alt="Pic" src="{% static 'media/avatars/300-1.jpg' %}" />
+            {% if candidato.imagen_perfil %}
+            <img alt="{{candidato.imagen_perfil}}" src="{{ candidato.imagen_perfil.url  }}" />
+            {% else %}
+            <img alt="blank.png" src="{% static 'media/avatars/blank.png' %}" />
+            {% endif %}
         </div>
         <a href="#" class="fs-2 text-gray-800 text-hover-primary fw-bold mb-1">{{ candidato.primer_nombre }} {{ candidato.segundo_nombre }}</a>
         <div class="fs-6 fw-semibold text-gray-500 mb-2">{{ candidato.primer_apellido }} {{ candidato.segundo_apellido }}</div>

@@ -65,7 +65,7 @@ def cliente_listar(request):
 # Mostrar Listado de cada cliente
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
-def cliente_detalle(request, pk):
+def  cliente_detalle(request, pk):
 
     cliente = get_object_or_404(Cli051Cliente, pk=pk)
 
@@ -83,6 +83,7 @@ def cliente_detalle(request, pk):
     }
 
     form_cliente = ClienteFormEdit(initial=initial_data)
+
     #logica para mostrar el form
     if request.method == 'POST':
         form_cliente = ClienteFormEdit(request.POST, request.FILES)
@@ -105,7 +106,7 @@ def cliente_detalle(request, pk):
 
             messages.success(request, 'El cliente ha sido actualizado con éxito.')
             return redirect('clientes:cliente_detalle', pk=cliente.id)
-            
+
         else:
             messages.error(request, form_cliente.errors)  
     else:

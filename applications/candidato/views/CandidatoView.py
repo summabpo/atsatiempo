@@ -30,7 +30,7 @@ def candidato_mostrar(request, pk=None):
     if request.method == 'POST':
 
         if 'submit_candidato' in request.POST:
-            form = CandidatoForm(request.POST, instance=candidato)
+            form = CandidatoForm(request.POST, request.FILES, instance=candidato)
             
             if form.is_valid():
                 form.save()
@@ -71,7 +71,7 @@ def obtener_estudio_view(request):
         candidato_id = Can101Candidato.objects.get(email=solicitud_estudio.candidato_id_101)
         ciudad_id    = Cat004Ciudad.objects.get(nombre=solicitud_estudio.ciudad_id_004)
 
-        print(solicitud_estudio.grado_en)
+        
         
         response_data = {
             'data': {
@@ -220,7 +220,7 @@ def habilidades_crear(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            print(data)
+            
             for item in data:
                 # Intentar obtener el objeto existente
                 habilidad, creada = Can104Skill.objects.get_or_create(
@@ -228,10 +228,10 @@ def habilidades_crear(request):
                     estado_id_004= Cat001Estado.objects.get(id=1) 
                 )
 
-                if creada:
-                    print(f'La habilidad {habilidad.nombre} se ha creado con éxito')
-                else:
-                    print(f'La habilidad {habilidad.nombre} ya existe')
+                # if creada:
+                #     print(f'La habilidad {habilidad.nombre} se ha creado con éxito')
+                # else:
+                #     print(f'La habilidad {habilidad.nombre} ya existe')
 
                 Can101CandidatoSkill.objects.get_or_create(
                     candidato_id_101=Can101Candidato.objects.get(id=item['empleado_id']), 
@@ -255,8 +255,7 @@ def candidatos_listar(request):
     
     
     if request.method == 'POST':
-        form = CandidatoFormAdmin(request.POST)
-
+        form = CandidatoFormAdmin(request.POST, request.FILES)
 
         if form.is_valid():
             primer_nombre=form.cleaned_data.get('primer_nombre')
@@ -268,6 +267,7 @@ def candidatos_listar(request):
             sexo=form.cleaned_data.get('sexo')
             fecha_nacimiento=form.cleaned_data.get('fecha_nacimiento')
             ciudad=form.cleaned_data.get('ciudad')
+            imagen_perfil=form.cleaned_data.get('imagen_perfil')
 
             # Obtén la instancia del modelo `Cat004Ciudad`
             ciudad = Cat004Ciudad.objects.get(id=ciudad)
@@ -283,7 +283,8 @@ def candidatos_listar(request):
                 sexo=sexo,
                 fecha_nacimiento=fecha_nacimiento,
                 ciudad_id_004=ciudad,
-                estado_id_001=estado
+                estado_id_001=estado,
+                imagen_perfil=imagen_perfil
             )
 
             messages.success(request, 'El candidato ha sido creado con éxito.')
