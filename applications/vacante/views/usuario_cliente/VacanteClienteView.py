@@ -230,8 +230,6 @@ def gestion_entrevista(request, pk):
 
             messages.success(request, 'Se ha actualizado la entrevista.')
 
-            
-            
             if cliente_id:
                 if grupo_id == 4:
                     return redirect('vacantes:ver_entrevista_entrevistador')
