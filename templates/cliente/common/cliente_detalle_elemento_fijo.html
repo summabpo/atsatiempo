@@ -4,7 +4,7 @@
         <h3 class="card-title">Información Principal</h3>
         <div class="card-toolbar">
             <!--begin::Action menu-->
-            <a href="#" class="btn btn-sm btn-light-success" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">Crear 
+            {% comment %} <a href="#" class="btn btn-sm btn-light-success" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">Crear 
             <i class="ki-duotone ki-down fs-2 me-0"></i></a>
             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold py-4 w-250px fs-6" data-kt-menu="true">
                 <div class="menu-item px-5">
@@ -28,7 +28,7 @@
                 <div class="menu-item px-5 my-1">
                     <a href="#" class="menu-link px-5">Reporte 2</a>
                 </div>
-            </div>
+            </div> {% endcomment %}
         </div>
     </div>
     <div class="card-body">
@@ -39,8 +39,6 @@
                 {% else %}
                     <img src="{% static 'media/avatars/300-1.jpg' %}" alt="image" />
                 {% endif %}
-                    
-                
             </div>
             <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">{{cliente.razon_social}}</a>
             <div class="fs-5 fw-semibold text-muted mb-6">{{cliente.ciudad_id_004.nombre}}</div>
@@ -84,9 +82,9 @@
             <span class="ms-2 rotate-180">
                 <i class="ki-duotone ki-down fs-3"></i>
             </span></div>
-            <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Editar Información del Cliente">
+            {% comment %} <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Editar Información del Cliente">
                 <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_customer">EDITAR</a>
-            </span>
+            </span> {% endcomment %}
         </div>
         <div class="separator separator-dashed my-3"></div>
         <div id="kt_customer_view_details" class="collapse show">

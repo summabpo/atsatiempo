@@ -4,67 +4,10 @@
     <div class="card-header">
         <h3 class="card-title">Entrevistas </h3>
         <div class="card-toolbar">
-            <button type="button" class="btn btn-sm btn-light">
-                Pendiente
-            </button>
+            
         </div>
     </div>
     <div class="card-body">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <div class="card-header">
-                                <h3 class="card-title">Vacantes Pendientes</h3>
-                                <div class="card-toolbar">
-                                    
-                                </div>
-                            </div>
-                            <div class="card-body"><table id="kt_datatable_dom_positioning" class="table table-striped table-row-bordered gy-5 gs-7 border rounded">
-                                    <thead>
-                                        <tr class="fw-bold fs-6 text-gray-800 px-7">
-                                            <th>Vacante</th>
-                                            <th>Cliente</th>
-                                            <th>Fecha Creación</th>
-                                            <th>Candidatos</th>
-                                            <th>Estado</th>
-                                            <th>Ver</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for vacante in vacantes_pendiente %}
-                                            <tr>
-                                                <td>{{vacante.titulo}}</td>
-                                                <td>{{vacante.cliente_id_051.razon_social}}</td>
-                                                <td>{{vacante.fecha_creacion}}</td>
-                                                <td>{{vacante.num_aplicaciones}}</td>
-                                                <td>
-                                                    {% if  vacante.estado_vacante == 1 %} 
-                                                        ABIERTA 
-                                                    {% elif vacante.estado_vacante == 2 %}
-                                                        CERRADA
-                                                    {% elif vacante.estado_vacante == 3 %}
-                                                        CANCELADA
-                                                    {% endif %}
-                                                </td>
-                                                <td>Ver</td>
-                                            </tr>
-                                        {% empty %}
-                                                <p>No hay vacantes pendientes.</p>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div id="calendar"></div>
 
         <!-- Modal de Información Calendario -->
