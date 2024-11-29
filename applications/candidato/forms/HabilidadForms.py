@@ -3,7 +3,7 @@ from django import forms
 from django.utils import timezone
 from datetime import datetime
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden, Div, Submit
+from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden, Div, Submit, HTML
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato, Can104Skill, Can101CandidatoSkill
 
@@ -48,6 +48,9 @@ class HabilidadCandidatoForm(forms.Form):
         self.helper.layout = Layout(
             Row(
                     Column('ability', css_class='form-group col-md-12 mb-0'),
+            ),
+            Row(
+                    HTML('<div id="sugerencias" class="d-flex flex-column"></div>'),
             ),
             Row(
                     Column('level', css_class='form-group col-md-12 mb-0'),

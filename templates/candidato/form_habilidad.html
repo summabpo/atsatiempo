@@ -62,7 +62,7 @@ Información Habilidades
                     <div class="card-body">
                         {% crispy form %}   
                         <br>
-                        <ul id="sugerencias" class="list-unstyled"></ul>
+                        {% comment %} <ul id="sugerencias" class="list-unstyled"></ul> {% endcomment %}
                     </div>
                     <div class="card-footer">
                         <button type="submit" class="btn btn-light-success" form="form_habilidades">Guardar</button>
@@ -130,29 +130,41 @@ Información Habilidades
 {% block extrajs %}
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const habilidadInput = document.getElementById('habilidad');
         const sugerenciasList = document.getElementById('sugerencias');
     
-        habilidadInput.addEventListener('input', function() {
+        habilidadInput.addEventListener('input', function () {
             const query = this.value;
             if (query.length > 2) {
                 fetch(`http://127.0.0.1:8000/pruebas/api/prueba_texto_sugerido?query=${query}`)
                     .then(response => response.json())
                     .then(data => {
-                        sugerenciasList.innerHTML = '';
+                        sugerenciasList.innerHTML = ''; // Limpia las sugerencias previas
                         data.forEach(sugerencia => {
+                            // Crea la estructura HTML deseada
                             const li = document.createElement('li');
-                            li.textContent = sugerencia;
-                            li.addEventListener('click', function() {
-                                habilidadInput.value = this.textContent;
-                                sugerenciasList.innerHTML = '';
+                            li.className = 'd-flex align-items-center py-2 bg-light-success text-success';
+    
+                            const bullet = document.createElement('span');
+                            bullet.className = 'bullet me-5 '; // Clase del bullet
+                            li.appendChild(bullet);
+    
+                            const texto = document.createElement('span');
+                            texto.textContent = sugerencia; // El texto de la sugerencia
+                            li.appendChild(texto);
+    
+                            // Evento para seleccionar la sugerencia
+                            li.addEventListener('click', function () {
+                                habilidadInput.value = sugerencia; // Asigna la sugerencia al campo
+                                sugerenciasList.innerHTML = ''; // Limpia las sugerencias
                             });
+    
                             sugerenciasList.appendChild(li);
                         });
                     });
             } else {
-                sugerenciasList.innerHTML = '';
+                sugerenciasList.innerHTML = ''; // Limpia las sugerencias si la consulta es corta
             }
         });
     });
