@@ -15,6 +15,7 @@ from applications.usuarios.decorators  import validar_permisos
 # utils
 from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante_candidato
 
+
 # forms
 from applications.vacante.forms.VacanteFilterForm import VacanteFilterForm
 
@@ -422,3 +423,16 @@ def buscar_vacante(request):
         vacantes = vacantes[:10]
 
     return render(request, 'vacante/buscar_vacante.html', {'vacantes': vacantes, 'form': form})
+
+#Emparejamiento individual entre vacante y candidato
+def vacante_candidato_emparejamiento(request, vacante_id, candidato_id):
+
+    candidato = Can101Candidato.objects.get(id=candidato_id)
+    vacante = Cli052Vacante.objects.get(id=vacante_id)
+
+    contexto = {
+        'vacante': vacante,
+        'candidato': candidato,
+    }
+
+    return render(request, 'vacante/vacante_candidato_emparejamiento.html', contexto)

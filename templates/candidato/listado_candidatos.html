@@ -67,12 +67,12 @@
         <table id="kt_candidato" class="table align-middle table-row-dashed fs-6 gy-5">
             <thead>
                 <tr class="fw-bold fs-6 text-gray-800 px-7">
-                    <th style="text-align: center">PRIMERO APELLIDO</th>
+                    <th style="text-align: center">NOMBRE</th>
+                    {% comment %} <th style="text-align: center">PRIMERO APELLIDO</th>
                     <th style="text-align: center">SEGUNDO APELLIDO</th>
                     <th style="text-align: center">PRIMER NOMBRE</th>
                     <th style="text-align: center">SEGUNDO NOMBRE</th>
-                    
-                    <th style="text-align: center">EMAIL</th>
+                    <th style="text-align: center">EMAIL</th> {% endcomment %}
                     <th style="text-align: center">TELEFONO</th>
                     <th style="text-align: center">FECHA NACIMIENTO</th>
                     <th style="text-align: center">PERFIL COMPLETO</th>
@@ -83,11 +83,28 @@
             <tbody>
                 {% for e in candidatos %}
                 <tr class="rounded p-10 hover-elevate-up">
-                    <td style="text-align: center;">{{ e.primer_apellido }}</td>
+                    <td class="d-flex align-items-center">
+                        <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                            <a href="{% url 'candidatos:candidato_editar' e.id  %}">
+                                <div class="symbol-label">
+                                    {% if e.imagen_perfil %}
+                                        <img src="{{e.imagen_perfil.url}}" alt="{{e.imagen_perfil.url}}" class="w-100" />
+                                    {% else %}    
+                                        <img src="{% static 'media/avatars/blank.png' %}" alt="blank.png" class="w-100" />
+                                    {% endif %}
+                                </div>
+                            </a>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <a href="{% url 'candidatos:candidato_editar' e.id  %}" class="text-gray-800 text-hover-primary mb-1">{{ e.primer_nombre|title }} {{ e.segundo_apellido|title }} {{ e.primer_apellido|title }} {{ e.segundo_apellido|title }}</a>
+                            <span>{{ e.email }}</span>
+                        </div>
+                    </td>
+                    {% comment %} <td style="text-align: center;">{{ e.primer_apellido }}</td>
                     <td style="text-align: center;">{{ e.segundo_apellido }}</td>
                     <td style="text-align: center;">{{ e.primer_nombre }}</td>
                     <td style="text-align: center;">{{ e.segundo_nombre }}</td>
-                    <td style="text-align: center;">{{ e.email }}</td>
+                    <td style="text-align: center;">{{ e.email }}</td> {% endcomment %}
                     <td style="text-align: center;">{{ e.telefono |default:"-" }}</td>
                     <td style="text-align: center;">{{ e.fecha_nacimiento | date:"d/m/Y" }}</td>
                     <td style="text-align: center;">
@@ -148,7 +165,7 @@
                 "sortDescending": ": Activar para ordenar la columna de manera descendente"
             }
         },
-        "pageLength": 50,
+        "pageLength": 10,
         "order": [],
         "dom":
             "<'row mb-2'" +
