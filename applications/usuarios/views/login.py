@@ -3,9 +3,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
-from applications.usuarios.forms.loginform import LoginForm
-from applications.usuarios.forms.UserForms import SignupForm
-from applications.usuarios.forms.CandidatoForm import SignupFormCandidato
 from applications.usuarios.models import UsuarioBase, TokenAutorizacion, Grupo, Permiso
 from applications.usuarios.forms.CorreoForm import CorreoForm
 from applications.cliente.models import Cli051Cliente
@@ -18,11 +15,16 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
 from ..decorators  import validar_permisos
+from django.conf import settings
 
-from applications.common.views.PanelView import info_vacantes_pendientes, info_entrevistas_candidato
+# form
+from applications.usuarios.forms.loginform import LoginForm
+from applications.usuarios.forms.UserForms import SignupForm
+from applications.usuarios.forms.CandidatoForm import SignupFormCandidato
 
 # consultas
 from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante_candidato
+from applications.common.views.PanelView import info_vacantes_pendientes, info_entrevistas_candidato
 
 ## login 
 frases_falla_login = [
@@ -199,7 +201,7 @@ def inicio_app(request):
         entrevistas_pendiente_candidato = None
         asignacion_vacante = None
 
-    print(entrevistas_pendiente_candidato)
+    
 
     # Si quieres pasar las variables de sesión al template
     context = {
@@ -234,13 +236,34 @@ def login_view(request):
                         # Valida el usuario es de grupo cliente para mostrar el id cliente. 
                         if usuario.group.id == 4:
                             request.session['cliente_id'] = usuario.cliente_id_051.id
-
+                            request.session['tipo_usuario'] = 'Cliente'
+                            
                         if usuario.group.id == 3:
-                            request.session['cliente_id'] = usuario.cliente_id_051.id
+                            cliente_id = usuario.cliente_id_051.id
+                            cliente = Cli051Cliente.objects.get(id = cliente_id)
+                            request.session['cliente_id'] = cliente.id
+                            if cliente.logo:
+                                request.session['imagen_url'] = cliente.logo.url
+                            else:
+                                request.session['imagen_url'] = '/static/media/avatars/blank.png'
+                            
+                            request.session['tipo_usuario'] = 'Cliente'
 
                         if usuario.group.id == 2:
-                            request.session['candidato_id'] = usuario.candidato_id_101.id
-                        
+                            candidato_id = usuario.candidato_id_101.id
+                            candidato = Can101Candidato.objects.get(id = candidato_id)
+                            request.session['candidato_id'] = candidato.id
+                            if candidato.imagen_perfil:
+                                request.session['imagen_url'] = candidato.imagen_perfil.url
+                            else:
+                                request.session['imagen_url'] = '/static/media/avatars/blank.png'
+                            
+                            request.session['tipo_usuario'] = 'Candidato'
+
+                        if usuario.group.id == 1:
+                            request.session['imagen_url'] = '/media/ats/logo_atiempo.png'
+                            request.session['tipo_usuario'] = 'Administrador'
+
                         request.session['grupo_id'] = usuario.group.id
                         return redirect('accesses:inicio')  
                     else:
@@ -249,7 +272,7 @@ def login_view(request):
                 else:
                     frase_aleatoria = random.choice(frases_falla_login)
                     messages.error(request, frase_aleatoria)
-                    return redirect('accesses:login')  
+                    return redirect('accesses:login')
         else:
             form = LoginForm()
 

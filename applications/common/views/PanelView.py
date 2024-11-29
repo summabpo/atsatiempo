@@ -14,8 +14,7 @@ def info_vacantes_pendientes(pk):
     cliente = get_object_or_404(Cli051Cliente, pk=pk)
     # vacantes = Cli052Vacante.objects.filter(cliente_id_051 = cliente.id)
     vacantes = Cli052Vacante.objects.annotate(num_aplicaciones=Count('aplicaciones')).filter(cliente_id_051 = cliente.id)
-
-    print(vacantes)
+    
     return vacantes
 
 # Panel principal Candidato

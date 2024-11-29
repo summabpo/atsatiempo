@@ -31,23 +31,30 @@ class HabilidadCandidatoForm(forms.Form):
             
         })
 
-        self.fields['ability'].widget.attrs.update({
-            'class': 'form-control form-control-solid', 
-            'id': 'habilidad', 
-            'required': 'required'
-            
-        })
+        self.fields['level'] = forms.ChoiceField(
+            label='Nivel',
+            choices=level_Choices,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select form-select-solid',  # Clases CSS del campo  
+                    'data-control': 'select2',
+                    'data-placeholder': 'Seleccion una opción',
+                    }
+        ), required=True)
         
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_id = 'form_habilidades'
         self.helper.layout = Layout(
-            Div(
-                Div('ability',css_class='me-4 mb-0'),
-                Div('level',css_class='me-4 mb-0'),
-                Submit('submit', 'Agregar', css_class='btn btn-lg btn-primary px-8'),
-                css_class='d-flex align-items-center'), 
+            Row(
+                    Column('ability', css_class='form-group col-md-12 mb-0'),
+            ),
+            Row(
+                    Column('level', css_class='form-group col-md-12 mb-0'),
+            ),
         )
+
+
 
     def clean(self):
         cleaned_data = super().clean()
