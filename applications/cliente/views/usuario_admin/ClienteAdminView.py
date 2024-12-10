@@ -9,13 +9,15 @@ from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 from django.db.models import F, Value
 from django.db.models.functions import Concat
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 #model
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli052VacanteSoftSkillsId053, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli056AplicacionVacante, Cli057AsignacionEntrevista
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.models import Permiso
 from applications.cliente.models import Cli051Cliente
-from applications.usuarios.models import UsuarioBase, Grupo
+from applications.usuarios.models import UsuarioBase, Grupo, TokenAutorizacion
 from applications.candidato.models import Can101Candidato, Can101CandidatoSkill, Can102Experiencia, Can103Educacion, Can104Skill
 
 #form
@@ -39,15 +41,79 @@ def generate_random_password(length=12):
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def cliente_listar(request):
+    url_actual = f"{request.scheme}://{request.get_host()}"
     clientes = Cli051Cliente.objects.filter(estado_id_001=1).order_by('-id')
     form_errors = False
 
     if request.method == 'POST':
-        form = ClienteForm(request.POST, request.FILES)
-        if form.is_valid():
-            ClienteForm.logo = form.cleaned_data['logo']
-            form.save()
-            messages.success(request, 'Cliente Creado!')
+        form_cliente = ClienteForm(request.POST, request.FILES)
+        if form_cliente.is_valid():
+            
+            razon_social = form_cliente.cleaned_data['razon_social']
+            nit = form_cliente.cleaned_data['nit']
+            email = form_cliente.cleaned_data['email']
+            contacto = form_cliente.cleaned_data['contacto']
+            telefono = form_cliente.cleaned_data['telefono']
+            perfil_empresarial = form_cliente.cleaned_data['perfil_empresarial']
+            estado_id_001 = Cat001Estado.objects.get(id=1)
+            ciudad_id_004 = Cat004Ciudad.objects.get(id = form_cliente.cleaned_data['ciudad_id_004'])
+
+            # Manejo del campo logo (imagen)
+            if form_cliente.cleaned_data.get('logo'):
+                logo = form_cliente.cleaned_data['logo']
+            else:
+                logo = None
+
+            cliente = Cli051Cliente.objects.create(
+                razon_social = razon_social,
+                nit = nit,
+                email = email,
+                contacto = contacto,
+                telefono = telefono,
+                perfil_empresarial = perfil_empresarial,
+                estado_id_001 = estado_id_001,
+                ciudad_id_004 = ciudad_id_004,
+                logo = logo
+            )
+
+            password = generate_random_password()
+
+            grupo = Grupo.objects.get(id=3)
+            user = UsuarioBase.objects.create_user(
+                username= email, 
+                email= email, 
+                password=password,
+                cliente_id_051 = cliente ,
+                primer_nombre = contacto.capitalize() ,
+                primer_apellido = contacto.capitalize(),  
+                group=grupo,
+            )
+
+            token_generado = generate_token(50);
+
+            TokenAutorizacion.objects.create(
+                user_id=user.id,
+                token=token_generado,  # Una función que genere un token único
+                fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
+            )    
+
+            
+
+            # Envio del correo electronico de confirmación del usuario y contraseña
+            contexto = {
+                'name': contacto.capitalize(),
+                'last_name': contacto.capitalize(),
+                'user': user,
+                'email': email,
+                'password': password,
+                'token': token_generado,
+                'url': url_actual
+            }
+
+            # Envia el metodo
+            enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
+                        
+            messages.success(request, 'Cliente Creado!, Se ha enviado al correo del cliente el usuario y la contraseña')
             return redirect('clientes:cliente_listar')  # Cambia a la vista deseada después de guardar
         else:
             form_errors = True
