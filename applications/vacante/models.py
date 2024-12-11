@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.cliente.models import Cli051Cliente
 from applications.candidato.models import Can101Candidato
@@ -75,6 +76,29 @@ class Cli052Vacante(models.Model):
 
     def __str__(self):
         return self.titulo
+    
+    @classmethod
+    def contar_vacantes_por_estado(cls, cliente_id):
+        total_vacantes = cls.objects.filter(cliente_id_051=cliente_id).count()
+        
+        activas = cls.objects.filter(estado_vacante=1, cliente_id_051=cliente_id).count()
+        en_proceso = cls.objects.filter(estado_vacante=2, cliente_id_051=cliente_id).count()
+        finalizadas = cls.objects.filter(estado_vacante=3, cliente_id_051=cliente_id).count()
+        canceladas = cls.objects.filter(estado_vacante=4, cliente_id_051=cliente_id).count()
+        
+        # Evitar división por cero
+        porcentaje_activas = (activas / total_vacantes * 100) if total_vacantes > 0 else 0
+        porcentaje_en_proceso = (en_proceso / total_vacantes * 100) if total_vacantes > 0 else 0
+        porcentaje_finalizadas = (finalizadas / total_vacantes * 100) if total_vacantes > 0 else 0
+        porcentaje_canceladas = (canceladas / total_vacantes * 100) if total_vacantes > 0 else 0
+        
+        return {
+            'activas': {'cantidad': activas, 'porcentaje': porcentaje_activas},
+            'en_proceso': {'cantidad': en_proceso, 'porcentaje': porcentaje_en_proceso},
+            'finalizadas': {'cantidad': finalizadas, 'porcentaje': porcentaje_finalizadas},
+            'canceladas': {'cantidad': canceladas, 'porcentaje': porcentaje_canceladas},
+            'total_vacantes': total_vacantes,
+        }
     
     class Meta:
         #managed = False
