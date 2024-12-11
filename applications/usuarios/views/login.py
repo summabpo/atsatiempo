@@ -261,7 +261,7 @@ def login_view(request):
                             request.session['tipo_usuario'] = 'Candidato'
 
                         if usuario.group.id == 1:
-                            request.session['imagen_url'] = '/media/ats/logo_atiempo.png'
+                            request.session['imagen_url'] = '/media_uploads/ats/logo_atiempo.png'
                             request.session['tipo_usuario'] = 'Administrador'
 
                         request.session['grupo_id'] = usuario.group.id

@@ -58,7 +58,6 @@ class ClienteForm(forms.Form):
             widget=forms.Select(
                 attrs={
                     'data-control': 'select2',
-                    'data-tags': 'true',
                     'data-placeholder': 'Seleccione una ciudad',
                     'class': 'form-select form-select-solid fw-bold',
                     'data-dropdown-parent': '#modal1',

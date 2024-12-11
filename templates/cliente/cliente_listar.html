@@ -53,9 +53,9 @@
                         <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                             <div class="symbol-label">
                                 {% if e.logo %}
-                                    <img src="{{ e.logo.url }}" alt="Emma Smith" class="w-100" />
+                                    <img src="{{ e.logo.url }}" alt="Perfil" class="w-100" />
                                 {% else %}  
-                                    <img src="{% static 'media/avatars/blank.png' %}" alt="Emma Smith" class="w-100" />
+                                    <img src="{% static 'media/avatars/blank.png' %}" alt="Perfil" class="w-100" />
                                 {% endif %}
                             </div>
                         </div>
@@ -71,11 +71,7 @@
                     <td style="text-align: center;">{{ e.telefono }}</td>
                     <td style="text-align: center;">{{ e.ciudad_id_004.nombre }}</td>
                     <td style="text-align: center;" class="min-w-100px">
-                        <!-- Botón 1 -->
-                        {% comment %} <button type="button" class="btn btn-light-primary" data-bs-toggle="modal" data-bs-target="#modal2" data-cliente_id="{{ e.id }}">
-                            <i class="fa-solid fa-file-pen fs-4"></i>
-                        </button> {% endcomment %}
-
+                        
                         <!-- Detalle -->
                         <a class="btn btn-light-primary" href="{% url 'clientes:cliente_detalle' e.id  %}" title="Gestión Cliente" >
                             <i class="ki-duotone ki-element-8">
