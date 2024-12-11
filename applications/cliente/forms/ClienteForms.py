@@ -11,7 +11,7 @@ class ClienteForm(forms.Form):
     # estado_id_001 = forms.ModelChoiceField(label='ESTADO'    , queryset=Cat001Estado.objects.all(), required=True)
     nit           = forms.CharField(label='NIT' , required=True  ,widget=forms.TextInput(attrs={'placeholder': ' Nit'}))
     razon_social  = forms.CharField(label='RAZON SOCIAL', required=True ,widget=forms.TextInput(attrs={'placeholder': 'Razón Social'}))
-    ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)
+    # ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)
     email         = forms.CharField(label='EMAIL'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Email'}))
     contacto      = forms.CharField(label='CONTACTO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Contacto'}))
     telefono      = forms.CharField(label='TELEFONO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
@@ -37,6 +37,8 @@ class ClienteForm(forms.Form):
         self.helper.enctype = 'multipart/form-data'
         self.helper.form_id = 'form_cliente'
 
+
+
         self.fields['nit'].widget.attrs.update({
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
             'data-placeholder': 'Ingrese Nit'
@@ -44,14 +46,32 @@ class ClienteForm(forms.Form):
 
         self.fields['razon_social'].widget.attrs.update({
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
-            'data-placeholder': 'Ingrese Razón Social'
+            'data-placeholder': 'Ingrese Razón Social',
+            
         })
+        cities = Cat004Ciudad.objects.all().order_by('nombre')
+        city_choices = [('', '----------')] + [(ciudad.id, f"{ciudad.nombre}") for ciudad in cities]
 
-        self.fields['ciudad_id_004'].widget.attrs.update({
-            'data-control': 'select2',
-            'data-tags':'true',
-            'class': 'form-select form-select-solid fw-bold',
-        })
+        self.fields['ciudad_id_004'] = forms.ChoiceField(
+            label='CIUDAD',
+            choices=city_choices,
+            widget=forms.Select(
+                attrs={
+                    'data-control': 'select2',
+                    'data-tags': 'true',
+                    'data-placeholder': 'Seleccione una ciudad',
+                    'class': 'form-select form-select-solid fw-bold',
+                    'data-dropdown-parent': '#modal1',
+                    }
+        ), required=True)
+
+        # self.fields['ciudad_id_004'].widget.attrs.update({
+        #     'data-control': 'select2',
+        #     'data-tags': 'true',
+        #     'data-placeholder': 'Seleccione una ciudad',
+        #     'class': 'form-select form-select-solid fw-bold',
+        #     'data-dropdown-parent': '#modal1',
+        # })
 
         self.fields['email'].widget.attrs.update({
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
@@ -60,22 +80,22 @@ class ClienteForm(forms.Form):
 
         self.fields['contacto'].widget.attrs.update({
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
-            'data-placeholder': 'Ingrese Razón Social'
+            'data-placeholder': 'Contacto'
         })
 
         self.fields['telefono'].widget.attrs.update({
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
-            'data-placeholder': 'Ingrese Razón Social'
+            'data-placeholder': 'Teléfono'
         })
 
         self.fields['perfil_empresarial'].widget.attrs.update({
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
-            'data-placeholder': 'Ingrese Razón Social'
+            'data-placeholder': 'Perfil Empresarial'
         })
 
         self.fields['logo'].widget.attrs.update({
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
-            'data-placeholder': 'Ingrese Razón Social'
+            'data-placeholder': 'Logo'
         })
 
 
@@ -130,11 +150,19 @@ class ClienteForm(forms.Form):
         if not re.match(r'^\d{10}$', telefono):
             self.add_error('telefono','El teléfono debe contener solo números y tener 10 dígitos.')
 
+        # Verifica si el teléfono ya está registrado
+        if telefono and Cli051Cliente.objects.filter(telefono=telefono).exists():
+            self.add_error('telefono', 'El teléfono ya está registrado.')
+
         if len(perfil_empresarial.split()) < 10:
             self.add_error('perfil_empresarial','La descripción debe contener al menos 10 palabras')
 
         if email and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
             self.add_error('email','El email no es válido.')
+
+        # Verifica si el email ya está registrado
+        if email and Cli051Cliente.objects.filter(email=email).exists():
+            self.add_error('email','El email ya está registrado.')
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', contacto):
             self.add_error('contacto','El Nombre del Contacto solo puede contener letras.')
@@ -156,7 +184,7 @@ class ClienteForm(forms.Form):
             if Cli051Cliente.objects.filter(logo=logo.name).exists():
                 self.add_error('logo','Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
 
-        return super().clean()
+        return cleaned_data
 
 
     def save(self):
@@ -241,8 +269,6 @@ class ClienteFormEdit(forms.Form):
             'data-placeholder': 'Ingrese Razón Social'
         })
 
-        
-
         self.fields['email'].widget.attrs.update({
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
             'data-placeholder': 'Ingrese Razón Social'
@@ -267,7 +293,6 @@ class ClienteFormEdit(forms.Form):
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
             'data-placeholder': 'Ingrese Razón Social'
         })
-
 
         self.helper.layout = Layout(
             Div(
