@@ -97,8 +97,6 @@ def cliente_listar(request):
                 fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
             )    
 
-            
-
             # Envio del correo electronico de confirmación del usuario y contraseña
             contexto = {
                 'name': contacto.capitalize(),
@@ -112,7 +110,7 @@ def cliente_listar(request):
 
             # Envia el metodo
             enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
-                        
+            
             messages.success(request, 'Cliente Creado!, Se ha enviado al correo del cliente el usuario y la contraseña')
             return redirect('clientes:cliente_listar')  # Cambia a la vista deseada después de guardar
         else:
@@ -121,7 +119,6 @@ def cliente_listar(request):
     else:
         form = ClienteForm()
 
-    
     return render(request, 'cliente/cliente_listar.html', {
         'clientes': clientes,
         'form': form,

@@ -298,11 +298,12 @@ def gestion_vacante_editar(request, pk):
 
     # form_vacante = VacanteFormEdit()
     form_vacante = VacanteFormEdit(initial=initial_data)
-
+    print(vacante)
     # Formulario Vacantes
     if request.method == 'POST': 
         form_vacante = VacanteFormEdit(request.POST)
         if form_vacante.is_valid():
+            
             vacante.titulo = form_vacante.cleaned_data['titulo']
             vacante.numero_posiciones = form_vacante.cleaned_data['numero_posiciones']
 
