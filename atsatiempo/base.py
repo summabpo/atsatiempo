@@ -39,8 +39,8 @@ LOCAL_APPS = [
     'applications.pruebas_psi',
     'applications.usuarios',
     'applications.vacante',
-    'candidate',
-    'client',
+    #'candidate',
+    #'client',
 ]
 THIRD_APPS = [
     # Crispy Forms
