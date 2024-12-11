@@ -131,6 +131,7 @@ def cliente_listar(request):
 def  cliente_detalle(request, pk):
 
     cliente = get_object_or_404(Cli051Cliente, pk=pk)
+    contadores_vacantes = Cli052Vacante.contar_vacantes_por_estado(cliente.id)
 
     # Define los datos iniciales que quieres pasar al formulario
     initial_data = {
@@ -177,6 +178,7 @@ def  cliente_detalle(request, pk):
     contexto = {
         'cliente' : cliente,
         'form_cliente' : form_cliente,
+        'contadores_vacantes' : contadores_vacantes,
     }
 
     return render(request, 'cliente/cliente_detalle.html', contexto)
