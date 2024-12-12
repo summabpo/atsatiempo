@@ -53,10 +53,63 @@
                 </div>
             </div>
             <div class="card-body">
-                
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="kt_docs_google_chart_column"></div>   
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                    <script src="//www.google.com/jsapi"></script> 
+                    <script>
+                        // GOOGLE CHARTS INIT
+                        google.load('visualization', '1', {
+                            packages: ['corechart', 'bar', 'line']
+                        });
+
+                        google.setOnLoadCallback(function () {
+                            var data = google.visualization.arrayToDataTable([
+                                ['Task', 'Hours per Day'],
+                                ['Aplicadas', {{contadores_reclutados.aplicadas.cantidad}}],
+                                ['En Proceso', {{contadores_reclutados.en_proceso.cantidad}}],
+                                ['Seleccionados', {{contadores_reclutados.seleccionados.cantidad}}],
+                                ['No Aptos', {{contadores_reclutados.no_aptas.cantidad}}],
+                                ['Cancelado', {{contadores_reclutados.canceladas.cantidad}}],
+                                ['Desistidos', {{contadores_reclutados.desistidos.cantidad}}]
+                            ]);
+
+                            var options = {
+                                title: 'Gestión Vacante',
+                                colors: ['#2abe81', '#f6aa33', '#45f71e', '#e74c3c', '#c7d2e7', '#593ae1'],
+                                height: 500,
+                                width: '100%'
+                            };
+
+                            var chart = new google.visualization.PieChart(document.getElementById('kt_docs_google_chart_column'));
+                            chart.draw(data, options);
+
+                            document.getElementById('chartType').addEventListener('change', function () {
+                                var chartType = this.value;
+                                if (chartType === 'PieChart') {
+                                    chart = new google.visualization.PieChart(document.getElementById('kt_docs_google_chart_column'));
+                                } else if (chartType === 'BarChart') {
+                                    chart = new google.visualization.BarChart(document.getElementById('kt_docs_google_chart_column'));
+                                }
+                                chart.draw(data, options);
+                            });
+                        });
+                    </script>
+                    <div class="form-group">
+                        <label for="chartType">Tipo de Gráfico:</label>
+                        <select id="chartType" class="form-control">
+                            <option value="PieChart">Pie Chart</option>
+                            <option value="BarChart">Bar Chart</option>
+                        </select>
+                    </div>
+                    </script>
+                </div>
             </div>
             <div class="card-footer">
-                Footer
+                
             </div>
         </div>
     </div>

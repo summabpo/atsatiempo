@@ -87,10 +87,11 @@ class Cli052Vacante(models.Model):
         canceladas = cls.objects.filter(estado_vacante=4, cliente_id_051=cliente_id).count()
         
         # Evitar división por cero
-        porcentaje_activas = (activas / total_vacantes * 100) if total_vacantes > 0 else 0
-        porcentaje_en_proceso = (en_proceso / total_vacantes * 100) if total_vacantes > 0 else 0
-        porcentaje_finalizadas = (finalizadas / total_vacantes * 100) if total_vacantes > 0 else 0
-        porcentaje_canceladas = (canceladas / total_vacantes * 100) if total_vacantes > 0 else 0
+        porcentaje_activas = round((activas / total_vacantes * 100), 1) if total_vacantes > 0 else 0
+        porcentaje_en_proceso = round((en_proceso / total_vacantes * 100), 1) if total_vacantes > 0 else 0
+        porcentaje_finalizadas = round((finalizadas / total_vacantes * 100), 1) if total_vacantes > 0 else 0
+        porcentaje_canceladas = round((canceladas / total_vacantes * 100), 1) if total_vacantes > 0 else 0
+
         
         return {
             'activas': {'cantidad': activas, 'porcentaje': porcentaje_activas},
@@ -154,6 +155,48 @@ class Cli056AplicacionVacante(models.Model):
     def __str__(self):
         return str(self.id)
 
+    def calcular_cantidades_y_porcentajes(vacante_id):
+        total_aplicaciones = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante_id).count()
+
+        if total_aplicaciones == 0:
+            return {
+                'aplicadas': {'cantidad': 0, 'porcentaje': 0},
+                'en_proceso': {'cantidad': 0, 'porcentaje': 0},
+                'finalizadas': {'cantidad': 0, 'porcentaje': 0},
+                'canceladas': {'cantidad': 0, 'porcentaje': 0},
+                'desistidos': {'cantidad': 0, 'porcentaje': 0},
+                'no_aptas': {'cantidad': 0, 'porcentaje': 0},
+                'seleccionados': {'cantidad': 0, 'porcentaje': 0},
+            }
+
+        # Contar estados específicos
+        aplicadas = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante_id, estado_aplicacion=1).count()
+        en_proceso = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante_id, estado_aplicacion__in=[2, 3, 5, 6]).count()
+        seleccionados = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante_id, estado_aplicacion=8).count()
+        finalizadas = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante_id, estado_aplicacion=9).count()
+        canceladas = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante_id, estado_aplicacion=10).count()
+        desistidos = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante_id, estado_aplicacion=11).count()
+        no_aptas = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante_id, estado_aplicacion=12).count()
+
+        # Calcular porcentajes
+        porcentaje_aplicadas = round((aplicadas / total_aplicaciones * 100), 1) if total_aplicaciones > 0 else 0
+        porcentaje_en_proceso = round((en_proceso / total_aplicaciones * 100), 1) if total_aplicaciones > 0 else 0
+        porcentaje_finalizadas = round((finalizadas / total_aplicaciones * 100), 1) if total_aplicaciones > 0 else 0
+        porcentaje_canceladas = round((canceladas / total_aplicaciones * 100), 1) if total_aplicaciones > 0 else 0
+        porcentaje_desistidos = round((desistidos / total_aplicaciones * 100), 1) if total_aplicaciones > 0 else 0
+        porcentaje_no_aptas = round((no_aptas / total_aplicaciones * 100), 1) if total_aplicaciones > 0 else 0
+        porcentaje_seleccionados = round((seleccionados / total_aplicaciones * 100), 1) if total_aplicaciones > 0 else 0
+
+        return {
+            'aplicadas': {'cantidad': aplicadas, 'porcentaje': porcentaje_aplicadas},
+            'en_proceso': {'cantidad': en_proceso, 'porcentaje': porcentaje_en_proceso},
+            'finalizadas': {'cantidad': finalizadas, 'porcentaje': porcentaje_finalizadas},
+            'canceladas': {'cantidad': canceladas, 'porcentaje': porcentaje_canceladas},
+            'desistidos': {'cantidad': desistidos, 'porcentaje': porcentaje_desistidos},
+            'no_aptas': {'cantidad': no_aptas, 'porcentaje': porcentaje_no_aptas},
+            'seleccionados': {'cantidad': seleccionados, 'porcentaje': porcentaje_seleccionados},
+            'total_aplicaciones': total_aplicaciones,
+        }
     class Meta:
         db_table = 'cli_056_aplicacion_vacante'
         verbose_name = 'APLICACIÓN A VACANTE'

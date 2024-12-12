@@ -167,10 +167,13 @@ def gestion_vacante_entrevistas(request, pk):
 
     asignacion_entrevista = consulta_asignacion_entrevista_cliente(vacante.id)
 
+    contadores_reclutados = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(pk)
+
     contexto = {
         'vacante' : vacante,
         'cliente' : cliente,
         'asignacion_entrevista' : asignacion_entrevista,
+        'contadores_reclutados' : contadores_reclutados,
     }
 
     return render(request, 'vacante/gestion_vacante_entrevistas.html', contexto)
@@ -198,8 +201,7 @@ def gestion_entrevista(request, pk):
         if form.is_valid():
             observacion = form.cleaned_data['observacion']
             estado_asignacion = int(form.cleaned_data['estado_asignacion'])
-            
-            
+
             estado_vacante = None
             observacion_historial = None
 
@@ -218,10 +220,10 @@ def gestion_entrevista(request, pk):
             if estado_asignacion == 5:
                 estado_vacante = 10 # Se cambia estado de la vacante a cancelado
                 observacion_historial = 'Se cancela la postulación del candidato.'
-            
+
             #crea el historial y actualiza el estado de la aplicacion de la vacante
             crear_historial_aplicacion(reclutamiento, estado_vacante, request.session.get('_auth_user_id'), observacion_historial)
-            
+
             #actualizacion de gestión de entrevista
             entrevista.observacion = observacion
             entrevista.estado_asignacion = estado_asignacion

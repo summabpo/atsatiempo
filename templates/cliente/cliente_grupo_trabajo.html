@@ -88,7 +88,7 @@
                             <th>Nombre</th>
                             <th>Correo</th>
                             <th>Grupo</th>
-                            <th>Editar</th>
+                            {% comment %} <th>Editar</th> {% endcomment %}
                         </tr>
                     </thead>
                     <tbody>
@@ -99,7 +99,7 @@
                             <td>{{ e.primer_nombre }} {{ e.segundo_nombre }} {{ e.primer_apellido }}</td>
                             <td>{{ e.email}}</td>
                             <td>{{ e.group.name }}</td>
-                            <td>Editar</td>
+                            {% comment %} <td>Editar</td> {% endcomment %}
                         </tr>
                         {% endfor %}
                             
