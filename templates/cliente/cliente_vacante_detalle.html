@@ -69,12 +69,12 @@
                         google.setOnLoadCallback(function () {
                             var data = google.visualization.arrayToDataTable([
                                 ['Task', 'Hours per Day'],
-                                ['Aplicadas', {{contadores_reclutados.aplicadas.cantidad}}],
-                                ['En Proceso', {{contadores_reclutados.en_proceso.cantidad}}],
-                                ['Seleccionados', {{contadores_reclutados.seleccionados.cantidad}}],
-                                ['No Aptos', {{contadores_reclutados.no_aptas.cantidad}}],
-                                ['Cancelado', {{contadores_reclutados.canceladas.cantidad}}],
-                                ['Desistidos', {{contadores_reclutados.desistidos.cantidad}}]
+                                ['Aplicadas: {{contadores_reclutados.aplicadas.cantidad}}', {{contadores_reclutados.aplicadas.cantidad}}],
+                                ['En Proceso: {{contadores_reclutados.en_proceso.cantidad}}', {{contadores_reclutados.en_proceso.cantidad}}],
+                                ['Seleccionados: {{contadores_reclutados.seleccionados.cantidad}}', {{contadores_reclutados.seleccionados.cantidad}}],
+                                ['No Aptos: {{contadores_reclutados.no_aptas.cantidad}}', {{contadores_reclutados.no_aptas.cantidad}}],
+                                ['Cancelado: {{contadores_reclutados.canceladas.cantidad}}', {{contadores_reclutados.canceladas.cantidad}}],
+                                ['Desistidos {{contadores_reclutados.desistidos.cantidad}}', {{contadores_reclutados.desistidos.cantidad}}]
                             ]);
 
                             var options = {

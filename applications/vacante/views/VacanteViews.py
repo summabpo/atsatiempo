@@ -242,6 +242,8 @@ def vacante_gestion(request, pk):
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
     vacante_aplicada = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante.id)
 
+    contadores_reclutados = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(pk)
+
     user_id = request.session.get('_auth_user_id')
     print(user_id)
 
@@ -249,6 +251,7 @@ def vacante_gestion(request, pk):
         'vacante': vacante,
         'cliente': cliente,
         'vacante_aplicada': vacante_aplicada,
+        'contadores_reclutados': contadores_reclutados,
     }
 
     return render(request, 'vacante/gestion_vacante.html', contexto)
