@@ -189,6 +189,7 @@ def cliente_grupo_trabajo(request, pk):
     url_actual = f"{request.scheme}://{request.get_host()}"
     form_errores = False
     cliente = get_object_or_404(Cli051Cliente, pk=pk)
+    contadores_vacantes = Cli052Vacante.contar_vacantes_por_estado(pk)
 
     usuarios_internos = UsuarioBase.objects.filter(group__in=[4, 5], cliente_id_051=cliente)
 
@@ -248,6 +249,7 @@ def cliente_grupo_trabajo(request, pk):
         'usuarios_internos': usuarios_internos,
         'form_creacion': form_creacion,
         'form_errores': form_errores,
+        'contadores_vacantes': contadores_vacantes,
     }
     return render(request, 'cliente/cliente_grupo_trabajo.html', contexto)
 
@@ -257,6 +259,7 @@ def cliente_grupo_trabajo(request, pk):
 def cliente_vacante(request, pk):
 
     vacante = Cli052Vacante.objects.filter(cliente_id_051= pk).order_by('-id')
+    contadores_vacantes = Cli052Vacante.contar_vacantes_por_estado(pk)
 
     listado_vacante = consulta_vacantes_cliente(pk)
 
@@ -304,7 +307,7 @@ def cliente_vacante(request, pk):
 
             # Convertir el string JSON en un objeto Python (lista de diccionarios)
             skills = json.loads(soft_skills_id_053)
-            
+
             # Ahora puedes iterar sobre la lista de diccionarios
             for skill in skills:
                 # Intentar obtener el objeto soft_skills
@@ -348,9 +351,10 @@ def cliente_vacante(request, pk):
         'cliente' : cliente,
         'vacante' : vacante,
         'listado_vacante' : listado_vacante,
-        'form_errors' : form_errors
+        'form_errors' : form_errors,
+        'contadores_vacantes' : contadores_vacantes,
     }        
-    
+
     return render(request, 'cliente/cliente_vacante.html', contexto)
 
 # Mostrar detalle de cada vacante
@@ -366,11 +370,15 @@ def cliente_vacante_detalle(request, pk):
         vacante_id_052__id=vacante.id
     ).order_by('fecha_aplicacion')
 
+    contadores_reclutados = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(pk)
+
+
 
     contexto = {
         'cliente' : cliente,
         'vacante' : vacante,
         'candidato_aplicante' : candidato_aplicante,
+        'contadores_reclutados' : contadores_reclutados,
     }        
     
     return render(request, 'cliente/cliente_vacante_detalle.html', contexto)
@@ -389,12 +397,14 @@ def cliente_vacante_reclutado(request, pk):
         vacante_id_052__id=vacante.id
     ).order_by('fecha_aplicacion')
 
+    contadores_reclutados = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(pk)
 
     contexto = {
         'cliente' : cliente,
         'vacante' : vacante,
         'candidato_aplicante' : candidato_aplicante,
         'asignacion_vacante' : asignacion_vacante,
+        'contadores_reclutados' : contadores_reclutados,
     }        
     
     return render(request, 'cliente/cliente_vacante_reclutado.html', contexto)
@@ -404,6 +414,8 @@ def cliente_vacante_reclutado(request, pk):
 def cliente_vacante_entrevista(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
+
+    contadores_reclutados = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(pk)
     
     entrevista = Cli057AsignacionEntrevista.objects.select_related(
         'asignacion_vacante__vacante_id_052__cliente_id_051', 
@@ -451,6 +463,7 @@ def cliente_vacante_entrevista(request, pk):
         'cliente' : cliente,
         'entrevista' : entrevista,
         'asignacion_entrevista' : asignacion_entrevista,
+        'contadores_reclutados' : contadores_reclutados,
         
     }
     return render(request, 'cliente/cliente_vacante_entrevista.html', contexto)
@@ -460,6 +473,8 @@ def cliente_vacante_entrevista(request, pk):
 def cliente_vacante_editar(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
+
+    contadores_reclutados = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(pk)
 
     # Define los datos iniciales que quieres pasar al formulario
     initial_data = {
@@ -562,6 +577,7 @@ def cliente_vacante_editar(request, pk):
         'vacante' : vacante,
         'cliente' : cliente,
         'form_vacante': form_vacante,
+        'contadores_reclutados': contadores_reclutados,
         
     }
     return render(request, 'cliente/cliente_vacante_editar.html', contexto)
