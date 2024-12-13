@@ -256,8 +256,8 @@ def vacante_gestion(request, pk):
 
     return render(request, 'vacante/gestion_vacante.html', contexto)
 
-#CANDIDATO
 
+#CANDIDATO
 #Ver vacantes aplicadas del candidato
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
