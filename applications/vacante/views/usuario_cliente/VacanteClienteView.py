@@ -146,12 +146,15 @@ def gestion_vacante_reclutados(request, pk):
     # Obtener el cliente usando el id de la sesión
     cliente = get_object_or_404(Cli051Cliente, pk=cliente_id)
 
+    contadores_reclutados = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(pk)
+
     asignacion_vacante = consulta_asignacion_vacante_cliente(cliente_id, vacante.id)
 
     contexto = {
         'vacante' : vacante,
         'cliente' : cliente,
         'asignacion_vacante' : asignacion_vacante,
+        'contadores_reclutados' : contadores_reclutados,
     }
 
     return render(request, 'vacante/gestion_vacante_reclutados.html', contexto)
@@ -284,6 +287,8 @@ def gestion_vacante_editar(request, pk):
 
     # Se obtiene información de la vacante
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
+
+    contadores_reclutados = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(pk)
     
     # Define los datos iniciales que quieres pasar al formulario
     initial_data = {
@@ -386,6 +391,7 @@ def gestion_vacante_editar(request, pk):
     contexto = {
         'vacante': vacante,
         'form_vacante': form_vacante,
+        'contadores_reclutados': contadores_reclutados,
     }
 
     return render(request, 'vacante/gestionar_editar_vacante.html', contexto)

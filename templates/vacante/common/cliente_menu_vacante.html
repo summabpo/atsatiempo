@@ -45,43 +45,68 @@
                             <div class="d-flex my-4">
                                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                     <div class="d-flex align-items-center">
-                                        <i class="ki-duotone ki-arrow-up fs-3 text-success me-2">
+                                        <i class="ki-duotone ki-brifecase-tick fs-3 text-primary me-2">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
+                                            <span class="path3"></span>
                                         </i>
-                                        <div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="4500" data-kt-countup-prefix="$">0</div>
+                                        <div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="{{contadores_reclutados.aplicadas.cantidad}}" data-kt-countup-prefix="">0</div>
                                     </div>
-                                    <div class="fw-semibold fs-6 text-gray-500">Reclutados</div>
+                                    <div class="fw-semibold fs-6 text-gray-500">Aplicados</div>
                                 </div>
                                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                     <div class="d-flex align-items-center">
-                                        <i class="ki-duotone ki-arrow-down fs-3 text-danger me-2">
+                                        <i class="ki-duotone ki-timer fs-3 text-warning me-2">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
+                                            <span class="path3"></span>
                                         </i>
-                                        <div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="75">0</div>
+                                        <div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="{{contadores_reclutados.en_proceso.cantidad}}">0</div>
                                     </div>
-                                    <div class="fw-semibold fs-6 text-gray-500">Cancelados</div>
+                                    <div class="fw-semibold fs-6 text-gray-500">En proceso</div>
                                 </div>
                                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                     <div class="d-flex align-items-center">
-                                        <i class="ki-duotone ki-arrow-down fs-3 text-danger me-2">
+                                        <i class="ki-duotone ki-like fs-3 text-success me-2">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
+                                            <span class="path3"></span>
                                         </i>
-                                        <div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="75">0</div>
+                                        <div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="{{contadores_reclutados.seleccionados.cantidad}}">0</div>
                                     </div>
-                                    <div class="fw-semibold fs-6 text-gray-500">NO Aptos</div>
+                                    <div class="fw-semibold fs-6 text-gray-500">Seleccionados</div>
                                 </div>
                                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                     <div class="d-flex align-items-center">
-                                        <i class="ki-duotone ki-arrow-up fs-3 text-success me-2">
+                                        <i class="ki-duotone ki-dislike fs-3 text-danger me-2">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
                                         </i>
-                                        <div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="60" data-kt-countup-prefix="%">0</div>
+                                        <div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="{{contadores_reclutados.no_aptas.cantidad}}" data-kt-countup-prefix="">0</div>
                                     </div>
-                                    <div class="fw-semibold fs-6 text-gray-500">Success Rate</div>
+                                    <div class="fw-semibold fs-6 text-gray-500">No Aptos</div>
+                                </div>
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="ki-duotone ki-tablet-delete fs-3 text-danger me-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                        <div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="{{contadores_reclutados.canceladas.cantidad}}" data-kt-countup-prefix="">0</div>
+                                    </div>
+                                    <div class="fw-semibold fs-6 text-gray-500">Cancelado</div>
+                                </div>
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="ki-duotone ki-tablet-delete fs-3 text-info me-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                        <div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="{{contadores_reclutados.desistidos.cantidad}}" data-kt-countup-prefix="">0</div>
+                                    </div>
+                                    <div class="fw-semibold fs-6 text-gray-500">Desistidos</div>
                                 </div>
                             </div>
                         </div>
