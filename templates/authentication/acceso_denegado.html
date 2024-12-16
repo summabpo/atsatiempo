@@ -1,0 +1,92 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<!--
+Author: Keenthemes
+Product Name: CeresProduct Version: 1.1.7
+Purchase: https://keenthemes.com/products/ceres-html-pro
+Website: http://www.keenthemes.com
+Contact: support@keenthemes.com
+Follow: www.twitter.com/keenthemes
+Dribbble: www.dribbble.com/keenthemes
+Like: www.facebook.com/keenthemes
+License: For each use you must have a valid license purchased only from above link in order to legally use the theme for your project.
+-->
+<html lang="en">
+	<!--begin::Head-->
+	<head>
+<base href="../../" />
+		<title>ATS Atiempo | Ingreso</title>
+		<meta charset="utf-8" />
+
+		<link rel="shortcut icon" href="{% static 'media/logos/favicon.ico' %}" />
+		<!--begin::Fonts(mandatory for all pages)-->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+		<!--end::Fonts-->
+
+
+		<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
+		<link href="{% static 'plugins/global/plugins.bundle.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'css/style.bundle.css' %}" rel="stylesheet" type="text/css" />
+		<!--end::Global Stylesheets Bundle-->
+
+
+		<style>
+
+			.da {
+					display: block;
+					margin-top: 0em;
+					unicode-bidi: isolate;
+				}
+
+			/* Ocultar asteriscos y estilos adicionales */
+			.asteriskField {
+				display: none !important;
+			}
+			
+		</style>
+	</head>
+	<body id="kt_body" class="auth-bg">
+		<script>var defaultThemeMode = "light"; var themeMode; if ( document.documentElement ) { if ( document.documentElement.hasAttribute("data-bs-theme-mode")) { themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); } else { if ( localStorage.getItem("data-bs-theme") !== null ) { themeMode = localStorage.getItem("data-bs-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-bs-theme", themeMode); }</script>
+		<div class="d-flex flex-column flex-root">
+			<style>.auth-page-bg { background-image: url("{% static 'media/illustrations/dozzy-1/14.png' %}"); } [data-bs-theme="dark"] .auth-page-bg { background-image: url("{% static 'media/illustrations/dozzy-1/14-dark.png' %}" ); }</style>
+			<div class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed auth-page-bg">
+				<div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
+					<a href="#" class="mb-12">
+						<img alt="Logo" src="{% static 'media/logos/logo_atiempo_2.png' %}" class="h-30px theme-light-show" />
+						<img alt="Logo" src="{% static 'media/logos/logo_atiempo_2.png' %}" class="h-30px theme-dark-show" />
+					</a>
+                    <div class="w-lg-500px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto text-center">
+                        <h2 class="mb-5">Acceso Denegado</h2>
+                        <p class="mb-10">No tienes permiso para acceder a este modulo.</p>
+                        <img alt="illustracion" src="{% static 'media/illustrations/dozzy-1/9.png' %}" width="300px"/>
+                        <br>
+                        <a href="{% url 'accesses:inicio' %}" class="btn btn-light-primary">Regresar</a>
+                    </div>
+                </div>
+			</div>
+		</div>
+		<script>
+		{% if messages %}
+			{% for message in messages %}
+				Swal.fire({
+					text: "{{ message }}",
+					icon: "{{message.tags}}",
+					showConfirmButton: true,
+					confirmButtonText: "Ok",
+					customClass: {
+						confirmButton: "btn btn-primary"
+					},
+					willOpen: (toast) => {
+						toast.addEventListener('mouseenter', Swal.stopTimer);
+						toast.addEventListener('mouseleave', Swal.resumeTimer);
+					}
+				});
+			{% endfor %}
+		{% endif %}
+		</script>
+
+
+	</body>
+	<!--end::Body-->
+</html>

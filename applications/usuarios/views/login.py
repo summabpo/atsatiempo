@@ -217,6 +217,9 @@ def inicio_app(request):
 # Acceso a sistema
 def login_view(request):
     if request.user.is_authenticated:
+        # print('No esta autenticado')
+        # messages.error(request, "Debes iniciar sesión para acceder a esta página.")
+        # return redirect('accesses:login')
         return redirect('accesses:inicio')
     else:
         if request.method == 'POST':
@@ -550,3 +553,8 @@ def enviar_token(request):
         form = CorreoForm()
 
     return render(request, './authentication/correo_revalidacion.html', {'form': form, })
+
+
+def acceso_denegado(request):
+    url_actual = f"{request.scheme}://{request.get_host()}"
+    return render(request, './authentication/acceso_denegado.html')

@@ -15,7 +15,7 @@ from applications.usuarios.decorators  import validar_permisos
 global_id = None 
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin', 'acceso_candidato')
 def estudio_mostrar(request, pk=None):
     form_errors = False
     candidato = get_object_or_404(Can101Candidato, pk=pk)

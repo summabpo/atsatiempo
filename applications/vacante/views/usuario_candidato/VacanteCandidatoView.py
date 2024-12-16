@@ -21,7 +21,7 @@ from applications.vacante.views.consultas.VacanteConsultaView import consulta_va
 
 # Ver vacantes disponibles para aplicar
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_candidato')
 def ver_vacante_disponibles(request):
     candidato_id = request.session.get('candidato_id')
     vacantes = consulta_vacantes_disponibles(candidato_id)

@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin', 'acceso_candidato')
 def candidato_mostrar(request, pk=None):
     # Valida si se pasa un parametro pk o ID del candidato
     if pk:
@@ -248,11 +248,10 @@ def habilidades_crear(request):
 
 #listado de candidatos
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def candidatos_listar(request):
     form_errors = False
     candidatos = Can101Candidato.objects.filter(estado_id_001 = 1).order_by('primer_apellido')
-    
     
     if request.method == 'POST':
         form = CandidatoFormAdmin(request.POST, request.FILES)

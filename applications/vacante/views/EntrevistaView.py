@@ -40,7 +40,7 @@ def ver_entrevista_todos(request):
 
 # Ver entrevistas generadas por candidato
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_candidato')
 def ver_entrevista_candidato(request): 
     candidato_id = request.session.get('candidato_id')
 
@@ -113,7 +113,7 @@ def ver_entrevista_entrevistador(request):
 
 #Generar Entrevista
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin', 'acceso_cliente')
 def crear_entrevista(request, asignacion_id):
     url_actual = f"{request.scheme}://{request.get_host()}"
     validar_registro = False

@@ -236,7 +236,7 @@ def vacante_cliente_mostrar(request, pk=None):
 
 #Ver Gestión de la vacante
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_cliente')
 def vacante_gestion(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
@@ -245,7 +245,7 @@ def vacante_gestion(request, pk):
     contadores_reclutados = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(pk)
 
     user_id = request.session.get('_auth_user_id')
-    print(user_id)
+    # print(user_id)
 
     contexto = {
         'vacante': vacante,
@@ -260,7 +260,7 @@ def vacante_gestion(request, pk):
 #CANDIDATO
 #Ver vacantes aplicadas del candidato
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_candidato')
 def ver_vacante_candidato_aplicadas(request):
     candidato_id = request.session.get('candidato_id')
     candidato = get_object_or_404(Can101Candidato, id=candidato_id)
@@ -309,7 +309,7 @@ def vacante_aplicada(request, pk):
 
 #Ver Detalle de la vacante
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_candidato')
 def vacante_detalle(request, pk):
 
     candidato_id = candidato_id = request.session.get('candidato_id')

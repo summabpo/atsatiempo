@@ -32,7 +32,7 @@ from components.RegistrarGestionVacante import validar_vacante_cancelar
 
 # Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_cliente')
 def vacantes_cliente(request):
     
     # Verificar si el cliente_id está en la sesión
@@ -139,7 +139,7 @@ def vacantes_cliente(request):
 
 # Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_cliente')
 def gestion_vacante_reclutados(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente_id = request.session.get('cliente_id')
@@ -161,7 +161,7 @@ def gestion_vacante_reclutados(request, pk):
 
 # Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_cliente')
 def gestion_vacante_entrevistas(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente_id = request.session.get('cliente_id')
@@ -183,7 +183,7 @@ def gestion_vacante_entrevistas(request, pk):
 
 # Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin','acceso_cliente')
 def gestion_entrevista(request, pk):
 
     cliente_id = request.session.get('cliente_id')
@@ -259,7 +259,7 @@ def gestion_entrevista(request, pk):
 
 # Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin','acceso_cliente')
 def gestion_vacante_cancelar(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
@@ -282,7 +282,7 @@ def gestion_vacante_cancelar(request, pk):
     return render(request, 'vacante/gestion_vacante_cancelar.html', contexto)
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_cliente')
 def gestion_vacante_editar(request, pk):
 
     # Se obtiene información de la vacante

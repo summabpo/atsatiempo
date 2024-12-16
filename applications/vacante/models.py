@@ -81,10 +81,10 @@ class Cli052Vacante(models.Model):
     def contar_vacantes_por_estado(cls, cliente_id):
         total_vacantes = cls.objects.filter(cliente_id_051=cliente_id).count()
         
-        activas = cls.objects.filter(estado_vacante=1, cliente_id_051=cliente_id).count()
-        en_proceso = cls.objects.filter(estado_vacante=2, cliente_id_051=cliente_id).count()
-        finalizadas = cls.objects.filter(estado_vacante=3, cliente_id_051=cliente_id).count()
-        canceladas = cls.objects.filter(estado_vacante=4, cliente_id_051=cliente_id).count()
+        activas = cls.objects.filter(estado_vacante=1, estado_id_001=1, cliente_id_051=cliente_id).count()
+        en_proceso = cls.objects.filter(estado_vacante=2, estado_id_001=1, cliente_id_051=cliente_id).count()
+        finalizadas = cls.objects.filter(estado_vacante=3, estado_id_001=1, cliente_id_051=cliente_id).count()
+        canceladas = cls.objects.filter(estado_vacante=4, estado_id_001=1, cliente_id_051=cliente_id).count()
         
         # Evitar división por cero
         porcentaje_activas = round((activas / total_vacantes * 100), 1) if total_vacantes > 0 else 0

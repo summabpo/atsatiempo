@@ -39,7 +39,7 @@ def generate_random_password(length=12):
 # Portal interno
 # Mostrar todos los clientes todos
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def cliente_listar(request):
     url_actual = f"{request.scheme}://{request.get_host()}"
     clientes = Cli051Cliente.objects.filter(estado_id_001=1).order_by('-id')
@@ -127,7 +127,7 @@ def cliente_listar(request):
 
 # Mostrar Listado de cada cliente
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def  cliente_detalle(request, pk):
 
     cliente = get_object_or_404(Cli051Cliente, pk=pk)
@@ -184,7 +184,7 @@ def  cliente_detalle(request, pk):
     return render(request, 'cliente/cliente_detalle.html', contexto)
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def cliente_grupo_trabajo(request, pk):
     url_actual = f"{request.scheme}://{request.get_host()}"
     form_errores = False
@@ -255,7 +255,7 @@ def cliente_grupo_trabajo(request, pk):
 
 # Mostrar detalle de cada cliente
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def cliente_vacante(request, pk):
 
     vacante = Cli052Vacante.objects.filter(cliente_id_051= pk).order_by('-id')
@@ -359,7 +359,7 @@ def cliente_vacante(request, pk):
 
 # Mostrar detalle de cada vacante
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def cliente_vacante_detalle(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
@@ -385,7 +385,7 @@ def cliente_vacante_detalle(request, pk):
 
 # Mostrar reclutamiento de la vacante_seleccionada vacante
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def cliente_vacante_reclutado(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     asignacion_vacante = consulta_asignacion_vacante_id(vacante.id)
@@ -410,7 +410,7 @@ def cliente_vacante_reclutado(request, pk):
     return render(request, 'cliente/cliente_vacante_reclutado.html', contexto)
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def cliente_vacante_entrevista(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
@@ -469,7 +469,7 @@ def cliente_vacante_entrevista(request, pk):
     return render(request, 'cliente/cliente_vacante_entrevista.html', contexto)
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def cliente_vacante_editar(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
@@ -583,7 +583,7 @@ def cliente_vacante_editar(request, pk):
     return render(request, 'cliente/cliente_vacante_editar.html', contexto)
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def cliente_vacante_emparejamiento_vacante(request, pk):
 
     candidatos = Can101Candidato.objects.filter(estado_id_001=1)
@@ -605,7 +605,7 @@ def cliente_vacante_emparejamiento_vacante(request, pk):
     return render(request, 'cliente/cliente_vacante_emparejamiento.html', contexto)
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def reclutados_todos(request):
     contexto = {
         'asignacion_vacante' : consulta_asignacion_vacante()
@@ -614,7 +614,7 @@ def reclutados_todos(request):
 
 # Ver todas las vacantes activas
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def vacantes_todos(request):
     
     vacantes = consulta_vacantes_todas() 
