@@ -554,7 +554,7 @@ def enviar_token(request):
 
     return render(request, './authentication/correo_revalidacion.html', {'form': form, })
 
-
+#vista para mostrar pantalla de acceso deneado cuando el decorador no tenga el listado de permisos cargados
 def acceso_denegado(request):
     url_actual = f"{request.scheme}://{request.get_host()}"
     return render(request, './authentication/acceso_denegado.html')

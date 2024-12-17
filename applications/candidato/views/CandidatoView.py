@@ -71,8 +71,6 @@ def obtener_estudio_view(request):
         candidato_id = Can101Candidato.objects.get(email=solicitud_estudio.candidato_id_101)
         ciudad_id    = Cat004Ciudad.objects.get(nombre=solicitud_estudio.ciudad_id_004)
 
-        
-        
         response_data = {
             'data': {
                 'id': solicitud_estudio.id,
