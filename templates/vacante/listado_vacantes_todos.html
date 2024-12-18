@@ -29,7 +29,7 @@
     {% endblock css %}
 
 {% block boton_volver %}
-    <a href="{% url 'accesses:inicio' %}" class="btn btn-primary my-2"">Volver</a>
+    <a href="{% url 'accesses:inicio' %}" class="btn btn-primary my-2">Volver</a>
 {% endblock boton_volver %}
 
 {% block content %}
@@ -40,7 +40,10 @@
         </div>
         <div class="card-toolbar">
             <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                
+                <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                    <button type="button" class="btn btn-light-success" data-bs-toggle="modal" data-bs-target="#modal_vacante">
+                    <i class="ki-duotone ki-plus fs-2"></i>Crear Vacante </button>
+                </div>
             </div>
         </div>
     </div>
@@ -95,13 +98,34 @@
                     </td>
                     <td style="text-align: center">
                         <a href="{% url 'clientes:cliente_vacante_detalle' e.id  %}" class="btn btn-light-primary btn-xs">
-                            <i class="fas    fa-search fs-4"></i>
+                            <i class="fas fa-search fs-4"></i>
                         </a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+</div>
+
+<!-- Modal 1 -->
+<div class="modal fade" tabindex="-1" id="modal_vacante">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Crear Vacante</h3>
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                {% crispy form %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <button id='kt_button_crear_cliente' type="submit" class="btn btn-primary" form="form_vacante" >Crear Vacante</button>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock content %}
