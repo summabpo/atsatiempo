@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import login
+from .views import CreacionUsuarioInternoView, login
 
 urlpatterns = [
     path('', login.principal, name='home'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('validar_token/<str:token>', login.validar_token, name='validar_token'),
     path('enviar_token/', login.enviar_token, name='enviar_token'),
     path('acceso_denegado/', login.acceso_denegado, name='acceso_denegado'),
+    path('usuarios_internos_ats/', CreacionUsuarioInternoView.crear_usuario_interno, name='listado_persona_interno'),
 ]

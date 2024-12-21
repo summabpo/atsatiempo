@@ -62,7 +62,8 @@ class CrearUsuarioInternoForm(forms.Form):
         label='Rol del Usuario',
         choices=[
             ('', 'Seleccione un rol'),
-            ('6', 'Analista de selección ATS')
+            ('4', 'Entrevistador'),
+            ('5', 'Analista de selección')
         ],
         required=True,
         widget=forms.Select(attrs={

@@ -76,7 +76,7 @@ class Cli052Vacante(models.Model):
 
     def __str__(self):
         return self.titulo
-    
+
     @classmethod
     def contar_vacantes_por_estado(cls, cliente_id):
         total_vacantes = cls.objects.filter(cliente_id_051=cliente_id).count()
@@ -100,14 +100,13 @@ class Cli052Vacante(models.Model):
             'canceladas': {'cantidad': canceladas, 'porcentaje': porcentaje_canceladas},
             'total_vacantes': total_vacantes,
         }
-    
+
     class Meta:
         #managed = False
         db_table = 'cli_052_vacante'
 
         verbose_name = 'VACANTE'
         verbose_name_plural = 'VACANTES'
-
 
 class Cli052VacanteHardSkillsId054(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -118,7 +117,6 @@ class Cli052VacanteHardSkillsId054(models.Model):
         managed = False
         db_table = 'cli_052_vacante_hard_skills_id_054'
         unique_together = (('cli052vacante', 'cli054hardskill'),)
-
 
 class Cli052VacanteSoftSkillsId053(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -203,7 +201,6 @@ class Cli056AplicacionVacante(models.Model):
         verbose_name_plural = 'APLICACIONES A VACANTES'
         unique_together = ('candidato_101', 'vacante_id_052')  # Evita aplicaciones duplicadas
 
-
 class Cli057AsignacionEntrevista(models.Model):
     id = models.BigAutoField(primary_key=True)
     
@@ -271,7 +268,6 @@ class Cli057AsignacionEntrevista(models.Model):
         verbose_name_plural = 'ASIGNACIONES DE ENTREVISTAS'
         # unique_together = ('asignacion_vacante', 'usuario_asignado', 'fecha_entrevista', 'hora_entrevista')  # Evita asignaciones duplicadas
 
-    
 class Cli063AplicacionVacanteHistorial(models.Model):
     aplicacion_vacante_056 = models.ForeignKey(
         Cli056AplicacionVacante, 
