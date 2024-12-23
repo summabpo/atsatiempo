@@ -226,10 +226,7 @@ def habilidades_crear(request):
                     estado_id_004= Cat001Estado.objects.get(id=1) 
                 )
 
-                # if creada:
-                #     print(f'La habilidad {habilidad.nombre} se ha creado con éxito')
-                # else:
-                #     print(f'La habilidad {habilidad.nombre} ya existe')
+                
 
                 Can101CandidatoSkill.objects.get_or_create(
                     candidato_id_101=Can101Candidato.objects.get(id=item['empleado_id']), 

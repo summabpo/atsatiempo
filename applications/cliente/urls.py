@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  ClienteView, CreacionUsuariosView
+from applications.cliente.views import  ClienteView, CreacionUsuariosView
 from applications.cliente.views.preguntasView import PreguntasView
 
 #vistas del usuario administrador ATS
@@ -9,7 +9,6 @@ url_principal = 'cliente/'
 
 urlpatterns = [
     path( url_principal+'crear', ClienteView.cliente_crear, name='cliente_crear'),
-    
     path( url_principal+'grupo_trabajo', CreacionUsuariosView.usuario_interno, name='usuarios_internos_listar'),
     path( url_principal+'ajax/obtener_cliente/', ClienteView.obtener_cliente_view, name='ajax_obtener_cliente'),
 

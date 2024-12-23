@@ -1,6 +1,5 @@
 from .base import *
 
-
 #dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 #load_dotenv(dotenv_path)
 
@@ -13,8 +12,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 SETTINGS_ENV = 'development'
-
-
 
 DATABASES = {
     'default': {
@@ -29,8 +26,8 @@ DATABASES = {
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '..', 'static')
+    os.path.join(BASE_DIR, 'static')
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media_uploads/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media_uploads')

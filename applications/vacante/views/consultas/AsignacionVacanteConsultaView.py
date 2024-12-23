@@ -11,7 +11,8 @@ from django.db.models import F, Q, Case, When, Value, CharField
 from django.db.models.functions import Concat
 
 #model
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli052VacanteSoftSkillsId053, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli056AplicacionVacante, Cli057AsignacionEntrevista
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli052VacanteSoftSkillsId053, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli056AplicacionVacante
+from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.models import Permiso
 from applications.cliente.models import Cli051Cliente

@@ -36,7 +36,7 @@ def enviar_correo(tipo_correo, contexto, asunto, lista_destinatarios, correo_rem
         email.send()
         return True
     except Exception as e:
-        print(f"Error el enviar el correo: {e}")
+        
         return False
 
 def generate_token(length=100):

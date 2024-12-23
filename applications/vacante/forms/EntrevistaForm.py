@@ -1,7 +1,7 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset
-from applications.vacante.models import Cli057AsignacionEntrevista
+from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import UsuarioBase
 from django.utils import timezone
 from datetime import datetime, time

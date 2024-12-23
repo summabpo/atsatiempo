@@ -9,7 +9,8 @@ from django.db.models import F
 from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm
 
 #modelos
-from applications.vacante.models import Cli057AsignacionEntrevista, Cli056AplicacionVacante, Cli052Vacante
+from applications.vacante.models import Cli056AplicacionVacante, Cli052Vacante
+from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.cliente.models import Cli051Cliente
 from applications.usuarios.models import Permiso
 from applications.usuarios.models import UsuarioBase

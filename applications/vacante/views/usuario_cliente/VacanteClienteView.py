@@ -14,7 +14,8 @@ from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit
 from applications.vacante.forms.EntrevistaForm import EntrevistaGestionForm
 
 #modelos
-from applications.vacante.models import Cli057AsignacionEntrevista, Cli056AplicacionVacante, Cli052Vacante, Cli055ProfesionEstudio, Cli054HardSkill, Cli051Cliente, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli053SoftSkill
+from applications.vacante.models import Cli056AplicacionVacante, Cli052Vacante, Cli055ProfesionEstudio, Cli054HardSkill, Cli051Cliente, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli053SoftSkill
+from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.cliente.models import Cli051Cliente
 from applications.usuarios.models import Permiso
 from applications.usuarios.models import UsuarioBase

@@ -13,7 +13,8 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 
 #model
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli052VacanteSoftSkillsId053, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli056AplicacionVacante, Cli057AsignacionEntrevista
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli052VacanteSoftSkillsId053, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli056AplicacionVacante
+from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.models import Permiso
 from applications.cliente.models import Cli051Cliente
@@ -516,7 +517,7 @@ def cliente_vacante_editar(request, pk):
 
             estado_id = Cat001Estado.objects.get(id=1)
             
-            print(form_vacante.cleaned_data['soft_skills_id_053'])
+            
             # Convertir el string JSON en un objeto Python (lista de diccionarios)
             skills = json.loads(soft_skills_id_053)
             

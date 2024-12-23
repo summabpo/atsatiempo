@@ -4,7 +4,8 @@ from django.db.models import F, Count, Q
 
 #modelos
 from applications.cliente.models import Cli051Cliente
-from applications.vacante.models import Cli052Vacante, Cli056AplicacionVacante, Cli057AsignacionEntrevista
+from applications.vacante.models import Cli052Vacante, Cli056AplicacionVacante
+from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.candidato.models import Can101Candidato
 
 # Panel principal administrador ATS

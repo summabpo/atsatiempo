@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'applications.pruebas_psi',
     'applications.usuarios',
     'applications.vacante',
+    'applications.entrevista',
     'django.contrib.humanize',
 ]
 

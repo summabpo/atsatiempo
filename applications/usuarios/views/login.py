@@ -193,7 +193,7 @@ def inicio_app(request):
 
     #candidato información panel
     if session_variables['grupo_id'] == 2:
-        print('Sesion Candidato')
+        
         candidato_id = request.session.get('candidato_id')
         entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
         asignacion_vacante = consulta_asignacion_vacante_candidato(candidato_id)

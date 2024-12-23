@@ -27,7 +27,7 @@ BASE_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django.contrib.humanize',
+    'django.contrib.humanize',
     'storages',
 ]
 
@@ -39,6 +39,7 @@ LOCAL_APPS = [
     'applications.pruebas_psi',
     'applications.usuarios',
     'applications.vacante',
+    'applications.entrevista',
 
 ]
 
