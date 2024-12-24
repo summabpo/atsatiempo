@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q
 from applications.cliente.models import Cli051Cliente
 from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli056AplicacionVacante
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053
+from applications.reclutado.models import Cli056AplicacionVacante
 from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import Permiso
 from applications.common.models import Cat001Estado, Cat004Ciudad

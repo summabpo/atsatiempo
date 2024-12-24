@@ -6,7 +6,8 @@ from django.utils.timezone import now
 from applications.common.views.EnvioCorreo import enviar_correo
 
 #modelos
-from applications.vacante.models import Cli052Vacante, Cli056AplicacionVacante
+from applications.vacante.models import Cli052Vacante
+from applications.reclutado.models import Cli056AplicacionVacante
 
 def validar_vacante_cierre(vacante_id):
 

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'applications.usuarios',
     'applications.vacante',
     'applications.entrevista',
+    'applications.reclutado',
     'django.contrib.humanize',
 ]
 

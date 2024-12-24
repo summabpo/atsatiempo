@@ -2,7 +2,7 @@ from django.db import models
 
 #modelos
 from applications.usuarios.models import UsuarioBase
-from applications.vacante.models import Cli056AplicacionVacante
+from applications.reclutado.models import Cli056AplicacionVacante
 from applications.common.models import Cat001Estado
 
 # Create your models here.
