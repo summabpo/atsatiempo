@@ -29,6 +29,7 @@ def consulta_vacantes_todas():
         'cliente_id_051',
         'ciudad',
         'profesion_estudio_id_055',
+        'usuario_asignado',
     ).values(
         'id',
         'fecha_creacion',
@@ -40,6 +41,12 @@ def consulta_vacantes_todas():
         'salario',
         'cliente_id_051__razon_social',
         'estado_vacante',
+        nombre_completo_asignado=Concat(
+            F('usuario_asignado__primer_nombre'), Value(' '),
+            F('usuario_asignado__segundo_nombre'), Value(' '),
+            F('usuario_asignado__primer_apellido'), Value(' '),
+            F('usuario_asignado__segundo_apellido')
+        ),
     ).annotate(
         vacante_estado = Case(
             When(estado_vacante=1, then=Value('Activa')),
@@ -119,6 +126,7 @@ def consulta_vacantes_cliente(cliente_id):
         'cliente_id_051',
         'ciudad',
         'profesion_estudio_id_055',
+        'usuario_asignado',
     ).values(
         'id',
         'fecha_creacion',
@@ -130,6 +138,12 @@ def consulta_vacantes_cliente(cliente_id):
         'salario',
         'cliente_id_051__razon_social',
         'estado_vacante',
+        nombre_completo_asignado=Concat(
+            F('usuario_asignado__primer_nombre'), Value(' '),
+            F('usuario_asignado__segundo_nombre'), Value(' '),
+            F('usuario_asignado__primer_apellido'), Value(' '),
+            F('usuario_asignado__segundo_apellido')
+        ),
     ).annotate(
         vacante_estado = Case(
             When(estado_vacante=1, then=Value('Activa')),

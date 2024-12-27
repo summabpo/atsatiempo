@@ -303,11 +303,12 @@ def gestion_vacante_editar(request, pk):
         'funciones_responsabilidades': vacante.funciones_responsabilidades,
         'ciudad': vacante.ciudad.id if vacante.ciudad else '',
         'salario': vacante.salario,
+        'usuario_asignado': vacante.usuario_asignado.id if vacante.usuario_asignado else '',
     }
 
     # form_vacante = VacanteFormEdit()
     form_vacante = VacanteFormEdit(initial=initial_data)
-    print(vacante)
+    
     # Formulario Vacantes
     if request.method == 'POST': 
         form_vacante = VacanteFormEdit(request.POST)
@@ -323,6 +324,9 @@ def gestion_vacante_editar(request, pk):
             vacante.experiencia_requerida = form_vacante.cleaned_data['experiencia_requerida']
             vacante.funciones_responsabilidades = form_vacante.cleaned_data['funciones_responsabilidades']
 
+            usuario_asignado = UsuarioBase.objects.get(id=form_vacante.cleaned_data['usuario_asignado'])
+            vacante.usuario_asignado = usuario_asignado
+
             soft_skills_id_053 = form_vacante.cleaned_data['soft_skills_id_053']
             hard_skills_id_054 = form_vacante.cleaned_data['hard_skills_id_054']
             
@@ -333,7 +337,7 @@ def gestion_vacante_editar(request, pk):
 
             estado_id = Cat001Estado.objects.get(id=1)
             
-            print(form_vacante.cleaned_data['soft_skills_id_053'])
+            # print(form_vacante.cleaned_data['soft_skills_id_053'])
             # Convertir el string JSON en un objeto Python (lista de diccionarios)
             skills = json.loads(soft_skills_id_053)
             

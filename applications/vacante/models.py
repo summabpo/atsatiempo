@@ -74,6 +74,7 @@ class Cli052Vacante(models.Model):
     cliente_id_051 = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_cierre = models.DateTimeField(null=True, blank=True)
+    usuario_asignado = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.titulo

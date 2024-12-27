@@ -4,6 +4,7 @@ from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio
 from applications.common.models import Cat004Ciudad
 from applications.cliente.models import Cli051Cliente
+from applications.usuarios.models import UsuarioBase
 
 class VacanteForm(forms.Form):
     EXPERIENCIA_TIEMPO = [
@@ -104,6 +105,21 @@ class VacanteForm(forms.Form):
                     }
         ), required=True)
 
+        usuarios = UsuarioBase.objects.filter(group__id=6).order_by('primer_apellido')
+        usuario_choices = [('', '----------')] + [(usuario.id, f"{usuario.primer_nombre} {usuario.segundo_nombre} {usuario.primer_apellido} {usuario.segundo_apellido}") for usuario in usuarios]
+
+        self.fields['usuario_asignado'] = forms.ChoiceField(
+            label='ANALISTA RESPONSABLE',
+            choices=usuario_choices,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',  # Clases CSS del campo  
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccion una opción',
+                'data-dropdown-parent': '#modal_vacante',
+                }
+        ), required=True)
+
         self.helper.layout = Layout(
             Fieldset(
                 '',
@@ -128,6 +144,10 @@ class VacanteForm(forms.Form):
                     Column('salario', css_class='form-group col-md-6 mb-0'),
                     css_class='form-row'
                 ),
+            ),
+            Fieldset(
+                '',
+                'usuario_asignado',
             ),
             
             # Submit('submit', 'Guardar Vacante', css_class='btn btn-primary')
@@ -204,8 +224,7 @@ class VacanteForm(forms.Form):
             
                 
 
-        return cleaned_data
-    
+        return cleaned_data  
 class VacanteFormEdit(forms.Form):
     EXPERIENCIA_TIEMPO = [
         ('', 'Seleccione una opción... '),
@@ -304,6 +323,20 @@ class VacanteFormEdit(forms.Form):
                     }
         ), required=True)
 
+        usuarios = UsuarioBase.objects.filter(group__id=6).order_by('primer_apellido')
+        usuario_choices = [('', '----------')] + [(usuario.id, f"{usuario.primer_nombre} {usuario.segundo_nombre} {usuario.primer_apellido} {usuario.segundo_apellido}") for usuario in usuarios]
+
+        self.fields['usuario_asignado'] = forms.ChoiceField(
+            label='ANALISTA RESPONSABLE',
+            choices=usuario_choices,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',  # Clases CSS del campo  
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccion una opción',
+                }
+        ), required=True)
+
         self.helper.layout = Layout(
             Fieldset(
                 '',
@@ -328,6 +361,10 @@ class VacanteFormEdit(forms.Form):
                     Column('salario', css_class='form-group col-md-6 mb-0'),
                     css_class='form-row'
                 ),
+            ),
+            Fieldset(
+                '',
+                'usuario_asignado',
             ),
             
             # Submit('submit', 'Guardar Vacante', css_class='btn btn-primary')
@@ -403,7 +440,6 @@ class VacanteFormEdit(forms.Form):
         
 
         return cleaned_data
-    
 class VacanteAdicionalForms(forms.Form):
     EXPERIENCIA_TIEMPO = [
         ('', 'Seleccione una opción... '),
@@ -518,6 +554,21 @@ class VacanteAdicionalForms(forms.Form):
                 }
         ), required=True)
 
+        usuarios = UsuarioBase.objects.filter(group__id=6).order_by('primer_apellido')
+        usuario_choices = [('', '----------')] + [(usuario.id, f"{usuario.primer_nombre} {usuario.segundo_nombre} {usuario.primer_apellido} {usuario.segundo_apellido}") for usuario in usuarios]
+
+        self.fields['usuario_asignado'] = forms.ChoiceField(
+            label='ANALISTA RESPONSABLE',
+            choices=usuario_choices,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',  # Clases CSS del campo  
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccion una opción',
+                'data-dropdown-parent': '#modal_vacante',
+                }
+        ), required=True)
+
         self.helper.layout = Layout(
             Fieldset(
                 '',
@@ -546,6 +597,11 @@ class VacanteAdicionalForms(forms.Form):
                     Column('salario', css_class='form-group col-md-6 mb-0'),
                     css_class='form-row'
                 ),
+            ),
+            Fieldset(
+                '',
+                'usuario_asignado',
+                
             ),
             
             # Submit('submit', 'Guardar Vacante', css_class='btn btn-primary')

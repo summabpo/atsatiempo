@@ -59,7 +59,7 @@ def cliente_listar(request):
             perfil_empresarial = form_cliente.cleaned_data['perfil_empresarial']
             estado_id_001 = Cat001Estado.objects.get(id=1)
             ciudad_id_004 = Cat004Ciudad.objects.get(id = form_cliente.cleaned_data['ciudad_id_004'])
-
+            
             # Manejo del campo logo (imagen)
             if form_cliente.cleaned_data.get('logo'):
                 logo = form_cliente.cleaned_data['logo']
@@ -489,8 +489,10 @@ def cliente_vacante_editar(request, pk):
         'funciones_responsabilidades': vacante.funciones_responsabilidades,
         'ciudad': vacante.ciudad.id if vacante.ciudad else '',
         'salario': vacante.salario,
+        'usuario_asignado': vacante.usuario_asignado.id if vacante.usuario_asignado else '',
     }
 
+    print(initial_data)
     # form_vacante = VacanteFormEdit()
     form_vacante = VacanteFormEdit(initial=initial_data)
 
@@ -515,6 +517,9 @@ def cliente_vacante_editar(request, pk):
             ciudad = Cat004Ciudad.objects.get(id=form_vacante.cleaned_data['ciudad'])
             vacante.ciudad = ciudad
             vacante.salario = form_vacante.cleaned_data['salario']
+
+            usuario_asignado = UsuarioBase.objects.get(id=form_vacante.cleaned_data['usuario_asignado'])
+            vacante.usuario_asignado = usuario_asignado
 
             estado_id = Cat001Estado.objects.get(id=1)
             
@@ -643,6 +648,7 @@ def vacantes_todos(request):
             estado_id = Cat001Estado.objects.get(id=1)
             ciudad_id = Cat004Ciudad.objects.get(id=form.cleaned_data['ciudad'])
             cliente = Cli051Cliente.objects.get(id=form.cleaned_data['cliente_id_051'])
+            usuario_asignado = UsuarioBase.objects.get(id=form.cleaned_data['usuario_asignado'])
 
             # Intentar obtener el objeto profesion estudio
             profesion_estudio_dato, created = Cli055ProfesionEstudio.objects.get_or_create(
@@ -662,6 +668,7 @@ def vacantes_todos(request):
                 cliente_id_051_id = cliente.id,
                 estado_id_001_id = estado_id.id,
                 profesion_estudio_id_055_id = profesion_estudio_dato.id,
+                usuario_asignado = usuario_asignado,
             )
 
             # Convertir el string JSON en un objeto Python (lista de diccionarios)

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from applications.usuarios.models import UsuarioBase, Grupo
 from applications.cliente.models import Cli051Cliente
-from applications.cliente.forms.CreacionUsuariosForm import CrearUsuarioInternoForm
+from applications.cliente.forms.CreacionUsuariosForm import CrearUsuarioInternoForm, CrearUsuarioInternoAtsForm
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 import random
@@ -25,7 +25,7 @@ def crear_usuario_interno(request):
     form_errores = False
 
     if request.method == 'POST':
-        form_creacion = CrearUsuarioInternoForm(request.POST)
+        form_creacion = CrearUsuarioInternoAtsForm(request.POST)
         if form_creacion.is_valid():
             primer_nombre = form_creacion.cleaned_data['primer_nombre']
             segundo_nombre = form_creacion.cleaned_data['segundo_nombre']
@@ -68,7 +68,7 @@ def crear_usuario_interno(request):
             form_errores = True
             messages.error(request, 'Error al crear usuario interno')
     else:
-        form_creacion = CrearUsuarioInternoForm()
+        form_creacion = CrearUsuarioInternoAtsForm()
 
     contexto = {
         'usuarios_internos': usuarios_internos,
@@ -77,3 +77,14 @@ def crear_usuario_interno(request):
     }
 
     return render(request, 'authentication/listado_usuarios_internos_ats.html', contexto)
+
+@login_required
+@validar_permisos('acceso_admin')
+def ver_detalle_usuario_interno(request, id):
+    usuario_interno = get_object_or_404(UsuarioBase, id=id)
+
+    contexto = {
+        'usuario_interno': usuario_interno,
+    }
+
+    return render(request, 'authentication/ver_usuario_interno.html', contexto)
