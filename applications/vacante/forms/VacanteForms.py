@@ -5,15 +5,18 @@ from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio
 from applications.common.models import Cat004Ciudad
 from applications.cliente.models import Cli051Cliente
 from applications.usuarios.models import UsuarioBase
+from applications.vacante.models import Cli052Vacante
 
 class VacanteForm(forms.Form):
-    EXPERIENCIA_TIEMPO = [
-        ('', 'Seleccione una opción... '),
-        (1, '0 a 6 Meses'),
-        (2, '1 año a 2 años'),
-        (3, 'Más de 2 años'),
-        (4, 'Sin experiencia'),
-    ]
+    # EXPERIENCIA_TIEMPO = [
+    #     ('', 'Seleccione una opción... '),
+    #     (1, '0 a 6 Meses'),
+    #     (2, '1 año a 2 años'),
+    #     (3, 'Más de 2 años'),
+    #     (4, 'Sin experiencia'),
+    # ]
+
+    EXPERIENCIA_TIEMPO = [('', 'Seleccione una opción... ')] + Cli052Vacante.EXPERIENCIA_TIEMPO
 
     titulo = forms.CharField(label='TITULO DE LA VACANTE',
         widget=forms.TextInput(
@@ -53,10 +56,11 @@ class VacanteForm(forms.Form):
     funciones_responsabilidades = forms.CharField( label='FUNCIONES Y RESPONSABILIDADES', required=True,
         widget=forms.Textarea(
             attrs={
-                'placeholder': 'Describa por favor las funciones y responsabilidades',
+                'placeholder': 'Describa por favor las funciones y responsabilidades.',
                 'rows': 5,  
                 'cols': 30,  
-                'class': 'fixed-size-textarea form-control-solid'
+                'class': 'fixed-size-textarea form-control-solid',
+                'id': 'funciones_responsabilidades'
             }
         )
     )
@@ -226,13 +230,15 @@ class VacanteForm(forms.Form):
 
         return cleaned_data  
 class VacanteFormEdit(forms.Form):
-    EXPERIENCIA_TIEMPO = [
-        ('', 'Seleccione una opción... '),
-        (1, '0 a 6 Meses'),
-        (2, '1 año a 2 años'),
-        (3, 'Más de 2 años'),
-        (4, 'Sin experiencia'),
-    ]
+    # EXPERIENCIA_TIEMPO = [
+    #     ('', 'Seleccione una opción... '),
+    #     (1, '0 a 6 Meses'),
+    #     (2, '1 año a 2 años'),
+    #     (3, 'Más de 2 años'),
+    #     (4, 'Sin experiencia'),
+    # ]
+
+    EXPERIENCIA_TIEMPO = [('', 'Seleccione una opción... ')] + Cli052Vacante.EXPERIENCIA_TIEMPO
 
     titulo = forms.CharField(label='TITULO DE LA VACANTE',
         widget=forms.TextInput(
@@ -275,7 +281,8 @@ class VacanteFormEdit(forms.Form):
                 'placeholder': 'Describa por favor las funciones y responsabilidades',
                 'rows': 5,  
                 'cols': 40,  
-                'class': 'fixed-size-textarea form-control-solid'
+                'class': 'fixed-size-textarea form-control-solid',
+                'id': 'funciones_responsabilidades'
             }
         )
     )
@@ -441,13 +448,15 @@ class VacanteFormEdit(forms.Form):
 
         return cleaned_data
 class VacanteAdicionalForms(forms.Form):
-    EXPERIENCIA_TIEMPO = [
-        ('', 'Seleccione una opción... '),
-        (1, '0 a 6 Meses'),
-        (2, '1 año a 2 años'),
-        (3, 'Más de 2 años'),
-        (4, 'Sin experiencia'),
-    ]
+    # EXPERIENCIA_TIEMPO = [
+    #     ('', 'Seleccione una opción... '),
+    #     (1, '0 a 6 Meses'),
+    #     (2, '1 año a 2 años'),
+    #     (3, 'Más de 2 años'),
+    #     (4, 'Sin experiencia'),
+    # ]
+
+    EXPERIENCIA_TIEMPO = [('', 'Seleccione una opción... ')] + Cli052Vacante.EXPERIENCIA_TIEMPO
 
     titulo = forms.CharField(label='TITULO DE LA VACANTE',
         widget=forms.TextInput(
@@ -490,7 +499,8 @@ class VacanteAdicionalForms(forms.Form):
                 'placeholder': 'Describa por favor las funciones y responsabilidades',
                 'rows': 5,  
                 'cols': 30,  
-                'class': 'fixed-size-textarea form-control-solid'
+                'class': 'fixed-size-textarea form-control-solid',
+                'id': 'funciones_responsabilidades',
             }
         )
     )

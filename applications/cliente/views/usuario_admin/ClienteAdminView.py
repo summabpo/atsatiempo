@@ -486,7 +486,9 @@ def cliente_vacante_editar(request, pk):
         'experiencia_requerida': vacante.experiencia_requerida,
         'soft_skills_id_053': ','.join([skill.nombre for skill in vacante.soft_skills_id_053.all()]),
         'hard_skills_id_054': ','.join([skill.nombre for skill in vacante.hard_skills_id_054.all()]),
-        'funciones_responsabilidades': vacante.funciones_responsabilidades,
+        'funciones_responsabilidades': ', '.join([funcion['value'] for funcion in json.loads(vacante.funciones_responsabilidades)]),
+
+        # 'funciones_responsabilidades': vacante.funciones_responsabilidades,
         'ciudad': vacante.ciudad.id if vacante.ciudad else '',
         'salario': vacante.salario,
         'usuario_asignado': vacante.usuario_asignado.id if vacante.usuario_asignado else '',
@@ -623,6 +625,9 @@ def reclutados_todos(request):
 @login_required
 @validar_permisos('acceso_admin')
 def vacantes_todos(request):
+    #url actual
+    url_actual = f"{request.scheme}://{request.get_host()}"
+
     #estado_general_vacante
     estado = Cat001Estado.objects.get(id=1)
     
@@ -703,6 +708,27 @@ def vacantes_todos(request):
                     cli052vacante=vacante_creada,
                     cli054hardskill=hard_skills
                 )
+
+            # Envio del correo electronico de confirmación de la creación de la vacante.
+            contexto_mail = {
+                'Cliente': cliente.razon_social.capitalize(),
+                'id': vacante_creada.id,
+                'vacante': vacante_creada.titulo.capitalize(),
+                'fecha_creacion': vacante_creada.fecha_creacion,
+                'vacante_cantidad': vacante_creada.numero_posiciones,
+                'url': url_actual,
+            }
+            
+            # correos a enviar
+            correo_cliente = cliente.email
+            correo_analista = usuario_asignado.email if usuario_asignado else None
+
+            lista_correos = [
+                correo_cliente,
+                correo_analista
+            ]
+
+            enviar_correo('creacion_vacante', contexto_mail, 'Creación de Vacante ATS', lista_correos, correo_remitente=None)
 
             messages.success(request, 'El registro de la vacante ha sido creado con éxito.')
             return redirect('clientes:vacantes_cliente_todas')

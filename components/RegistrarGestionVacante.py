@@ -53,7 +53,7 @@ def validar_vacante_cancelar(vacante, url_actual):
             'vacante' : vacante.titulo,
             'url' : url_actual
         }
-        print(email_candidato)
+        
         lista_correos = [
             email_candidato,
         ]
