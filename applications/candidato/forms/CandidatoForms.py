@@ -17,6 +17,7 @@ class CandidatoForm(forms.Form):
     fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     telefono = forms.CharField(label='TELEFONO'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
     imagen_perfil = forms.ImageField(label='IMAGEN DE PERFIL', required=False)
+    hoja_de_vida = forms.FileField(label='HOJA DE VIDA', required=False)
     
 
     def __init__(self, *args, **kwargs):
@@ -35,6 +36,7 @@ class CandidatoForm(forms.Form):
             self.fields['fecha_nacimiento'].initial = str(self.instance.fecha_nacimiento)
             self.fields['telefono'].initial = self.instance.telefono
             self.fields['imagen_perfil'].initial = self.instance.imagen_perfil
+            self.fields['hoja_de_vida'].initial = self.instance.hoja_de_vida
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -63,6 +65,10 @@ class CandidatoForm(forms.Form):
                     Div('imagen_perfil', css_class='col'),
                     css_class='row'
                 ),
+                Div(
+                    Div('hoja_de_vida', css_class='col'),
+                    css_class='row'
+                ),
                 # Div(
                 #     Div('estado_id_001', css_class='col'),
                 #     css_class='row'
@@ -81,6 +87,7 @@ class CandidatoForm(forms.Form):
         email = cleaned_data.get('email')
         telefono = cleaned_data.get('telefono')
         imagen_perfil = cleaned_data.get('imagen_perfil') 
+        hoja_de_vida = cleaned_data.get('hoja_de_vida') 
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', primer_nombre):
             self.add_error('primer_nombre', "El campo solo puede contener letras.")
@@ -110,7 +117,8 @@ class CandidatoForm(forms.Form):
 
         if not re.match(r'^\d{10}$', telefono):
             self.add_error('telefono','El teléfono debe contener solo números y tener 10 dígitos.')
-        # validacion imagen logo
+        
+        # validacion imagen perfil
         tamanio_maximo = 5 * 1024 * 1024  # 5 MB
         listado_extensiones = ['.jpg', '.jpeg', '.png']
 
@@ -122,9 +130,27 @@ class CandidatoForm(forms.Form):
             if extension not in listado_extensiones:
                 self.add_error('imagen_perfil','El archivo no es válido.')
 
-            if Can101Candidato.objects.filter(imagen_perfil=imagen_perfil.name).exists():
-                self.add_error('imagen_perfil','Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
+            if self.instance:
+                if Can101Candidato.objects.filter(imagen_perfil=imagen_perfil.name).exclude(id=self.instance.id).exists():
+                    self.add_error('imagen_perfil','Ya existe un archivo con este nombre en otro registro. Por favor renombre el archivo y vuelva a intentarlo.')
+            
         
+        # validacion hoja de vida
+        tamanio_maximo_hoja = 2 * 1024 * 1024  # 2 MB
+        listado_extensiones_hoja = ['.pdf']
+
+        if hoja_de_vida:
+            if hoja_de_vida.size > tamanio_maximo_hoja:
+                self.add_error('hoja_de_vida', 'El tamaño del archivo supera el tamaño permitido.')
+
+            extension_hoja = os.path.splitext(hoja_de_vida.name)[1].lower()
+            if extension_hoja not in listado_extensiones_hoja:
+                self.add_error('hoja_de_vida', 'El archivo no es válido. Debe ser un archivo PDF.')
+
+            if self.instance:
+                if Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exclude(id=self.instance.id).exists():
+                    self.add_error('hoja_de_vida', 'Ya existe un archivo con este nombre en otro registro. Por favor renombre el archivo y vuelva a intentarlo.')
+
         # return cleaned_data
 
     def save(self):
@@ -144,6 +170,7 @@ class CandidatoForm(forms.Form):
         candidato.sexo = self.cleaned_data['sexo']
         candidato.fecha_nacimiento = self.cleaned_data['fecha_nacimiento']
         candidato.imagen_perfil = self.cleaned_data['imagen_perfil']
+        candidato.hoja_de_vida = self.cleaned_data['hoja_de_vida']
 
 
         candidato.save()
@@ -159,6 +186,7 @@ class CandidatoFormAdmin(forms.Form):
     fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     telefono = forms.CharField(label='TELEFONO'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
     imagen_perfil = forms.ImageField(label='IMAGEN DE PERFIL', required=False)
+    hoja_de_vida = forms.FileField(label='HOJA DE VIDA', required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -213,6 +241,12 @@ class CandidatoFormAdmin(forms.Form):
                     Column('imagen_perfil', css_class='form-group col-md-12 mb-0'),
                 )
             ),
+            Fieldset(
+                'Hoja de Vida Candidato',
+                Row(
+                    Column('hojda_de_vida', css_class='form-group col-md-12 mb-0'),
+                )
+            ),
         )
 
     #metodo de validacion
@@ -235,6 +269,7 @@ class CandidatoFormAdmin(forms.Form):
         email = cleaned_data.get('email')
         telefono = cleaned_data.get('telefono')
         imagen_perfil = cleaned_data.get('imagen_perfil')
+        hoja_de_vida = cleaned_data.get('hoja_de_vida')
         
 
         # Validación primer nombre
@@ -292,5 +327,20 @@ class CandidatoFormAdmin(forms.Form):
 
             if Can101Candidato.objects.filter(imagen_perfil=imagen_perfil.name).exists():
                 self.add_error('imagen_perfil','Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
+
+        # validacion hoja de vida
+        tamanio_maximo_hoja = 2 * 1024 * 1024  # 2 MB
+        listado_extensiones_hoja = ['.pdf']
+
+        if hoja_de_vida:
+            if hoja_de_vida.size > tamanio_maximo_hoja:
+                self.add_error('hoja_de_vida', 'El tamaño del archivo supera el tamaño permitido.')
+
+            extension_hoja = os.path.splitext(hoja_de_vida.name)[1].lower()
+            if extension_hoja not in listado_extensiones_hoja:
+                self.add_error('hoja_de_vida', 'El archivo no es válido. Debe ser un archivo PDF.')
+
+            if Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exists():
+                self.add_error('hoja_de_vida', 'Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
         
         return cleaned_data
