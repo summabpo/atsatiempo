@@ -80,7 +80,7 @@ class VacanteForm(forms.Form):
             'class': 'form-control form-control-solid',
             'placeholder': 'Ingrese el salario, ej: 3.890.000'
         }),
-        required=False
+        required=True
     )
     # estado_vacante 
     # estado_id_004
