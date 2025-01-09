@@ -193,7 +193,7 @@ def inicio_app(request):
 
     #candidato información panel
     if session_variables['grupo_id'] == 2:
-        print('Sesion Candidato')
+        
         candidato_id = request.session.get('candidato_id')
         entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
         asignacion_vacante = consulta_asignacion_vacante_candidato(candidato_id)
@@ -217,6 +217,9 @@ def inicio_app(request):
 # Acceso a sistema
 def login_view(request):
     if request.user.is_authenticated:
+        # print('No esta autenticado')
+        # messages.error(request, "Debes iniciar sesión para acceder a esta página.")
+        # return redirect('accesses:login')
         return redirect('accesses:inicio')
     else:
         if request.method == 'POST':
@@ -550,3 +553,8 @@ def enviar_token(request):
         form = CorreoForm()
 
     return render(request, './authentication/correo_revalidacion.html', {'form': form, })
+
+#vista para mostrar pantalla de acceso deneado cuando el decorador no tenga el listado de permisos cargados
+def acceso_denegado(request):
+    url_actual = f"{request.scheme}://{request.get_host()}"
+    return render(request, './authentication/acceso_denegado.html')

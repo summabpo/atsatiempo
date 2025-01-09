@@ -8,6 +8,16 @@ from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato, Can103Educacion
 
 class EstudioCandidatoForm(forms.Form):
+    ESTUDIO_CHOICES = [
+        ('', '----------'),
+        ('1', 'Primaria'),
+        ('2', 'Secundaria'),
+        ('3', 'Técnico'),
+        ('4', 'Tecnológico'),
+        ('5', 'Universitario'),
+        ('6', 'Postgrado'),
+    ]
+
     estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=False)
     institucion = forms.CharField(label='INSTITUCION', required=True , widget=forms.TextInput(attrs={'placeholder': 'Institución'}))
     fecha_inicial = forms.DateField(label='FECHA DE INICIO', widget=forms.DateInput(attrs={'type': 'date'}), required=True)
@@ -20,9 +30,10 @@ class EstudioCandidatoForm(forms.Form):
     )
     titulo = forms.CharField(label='TITULO', required=True , widget=forms.TextInput(attrs={'placeholder': 'Titulo'}))
     carrera = forms.CharField(label='CARRERA', required=True , widget=forms.TextInput(attrs={'placeholder': 'Carrera'}))
-    fortaleza_adquiridas = forms.CharField(label='LOGROS', required=True, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Fortalezas'}))
+    fortaleza_adquiridas = forms.CharField(label='LOGROS', required=False, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Fortalezas'}))
     ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)
-    
+    tipo_estudio = forms.ChoiceField(label='TIPO DE ESTUDIO', choices=ESTUDIO_CHOICES, required=True)
+
     def __init__(self, *args, **kwargs):
         self.candidato_id = kwargs.pop('candidato_id', None)
         super(EstudioCandidatoForm, self).__init__(*args, **kwargs)
@@ -35,15 +46,39 @@ class EstudioCandidatoForm(forms.Form):
         self.fields['ciudad_id_004'].widget.attrs.update({
             'data-control': 'select2',
             'data-tags':'true',
-            'data-dropdown-parent': '#kt_modal_stacked_2,#modal2',
+            'data-dropdown-parent': '#modal1, #modal2',
             'data-hide-search': 'true' ,
             'class': 'form-select',
             
+        })
+
+        cities = Cat004Ciudad.objects.all().order_by('nombre')
+        city_choices = [('', '----------')] + [(ciudad.id, f"{ciudad.nombre}") for ciudad in cities]
+
+        self.fields['ciudad_id_004'] = forms.ChoiceField(
+            label='CIUDAD',
+            choices=city_choices,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select ',  # Clases CSS del campo  
+                    'data-control': 'select2',
+                    'data-placeholder': 'Seleccion una opción',
+                    'data-dropdown-parent': '#modal1, #modal2',
+                    }
+        ), required=True)
+
+        self.fields['tipo_estudio'].widget.attrs.update({
+            'data-control': 'select2',
+            'data-tags': 'true',
+            'data-dropdown-parent': '#modal1,#modal2',
+            'data-hide-search': 'true',
+            'class': 'form-select',
         })
         
         self.helper.layout = Layout(
             Div(
                 Div('institucion', css_class='col'),
+                Div('tipo_estudio', css_class='col'),
                 css_class='row'
             ),
             
@@ -80,6 +115,7 @@ class EstudioCandidatoForm(forms.Form):
         titulo = cleaned_data.get('titulo')
         carrera = cleaned_data.get('carrera')
         fortaleza_adquiridas = cleaned_data.get('fortaleza_adquiridas')
+        tipo_estudio = cleaned_data.get('tipo_estudio')
         
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', institucion):
             self.add_error('institucion', "La Instirución solo puede contener letras.")
@@ -111,9 +147,9 @@ class EstudioCandidatoForm(forms.Form):
             self.add_error('carrera', "La Instirución solo puede contener letras.")
         else:
             self.cleaned_data['carrera'] = carrera.upper()
-
-        if len(fortaleza_adquiridas.split()) < 10:
-            self.add_error('fortaleza_adquiridas','La descripción debe contener al menos 10 palabras')
+        
+        if fortaleza_adquiridas and len(fortaleza_adquiridas.split()) < 5:
+            self.add_error('fortaleza_adquiridas', 'La descripción debe contener al menos 5 palabras')
 
         return cleaned_data
 
@@ -130,6 +166,7 @@ class EstudioCandidatoForm(forms.Form):
         titulo        = self.cleaned_data['titulo']
         carrera       = self.cleaned_data['carrera']
         fortaleza_adquiridas = self.cleaned_data['fortaleza_adquiridas']
+        tipo_estudio = self.cleaned_data['tipo_estudio']
         ciudad_id_004 = self.cleaned_data['ciudad_id_004']
         candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
         
@@ -144,6 +181,7 @@ class EstudioCandidatoForm(forms.Form):
             fortaleza_adquiridas= fortaleza_adquiridas,
             ciudad_id_004= ciudad_id_004,
             candidato_id_101= candidato_id_101,
+            tipo_estudio= tipo_estudio,
         )
 
         estudio.save()

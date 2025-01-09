@@ -10,7 +10,10 @@ def validar_permisos(*nombres_permisos):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if not request.user.is_authenticated:
-                raise PermissionDenied
+                #raise PermissionDenied
+                messages.error(request, "Debes iniciar sesión para acceder a esta página.")
+                list(messages.get_messages(request))  # Forzar almacenamiento del mensaje
+                return redirect('accesses:login')
             
             user = request.user
 
@@ -35,9 +38,9 @@ def validar_permisos(*nombres_permisos):
             if permisos_usuario:
                 return view_func(request, *args, **kwargs)
             else:
-                logout(request)
-                messages.error(request, 'NO tiene acceso al sistema ATS, por favor cree una cuenta.')
-                return redirect('accesses:login')
+                # logout(request)
+                messages.error(request, 'No Cuenta con permisos para acceder a este modulo.')
+                return redirect('accesses:acceso_denegado')
                 # raise PermissionDenied
         
         return _wrapped_view

@@ -17,6 +17,8 @@ urlpatterns = [
 
     path( url_principal+'candidato/habilidades/<int:pk>/', HabilidadView.habilidad_obtener, name='candidato_habilidad'),
     path('limpiar_lisskill', HabilidadView.limpiar_lisskill, name='limpiar_lisskill'),
+    path( url_principal+'eliminar_habilidad/', HabilidadView.habilidad_eliminar, name='habilidad_eliminar'),
+    path( url_principal+'eliminar_habilidad/<int:pk> <int:candidato_id>', HabilidadView.habilidad_eliminar_id, name='habilidad_eliminar_id'),
     # path( url_principal+'pruebas', pruebas.pruebas, name='pruebas'),
 
     # path( url_principal+'editar/<int:pk>/', views.candidato_crear, name='candidato_editar'),

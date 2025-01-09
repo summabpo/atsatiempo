@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q
 from applications.cliente.models import Cli051Cliente
 from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli056AplicacionVacante, Cli057AsignacionEntrevista
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053
+from applications.reclutado.models import Cli056AplicacionVacante
+from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import Permiso
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato
@@ -14,7 +16,6 @@ from applications.usuarios.decorators  import validar_permisos
 
 # utils
 from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante_candidato
-
 
 # forms
 from applications.vacante.forms.VacanteFilterForm import VacanteFilterForm
@@ -236,7 +237,7 @@ def vacante_cliente_mostrar(request, pk=None):
 
 #Ver Gestión de la vacante
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_cliente')
 def vacante_gestion(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
@@ -245,7 +246,7 @@ def vacante_gestion(request, pk):
     contadores_reclutados = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(pk)
 
     user_id = request.session.get('_auth_user_id')
-    print(user_id)
+    # print(user_id)
 
     contexto = {
         'vacante': vacante,
@@ -260,7 +261,7 @@ def vacante_gestion(request, pk):
 #CANDIDATO
 #Ver vacantes aplicadas del candidato
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_candidato')
 def ver_vacante_candidato_aplicadas(request):
     candidato_id = request.session.get('candidato_id')
     candidato = get_object_or_404(Can101Candidato, id=candidato_id)
@@ -309,7 +310,7 @@ def vacante_aplicada(request, pk):
 
 #Ver Detalle de la vacante
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_candidato')
 def vacante_detalle(request, pk):
 
     candidato_id = candidato_id = request.session.get('candidato_id')

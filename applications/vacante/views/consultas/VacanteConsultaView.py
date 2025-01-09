@@ -11,7 +11,9 @@ from django.db.models import F, Q, Case, When, Value, CharField, Count, Exists, 
 from django.db.models.functions import Concat
 
 #model
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli052VacanteSoftSkillsId053, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli056AplicacionVacante, Cli057AsignacionEntrevista
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli052VacanteSoftSkillsId053, Cli054HardSkill, Cli052VacanteHardSkillsId054
+from applications.reclutado.models import Cli056AplicacionVacante
+from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.models import Permiso
 from applications.cliente.models import Cli051Cliente
@@ -27,6 +29,7 @@ def consulta_vacantes_todas():
         'cliente_id_051',
         'ciudad',
         'profesion_estudio_id_055',
+        'usuario_asignado',
     ).values(
         'id',
         'fecha_creacion',
@@ -38,6 +41,12 @@ def consulta_vacantes_todas():
         'salario',
         'cliente_id_051__razon_social',
         'estado_vacante',
+        nombre_completo_asignado=Concat(
+            F('usuario_asignado__primer_nombre'), Value(' '),
+            F('usuario_asignado__segundo_nombre'), Value(' '),
+            F('usuario_asignado__primer_apellido'), Value(' '),
+            F('usuario_asignado__segundo_apellido')
+        ),
     ).annotate(
         vacante_estado = Case(
             When(estado_vacante=1, then=Value('Activa')),
@@ -117,6 +126,7 @@ def consulta_vacantes_cliente(cliente_id):
         'cliente_id_051',
         'ciudad',
         'profesion_estudio_id_055',
+        'usuario_asignado',
     ).values(
         'id',
         'fecha_creacion',
@@ -128,6 +138,12 @@ def consulta_vacantes_cliente(cliente_id):
         'salario',
         'cliente_id_051__razon_social',
         'estado_vacante',
+        nombre_completo_asignado=Concat(
+            F('usuario_asignado__primer_nombre'), Value(' '),
+            F('usuario_asignado__segundo_nombre'), Value(' '),
+            F('usuario_asignado__primer_apellido'), Value(' '),
+            F('usuario_asignado__segundo_apellido')
+        ),
     ).annotate(
         vacante_estado = Case(
             When(estado_vacante=1, then=Value('Activa')),

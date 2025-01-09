@@ -15,7 +15,7 @@ from applications.usuarios.decorators  import validar_permisos
 global_id = None 
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin', 'acceso_candidato')
 def estudio_mostrar(request, pk=None):
     form_errors = False
     candidato = get_object_or_404(Can101Candidato, pk=pk)
@@ -73,9 +73,11 @@ def estudio_api(request):
                 'titulo': solicitud_candidato_academia.titulo,
                 'carrera': solicitud_candidato_academia.carrera,
                 'fortaleza_adquiridas': solicitud_candidato_academia.fortaleza_adquiridas,
+                'tipo_estudio': solicitud_candidato_academia.tipo_estudio,
                 'ciudad_id_004': ciudad_id.id,
             }
-        }       
+        }
+
         return JsonResponse(response_data)
 
     if request.method == 'POST':
@@ -88,9 +90,10 @@ def estudio_api(request):
         carrera = request.POST.get('carrera')
         fortaleza_adquiridas = request.POST.get('fortaleza_adquiridas')
         ciudad_id_004 = request.POST.get('ciudad_id_004')
+        tipo_estudio = request.POST.get('tipo_estudio')
 
         academia_modificar = get_object_or_404(Can103Educacion, pk= global_id )
-        
+
         # Obtener la instancia del modelo Cat004Ciudad
         ciudad = get_object_or_404(Cat004Ciudad, pk=ciudad_id_004)
 
@@ -100,16 +103,17 @@ def estudio_api(request):
         academia_modificar.carrera = carrera
         academia_modificar.fortaleza_adquiridas = fortaleza_adquiridas
         academia_modificar.ciudad_id_004 = ciudad
+        academia_modificar.tipo_estudio = tipo_estudio
 
         
         if fecha_inicial:
             academia_modificar.fecha_inicial = datetime.strptime(fecha_inicial, '%Y-%m-%d').date()
         if fecha_final:
             academia_modificar.fecha_final = datetime.strptime(fecha_final, '%Y-%m-%d').date()
-            
+
         academia_modificar.save()
-        
+
         messages.success(request, 'Se ha realizado la actualización del registro éxito.')
         return redirect('candidatos:candidato_academica' , pk = academia_modificar.candidato_id_101.id)
-        
+
     return JsonResponse({'error': 'Método no permitido'}, status=405)

@@ -15,6 +15,7 @@ def enviar_correo(tipo_correo, contexto, asunto, lista_destinatarios, correo_rem
         'creacion_usuario_cliente': 'cliente/creacion_usuario.html',
         'asignacion_entrevista_entrevista' : 'vacante/asignacion_entrevista_correo.html',
         'cancelacion_vacante_correo' : 'vacante/plantilla_correo/cancelacion_vacante_correo.html',
+        'creacion_vacante' : 'vacante/plantilla_correo/creacion_vacante_correo.html',
     }
 
     nombre_plantilla = plantilla_correo.get(tipo_correo)
@@ -36,7 +37,7 @@ def enviar_correo(tipo_correo, contexto, asunto, lista_destinatarios, correo_rem
         email.send()
         return True
     except Exception as e:
-        print(f"Error el enviar el correo: {e}")
+        
         return False
 
 def generate_token(length=100):

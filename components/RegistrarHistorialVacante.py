@@ -4,7 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 
 #modelos
-from applications.vacante.models import Cli063AplicacionVacanteHistorial, Cli056AplicacionVacante
+from applications.reclutado.models import Cli063AplicacionVacanteHistorial
+from applications.reclutado.models import Cli056AplicacionVacante
 from applications.usuarios.models import UsuarioBase
 
 # components

@@ -14,7 +14,9 @@ from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit
 from applications.vacante.forms.EntrevistaForm import EntrevistaGestionForm
 
 #modelos
-from applications.vacante.models import Cli057AsignacionEntrevista, Cli056AplicacionVacante, Cli052Vacante, Cli055ProfesionEstudio, Cli054HardSkill, Cli051Cliente, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli053SoftSkill
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli054HardSkill, Cli051Cliente, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli053SoftSkill
+from applications.reclutado.models import Cli056AplicacionVacante
+from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.cliente.models import Cli051Cliente
 from applications.usuarios.models import Permiso
 from applications.usuarios.models import UsuarioBase
@@ -32,7 +34,7 @@ from components.RegistrarGestionVacante import validar_vacante_cancelar
 
 # Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_cliente')
 def vacantes_cliente(request):
     
     # Verificar si el cliente_id está en la sesión
@@ -139,7 +141,7 @@ def vacantes_cliente(request):
 
 # Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_cliente')
 def gestion_vacante_reclutados(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente_id = request.session.get('cliente_id')
@@ -161,7 +163,7 @@ def gestion_vacante_reclutados(request, pk):
 
 # Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_cliente')
 def gestion_vacante_entrevistas(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente_id = request.session.get('cliente_id')
@@ -183,7 +185,7 @@ def gestion_vacante_entrevistas(request, pk):
 
 # Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin','acceso_cliente')
 def gestion_entrevista(request, pk):
 
     cliente_id = request.session.get('cliente_id')
@@ -259,7 +261,7 @@ def gestion_entrevista(request, pk):
 
 # Ver vacantes por id cliente para ver todas las vacantes que ha creado
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin','acceso_cliente')
 def gestion_vacante_cancelar(request, pk):
     vacante = get_object_or_404(Cli052Vacante, pk=pk)
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
@@ -282,7 +284,7 @@ def gestion_vacante_cancelar(request, pk):
     return render(request, 'vacante/gestion_vacante_cancelar.html', contexto)
 
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_cliente')
 def gestion_vacante_editar(request, pk):
 
     # Se obtiene información de la vacante
@@ -301,11 +303,12 @@ def gestion_vacante_editar(request, pk):
         'funciones_responsabilidades': vacante.funciones_responsabilidades,
         'ciudad': vacante.ciudad.id if vacante.ciudad else '',
         'salario': vacante.salario,
+        'usuario_asignado': vacante.usuario_asignado.id if vacante.usuario_asignado else '',
     }
 
     # form_vacante = VacanteFormEdit()
     form_vacante = VacanteFormEdit(initial=initial_data)
-    print(vacante)
+    
     # Formulario Vacantes
     if request.method == 'POST': 
         form_vacante = VacanteFormEdit(request.POST)
@@ -321,6 +324,9 @@ def gestion_vacante_editar(request, pk):
             vacante.experiencia_requerida = form_vacante.cleaned_data['experiencia_requerida']
             vacante.funciones_responsabilidades = form_vacante.cleaned_data['funciones_responsabilidades']
 
+            usuario_asignado = UsuarioBase.objects.get(id=form_vacante.cleaned_data['usuario_asignado'])
+            vacante.usuario_asignado = usuario_asignado
+
             soft_skills_id_053 = form_vacante.cleaned_data['soft_skills_id_053']
             hard_skills_id_054 = form_vacante.cleaned_data['hard_skills_id_054']
             
@@ -331,7 +337,7 @@ def gestion_vacante_editar(request, pk):
 
             estado_id = Cat001Estado.objects.get(id=1)
             
-            print(form_vacante.cleaned_data['soft_skills_id_053'])
+            # print(form_vacante.cleaned_data['soft_skills_id_053'])
             # Convertir el string JSON en un objeto Python (lista de diccionarios)
             skills = json.loads(soft_skills_id_053)
             

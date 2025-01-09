@@ -50,7 +50,7 @@
                             </div>
                         
                         </div>
-                        
+
                         <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
                             
                             <span class="menu-link py-3">
@@ -60,14 +60,15 @@
                             
                             <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
                                 
-                                <div class="menu-item">
+                                {% comment %} <div class="menu-item">
                                     <a class="menu-link py-3" href="{% url 'candidatos:candidato_crear' %}">
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
                                         <span class="menu-title">Crear Candidato</span>
                                     </a>
-                                </div>
+                                </div> {% endcomment %}
+                                
                                 <div class="menu-item">
                                     <a class="menu-link py-3" href="{% url 'candidatos:candidato_listar' %}">
                                         <span class="menu-bullet">
@@ -118,6 +119,29 @@
                                     </a>
                                 </div>
                             </div>
+                        </div>
+
+                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1">
+                            
+                            <span class="menu-link py-3">
+                                <span class="menu-title">COLABORADORES</span>
+                                <span class="menu-arrow d-lg-none"></span>
+                            </span>
+                            
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                                <div class="menu-item">
+                                    
+                                    <a class="menu-link  py-3" href="{% url 'accesses:listado_persona_interno' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Colaboradores</span>
+                                    </a>
+                                
+                                </div>
+                            
+                            </div>
+                        
                         </div>
                         {% endif %}
 
@@ -212,6 +236,17 @@
                             </span>
                             
                             <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+
+                                <div class="menu-item">
+                                    <a class="menu-link  py-3" href="{% url 'vacantes:ver_vacantes_disponibles' %}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Ver Vacantes</span>
+                                    </a>
+                                
+                                </div>
+                                
                                 <!--begin:Menu item-->
                                 <div class="menu-item">
                                     <a class="menu-link py-3" href="{% url 'vacantes:vacante_candidato' %}">
@@ -222,17 +257,7 @@
                                     </a>
                                 
                                 </div>
-                                
-                                <div class="menu-item">
-                                    <a class="menu-link  py-3" href="{% url 'vacantes:ver_vacantes_disponibles' %}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Ver Vacantes</span>
-                                    </a>
-                                
-                                </div>
-                            
+                                                            
                             </div>
                         
                         </div>

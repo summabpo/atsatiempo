@@ -14,15 +14,24 @@ Información Habilidades
 
 {% endblock css %}
 
+{% block boton_volver %}
+    {% if 'acceso_admin' in request.permisos_usuario %}
+        <a href="{% url 'candidatos:candidato_listar' %}" class="btn btn-primary my-2">Volver</a>
+    {% endif %}
+    {% if 'acceso_candidato' in request.permisos_usuario %}
+        <a href="{% url 'accesses:inicio' %}" class="btn btn-primary my-2">Volver</a>
+    {% endif %}
+{% endblock boton_volver %}
 
 {% block navegacion %}
+    {% if 'acceso_admin' in request.permisos_usuario %}
     <li class="breadcrumb-item text-white opacity-75">
         <a href="{% url 'candidatos:candidato_listar' %}" class="text-white text-hover-primary">Listado Candidatos</a>
     </li>
-
     <li class="breadcrumb-item">
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
     </li>
+    {% endif %}
 
     <li class="breadcrumb-item text-white opacity-75">
         <a href="{% url 'candidatos:candidato_editar' candidato.id  %}" class="text-white text-hover-primary">Información Personal</a>
@@ -32,7 +41,7 @@ Información Habilidades
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
     </li>
 
-    <li class="breadcrumb-item text-white opacity-75">Información Habilidades </li>
+    <li class="breadcrumb-item text-white opacity-75">Información Habilidades</li>
 {% endblock navegacion %}
 
 {% block content %}
@@ -76,10 +85,9 @@ Información Habilidades
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-800 px-7">
                                     <th class="w-10px pe-2">
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                            <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_table_users .form-check-input" value="1" />
-                                        </div>
+                                        
                                     </th>
+                                    <th style="text-align: center;" class="min-w-125px">Id</th>
                                     <th style="text-align: center;" class="min-w-125px">Habilidad</th>
                                     <th style="text-align: center;" class="min-w-125px">Nivel</th>
                                     <th style="text-align: center;" >Acciones</th>
@@ -93,6 +101,7 @@ Información Habilidades
                                                 <input class="form-check-input" type="checkbox" value="1" />
                                             </div>
                                         </td>
+                                        <td style="text-align: center;">{{ e.id }}</td>
                                         <td style="text-align: center;">{{ e.skill_id_104.nombre|upper }}</td>
                                         <td style="text-align: center;">
                                             {% if e.nivel == 1 %}
@@ -104,7 +113,7 @@ Información Habilidades
                                             {% endif %}
                                         </td>
                                         <td style="text-align: center;">
-                                            <a href="#" class="btn btn-light-danger" title="Eliminar {{ e.skill_id_104.nombre|upper }}">
+                                            <a href="{% url 'candidatos:habilidad_eliminar_id' e.id e.candidato_id_101.id %}" class="btn btn-light-danger" title="Eliminar {{ e.skill_id_104.nombre|upper }}">
                                                 <i class="ki-duotone ki-trash fs-1">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
@@ -115,6 +124,7 @@ Información Habilidades
                                             </a>
                                         </td>
                                     </tr>
+                                
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -166,6 +176,78 @@ Información Habilidades
             } else {
                 sugerenciasList.innerHTML = ''; // Limpia las sugerencias si la consulta es corta
             }
+        });
+
+        const checkboxes = document.querySelectorAll('#kt_table_users .form-check-input');
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'btn btn-light-danger';
+        deleteButton.textContent = 'Eliminar Seleccionados';
+        deleteButton.style.display = 'none';
+        deleteButton.addEventListener('click', function () {
+            // Add your delete logic here
+            const selectedIds = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.closest('tr').querySelector('td:nth-child(2)').textContent.trim());
+
+            console.log('Selected IDs:', selectedIds);
+
+            if (selectedIds.length > 0) {
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "No podrás revertir esto!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, eliminar!',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch('/candidato/eliminar_habilidad/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: JSON.stringify({ ids: selectedIds })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Eliminado!',
+                                    'Los registros han sido eliminados.',
+                                    'success'
+                                ).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Hubo un problema al eliminar los registros.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            } else {
+                Swal.fire(
+                    'No hay elementos seleccionados',
+                    'Por favor selecciona al menos un elemento para eliminar.',
+                    'info'
+                );
+            }
+
+        });
+
+        document.querySelector('.card-body.mb-5').appendChild(deleteButton);
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                deleteButton.style.display = anyChecked ? 'block' : 'none';
+            });
         });
     });
 

@@ -14,8 +14,18 @@
 }
 {% endblock css %}
 
+{% block boton_volver %}
+    {% if 'acceso_admin' in request.permisos_usuario %}
+        <a href="{% url 'candidatos:candidato_listar' %}" class="btn btn-primary my-2">Volver</a>
+    {% endif %}
+    {% if 'acceso_candidato' in request.permisos_usuario %}
+        <a href="{% url 'accesses:inicio' %}" class="btn btn-primary my-2">Volver</a>
+    {% endif %}
+{% endblock boton_volver %}
+
 
 {% block navegacion %}
+    {% if 'acceso_admin' in request.permisos_usuario %}
     <li class="breadcrumb-item text-white opacity-75">
         <a href="{% url 'candidatos:candidato_listar' %}" class="text-white text-hover-primary">Listado Candidatos</a>
     </li>
@@ -23,6 +33,7 @@
     <li class="breadcrumb-item">
         <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
     </li>
+    {% endif %}
 
     <li class="breadcrumb-item text-white opacity-75">Información Candidato</li>
 {% endblock navegacion %}

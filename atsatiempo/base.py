@@ -39,9 +39,16 @@ LOCAL_APPS = [
     'applications.pruebas_psi',
     'applications.usuarios',
     'applications.vacante',
+<<<<<<< HEAD
     #'candidate',
     #'client',
+=======
+    'applications.entrevista',
+    'applications.reclutado',
+
+>>>>>>> Fernando
 ]
+
 THIRD_APPS = [
     # Crispy Forms
     'crispy_forms',

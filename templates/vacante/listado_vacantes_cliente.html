@@ -83,6 +83,7 @@
                     <th style="text-align: center">CANCELADO</th>
                     <th style="text-align: center">DESISTIDO</th>
                     <th style="text-align: center">TOTAL APLICADOS</th>
+                    <th style="text-align: center">ANALISTA ASIGNADO</th>
                     <th style="text-align: center">ESTADO</th>
                     <th style="text-align: center">VER DETALLE</th>
                 </tr>
@@ -102,6 +103,7 @@
                     <td style="text-align: center" class="bg-light-dark text-dark">{{e.canceladas}}</td>
                     <td style="text-align: center" class="bg-light-warning text-warning">{{e.desistidos}}</td>
                     <td style="text-align: center">{{e.vacante_aplicados}}</td>
+                    <td style="text-align: center">{{e.nombre_completo_asignado}}</td>
                     <td style="text-align: center">
                         {% if e.estado_vacante == 1 %}
                             <span class="badge badge-light-secondary">Activa</span>

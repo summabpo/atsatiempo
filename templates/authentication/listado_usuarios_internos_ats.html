@@ -1,0 +1,141 @@
+{% extends 'base/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %} Grupo de Trabajo {% endblock title %}
+
+{% block titulo_pagina %} Grupo de Trabajo {% endblock titulo_pagina %}
+
+{% block navegacion %}
+    <li class="breadcrumb-item text-white opacity-75">Colaboradores</li>
+    
+    <!-- <li class="breadcrumb-item">
+        <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+    </li>
+    
+    <li class="breadcrumb-item text-white opacity-75">Multipurpose</li> -->
+{% endblock navegacion %}
+
+{% block css %}
+    .asteriskField {
+        color: red !important;
+    }
+{% endblock css %}
+
+{% block boton_volver %}
+    <a href="{% url 'accesses:inicio' %}" class="btn btn-primary my-2"">Volver</a>
+{% endblock boton_volver %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2 class="card-title">Listado Usuarios Internos ATS</h2>
+        <div class="card-toolbar">
+            <button type="button" class="btn btn-light-success" data-bs-toggle="modal" data-bs-target="#modal_grupo_trabajo">
+                <i class="ki-duotone ki-profile-user fs-1"><span class="path1"></span><span class="path2"></span></i>
+                Crear Usuario
+            </button>
+            <div class="modal fade" tabindex="-1" id="modal_grupo_trabajo" data-bs-backdrop="static">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Crear Rol</h3>
+                            <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                            </div>
+                        </div>
+
+                        <div class="modal-body">
+                            {% crispy form_creacion %} 
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary" form="form_crear_usuario">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="kt_datatable_dom_positioning" class="table table-striped table-row-bordered gy-5 gs-7 border rounded text-center">
+            <thead>
+                <tr class="fw-bold fs-6 text-gray-800 px-7 text-center">
+                    <th class="text-center">ID</th>
+                    <th class="text-center">Nombre</th>
+                    <th class="text-center">Correo</th>
+                    <th class="text-center">Grupo</th>
+                    <th class="text-center">Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+            
+            {% for e in usuarios_internos %}
+            <tr class="text-center">
+                <td>{{ e.id }}</td>
+                <td>{{ e.primer_nombre }} {{ e.segundo_nombre }} {{ e.primer_apellido }}</td>
+                <td>{{ e.email}}</td>
+                <td>{{ e.group.name }}</td>
+                <td>
+                    <a href="#" class="btn btn-light-primary" title="Editar Usuario">
+                        <i class="ki-duotone ki-user-edit fs-1">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                        </i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        Footer
+    </div>
+</div>
+{% endblock content %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function() {
+        {% if form_errores %}
+            $('#modal_grupo_trabajo').modal('show');
+        {% endif %}
+    });
+
+    $("#kt_datatable_dom_positioning").DataTable({
+        "language": {
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "zeroRecords": "No se encontraron resultados",
+            "info": "Mostrando página _PAGE_ de _PAGES_",
+            "infoEmpty": "No hay registros disponibles",
+            "infoFiltered": "(filtrado de _MAX_ registros totales)",
+            "search": "Buscar:",
+            "paginate": {
+                "first": "Primero",
+                "last": "Último",
+                "next": "Siguiente",
+                "previous": "Anterior"
+            }
+        },
+        "dom":
+            "<'row mb-2'" +
+            "<'col-sm-6 d-flex align-items-center justify-conten-start dt-toolbar'l>" +
+            "<'col-sm-6 d-flex align-items-center justify-content-end dt-toolbar'f>" +
+            ">" +
+    
+            "<'table-responsive'tr>" +
+    
+            "<'row'" +
+            "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+            "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+            ">",
+        "ordering": false
+    });
+</script>
+{% endblock extrajs %}

@@ -9,7 +9,9 @@ from django.db.models import F
 from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm
 
 #modelos
-from applications.vacante.models import Cli057AsignacionEntrevista, Cli056AplicacionVacante, Cli052Vacante
+from applications.vacante.models import Cli052Vacante
+from applications.reclutado.models import Cli056AplicacionVacante
+from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.cliente.models import Cli051Cliente
 from applications.usuarios.models import Permiso
 from applications.usuarios.models import UsuarioBase
@@ -21,7 +23,7 @@ from applications.vacante.views.consultas.VacanteConsultaView import consulta_va
 
 # Ver vacantes disponibles para aplicar
 @login_required
-@validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_candidato')
 def ver_vacante_disponibles(request):
     candidato_id = request.session.get('candidato_id')
     vacantes = consulta_vacantes_disponibles(candidato_id)
