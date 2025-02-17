@@ -22,7 +22,14 @@ from applications.vacante.forms.VacanteFilterForm import VacanteFilterForm
 
 centinela = None
 
+#ALL
+def find_vacanty(request):
+
+    return render(request, 'admin/vacanty/vacanty_find.html')
+
+
 #ADMIN
+
 
 #CLIENTE
 

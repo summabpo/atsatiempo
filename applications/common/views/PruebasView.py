@@ -44,3 +44,7 @@ def sugerir_habilidades(request):
     habilidades = Can104Skill.objects.filter(nombre__icontains=query)[:5]
     sugerencias = [habilidad.nombre for habilidad in habilidades]
     return JsonResponse(sugerencias, safe=False)
+
+
+def test_template(request):
+    return render(request, 'admin/test_template.html')

@@ -1,9 +1,11 @@
 from django.urls import path
 
 from .views.usuariosInternosATS import CreacionUsuarioInternoView
+from applications.common.views import PruebasView
 from .views import login
 
 urlpatterns = [
+    path('test_template/', PruebasView.test_template, name='test_template'),
     path('', login.principal, name='home'),
     
     # Seguridad

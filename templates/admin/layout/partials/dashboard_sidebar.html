@@ -1,0 +1,1755 @@
+<div class="sidebar-area" id="sidebar-area">
+	<div class="logo position-relative">
+        <a href="/dashboard" class="d-block text-decoration-none position-relative">
+            <img src="/static/admin/images/logo-icon.png" alt="logo-icon" />
+            <span class="logo-text fw-bold text-dark">TALENT TRAY</span>
+        </a>
+        <button class="sidebar-burger-menu bg-transparent p-0 border-0 opacity-0 z-n1 position-absolute top-50 end-0 translate-middle-y" id="sidebar-burger-menu" >
+            <i data-feather="x"></i>
+        </button>
+	</div>
+    <aside
+    id="layout-menu"
+    class="layout-menu menu-vertical menu active"
+    data-simplebar
+    >
+    <ul class="menu-inner">
+        <li class="menu-title small text-uppercase">
+            <span class="menu-title-text">PRINCIPAL</span>
+        </li>
+        <li class="menu-item {% if request.path == '/test_template/' or request.path == '/dashboard/' %}open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle active">
+                <span class="material-symbols-outlined menu-icon">Dashboard</span>
+                <span class="title">Dashboard</span>
+                {% comment %} <span class="count">18</span>  {% endcomment %}
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item">
+                    <a href="{% url "accesses:test_template" %}" class="menu-link {% if request.path == '/test_template/' %}active{% endif %}">
+                        eCommerce
+                    </a>
+                </li>
+                {% comment %} <li class="menu-item">
+                    <a href="/crm" class="menu-link {% if request.path == '/crm/' %}active{% endif %}">
+                        CRM
+                        <span class="hot tag">Hot</span>
+                    </a>
+                </li> {% endcomment %}
+                {% comment %} <li class="menu-item mb-0">
+                    <a href="/lms" class="menu-link {% if request.path == '/lms/' %}active{% endif %}">
+                        LMS
+                    </a>
+                </li> {% endcomment %}
+                {% comment %} <li class="menu-item mb-0">
+                    <a href="/call-center" class="menu-link {% if request.path == '/call-center/' %}active{% endif %}">
+                        Call Center
+                        <span class="hot tag">New</span>
+                    </a>
+                </li> {% endcomment %}
+            </ul>
+        </li>
+        <li class="menu-title small text-uppercase">
+            <span class="menu-title-text">VACANTES</span>
+        </li>
+        <li class="menu-item {% if request.path == '/vacante/buscar/' or request.path == '/dashboard/' %}open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle active">
+                <span class="material-symbols-outlined menu-icon">work</span>
+                <span class="title">Buscar Vacantes</span>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item">
+                    <a href="{% url 'vacantes:find_vacanty' %}" class="menu-link {% if request.path == '/vacante/buscar/' %}active{% endif %}">
+                        Buscar
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-title small text-uppercase">
+            <span class="menu-title-text">OTROS</span>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle active">
+                <span class="material-symbols-outlined menu-icon">settings</span>
+                <span class="title">Configuraciones</span>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item">
+                    <a href="/account-settings" class="menu-link {% if request.path == '/account-settings/' %}active{% endif %}">
+                        Configuración Cuenta
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-item">
+            <a href="/logout" class="menu-link">
+                <span class="material-symbols-outlined menu-icon">logout</span>
+                <span class="title">Logout</span>
+            </a>
+        </li>
+    </ul>
+    </aside>
+</div>
+
+{% comment %} <div class="sidebar-area" id="sidebar-area">
+    <div class="logo position-relative">
+        <a href="/dashboard" class="d-block text-decoration-none position-relative">
+        <img src="/static/admin/images/logo-icon.png" alt="logo-icon" />
+        <span class="logo-text fw-bold text-dark">Talent Tray</span>
+        </a>
+        <button
+        class="sidebar-burger-menu bg-transparent p-0 border-0 opacity-0 z-n1 position-absolute top-50 end-0 translate-middle-y"
+        id="sidebar-burger-menu"
+        >
+        <i data-feather="x"></i>
+        </button>
+    </div>
+
+    <aside
+    id="layout-menu"
+    class="layout-menu menu-vertical menu active"
+    data-simplebar
+    >
+    <ul class="menu-inner">
+        <li class="menu-title small text-uppercase">
+        <span class="menu-title-text">MAIN</span>
+        </li>
+        <li
+        class="menu-item {% if request.path == '/dashboard/' or request.path == '/crm/' or request.path == '/project-management/' or request.path == '/lms/' or request.path == '/help-desk/' or request.path == '/analytics/' or request.path == '/crypto/' or request.path == '/sales/' or request.path == '/hospital/' %}open{% endif %}"
+        >
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">dashboard</span>
+            <span class="title">Dashboard</span>
+            <span class="count">18</span>
+        </a>
+
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/dashboard"
+                class="menu-link {% if request.path == '/dashboard/' %}active{% endif %}"
+            >
+                eCommerce
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/crm"
+                class="menu-link {% if request.path == '/crm/' %}active{% endif %}"
+            >
+                CRM
+                <span class="hot tag">Hot</span>
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/project-management"
+                class="menu-link {% if request.path == '/project-management/' %}active{% endif %}"
+            >
+                Project Management
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/lms"
+                class="menu-link {% if request.path == '/lms/' %}active{% endif %}"
+            >
+                LMS
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/help-desk"
+                class="menu-link {% if request.path == '/help-desk/' %}active{% endif %}"
+            >
+                HelpDesk
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/analytics"
+                class="menu-link {% if request.path == '/analytics/' %}active{% endif %}"
+            >
+                Analytics
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/crypto"
+                class="menu-link {% if request.path == '/crypto/' %}active{% endif %}"
+            >
+                Crypto
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/sales"
+                class="menu-link {% if request.path == '/sales/' %}active{% endif %}"
+            >
+                Sales
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/hospital"
+                class="menu-link {% if request.path == '/hospital/' %}active{% endif %}"
+            >
+                Hospital
+            </a>
+            </li>
+
+            <li class="menu-item mb-0">
+            <a
+                href="/marketing"
+                class="menu-link {% if request.path == '/marketing/' %}active{% endif %}"
+            >
+                Marketing
+                <span class="hot tag">New</span>
+            </a>
+            </li>
+
+            <li class="menu-item mb-0">
+            <a
+                href="/nft"
+                class="menu-link {% if request.path == '/nft/' %}active{% endif %}"
+            >
+                NFT
+                <span class="hot tag">New</span>
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/saas"
+                class="menu-link {% if request.path == '/saas/' %}active{% endif %}"
+            >
+                SaaS
+                <span class="hot tag">New</span>
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/real-estate"
+                class="menu-link {% if request.path == '/real-estate/' %}active{% endif %}"
+            >
+                Real Estate
+                <span class="hot tag">New</span>
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/shipment"
+                class="menu-link {% if request.path == '/shipment/' %}active{% endif %}"
+            >
+                Shipment
+                <span class="hot tag">New</span>
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/finance"
+                class="menu-link {% if request.path == '/finance/' %}active{% endif %}"
+            >
+                Finance
+                <span class="hot tag">New</span>
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/hrm"
+                class="menu-link {% if request.path == '/hrm/' %}active{% endif %}"
+            >
+                HRM
+                <span class="hot tag">New</span>
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/school"
+                class="menu-link {% if request.path == '/school/' %}active{% endif %}"
+            >
+                School
+                <span class="hot tag">New</span>
+            </a>
+            </li>
+            <li class="menu-item mb-0">
+            <a
+                href="/call-center"
+                class="menu-link {% if request.path == '/call-center/' %}active{% endif %}"
+            >
+                Call Center
+                <span class="hot tag">New</span>
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">note_stack</span>
+            <span class="title">Front Pages</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a href="/" class="menu-link"> Home </a>
+            </li>
+            <li class="menu-item">
+            <a href="/features" class="menu-link"> Features </a>
+            </li>
+            <li class="menu-item">
+            <a href="/our-team" class="menu-link"> Our Team </a>
+            </li>
+            <li class="menu-item">
+            <a href="/faqs" class="menu-link"> FAQ’s </a>
+            </li>
+            <li class="menu-item">
+            <a href="/contact" class="menu-link"> Contact </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-title small text-uppercase">
+        <span class="menu-title-text">APPS</span>
+        </li>
+
+        <li class="menu-item open">
+        <a
+            href="/calendar"
+            class="menu-link {% if request.path == '/calendar/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon">date_range</span>
+            <span class="title">Calendar</span>
+        </a>
+        </li>
+
+        <li class="menu-item open">
+        <a
+            href="/to-do-list"
+            class="menu-link {% if request.path == '/to-do-list/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon"
+            >format_list_bulleted</span
+            >
+            <span class="title">To Do List</span>
+        </a>
+        </li>
+
+        <li class="menu-item open">
+        <a
+            href="/contacts"
+            class="menu-link {% if request.path == '/contacts/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon">contact_page</span>
+            <span class="title">Contacts</span>
+        </a>
+        </li>
+
+        <li class="menu-item open">
+        <a
+            href="/chat"
+            class="menu-link {% if request.path == '/chat/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon">chat</span>
+            <span class="title">Chat</span>
+        </a>
+        </li>
+
+        <li
+        class="menu-item {% if request.path == '/inbox/' or request.path == '/compose/' or request.path == '/read-email/' or request.path == '/snoozed/' or request.path == '/draft/' or request.path == '/sent-mail/' or request.path == '/trash-email/' or request.path == '/spam/' or request.path == '/starred/' or request.path == '/important/' %}open{% endif %}"
+        >
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">mail</span>
+            <span class="title">Email</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/inbox"
+                class="menu-link {% if request.path == '/inbox/' %}active{% endif %}"
+            >
+                Inbox
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/compose"
+                class="menu-link {% if request.path == '/compose/' %}active{% endif %}"
+            >
+                Compose
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/read-email"
+                class="menu-link {% if request.path == '/read-email/' %}active{% endif %}"
+            >
+                Read Email
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/snoozed"
+                class="menu-link {% if request.path == '/snoozed/' %}active{% endif %}"
+            >
+                Snoozed
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/draft"
+                class="menu-link {% if request.path == '/draft/' %}active{% endif %}"
+            >
+                Draft
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/sent-mail"
+                class="menu-link {% if request.path == '/sent-mail/' %}active{% endif %}"
+            >
+                Sent Mail
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/trash-email"
+                class="menu-link {% if request.path == '/trash-email/' %}active{% endif %}"
+            >
+                Trash
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/spam"
+                class="menu-link {% if request.path == '/spam/' %}active{% endif %}"
+            >
+                Spam
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/starred"
+                class="menu-link {% if request.path == '/starred/' %}active{% endif %}"
+            >
+                Starred
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/important"
+                class="menu-link {% if request.path == '/important/' %}active{% endif %}"
+            >
+                Important
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item open">
+        <a
+            href="/kanban-board"
+            class="menu-link {% if request.path == '/kanban-board/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon"
+            >space_dashboard</span
+            >
+            <span class="title">Kanban Board</span>
+        </a>
+        </li>
+
+        <li
+        class="menu-item {% if request.path == '/file-manager/' or request.path == '/assets/' or request.path == '/projects/' or request.path == '/personal/' or request.path == '/applications/' or request.path == '/documents/' or request.path == '/media/' %}open{% endif %}"
+        >
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">folder</span>
+            <span class="title">File Manager</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/file-manager"
+                class="menu-link {% if request.path == '/file-manager/' %}active{% endif %}"
+            >
+                My Drive
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/assets"
+                class="menu-link {% if request.path == '/assets/' %}active{% endif %}"
+            >
+                Assets
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/projects"
+                class="menu-link {% if request.path == '/projects/' %}active{% endif %}"
+            >
+                Projects
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/personal"
+                class="menu-link {% if request.path == '/personal/' %}active{% endif %}"
+            >
+                Personal
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/applications"
+                class="menu-link {% if request.path == '/applications/' %}active{% endif %}"
+            >
+                Applications
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/documents"
+                class="menu-link {% if request.path == '/documents/' %}active{% endif %}"
+            >
+                Documents
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/media"
+                class="menu-link {% if request.path == '/media/' %}active{% endif %}"
+            >
+                Media
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-title small text-uppercase">
+        <span class="menu-title-text">PAGES</span>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">shopping_cart</span>
+            <span class="title">eCommerce</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/products-grid"
+                class="menu-link {% if request.path == '/products-grid/' %}active{% endif %}"
+            >
+                Products Grid
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/products-list"
+                class="menu-link {% if request.path == '/products-list/' %}active{% endif %}"
+            >
+                Products List
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/product-details"
+                class="menu-link {% if request.path == '/product-details/' %}active{% endif %}"
+            >
+                Product Details
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/create-product"
+                class="menu-link {% if request.path == '/create-product/' %}active{% endif %}"
+            >
+                Create Product
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/edit-product"
+                class="menu-link {% if request.path == '/edit-product/' %}active{% endif %}"
+            >
+                Edit Product
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/cart"
+                class="menu-link {% if request.path == '/cart/' %}active{% endif %}"
+            >
+                Cart
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/checkout"
+                class="menu-link {% if request.path == '/checkout/' %}active{% endif %}"
+            >
+                Checkout
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/orders"
+                class="menu-link {% if request.path == '/orders/' %}active{% endif %}"
+            >
+                Orders
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/order-details"
+                class="menu-link {% if request.path == '/order-details/' %}active{% endif %}"
+            >
+                Order Details
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/create-order"
+                class="menu-link {% if request.path == '/create-order/' %}active{% endif %}"
+            >
+                Create Order
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/order-tracking"
+                class="menu-link {% if request.path == '/order-tracking/' %}active{% endif %}"
+            >
+                Order Tracking
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/customers"
+                class="menu-link {% if request.path == '/customers/' %}active{% endif %}"
+            >
+                Customers
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/customer-details"
+                class="menu-link {% if request.path == '/customer-details/' %}active{% endif %}"
+            >
+                Customer Details
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/categories"
+                class="menu-link {% if request.path == '/categories/' %}active{% endif %}"
+            >
+                Categories
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/sellers"
+                class="menu-link {% if request.path == '/sellers/' %}active{% endif %}"
+            >
+                Sellers
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/seller-details"
+                class="menu-link {% if request.path == '/seller-details/' %}active{% endif %}"
+            >
+                Seller Details
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/create-seller"
+                class="menu-link {% if request.path == '/create-seller/' %}active{% endif %}"
+            >
+                Create Seller
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/reviews"
+                class="menu-link {% if request.path == '/reviews/' %}active{% endif %}"
+            >
+                Reviews
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/refunds"
+                class="menu-link {% if request.path == '/refunds/' %}active{% endif %}"
+            >
+                Refunds
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">handshake</span>
+            <span class="title">CRM</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/contacts-2"
+                class="menu-link {% if request.path == '/contacts-2/' %}active{% endif %}"
+            >
+                Contacts
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/customers-2"
+                class="menu-link {% if request.path == '/customers-2/' %}active{% endif %}"
+            >
+                Customers
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/leads"
+                class="menu-link {% if request.path == '/leads/' %}active{% endif %}"
+            >
+                Leads
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/deals"
+                class="menu-link {% if request.path == '/deals/' %}active{% endif %}"
+            >
+                Deals
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">content_paste</span>
+            <span class="title">Project Management</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/project-overview"
+                class="menu-link {% if request.path == '/project-overview/' %}active{% endif %}"
+            >
+                Project Overview
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/project-list"
+                class="menu-link {% if request.path == '/project-list/' %}active{% endif %}"
+            >
+                Project List
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/create-project"
+                class="menu-link {% if request.path == '/create-project/' %}active{% endif %}"
+            >
+                Create Project
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/clients"
+                class="menu-link {% if request.path == '/clients/' %}active{% endif %}"
+            >
+                Clients
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/teams"
+                class="menu-link {% if request.path == '/teams/' %}active{% endif %}"
+            >
+                Teams
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/kanban-board-2"
+                class="menu-link {% if request.path == '/kanban-board-2/' %}active{% endif %}"
+            >
+                Kanvan Board
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/user"
+                class="menu-link {% if request.path == '/user/' %}active{% endif %}"
+            >
+                User
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">auto_stories</span>
+            <span class="title">LMS</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/courses-list"
+                class="menu-link {% if request.path == '/courses-list/' %}active{% endif %}"
+            >
+                Courses List
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/course-details"
+                class="menu-link {% if request.path == '/course-details/' %}active{% endif %}"
+            >
+                Course Details
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/lesson-preview"
+                class="menu-link {% if request.path == '/lesson-preview/' %}active{% endif %}"
+            >
+                Lesson Preview
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/create-course"
+                class="menu-link {% if request.path == '/create-course/' %}active{% endif %}"
+            >
+                Create Course
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/edit-course"
+                class="menu-link {% if request.path == '/edit-course/' %}active{% endif %}"
+            >
+                Edit Course
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/instructors"
+                class="menu-link {% if request.path == '/instructors/' %}active{% endif %}"
+            >
+                Instructors
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">support</span>
+            <span class="title">Help Desk</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/tickets"
+                class="menu-link {% if request.path == '/tickets/' %}active{% endif %}"
+            >
+                Tickets
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/ticket-details"
+                class="menu-link {% if request.path == '/ticket-details/' %}active{% endif %}"
+            >
+                Ticket Details
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/agents"
+                class="menu-link {% if request.path == '/agents/' %}active{% endif %}"
+            >
+                Agents
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/reports"
+                class="menu-link {% if request.path == '/reports/' %}active{% endif %}"
+            >
+                Reports
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon"
+            >local_activity</span
+            >
+            <span class="title">Events</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/events"
+                class="menu-link {% if request.path == '/events/' %}active{% endif %}"
+            >
+                Events
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/events-list"
+                class="menu-link {% if request.path == '/events-list/' %}active{% endif %}"
+            >
+                Events List
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/event-details"
+                class="menu-link {% if request.path == '/event-details/' %}active{% endif %}"
+            >
+                Event Details
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/create-an-event"
+                class="menu-link {% if request.path == '/create-an-event/' %}active{% endif %}"
+            >
+                Create An Event
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/edit-an-event"
+                class="menu-link {% if request.path == '/edit-an-event/' %}active{% endif %}"
+            >
+                Edit An Event
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">share</span>
+            <span class="title">Social</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/profile"
+                class="menu-link {% if request.path == '/profile/' %}active{% endif %}"
+            >
+                Profile
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/settings"
+                class="menu-link {% if request.path == '/settings/' %}active{% endif %}"
+            >
+                Settings
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">content_paste</span>
+            <span class="title">Invoice</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/invoice-list"
+                class="menu-link {% if request.path == '/invoice-list/' %}active{% endif %}"
+            >
+                Invoice List
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/invoice-details"
+                class="menu-link {% if request.path == '/invoice-details/' %}active{% endif %}"
+            >
+                Invoice Details
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/create-invoice"
+                class="menu-link {% if request.path == '/create-invoice/' %}active{% endif %}"
+            >
+                Create Invoice
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/edit-invoice"
+                class="menu-link {% if request.path == '/edit-invoice/' %}active{% endif %}"
+            >
+                Edit Invoice
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">group_add</span>
+            <span class="title">Users</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/team-members"
+                class="menu-link {% if request.path == '/team-members/' %}active{% endif %}"
+            >
+                Team Members
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/users-list"
+                class="menu-link {% if request.path == '/users-list/' %}active{% endif %}"
+            >
+                Users List
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/add-user"
+                class="menu-link {% if request.path == '/add-user/' %}active{% endif %}"
+            >
+                Add User
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon"
+            >account_circle</span
+            >
+            <span class="title">Profile</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/user-profile"
+                class="menu-link {% if request.path == '/user-profile/' %}active{% endif %}"
+            >
+                User Profile
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/teams-2"
+                class="menu-link {% if request.path == '/teams-2/' %}active{% endif %}"
+            >
+                Teams
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/my-projects"
+                class="menu-link {% if request.path == '/my-projects/' %}active{% endif %}"
+            >
+                Projects
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a
+            href="/starter"
+            class="menu-link {% if request.path == '/starter/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon">star</span>
+            <span class="title">Starter</span>
+        </a>
+        </li>
+
+        <li class="menu-title small text-uppercase">
+        <span class="menu-title-text">MODULES</span>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">add_reaction</span>
+            <span class="title">Icons</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/material-icons"
+                class="menu-link {% if request.path == '/material-icons/' %}active{% endif %}"
+            >
+                Material Icons
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/feathericon"
+                class="menu-link {% if request.path == '/feathericon/' %}active{% endif %}"
+            >
+                Feathericon
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/remixicon"
+                class="menu-link {% if request.path == '/remixicon/' %}active{% endif %}"
+            >
+                Remixicon
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon"
+            >gallery_thumbnail</span
+            >
+            <span class="title">UI Elements</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/alerts"
+                class="menu-link {% if request.path == '/alerts/' %}active{% endif %}"
+            >
+                Alerts
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/avatar"
+                class="menu-link {% if request.path == '/avatar/' %}active{% endif %}"
+            >
+                Avatar
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/buttons"
+                class="menu-link {% if request.path == '/buttons/' %}active{% endif %}"
+            >
+                Buttons
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/badges"
+                class="menu-link {% if request.path == '/badges/' %}active{% endif %}"
+            >
+                Badges
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/cards"
+                class="menu-link {% if request.path == '/cards/' %}active{% endif %}"
+            >
+                Cards
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/carousels"
+                class="menu-link {% if request.path == '/carousels/' %}active{% endif %}"
+            >
+                Carousels
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/dropdowns"
+                class="menu-link {% if request.path == '/dropdowns/' %}active{% endif %}"
+            >
+                Dropdowns
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/grids"
+                class="menu-link {% if request.path == '/grids/' %}active{% endif %}"
+            >
+                Grids
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/images"
+                class="menu-link {% if request.path == '/images/' %}active{% endif %}"
+            >
+                Images
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/list"
+                class="menu-link {% if request.path == '/list/' %}active{% endif %}"
+            >
+                List
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/modals"
+                class="menu-link {% if request.path == '/modals/' %}active{% endif %}"
+            >
+                Modals
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/navs"
+                class="menu-link {% if request.path == '/navs/' %}active{% endif %}"
+            >
+                Navs
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/paginations"
+                class="menu-link {% if request.path == '/paginations/' %}active{% endif %}"
+            >
+                Paginations
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/popover-tooltips"
+                class="menu-link {% if request.path == '/popover-tooltips/' %}active{% endif %}"
+            >
+                Popover Tooltips
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/progress"
+                class="menu-link {% if request.path == '/progress/' %}active{% endif %}"
+            >
+                Progess
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/spinners"
+                class="menu-link {% if request.path == '/spinners/' %}active{% endif %}"
+            >
+                Spinners
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/tabs"
+                class="menu-link {% if request.path == '/tabs/' %}active{% endif %}"
+            >
+                Tabs
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/accordions"
+                class="menu-link {% if request.path == '/accordions/' %}active{% endif %}"
+            >
+                Accordions
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/date-time-picker"
+                class="menu-link {% if request.path == '/date-time-picker/' %}active{% endif %}"
+            >
+                Date/Time Picker
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/videos"
+                class="menu-link {% if request.path == '/videos/' %}active{% endif %}"
+            >
+                Videos
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">table</span>
+            <span class="title">Tables</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/basic-table"
+                class="menu-link {% if request.path == '/basic-table/' %}active{% endif %}"
+            >
+                Basic Table
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/data-tables"
+                class="menu-link {% if request.path == '/data-tables/' %}active{% endif %}"
+            >
+                Data Table
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">clarify</span>
+            <span class="title">Forms</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/basic-elements"
+                class="menu-link {% if request.path == '/basic-elements/' %}active{% endif %}"
+            >
+                Basic Elements
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/advanced-elements"
+                class="menu-link {% if request.path == '/advanced-elements/' %}active{% endif %}"
+            >
+                Advanced Elements
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/validation"
+                class="menu-link {% if request.path == '/validation/' %}active{% endif %}"
+            >
+                Validation
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/wizard"
+                class="menu-link {% if request.path == '/wizard/' %}active{% endif %}"
+            >
+                Wizard
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/editors"
+                class="menu-link {% if request.path == '/editors/' %}active{% endif %}"
+            >
+                Editors
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/file-upload"
+                class="menu-link {% if request.path == '/file-upload/' %}active{% endif %}"
+            >
+                File Upload
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item open">
+        <a
+            href="/apex-charts"
+            class="menu-link {% if request.path == '/apex-charts/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon">donut_large</span>
+            <span class="title">Apex Charts</span>
+        </a>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">lock</span>
+            <span class="title">Authentication</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/login"
+                class="menu-link {% if request.path == '/login/' %}active{% endif %}"
+            >
+                Login
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/register"
+                class="menu-link {% if request.path == '/register/' %}active{% endif %}"
+            >
+                Register
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/reset-password"
+                class="menu-link {% if request.path == '/reset-password/' %}active{% endif %}"
+            >
+                Reset Password
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/forget-password"
+                class="menu-link {% if request.path == '/forget-password/' %}active{% endif %}"
+            >
+                Forget Password
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/lock-screen"
+                class="menu-link {% if request.path == '/lock-screen/' %}active{% endif %}"
+            >
+                Lock Screen
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/logout"
+                class="menu-link {% if request.path == '/logout/' %}active{% endif %}"
+            >
+                Log Out
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/confirm-mail"
+                class="menu-link {% if request.path == '/confirm-mail/' %}active{% endif %}"
+            >
+                Confirm Mail
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon"
+            >featured_video</span
+            >
+            <span class="title">Extra Pages</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/pricing-plan"
+                class="menu-link {% if request.path == '/pricing-plan/' %}active{% endif %}"
+            >
+                Pricing Plan
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/faq"
+                class="menu-link {% if request.path == '/faq/' %}active{% endif %}"
+            >
+                FAQ
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/timeline"
+                class="menu-link {% if request.path == '/timeline/' %}active{% endif %}"
+            >
+                Timeline
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/animation"
+                class="menu-link {% if request.path == '/animation/' %}active{% endif %}"
+            >
+                Animation
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/clip-board"
+                class="menu-link {% if request.path == '/clip-board/' %}active{% endif %}"
+            >
+                Clip Board
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/drag-drop"
+                class="menu-link {% if request.path == '/drag-drop/' %}active{% endif %}"
+            >
+                Drag & Drop
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/range-slider"
+                class="menu-link {% if request.path == '/range-slider/' %}active{% endif %}"
+            >
+                Range Slider
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/ratings"
+                class="menu-link {% if request.path == '/ratings/' %}active{% endif %}"
+            >
+                Ratings
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/toasts"
+                class="menu-link {% if request.path == '/toasts/' %}active{% endif %}"
+            >
+                Toasts
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/check-radio"
+                class="menu-link {% if request.path == '/check-radio/' %}active{% endif %}"
+            >
+                Check & Radio
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/select"
+                class="menu-link {% if request.path == '/select/' %}active{% endif %}"
+            >
+                Select
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/scrollbar"
+                class="menu-link {% if request.path == '/scrollbar/' %}active{% endif %}"
+            >
+                Scrollbar
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/typography"
+                class="menu-link {% if request.path == '/typography/' %}active{% endif %}"
+            >
+                Typography
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/gallery"
+                class="menu-link {% if request.path == '/gallery/' %}active{% endif %}"
+            >
+                Gallery
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/search"
+                class="menu-link {% if request.path == '/search/' %}active{% endif %}"
+            >
+                Search
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/blank-page"
+                class="menu-link {% if request.path == '/blank-page/' %}active{% endif %}"
+            >
+                Blank Page
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">chat_error</span>
+            <span class="title">Errors</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/error-page"
+                class="menu-link {% if request.path == '/error-page/' %}active{% endif %}"
+            >
+                404 Error Page
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/internal-error"
+                class="menu-link {% if request.path == '/internal-error/' %}active{% endif %}"
+            >
+                Internal Error
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item open">
+        <a
+            href="/widgets"
+            class="menu-link {% if request.path == '/widgets/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon">widgets</span>
+            <span class="title">Widgets</span>
+        </a>
+        </li>
+
+        <li class="menu-item open">
+        <a
+            href="/google-map"
+            class="menu-link {% if request.path == '/google-map/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon">map</span>
+            <span class="title">Google Map</span>
+        </a>
+        </li>
+
+        <li class="menu-item open">
+        <a
+            href="/notification"
+            class="menu-link {% if request.path == '/notification/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon">notifications</span>
+            <span class="title">Notification</span>
+        </a>
+        </li>
+
+        <li class="menu-item open">
+        <a
+            href="/members"
+            class="menu-link {% if request.path == '/members/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon">group</span>
+            <span class="title">Members</span>
+        </a>
+        </li>
+
+        <li class="menu-title small text-uppercase">
+        <span class="menu-title-text">OTHERS</span>
+        </li>
+
+        <li class="menu-item open">
+        <a
+            href="/my-profile"
+            class="menu-link {% if request.path == '/my-profile/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon"
+            >account_circle</span
+            >
+            <span class="title">My Profile</span>
+        </a>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon">settings</span>
+            <span class="title">Settings</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+            <a
+                href="/account-settings"
+                class="menu-link {% if request.path == '/account-settings/' %}active{% endif %}"
+            >
+                Account Settings
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/change-password"
+                class="menu-link {% if request.path == '/change-password/' %}active{% endif %}"
+            >
+                Change Password
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/connections"
+                class="menu-link {% if request.path == '/connections/' %}active{% endif %}"
+            >
+                Connections
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/privacy-policy"
+                class="menu-link {% if request.path == '/privacy-policy/' %}active{% endif %}"
+            >
+                Privacy Policy
+            </a>
+            </li>
+            <li class="menu-item">
+            <a
+                href="/terms-conditions"
+                class="menu-link {% if request.path == '/terms-conditions/' %}active{% endif %}"
+            >
+                Terms & Conditions
+            </a>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <span class="material-symbols-outlined menu-icon"
+            >keyboard_arrow_down</span
+            >
+            <span class="title">Multi Level Menu</span>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item after-sub-menu menu-level">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <span class="title">Level One</span>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item">
+                <a href="#" class="menu-link"> Level Three </a>
+                </li>
+            </ul>
+            </li>
+        </ul>
+        </li>
+
+        <li class="menu-item">
+        <a
+            href="/logout"
+            class="menu-link {% if request.path == '/logout/' %}active{% endif %}"
+        >
+            <span class="material-symbols-outlined menu-icon">logout</span>
+            <span class="title">Logout</span>
+        </a>
+        </li>
+    </ul>
+    </aside>
+</div> {% endcomment %}

@@ -1,0 +1,26 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>
+			{% block title %}Trezo - Django Bootstrap 5 Admin Dashboard
+			Template{% endblock %}
+		</title>
+		{% include 'layout/partials/asset_files.html' %}
+	</head>
+	<body
+		data-bs-spy="scroll"
+		data-bs-target="#navbar-example2"
+		data-bs-root-margin="0px 0px -40%"
+		data-bs-smooth-scroll="true"
+		class="scrollspy-example"
+		tabindex="0"
+	>
+        {% include 'layout/partials/preloader.html' %}
+		{% include 'layout/partials/navbar.html' %} {% block content %}
+		<!-- Default content can go here -->
+
+		<!-- Default content can go here -->
+		{% endblock %} {% include 'layout/partials/footer.html' %}
+	</body>
+</html>
