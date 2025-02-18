@@ -26,8 +26,8 @@ class LoginForm(forms.Form):
             # Add the link in a new Div
             
             Submit('submit', 'Continuar', css_class='btn btn-lg btn-primary w-100 mb-5'),
-            Row(
-                HTML('<div class="text-center mb-3"><a href="" class="link-primary fs-6 fw-bold">Forgot Password ?</a></div>'),
-                css_class='fv-row mb-10'
-            ),
+            # Row(
+            #     HTML('<div class="text-center mb-3"><a href="" class="link-primary fs-6 fw-bold">Forgot Password ?</a></div>'),
+            #     css_class='fv-row mb-10'
+            # ),
         )

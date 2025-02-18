@@ -4,13 +4,21 @@ from .views.usuariosInternosATS import CreacionUsuarioInternoView
 from applications.common.views import PruebasView
 from .views import login
 
+#new
+from applications.usuarios.views.user_login import loginView
+
 urlpatterns = [
-    path('test_template/', PruebasView.test_template, name='test_template'),
-    path('', login.principal, name='home'),
+    #new
+    path('test_template', PruebasView.test_template, name='test'),
+    path('', loginView.principal, name='home'),
+    path('login', loginView.login_view, name='login'),
+    path('registro', loginView.registration, name='registration'),
+    path('registro/empresa', loginView.company_registration, name='company_registration'),
     
+
     # Seguridad
     path('inicio', login.inicio_app, name='inicio'),
-    path('login', login.login_view, name='login'),
+    # path('login', login.login_view, name='login'),
     path('logout_view/', login.logout_view, name='logout'),
     path('registro_empresa/', login.signup_view, name='signup'),
     path('registro_candidato/', login.signup_candidato, name='signup_candidato'),

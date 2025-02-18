@@ -157,7 +157,7 @@ frases_cancelacion = [
 # pantalla principal
 def principal(request):
     """Pantalla Inicial"""
-    return render(request, 'authentication/home.html')
+    return render(request, 'admin/login/home.html')
 
 #pantalla inicio
 

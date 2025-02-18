@@ -6,7 +6,7 @@
 			{% block title %}Trezo - Django Bootstrap 5 Admin Dashboard
 			Template{% endblock %}
 		</title>
-		{% include 'layout/partials/asset_files.html' %}
+		{% include 'admin/layout/partials/asset_files.html' %}
 	</head>
 	<body
 		data-bs-spy="scroll"
@@ -21,5 +21,7 @@
 
 		<!-- Default content can go here -->
 		{% endblock %}
+
+		{% block js %} {% endblock js %}
 	</body>
 </html>

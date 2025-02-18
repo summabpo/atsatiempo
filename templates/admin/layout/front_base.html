@@ -3,10 +3,9 @@
 <html lang="en">
 	<head>
 		<title>
-			{% block title %}Trezo - Django Bootstrap 5 Admin Dashboard
-			Template{% endblock %}
+			{% block title %}{% endblock %}
 		</title>
-		{% include 'layout/partials/asset_files.html' %}
+		{% include 'admin/layout/partials/asset_files.html' %}
 	</head>
 	<body
 		data-bs-spy="scroll"
@@ -16,11 +15,11 @@
 		class="scrollspy-example"
 		tabindex="0"
 	>
-        {% include 'layout/partials/preloader.html' %}
-		{% include 'layout/partials/navbar.html' %} {% block content %}
+        {% include 'admin/layout/partials/preloader.html' %}
+		{% include 'admin/layout/partials/navbar.html' %} {% block content %}
 		<!-- Default content can go here -->
 
 		<!-- Default content can go here -->
-		{% endblock %} {% include 'layout/partials/footer.html' %}
+		{% endblock %} {% include 'admin/layout/partials/footer.html' %}
 	</body>
 </html>

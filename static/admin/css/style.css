@@ -43,7 +43,7 @@ This files table contents are outlined below>>>>>
   --bs-danger: #FD5812;
   --bs-light: #D5D9E2;
   --bs-dark: #000000;
-  --bs-primary-div: #AD63F6;
+  --bs-primary-div: #B10022;
   --bs-primary-div-50: #9135E8;
   --bs-primary-50: #4936F5;
   --bs-danger-50: #EE3E08;
@@ -450,8 +450,8 @@ caption {
 }
 
 th {
-  text-align: inherit;
   text-align: -webkit-match-parent;
+  text-align: inherit;
 }
 
 thead,
@@ -764,7 +764,7 @@ progress {
   --bs-danger: #FD5812;
   --bs-light: #D5D9E2;
   --bs-dark: #000000;
-  --bs-primary-div: #AD63F6;
+  --bs-primary-div: #B10022;
   --bs-primary-div-50: #9135E8;
   --bs-primary-50: #4936F5;
   --bs-danger-50: #EE3E08;
@@ -3852,10 +3852,10 @@ textarea.form-control-lg {
 
 .btn-primary-div {
   --bs-btn-color: #000;
-  --bs-btn-bg: #AD63F6;
-  --bs-btn-border-color: #AD63F6;
+  --bs-btn-bg: #B10022;
+  --bs-btn-border-color: #B10022;
   --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #b97af7;
+  --bs-btn-hover-bg: #FF1F1C;
   --bs-btn-hover-border-color: #b573f7;
   --bs-btn-focus-shadow-rgb: 147, 84, 209;
   --bs-btn-active-color: #000;
@@ -3863,8 +3863,8 @@ textarea.form-control-lg {
   --bs-btn-active-border-color: #b573f7;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   --bs-btn-disabled-color: #000;
-  --bs-btn-disabled-bg: #AD63F6;
-  --bs-btn-disabled-border-color: #AD63F6;
+  --bs-btn-disabled-bg: #B10022;
+  --bs-btn-disabled-border-color: #B10022;
 }
 
 .btn-primary-div-50 {
@@ -4208,19 +4208,19 @@ textarea.form-control-lg {
 }
 
 .btn-outline-primary-div {
-  --bs-btn-color: #AD63F6;
-  --bs-btn-border-color: #AD63F6;
+  --bs-btn-color: #B10022;
+  --bs-btn-border-color: #B10022;
   --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #AD63F6;
-  --bs-btn-hover-border-color: #AD63F6;
+  --bs-btn-hover-bg: #B10022;
+  --bs-btn-hover-border-color: #B10022;
   --bs-btn-focus-shadow-rgb: 173, 99, 246;
   --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #AD63F6;
-  --bs-btn-active-border-color: #AD63F6;
+  --bs-btn-active-bg: #B10022;
+  --bs-btn-active-border-color: #B10022;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #AD63F6;
+  --bs-btn-disabled-color: #B10022;
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #AD63F6;
+  --bs-btn-disabled-border-color: #B10022;
   --bs-gradient: none;
 }
 
@@ -17427,7 +17427,7 @@ Swiper Slider Style
   background-color: #0000CE !important;
 }
 .calendar-wrap .fc-h-event.primary-div {
-  background-color: #AD63F6 !important;
+  background-color: #B10022 !important;
 }
 .calendar-wrap .fc-h-event.danger {
   background-color: #FD5812 !important;
@@ -17723,7 +17723,7 @@ Swiper Slider Style
   background: #37D80A;
 }
 .timeline-wrap .timeline-item-2 .icon.three div {
-  background: #AD63F6;
+  background: #B10022;
 }
 .timeline-wrap .timeline-item-2 .icon.four div {
   background: #FD5812;
@@ -17791,7 +17791,7 @@ Swiper Slider Style
   background-color: #FD5812;
 }
 .timeline-item .border-style-for-timeline.dot-3::before {
-  background-color: #AD63F6;
+  background-color: #B10022;
 }
 .timeline-item .border-style-for-timeline.dot-4::before {
   background-color: #3584FC;
@@ -19924,8 +19924,8 @@ Swiper Slider Style
 }
 
 .top-title {
-  color: #AD63F6;
-  border: 1px solid #AD63F6;
+  color: #B10022;
+  border: 1px solid #B10022;
   padding: 5.5px 17px;
   display: inline-block;
   position: relative;
@@ -19939,7 +19939,7 @@ Swiper Slider Style
   right: -4px;
   width: 7px;
   height: 7px;
-  background-color: #AD63F6;
+  background-color: #B10022;
 }
 .top-title::after {
   right: auto;
@@ -19952,7 +19952,7 @@ Swiper Slider Style
   right: -4px;
   width: 7px;
   height: 7px;
-  background-color: #AD63F6;
+  background-color: #B10022;
 }
 .top-title span::after {
   right: auto;
@@ -20093,7 +20093,7 @@ Swiper Slider Style
   transition: all ease 0.5s;
 }
 .team-controller .controller-icon:hover {
-  background-color: #AD63F6;
+  background-color: #B10022;
   color: #fff;
 }
 
@@ -20150,7 +20150,7 @@ Swiper Slider Style
   color: #fff;
 }
 #backtotop:hover {
-  background-color: #AD63F6;
+  background-color: #B10022;
 }
 
 /* Max width 767px */
@@ -20390,7 +20390,7 @@ Swiper Slider Style
   transition: all ease 0.5s;
 }
 .cryptocurrency-controller .controller-icon:hover {
-  background-color: #AD63F6;
+  background-color: #B10022;
   color: #fff;
 }
 

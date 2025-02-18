@@ -4,7 +4,7 @@
 >
 	<div class="container">
 		<a class="navbar-brand me-xl-5 me-3" href="/">
-			<img src="/static/admin/images/landing/logo.svg" alt="logo" />
+			<img src="/static/admin/images/landing/logo-talent-tray.png" alt="logo" width="150px" />
 		</a>
 		<button
 			class="navbar-toggler"
@@ -18,40 +18,41 @@
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 				<li class="nav-item">
 					<a
 						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4 {% if request.path == '/' %}active{% endif %}"
 						href="/"
-						>Home</a
+						>Inicio</a
 					>
 				</li>
 				<li class="nav-item">
 					<a
 						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4 {% if request.path == '/features/' %}active{% endif %}"
-						href="/features"
-						>Features</a
+						href="#"
+						>Caracteristicas</a
 					>
 				</li>
 				<li class="nav-item">
 					<a
 						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4 {% if request.path == '/our-team/' %}active{% endif %}"
-						href="/our-team"
-						>Our Team</a
+						href="#"
+						>Nuestro Equipo</a
 					>
 				</li>
 				<li class="nav-item">
 					<a
 						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4 {% if request.path == '/faqs/' %}active{% endif %}"
-						href="/faqs"
+						href="#"
 						>FAQ’s</a
 					>
 				</li>
 				<li class="nav-item">
 					<a
 						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4 {% if request.path == '/contact/' %}active{% endif %}"
-						href="/contact"
-						>Contact</a
+						href="#"
+						>Contacto</a
 					>
 				</li>
 				<li class="nav-item">
@@ -62,20 +63,13 @@
 					>
 				</li>
 			</ul>
+			
 			<div class="othres">
-				<a
-					href="/login"
-					class="btn btn-outline-primary-div py-2 px-4 fw-medium fs-16 rounded-3"
-				>
-					<i
-						class="ri-login-box-line fs-18 position-relative top-2"
-					></i>
+				<a href="{% url 'accesses:login' %}" class="btn btn-outline-primary-div py-2 px-4 fw-medium fs-16 rounded-3" >
+					<i class="ri-login-box-line fs-18 position-relative top-2" ></i>
 					<span class="ms-1">Login</span>
 				</a>
-				<a
-					href="/register"
-					class="btn btn-primary-div py-2 px-4 fw-medium fs-16 text-white ms-3 rounded-3"
-				>
+				<a href="{% url 'accesses:login' %}" class="btn btn-primary-div py-2 px-4 fw-medium fs-16 text-white ms-3 rounded-3">
 					<i class="ri-user-line fs-18"></i>
 					<span class="ms-1">Register</span>
 				</a>

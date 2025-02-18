@@ -3,8 +3,7 @@
 <html lang="en">
 	<head>
 		<title>
-			{% block title %}Trezo - Django Bootstrap 5 Admin Dashboard
-			Template{% endblock %}
+			{% block title %}  {% endblock %}
 		</title>
 		{% include 'admin/layout/partials/asset_files.html' %}
 	</head>
@@ -17,9 +16,7 @@
 				{% include 'admin/layout/partials/dashboard_header.html' %} 
                 
                 {% block content %}
-				<!-- Default content can go here -->
-
-				<!-- Default content can go here -->
+				
 				{% endblock %}
 
 				<div class="flex-grow-1"></div>
@@ -27,6 +24,11 @@
 			</div>
 		</div>
 		{% comment %} {% include 'admin/layout/partials/dashboard_settings.html' %} {% endcomment %}
-        {% include 'admin/layout/partials/js_files.html' %}
+		
+		{% block js %}
+		
+		{% endblock %}
+
+		{% include 'admin/layout/partials/js_files.html' %}
 	</body>
 </html>

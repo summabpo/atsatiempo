@@ -8,6 +8,15 @@
     "axe/name-role-value": "off",
     "axe/structure": "off",
     "button-type": "off",
-    "axe/aria": "off"
+    "axe/aria": "off",
+    "compat-api/css": [
+      "default",
+      {
+        "ignore": [
+          "-webkit-text-size-adjust",
+          "text-align: -webkit-match-parent"
+        ]
+      }
+    ]
   }
 }
