@@ -172,6 +172,142 @@ def company_registration(request):
                     'login_f':login_f,
                     })
 
+#registro candidato
+def candidate_registration(request):
+    url_actual = f"{request.scheme}://{request.get_host()}"
+
+    if request.method == 'POST':
+        form = SignupFormCandidato(request.POST)
+        if form.is_valid():
+
+            email = form.cleaned_data['email']
+            password1 = form.cleaned_data['password1']
+            password2 = form.cleaned_data['password2']
+            primer_nombre = form.cleaned_data['primer_nombre']
+            segundo_nombre = form.cleaned_data['segundo_nombre']
+            primer_apellido = form.cleaned_data['primer_apellido']
+            segundo_apellido = form.cleaned_data['segundo_apellido']
+
+            if password1 == password2:
+                if UsuarioBase.objects.filter(username=email).exists():
+                    messages.error(request, '¡Oops! Parece que alguien más ya se adelantó y tomó ese correo. Prueba con otro, o tal vez es el momento de reconciliarte con tu contraseña olvidada.')
+                else:
+                    
+                    #creacion del candidato en la tabla candidato
+                    candidato = Can101Candidato.objects.create(
+                        email=email,
+                        primer_nombre=primer_nombre,
+                        segundo_nombre=segundo_nombre,
+                        primer_apellido=primer_apellido,
+                        segundo_apellido=segundo_apellido,
+                        estado_id_001 = Cat001Estado.objects.get(id=1)
+                    )
+
+                    grupo = Grupo.objects.get(id=2)
+                    user = UsuarioBase.objects.create_user(
+                        username= email, 
+                        email= email, 
+                        password=password1,
+                        primer_nombre = primer_nombre.capitalize() ,
+                        segundo_nombre = segundo_nombre.capitalize() ,
+                        primer_apellido = primer_apellido.capitalize(),   
+                        segundo_apellido = segundo_apellido.capitalize(), 
+                        group = grupo,
+                        candidato_id_101 = candidato,
+                    )
+                    
+                    token_generado = generate_token(50);
+
+                    TokenAutorizacion.objects.create(
+                        user_id=user.id,
+                        token=token_generado,  # Una función que genere un token único
+                        fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
+                    )
+
+                    # Envio del correo electronico de confirmación del usuario y contraseña
+                    contexto = {
+                        'name': primer_nombre.capitalize(),
+                        'last_name': primer_apellido.capitalize(),
+                        'user': user,
+                        'email': email,
+                        'password': password1,
+                        'token': token_generado,
+                        'url' : url_actual
+                    }
+
+                    # Envia el metodo
+                    enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
+                    
+                    frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
+                    messages.success(request, frase_aleatoria)
+
+                    return redirect('accesses:signup_candidato') 
+            else:
+                frase_aleatoria = random.choice(frases_error_contrasena)
+                messages.error(request, frase_aleatoria)
+    else:
+        form = SignupFormCandidato()
+
+    login_f = random.choice(frases_inicio_sesion)
+    return render(request, 'admin/login/candidate_registration.html', {'form': form, 'login_f':login_f,} )
+
+#pantalla inicio
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def dashboard_begin(request):
+    """ Vista que carga la página de inicio y muestra variables de sesión """
+    
+    # Obtener todas las variables de sesión
+    session_variables = dict(request.session)
+
+    # Accedemos a los permisos guardados en el request
+    permisos_usuario = getattr(request, 'permisos_usuario', [])
+
+    #print(permisos_usuario)
+    
+    # Puedes imprimir las variables de sesión para debug
+    print("Variables de sesión:", session_variables)
+
+
+    # valida 
+    #ats portal interno
+    if session_variables['grupo_id'] == 1:
+        print('Sesion Admin')
+        
+    #cliente informacion panel
+    if session_variables['grupo_id'] == 3:
+        print('Sesion Cliente')
+        cliente_id = request.session.get('cliente_id')
+        vacantes_pendiente_cliente = info_vacantes_pendientes(cliente_id)
+    else:
+        vacantes_pendiente_cliente = None  
+
+    #candidato información panel
+    if session_variables['grupo_id'] == 2:
+        
+        candidato_id = request.session.get('candidato_id')
+        entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
+        asignacion_vacante = consulta_asignacion_vacante_candidato(candidato_id)
+    else:
+        entrevistas_pendiente_candidato = None
+        asignacion_vacante = None
+
+    # Si quieres pasar las variables de sesión al template
+    context = {
+        'session_variables': session_variables,
+        'permisos' : permisos_usuario,
+        'vacantes_pendiente_cliente': vacantes_pendiente_cliente,
+        'entrevistas_pendiente_candidato': entrevistas_pendiente_candidato,
+        'asignacion_vacante': asignacion_vacante,
+    }
+    
+    return render(request, 'admin/dashboard.html', context)
+
+# Salida de sesión.
+def logout_view(request):
+    logout(request)
+    return redirect('accesses:login')    # Redirigir a la página de inicio de sesión después de cerrar sesión
+
 
 # Acceso a sistema
 def login_view(request):
