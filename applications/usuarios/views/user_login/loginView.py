@@ -1,21 +1,21 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.http import HttpResponse
+from django.shortcuts import render, redirect # type: ignore
+from django.contrib.auth import authenticate, login, logout # type: ignore
+from django.contrib.auth.decorators import login_required # type: ignore
+from django.contrib import messages # type: ignore
+from django.http import HttpResponse # type: ignore
 from applications.usuarios.models import UsuarioBase, TokenAutorizacion, Grupo, Permiso
 from applications.usuarios.forms.CorreoForm import CorreoForm
 from applications.cliente.models import Cli051Cliente
 from applications.candidato.models import Can101Candidato
 import random
-from django.utils.text import capfirst
+from django.utils.text import capfirst # type: ignore
 from applications.common.models import Cat004Ciudad, Cat001Estado
 from applications.common.views.EnvioCorreo import enviar_correo, generate_token
-from django.utils import timezone
+from django.utils import timezone # type: ignore
 from datetime import datetime, timedelta
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404 # type: ignore
 from ...decorators  import validar_permisos
-from django.conf import settings
+from django.conf import settings # type: ignore
 
 # form
 from applications.usuarios.forms.loginform import LoginForm

@@ -1,7 +1,7 @@
 import re, os
-from django import forms
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Submit, HTML
+from django import forms # type: ignore
+from crispy_forms.helper import FormHelper # type: ignore
+from crispy_forms.layout import Layout, Row, Column, Submit, HTML # type: ignore
 from applications.common.models import Cat004Ciudad, Cat001Estado
 
 class SignupForm(forms.Form):
@@ -74,21 +74,19 @@ class SignupForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_id = 'form_signup'
         self.helper.form_class = 'w-200'
-        
-        
+                
         cities = Cat004Ciudad.objects.all().order_by('nombre')
-        city_choices = [('', '----------')] + [(ciudad.id, f"{ciudad.nombre}") for ciudad in cities]
+        city_choices = [('', 'Seleccione una Ciudad')] + [(ciudad.id, f"{ciudad.nombre}") for ciudad in cities]
 
         # Añadir el campo city al formulario con las opciones obtenidas
         self.fields['city'] = forms.ChoiceField(
             choices=city_choices,
             label='Ciudad',
             widget=forms.Select(attrs={
-                # 'data-control': 'select2',
-                'class': 'select2 form-select form-control h-60',
+                'class': 'select2 h-60',
+                'id': 'id_city',  # Agregar un ID específico para el script
             })
         )
-        
         
         # Definimos el layout del formulario
         self.helper.layout = Layout(
@@ -117,7 +115,7 @@ class SignupForm(forms.Form):
                 css_class='fv-row mb-10'
             ),
             Row(
-                Column('city', css_class='form-group mb-0'),
+                Column('city', css_class='mb-0'),
                 css_class='fv-row mb-10'
             ),
             Submit('submit', 'Crear', css_class='btn btn-lg btn-primary w-100 mb-5'),
