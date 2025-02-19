@@ -84,8 +84,8 @@ class SignupForm(forms.Form):
             choices=city_choices,
             label='Ciudad',
             widget=forms.Select(attrs={
-                'data-control': 'select2',
-                'class': 'form-select',
+                # 'data-control': 'select2',
+                'class': 'select2 form-select form-control h-60',
             })
         )
         

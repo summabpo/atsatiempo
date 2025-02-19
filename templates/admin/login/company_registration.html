@@ -124,6 +124,13 @@
 
 {% block js %} 
 <script>
+
+    $(document).ready(function() {
+        $('.select2').select2({
+            
+        });
+    });
+
     {% if messages %}
         {% for message in messages %}
             Swal.fire({

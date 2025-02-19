@@ -3,8 +3,7 @@
 <html lang="en">
 	<head>
 		<title>
-			{% block title %}Trezo - Django Bootstrap 5 Admin Dashboard
-			Template{% endblock %}
+			{% block title %} {% endblock %}
 		</title>
 		{% include 'admin/layout/partials/asset_files.html' %}
 	</head>
@@ -21,7 +20,7 @@
 
 		<!-- Default content can go here -->
 		{% endblock %}
-
+		{% include 'admin/layout/partials/js_files.html' %}
 		{% block js %} {% endblock js %}
 	</body>
 </html>
