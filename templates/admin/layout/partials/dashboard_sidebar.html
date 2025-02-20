@@ -57,12 +57,17 @@
         </li>
         <li class="menu-item {% if request.path == '/vacante/buscar/' or request.path == '/dashboard/' %}open{% endif %}">
             <a href="javascript:void(0);" class="menu-link menu-toggle active">
-                <span class="material-symbols-outlined ">switch_account</span>
+                <span class="material-symbols-outlined ">crowdsource</span>
                 <span class="title">Clientes</span>
             </a>
             <ul class="menu-sub">
                 <li class="menu-item">
-                    <a href="{% url 'vacantes:find_vacanty' %}" class="menu-link {% if request.path == '/vacante/buscar/' %}active{% endif %}">
+                    <a href="#" class="menu-link {% if request.path == '/clientes/crear/' %}active{% endif %}">
+                        Crear Clientes
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="{% url 'vacantes:find_vacanty' %}" class="menu-link {% if request.path == '/clientes/' %}active{% endif %}">
                         Ver Clientes
                     </a>
                 </li>

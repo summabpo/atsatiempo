@@ -8,6 +8,12 @@ from .views.usuario_admin import ClienteAdminView
 url_principal = 'cliente/'
 
 urlpatterns = [
+    #new
+    path( url_principal+'/', ClienteView.cliente_crear, name='cliente_crear'),
+
+
+
+
     path( url_principal+'crear', ClienteView.cliente_crear, name='cliente_crear'),
     path( url_principal+'grupo_trabajo', CreacionUsuariosView.usuario_interno, name='usuarios_internos_listar'),
     path( url_principal+'ajax/obtener_cliente/', ClienteView.obtener_cliente_view, name='ajax_obtener_cliente'),
