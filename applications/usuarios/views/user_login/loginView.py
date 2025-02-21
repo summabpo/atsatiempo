@@ -73,6 +73,7 @@ def principal(request):
     """Pantalla Inicial"""
     return render(request, 'admin/login/home.html') 
 
+# pantalla de registro empresa o candidato
 def registration(request):
     return render(request, 'admin/login/registration.html')
 
@@ -307,7 +308,6 @@ def dashboard_begin(request):
 def logout_view(request):
     logout(request)
     return redirect('accesses:login')    # Redirigir a la página de inicio de sesión después de cerrar sesión
-
 
 # Acceso a sistema
 def login_view(request):

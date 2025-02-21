@@ -7,6 +7,13 @@ from django.utils import timezone
 
 # Create your models here.
 class Cli051Cliente(models.Model):
+
+    TIPO_CLIENTE = [
+        ('1', 'empresa'),
+        ('2', 'headhunter'),
+        ('3', 'cliente_empresa'),
+    ]
+
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     nit = models.IntegerField(blank=False)
     razon_social = models.CharField(max_length=100, blank=False)
@@ -16,6 +23,7 @@ class Cli051Cliente(models.Model):
     telefono = models.CharField(max_length=20, blank=False)
     perfil_empresarial = models.TextField(blank=True)  # Nuevo campo de texto
     logo = models.ImageField(upload_to='cliente', blank=True, null=True)  # Nuevo campo de imagen
+    tipo_cliente = models.CharField(max_length=1, choices=TIPO_CLIENTE, default='1')
 
     def __str__(self):
         return self.razon_social + ' - ' + str(self.nit)
@@ -87,7 +95,7 @@ class Cli061AsignacionCandidatoCuestionario(models.Model):
 
     def __str__(self):
         return str(self.id)
-    
+
     class Meta:
         db_table = 'cli_061_asignacion_candidato_cuestionario'
 
@@ -112,3 +120,23 @@ class Cli062Respuesta(models.Model):
 
         verbose_name = 'RESPUESTA'
         verbose_name_plural = 'RESPUESTAS'
+
+class Cli064AsignacionCliente(models.Model):
+    TIPO_ASIGNACION = [
+        ('1', 'Asignación Cliente'),
+        ('2', 'Asignación Headhunter'),
+    ]
+
+    id_cliente_maestro = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, related_name='cliente_maestro')
+    id_cliente_asignado = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, related_name='cliente_asignado')
+    fecha_asignacion = models.DateField(auto_now_add=True)
+    tipo_asignacion = models.CharField(max_length=1, choices=TIPO_ASIGNACION, default='1')
+
+    def __str__(self):
+        return f"{self.id_cliente_maestro} asignado a {self.id_cliente_asignado}"
+
+    class Meta:
+        db_table = 'cli_064_asignacion_cliente'
+        verbose_name = 'ASIGNACION_CLIENTE'
+        verbose_name_plural = 'ASIGNACIONES_CLIENTES'
+        unique_together = (('id_cliente_maestro', 'id_cliente_asignado'),)
