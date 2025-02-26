@@ -6,12 +6,32 @@ from django.utils import timezone
 
 
 # Create your models here.
+class Cli065ActividadEconomica(models.Model):
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE)
+    codigo = models.CharField(max_length=10, unique=True)
+    descripcion = models.TextField()
+
+    def __str__(self):
+        return f"{self.codigo} - {self.descripcion}"
+
+    class Meta:
+        db_table = 'cli_065_actividad_economica'
+        verbose_name = 'ACTIVIDAD_ECONOMICA'
+        verbose_name_plural = 'ACTIVIDADES_ECONOMICAS'
+
 class Cli051Cliente(models.Model):
 
     TIPO_CLIENTE = [
-        ('1', 'empresa'),
-        ('2', 'headhunter'),
-        ('3', 'cliente_empresa'),
+        ('1', 'Empresa'),
+        ('2', 'Headhunter'),
+        ('3', 'Cliente_empresa'),
+    ]
+
+    PAGO_NOMINA = [
+        ('', 'Sin Definir'),
+        ('1', 'Semanal'),
+        ('2', 'Quincenal'),
+        ('3', 'Mensual'),
     ]
 
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
@@ -24,6 +44,11 @@ class Cli051Cliente(models.Model):
     perfil_empresarial = models.TextField(blank=True)  # Nuevo campo de texto
     logo = models.ImageField(upload_to='cliente', blank=True, null=True)  # Nuevo campo de imagen
     tipo_cliente = models.CharField(max_length=1, choices=TIPO_CLIENTE, default='1')
+    actividad_economica = models.ForeignKey(Cli065ActividadEconomica, on_delete=models.CASCADE, null=True, blank=True)
+    periodicidad_pago = models.CharField(max_length=1, choices=PAGO_NOMINA, default='1', blank=True, null=True)
+    referencias_laborales = models.IntegerField(blank=True, null=True)
+    cantidad_colaboradores = models.IntegerField(blank=True, null=True)
+
 
     def __str__(self):
         return self.razon_social + ' - ' + str(self.nit)
@@ -131,7 +156,7 @@ class Cli064AsignacionCliente(models.Model):
     id_cliente_asignado = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, related_name='cliente_asignado')
     fecha_asignacion = models.DateField(auto_now_add=True)
     tipo_asignacion = models.CharField(max_length=1, choices=TIPO_ASIGNACION, default='1')
-
+    estado = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
     def __str__(self):
         return f"{self.id_cliente_maestro} asignado a {self.id_cliente_asignado}"
 
@@ -140,3 +165,4 @@ class Cli064AsignacionCliente(models.Model):
         verbose_name = 'ASIGNACION_CLIENTE'
         verbose_name_plural = 'ASIGNACIONES_CLIENTES'
         unique_together = (('id_cliente_maestro', 'id_cliente_asignado'),)
+

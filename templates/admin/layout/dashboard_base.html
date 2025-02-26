@@ -24,13 +24,27 @@
 			</div>
 		</div>
 		{% comment %} {% include 'admin/layout/partials/dashboard_settings.html' %} {% endcomment %}
-		
-		
 
 		{% include 'admin/layout/partials/js_files.html' %}
 
 		{% block js %}
-		
+			{% if messages %}
+				{% for message in messages %}
+					Swal.fire({
+						text: "{{ message }}",
+						icon: "{{message.tags}}",
+						showConfirmButton: true,
+						confirmButtonText: "Ok",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						},
+						willOpen: (toast) => {
+							toast.addEventListener('mouseenter', Swal.stopTimer);
+							toast.addEventListener('mouseleave', Swal.resumeTimer);
+						}
+					});
+				{% endfor %}
+			{% endif %}
 		{% endblock %}
 	</body>
 </html>

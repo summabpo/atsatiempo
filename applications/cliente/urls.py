@@ -1,5 +1,6 @@
 from django.urls import path
 from applications.cliente.views import  ClienteView, CreacionUsuariosView
+from applications.cliente.views import admin_views
 from applications.cliente.views.preguntasView import PreguntasView
 
 #vistas del usuario administrador ATS
@@ -9,12 +10,13 @@ url_principal = 'cliente/'
 
 urlpatterns = [
     #new
-    path( url_principal+'/', ClienteView.cliente_crear, name='cliente_crear'),
+    path( url_principal+'crear/', admin_views.crear_cliente, name='cliente_crear'),
+    path( url_principal+'listar/', admin_views.ver_cliente, name='cliente_ver'),
 
 
 
 
-    path( url_principal+'crear', ClienteView.cliente_crear, name='cliente_crear'),
+    # path( url_principal+'crear', ClienteView.cliente_crear, name='cliente_crear'),
     path( url_principal+'grupo_trabajo', CreacionUsuariosView.usuario_interno, name='usuarios_internos_listar'),
     path( url_principal+'ajax/obtener_cliente/', ClienteView.obtener_cliente_view, name='ajax_obtener_cliente'),
 
@@ -38,4 +40,4 @@ urlpatterns = [
 
     # Preguntas Cuestionario
     path( url_principal+'ver_preguntas/', PreguntasView.ver_preguntas_cliente, name='ver_preguntas_cliente'),
-]
+] 

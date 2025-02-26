@@ -18,7 +18,6 @@ from ..models import Cli051Cliente
 from applications.vacante.forms.VacanteForms import VacanteForm
 from ..forms.ClienteForms import ClienteForm
 
-
 # Portal interno
 # Mostrar todos los clientes todos
 @login_required
@@ -51,20 +50,11 @@ def cliente_listar(request):
 @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def cliente_detalle(request, pk):
-
     cliente = get_object_or_404(Cli051Cliente, pk=pk)
-
     contexto = {
         'cliente' : cliente,
     }
-
     return render(request, 'cliente/cliente_detalle.html', contexto)
-
-
-
-
-
-
 
 # Create your views here.
 @login_required

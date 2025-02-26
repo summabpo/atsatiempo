@@ -1,0 +1,56 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">CREAR CLIENTE</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="#" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Crear Usuario</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<!-- Start Your Code -->
+	<div class="card bg-white border-0 rounded-3 mb-4">
+		<div class="card-body p-4">
+			<div class="row">
+				<div class="col-12">
+					<div class="p-4 border rounded-3 mb-3">
+						
+						{% crispy form %}
+						<button id="form_cliente" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_cliente">Guardar</button>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+	$(document).ready(function() {
+		function initializeSelect2(selector) {
+			$(selector).select2({
+				width: '100%',
+				placeholder: "Seleccione una opción",
+				allowClear: true,
+			});
+		}
+
+		// Initialize select2 for specific fields
+		initializeSelect2('#id_ciudad_id_004');
+		initializeSelect2('#id_actividad_economica');
+	});
+</script>  
+{% endblock js %}

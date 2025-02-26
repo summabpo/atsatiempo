@@ -102,6 +102,7 @@ This files table contents are outlined below>>>>>
   --bs-light-border-subtle: #e9ecef;
   --bs-dark-border-subtle: #adb5bd;
   --bs-white-rgb: 255, 255, 255;
+  --bs-redtray-rgb: 177, 0, 34;
   --bs-black-rgb: 0, 0, 0;
   --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -10649,6 +10650,11 @@ textarea.form-control-lg {
   background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity)) !important;
 }
 
+.bg-redtray {
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-redtray-rgb), var(--bs-bg-opacity)) !important;
+}
+
 .bg-body {
   --bs-bg-opacity: 1;
   background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity)) !important;
@@ -16061,7 +16067,8 @@ Swiper Slider Style
   font-size: 24px;
   position: relative;
   top: 3.5px;
-  color: #64748B;
+  /* color: #64748B; */
+  color: #FFFFFF;
 }
 .left-header-content ul li .header-burger-menu .material-symbols-outlined:hover {
   color: #0000CE;
@@ -20723,3 +20730,62 @@ Swiper Slider Style
 }
 
 /*# sourceMappingURL=style.css.map */
+/* Ensure Select2 has the same height, padding, and font size */
+.select2-container .select2-selection--single {
+  height: 60px !important;
+  border-radius: 6px !important;
+  border: 1px solid #dee2e6 !important;
+  display: flex;
+  align-items: center;
+  padding-left: 12px !important;
+  font-size: 16px !important;
+  background-color: white !important;
+}
+
+/* Cambiar el color de fondo de la opción seleccionada en Select2 */
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: #f8f9fa !important; /* Color de fondo al seleccionar */
+  color: #000 !important; /* Color del texto */
+}
+
+/* Ensure the text inside Select2 is vertically aligned */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 58px !important;
+  font-size: 16px !important;
+  color: #495057 !important;
+}
+
+/* Fix the alignment of the dropdown arrow */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 60px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  right: 10px !important;
+}
+
+/* Adjust the dropdown options */
+.select2-dropdown {
+  border-radius: 6px !important;
+  border: 1px solid #dee2e6 !important;
+}
+
+/* Adjust dropdown item appearance */
+.select2-results__option {
+  padding: 12px !important;
+  font-size: 16px !important;
+  color: #495057 !important;
+}
+
+/* 🡆 Si quieres mover la "X" junto a la flecha, usa esto en lugar de ocultarla */
+.select2-container--default .select2-selection__clear {
+  position: absolute;
+  right: 30px !important;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ffffff !important;
+  font-size: 16px !important;
+  cursor: pointer;
+}
+
+
+
