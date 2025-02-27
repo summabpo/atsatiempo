@@ -1,8 +1,8 @@
-from django.db import models
+from django.db import models # type: ignore
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator # type: ignore
+from django.utils import timezone # type: ignore
 
 
 # Create your models here.

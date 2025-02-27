@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect # type: ignore
 import json
-from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
+from django.contrib import messages # type: ignore
+from django.shortcuts import render, redirect, get_object_or_404 # type: ignore
+from django.http import JsonResponse # type: ignore
+from django.contrib.auth.decorators import login_required # type: ignore
 from applications.usuarios.decorators  import validar_permisos
 
 #model
@@ -40,7 +40,7 @@ def crear_cliente(request):
     }
     return render(request, 'admin/client/client_create.html', context)
 
-# Portal interno
+
 # Mostrar todos los clientes todos
 @login_required
 # @validar_permisos(*Permiso.obtener_nombres())
@@ -67,4 +67,14 @@ def ver_cliente(request):
         'form_errors': form_errors,
         }
     
-    return render(request, 'admin/client/standard_client_list.html', context)
+    return render(request, 'admin/client/client_list.html', context)
+
+# Mostrar todos los clientes todos
+@login_required
+# @validar_permisos(*Permiso.obtener_nombres())
+def detalle_cliente(request, pk):
+    cliente = get_object_or_404(Cli051Cliente, pk=pk)
+    contexto = {
+        'cliente' : cliente,
+    }
+    return render(request, 'admin/client/client_detail.html', contexto)

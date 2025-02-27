@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 import json
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse # type: ignore
+from django.contrib.auth.decorators import login_required # type: ignore
 from applications.usuarios.decorators  import validar_permisos
 
 

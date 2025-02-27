@@ -12,6 +12,8 @@ urlpatterns = [
     #new
     path( url_principal+'crear/', admin_views.crear_cliente, name='cliente_crear'),
     path( url_principal+'listar/', admin_views.ver_cliente, name='cliente_ver'),
+    path( url_principal+'detalle/<int:pk>/', admin_views.detalle_cliente, name='cliente_detalle'),
+
 
 
 
