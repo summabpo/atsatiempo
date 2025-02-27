@@ -27,7 +27,11 @@ def crear_cliente(request):
         if form.is_valid():
             ClienteForm.logo = form.cleaned_data['logo']
             form.save()
+            messages.success(request, 'Cliente Creado!')
             return redirect('clientes:cliente_ver')  # Cambia a la vista deseada después de guardar
+        else:
+            messages.error(request, "Errores en el formulario:", form.errors)
+            print("Errores en el formulario:", form.errors) 
     else:
         form = ClienteForm()
     

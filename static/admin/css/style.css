@@ -20787,5 +20787,7 @@ Swiper Slider Style
   cursor: pointer;
 }
 
-
+.asteriskField {
+  color: red !important;
+}
 

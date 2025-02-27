@@ -1,7 +1,7 @@
 import re, os
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field , Div
+from crispy_forms.layout import Layout, Submit, Row, Column, Field , Div, HTML
 from applications.common.models import Cat004Ciudad, Cat001Estado
 from ..models import Cli051Cliente, Cli065ActividadEconomica
 
@@ -12,7 +12,7 @@ class ClienteForm(forms.Form):
     razon_social  = forms.CharField(label='RAZON SOCIAL', required=True ,widget=forms.TextInput(attrs={'placeholder': 'Razón Social'}))
     # ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)
     email         = forms.CharField(label='EMAIL'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Email'}))
-    contacto      = forms.CharField(label='CONTACTO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Contacto'}))
+    contacto      = forms.CharField(label='NOMBRE CONTACTO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Nombre Contacto'}))
     telefono      = forms.CharField(label='TELEFONO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
     perfil_empresarial = forms.CharField(
         label='PERFIL EMPRESARIAL',
@@ -27,11 +27,12 @@ class ClienteForm(forms.Form):
         )
     )
     logo = forms.ImageField(label='LOGO', required=False)
+
     
     TIPO_CLIENTE = [
-        ('1', 'Empresa'),
-        ('2', 'Headhunter'),
-        ('3', 'Ciente Headhunter'),
+        ('1', 'Cliente Standard'),
+        ('2', 'Cliente Headhunter'),
+        ('3', 'Cliente Asignado Headhunter'),
     ]
 
     tipo_cliente = forms.ChoiceField(
@@ -39,10 +40,68 @@ class ClienteForm(forms.Form):
         choices=[('', 'Seleccione una opción')] + TIPO_CLIENTE,
         widget=forms.Select(
             attrs={
-                'class': 'form-select form-control ps-5 h-55 select2',
+                'class': 'form-select form-control',
                 'id': 'id_tipo_cliente',
             }
         ), required=True)
+    
+    PAGO_NOMINA = [
+        ('1', 'Semanal'),
+        ('2', 'Quincenal'),
+        ('3', 'Mensual'),
+    ]
+
+    periodicidad_pago = forms.ChoiceField(
+        label='PERIODICIDAD DE PAGO',
+        choices=[('', 'Seleccione una opción')] + PAGO_NOMINA,
+        widget=forms.Select(
+            attrs={
+                'class': 'form-select form-control ps-5 h-55 select2',
+                'id': 'id_periodicidad_pago',
+            }
+        ), required=False)
+
+    referencias_laborales = forms.IntegerField(
+        label='REFERENCIAS LABORALES',
+        required=False,
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Referencias Laborales'
+            }
+        ))
+
+    cantidad_colaboradores = forms.IntegerField(
+        label='CANTIDAD DE COLABORADORES',
+        required=False,
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Cantidad de Colaboradores'
+            }
+        ))
+    
+    contacto_cargo = forms.CharField(
+        label='CARGO DEL CONTACTO',
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Cargo del Contacto'
+            }
+        )
+    )
+
+    direccion_cargo = forms.CharField(
+        label='DIRECCIÓN DEL CONTACTO',
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Dirección del Contacto'
+            }
+        )
+    )
 
     def __init__(self, *args, **kwargs):
         super(ClienteForm, self).__init__(*args, **kwargs)
@@ -73,7 +132,7 @@ class ClienteForm(forms.Form):
             choices=city_choices,
             widget=forms.Select(
                 attrs={
-                    'class': 'form-select form-control ps-5 h-55 select2',
+                    'class': 'form-select form-control select2',
                     'id': 'id_ciudad_id_004',
                     }
         ), required=True)
@@ -86,7 +145,7 @@ class ClienteForm(forms.Form):
             choices=activity_choices,
             widget=forms.Select(
                 attrs={
-                    'class': 'form-select form-control ps-5 h-55 select2',
+                    'class': 'form-select form-control select2',
                     'id': 'id_actividad_economica',
                 }
             ), required=True)
@@ -119,35 +178,40 @@ class ClienteForm(forms.Form):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    Div('tipo_cliente', css_class='col'),
-                    css_class='row'
+                    Div(
+                        HTML("<h4 class='mb-3 text-primary'>Información Principal</h4>"),  
+                        Div('tipo_cliente', css_class='col-4'),
+                        Div('nit', css_class='col-4'),
+                        Div('razon_social', css_class='col-4'),
+                        Div('ciudad_id_004', css_class='col-6'),
+                        Div('logo', css_class='col-6'),
+                        Div('perfil_empresarial', css_class='col-12'),
+                        Div('actividad_economica', css_class='col-12'),
+                        css_class='row'
+                    ),
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  # 
                 ),
                 Div(
-                    Div('nit', css_class='col form-control-solid mb-3 mb-lg-0'),
-                    Div('razon_social', css_class='col'),
-                    css_class='row'
+                    Div(
+                        HTML("<h4 class='mb-3 text-primary'>Información Contacto</h4>"),  # 🔹 Agregar título con color y margen
+                        Div('contacto', css_class='col-12'),
+                        Div('contacto_cargo', css_class='col-12'),
+                        Div('direccion_cargo', css_class='col-4'),
+                        Div('email', css_class='col-4'),
+                        Div('telefono', css_class='col-4'),
+                        css_class='row'
+                    ),
+                    css_class="mb-4 p-3 border rounded"  # 🔹 Opcional: Agregar estilo de borde y fondo
                 ),
                 Div(
-                    Div('ciudad_id_004', css_class='col'),
-                    Div('email', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('contacto', css_class='col'),
-                    Div('telefono', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('logo', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('perfil_empresarial', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('actividad_economica', css_class='col'),
-                    css_class='row'
+                    Div(
+                        HTML("<h4 class='mb-3 text-primary'>Información Adicional</h4>"),  # 🔹 Agregar título con color y margen
+                        Div('periodicidad_pago', css_class='col'),
+                        Div('referencias_laborales', css_class='col'),
+                        Div('cantidad_colaboradores', css_class='col'),
+                        css_class='row'
+                    ),
+                    css_class="mb-4 p-3 border rounded "  # 🔹 Opcional: Agregar estilo de borde y fondo
                 ),
             )
         )
@@ -163,9 +227,24 @@ class ClienteForm(forms.Form):
         logo = cleaned_data.get('logo')
         actividad_economica = cleaned_data.get('actividad_economica')
         tipo_cliente = cleaned_data.get('tipo_cliente')
+        periodicidad_pago = cleaned_data.get('periodicidad_pago')
+        referencias_laborales = cleaned_data.get('referencias_laborales')
+        cantidad_colaboradores = cleaned_data.get('cantidad_colaboradores')
+        contacto_cargo = cleaned_data.get('contacto_cargo')
+        direccion_cargo = cleaned_data.get('direccion_cargo')
+
+        if not contacto_cargo:
+            self.add_error('contacto_cargo', 'El Cargo del Contacto no puede estar vacío.')
+        else:
+            self.cleaned_data['contacto_cargo'] = contacto_cargo.upper()
+
+        if not direccion_cargo:
+            self.add_error('direccion_cargo', 'La Dirección del Contacto no puede estar vacía.')
+        else:
+            self.cleaned_data['direccion_cargo'] = direccion_cargo.upper()
 
         if not tipo_cliente:
-            self.add_error('tipo_cliente', 'Debe seleccionar un tipo de cliente.')
+            self.errors['tipo_cliente'] = self.error_class(['Debe seleccionar un tipo de cliente.'])
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', razon_social):
             self.add_error('razon_social', "El nombre solo puede contener letras.")
@@ -215,6 +294,15 @@ class ClienteForm(forms.Form):
         if not actividad_economica:
             self.add_error('actividad_economica', 'Debe seleccionar una actividad económica.')
 
+        if not periodicidad_pago:
+            self.add_error('periodicidad_pago', 'Debe seleccionar una periodicidad de pago.')
+
+        if referencias_laborales is None:
+            self.add_error('referencias_laborales', 'Debe ingresar el número de referencias laborales.')
+
+        if cantidad_colaboradores is None:
+            self.add_error('cantidad_colaboradores', 'Debe ingresar la cantidad de colaboradores.')
+
         return cleaned_data
 
 
@@ -230,6 +318,11 @@ class ClienteForm(forms.Form):
         logo = self.cleaned_data.get('logo')
         actividad_economica = self.cleaned_data['actividad_economica']
         tipo_cliente = self.cleaned_data['tipo_cliente']
+        periodicidad_pago = self.cleaned_data['periodicidad_pago']
+        referencias_laborales = self.cleaned_data['referencias_laborales']
+        cantidad_colaboradores = self.cleaned_data['cantidad_colaboradores']
+        contacto_cargo = self.cleaned_data['contacto_cargo']
+        direccion_cargo = self.cleaned_data['direccion_cargo']
         
 
         # Lógica para guardar en tu modelo Cliente
@@ -244,7 +337,12 @@ class ClienteForm(forms.Form):
             perfil_empresarial=perfil_empresarial,
             logo=logo,
             actividad_economica=Cli065ActividadEconomica.objects.get(id=actividad_economica),
-            tipo_cliente=tipo_cliente
+            tipo_cliente=tipo_cliente,
+            periodicidad_pago=periodicidad_pago,
+            referencias_laborales=referencias_laborales,
+            cantidad_colaboradores=cantidad_colaboradores,
+            contacto_cargo=contacto_cargo,
+            direccion_cargo=direccion_cargo
         )
         cliente.save()
 

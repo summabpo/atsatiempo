@@ -22,9 +22,9 @@ class Cli065ActividadEconomica(models.Model):
 class Cli051Cliente(models.Model):
 
     TIPO_CLIENTE = [
-        ('1', 'Empresa'),
-        ('2', 'Headhunter'),
-        ('3', 'Cliente_empresa'),
+        ('1', 'Cliente Standard'),
+        ('2', 'Cliente Headhunter'),
+        ('3', 'Cliente Asignado Headhunter'),
     ]
 
     PAGO_NOMINA = [
@@ -48,6 +48,9 @@ class Cli051Cliente(models.Model):
     periodicidad_pago = models.CharField(max_length=1, choices=PAGO_NOMINA, default='1', blank=True, null=True)
     referencias_laborales = models.IntegerField(blank=True, null=True)
     cantidad_colaboradores = models.IntegerField(blank=True, null=True)
+    contacto_cargo = models.CharField(max_length=100, blank=True, null=True)
+    direccion_cargo = models.CharField(max_length=100, blank=True, null=True)
+
 
 
     def __str__(self):

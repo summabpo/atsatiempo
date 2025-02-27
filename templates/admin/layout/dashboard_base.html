@@ -27,24 +27,28 @@
 
 		{% include 'admin/layout/partials/js_files.html' %}
 
+		{% if messages %}
+			{% for message in messages %}
+				<script>
+				Swal.fire({
+					text: "{{ message }}",
+					icon: "{{message.tags}}",
+					showConfirmButton: true,
+					confirmButtonText: "Ok",
+					customClass: {
+						confirmButton: "btn btn-primary"
+					},
+					willOpen: (toast) => {
+						toast.addEventListener('mouseenter', Swal.stopTimer);
+						toast.addEventListener('mouseleave', Swal.resumeTimer);
+					}
+				});
+				</script>
+			{% endfor %}
+		{% endif %}
+
 		{% block js %}
-			{% if messages %}
-				{% for message in messages %}
-					Swal.fire({
-						text: "{{ message }}",
-						icon: "{{message.tags}}",
-						showConfirmButton: true,
-						confirmButtonText: "Ok",
-						customClass: {
-							confirmButton: "btn btn-primary"
-						},
-						willOpen: (toast) => {
-							toast.addEventListener('mouseenter', Swal.stopTimer);
-							toast.addEventListener('mouseleave', Swal.resumeTimer);
-						}
-					});
-				{% endfor %}
-			{% endif %}
+			
 		{% endblock %}
 	</body>
 </html>
