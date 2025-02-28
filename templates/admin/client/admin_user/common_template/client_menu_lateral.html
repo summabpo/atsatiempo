@@ -1,0 +1,28 @@
+
+
+<div class="list-group list-group-flush rounded-3 overflow-hidden">
+    <a href="{% url 'clientes:cliente_detalle' data.cliente.id %}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'cliente_detalle' %}active{% endif %}" aria-current="true">
+        <i class="ri-home-4-line fs-18"></i>
+        <span>Home</span>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+        <i class="ri-information-line fs-18"></i>
+        <span>Información Cliente</span>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+        <i class="ri-group-line fs-18"></i>
+        <span>Grupo de Trabajo</span>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+        <i class="ri-briefcase-line fs-18"></i>
+        <span>Vacantes</span>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+        <i class="ri-calendar-line fs-18"></i>
+        <span>Entrevistas</span>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+        <i class="ri-user-line fs-18"></i>
+        <span>Clientes</span>
+    </a>
+</div>

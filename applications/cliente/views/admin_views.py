@@ -38,7 +38,7 @@ def crear_cliente(request):
     context = {
         'form': form
     }
-    return render(request, 'admin/client/client_create.html', context)
+    return render(request, 'admin/client/admin_user/client_create.html', context)
 
 
 # Mostrar todos los clientes todos
@@ -67,7 +67,7 @@ def ver_cliente(request):
         'form_errors': form_errors,
         }
     
-    return render(request, 'admin/client/client_list.html', context)
+    return render(request, 'admin/client/admin_user/client_list.html', context)
 
 # Mostrar todos los clientes todos
 @login_required
@@ -122,4 +122,4 @@ def detalle_cliente(request, pk):
     contexto = {
         'data' : data,
     }
-    return render(request, 'admin/client/client_detail.html', contexto)
+    return render(request, 'admin/client/admin_user/client_detail.html', contexto)
