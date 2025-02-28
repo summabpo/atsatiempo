@@ -136,7 +136,7 @@
 		<script src="{% static 'js/custom/utilities/modals/users-search.js' %}"></script> {% endcomment %}
 		
 
-		{% if messages %}
+	{% if messages %}
         {% for message in messages %}
             <script>
             Swal.fire({
@@ -154,7 +154,7 @@
             });
             </script>
         {% endfor %}
-    {% endif %}
+	{% endif %}
 
 	{% block extrajs %}  {% endblock extrajs %}
 	</body>
