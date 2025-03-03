@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Count
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.cliente.models import Cli051Cliente
+from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 from applications.candidato.models import Can101Candidato
 from applications.usuarios.models import UsuarioBase
 
@@ -79,10 +79,11 @@ class Cli052Vacante(models.Model):
     salario = models.IntegerField(null=True, blank=True)  # Opcional
     estado_vacante = models.IntegerField(choices=ESTADO_VACANTE, default=1)
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
-    cliente_id_051 = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE)
+    cliente_id_051 = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_cierre = models.DateTimeField(null=True, blank=True)
     usuario_asignado = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True)
+    asignacion_cliente_id_064 = models.ForeignKey(Cli064AsignacionCliente, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.titulo

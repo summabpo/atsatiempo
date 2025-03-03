@@ -169,3 +169,57 @@ class Cli064AsignacionCliente(models.Model):
         verbose_name_plural = 'ASIGNACIONES_CLIENTES'
         unique_together = (('id_cliente_maestro', 'id_cliente_asignado'),)
 
+class Cli066PruebasPsicologicas(models.Model):
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    uso = models.TextField(blank=True)
+    cargos_recomendados = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        db_table = 'cli_066_pruebas_psicologicas'
+        verbose_name = 'PRUEBA_PSICOLOGICA'
+        verbose_name_plural = 'PRUEBAS_PSICOLOGICAS'
+
+class Cli067PoliticasInternas(models.Model):
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        db_table = 'cli_067_politicas_internas'
+        verbose_name = 'POLITICA_INTERNA'
+        verbose_name_plural = 'POLITICAS_INTERNAS'
+
+class Cli051ClientePruebas(models.Model):
+    cliente = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE)
+    prueba_psicologica = models.ForeignKey(Cli066PruebasPsicologicas, on_delete=models.CASCADE)
+    fecha_asignacion = models.DateField(auto_now_add=True)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.SET_DEFAULT, default=1)
+
+    class Meta:
+        db_table = 'cli_051_cliente_pruebas'
+        unique_together = (('cliente', 'prueba_psicologica'),)  # Evita duplicados
+
+    def __str__(self):
+        return f"{self.cliente.razon_social} - {self.prueba_psicologica.nombre}"
+
+
+class Cli051ClientePoliticas(models.Model):
+    cliente = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE)
+    politica_interna = models.ForeignKey(Cli067PoliticasInternas, on_delete=models.CASCADE)
+    fecha_asignacion = models.DateField(auto_now_add=True)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.SET_DEFAULT, default=1)
+
+    class Meta:
+        db_table = 'cli_051_cliente_politicas'
+        unique_together = (('cliente', 'politica_interna'),)  # Evita duplicados
+
+    def __str__(self):
+        return f"{self.cliente.razon_social} - {self.politica_interna.nombre}"

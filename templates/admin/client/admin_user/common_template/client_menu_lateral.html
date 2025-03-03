@@ -1,28 +1,54 @@
+{% load static %}
+<div class="card-body p-4">
+    <div class="text-center mb-4">
 
+        {% if data.cliente.logo %}
+            <img src="{{ data.cliente.logo }}" class="rounded-circle border border-2 wh-160 mb-3" alt="cliente_default" />
+        {% else %}
+            <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2 wh-160 mb-3" alt="cliente_default" />
+        {% endif %}
+        <h4 class="fs-24 mb-1">{{data.cliente.razon_social}}</h4>
+        <span class="fs-15 fw-medium">
+            <span class="badge bg-opacity-10 bg-primary py-1 px-2 text-primary rounded-pill fw-medium fs-12">
+                {{data.cliente.tipo_cliente}}
+            </span>
+        </span>
+    </div>
 
-<div class="list-group list-group-flush rounded-3 overflow-hidden">
-    <a href="{% url 'clientes:cliente_detalle' data.cliente.id %}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'cliente_detalle' %}active{% endif %}" aria-current="true">
-        <i class="ri-home-4-line fs-18"></i>
-        <span>Home</span>
-    </a>
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
-        <i class="ri-information-line fs-18"></i>
-        <span>Información Cliente</span>
-    </a>
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
-        <i class="ri-group-line fs-18"></i>
-        <span>Grupo de Trabajo</span>
-    </a>
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
-        <i class="ri-briefcase-line fs-18"></i>
-        <span>Vacantes</span>
-    </a>
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
-        <i class="ri-calendar-line fs-18"></i>
-        <span>Entrevistas</span>
-    </a>
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
-        <i class="ri-user-line fs-18"></i>
-        <span>Clientes</span>
-    </a>
+    <div class="list-group list-group-flush rounded-3 overflow-hidden">
+        <a href="{% url 'clientes:cliente_detalle' data.cliente.id %}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'cliente_detalle' %}active{% endif %}" aria-current="true">
+            <i class="ri-home-4-line fs-18"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'clientes:cliente_info' data.cliente.id %}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'cliente_info' %}active{% endif %}">
+            <i class="ri-information-line fs-18"></i>
+            <span>Información Cliente</span>
+        </a>
+        <a href="{% url 'clientes:cliente_politicas' data.cliente.id %}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'cliente_politicas' %}active{% endif %}">
+            <i class="ri-file-list-line fs-18"></i>
+            <span>Políticas Internas</span>
+        </a>
+        <a href="{% url 'clientes:cliente_pruebas' data.cliente.id %}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'cliente_pruebas' %}active{% endif %}">
+            <i class="ri-test-tube-line fs-18"></i>
+            <span>Pruebas</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+            <i class="ri-group-line fs-18"></i>
+            <span>Grupo de Trabajo</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+            <i class="ri-briefcase-line fs-18"></i>
+            <span>Vacantes</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+            <i class="ri-calendar-line fs-18"></i>
+            <span>Entrevistas</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+            <i class="ri-user-line fs-18"></i>
+            <span>Clientes</span>
+        </a>
+    </div>
+
 </div>
+

@@ -3,14 +3,12 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field , Div, HTML
 from applications.common.models import Cat004Ciudad, Cat001Estado
-from ..models import Cli051Cliente, Cli065ActividadEconomica
+from ..models import Cli051Cliente, Cli065ActividadEconomica, Cli067PoliticasInternas
 
 
 class ClienteForm(forms.Form):
-    # estado_id_001 = forms.ModelChoiceField(label='ESTADO'    , queryset=Cat001Estado.objects.all(), required=True)
     nit           = forms.CharField(label='NIT' , required=True  ,widget=forms.TextInput(attrs={'placeholder': ' Nit'}))
     razon_social  = forms.CharField(label='RAZON SOCIAL', required=True ,widget=forms.TextInput(attrs={'placeholder': 'Razón Social'}))
-    # ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)
     email         = forms.CharField(label='EMAIL'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Email'}))
     contacto      = forms.CharField(label='NOMBRE CONTACTO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Nombre Contacto'}))
     telefono      = forms.CharField(label='TELEFONO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
@@ -34,7 +32,6 @@ class ClienteForm(forms.Form):
         ('2', 'Cliente Headhunter'),
         ('3', 'Cliente Asignado Headhunter'),
     ]
-
     tipo_cliente = forms.ChoiceField(
         label='TIPO CLIENTE',
         choices=[('', 'Seleccione una opción')] + TIPO_CLIENTE,
@@ -50,7 +47,6 @@ class ClienteForm(forms.Form):
         ('2', 'Quincenal'),
         ('3', 'Mensual'),
     ]
-
     periodicidad_pago = forms.ChoiceField(
         label='PERIODICIDAD DE PAGO',
         choices=[('', 'Seleccione una opción')] + PAGO_NOMINA,
@@ -102,6 +98,8 @@ class ClienteForm(forms.Form):
             }
         )
     )
+
+    
 
     def __init__(self, *args, **kwargs):
         super(ClienteForm, self).__init__(*args, **kwargs)
@@ -193,7 +191,7 @@ class ClienteForm(forms.Form):
                 ),
                 Div(
                     Div(
-                        HTML("<h4 class='mb-3 text-primary'>Información Contacto</h4>"),  # 🔹 Agregar título con color y margen
+                        HTML("<h4 class='mb-3 text-primary'>Información Contacto</h4>"),  #  Agregar título con color y margen
                         Div('contacto', css_class='col-12'),
                         Div('contacto_cargo', css_class='col-12'),
                         Div('direccion_cargo', css_class='col-4'),
@@ -201,17 +199,17 @@ class ClienteForm(forms.Form):
                         Div('telefono', css_class='col-4'),
                         css_class='row'
                     ),
-                    css_class="mb-4 p-3 border rounded"  # 🔹 Opcional: Agregar estilo de borde y fondo
+                    css_class="mb-4 p-3 border rounded"  #  Opcional: Agregar estilo de borde y fondo
                 ),
                 Div(
                     Div(
-                        HTML("<h4 class='mb-3 text-primary'>Información Adicional</h4>"),  # 🔹 Agregar título con color y margen
+                        HTML("<h4 class='mb-3 text-primary'>Información Adicional</h4>"),  #  Agregar título con color y margen
                         Div('periodicidad_pago', css_class='col'),
                         Div('referencias_laborales', css_class='col'),
                         Div('cantidad_colaboradores', css_class='col'),
                         css_class='row'
                     ),
-                    css_class="mb-4 p-3 border rounded "  # 🔹 Opcional: Agregar estilo de borde y fondo
+                    css_class="mb-4 p-3 border rounded "  #  Opcional: Agregar estilo de borde y fondo
                 ),
             )
         )
@@ -367,9 +365,9 @@ class ClienteFormEdit(forms.Form):
     logo = forms.ImageField(label='LOGO', required=False)
 
     TIPO_CLIENTE = [
-        ('1', 'Empresa'),
-        ('2', 'Headhunter'),
-        ('3', 'Cliente Headhunter'),
+        ('1', 'Cliente Standard'),
+        ('2', 'Cliente Headhunter'),
+        ('3', 'Cliente Asignado Headhunter'),
     ]
 
     tipo_cliente = forms.ChoiceField(
@@ -377,10 +375,67 @@ class ClienteFormEdit(forms.Form):
         choices=[('', 'Seleccione una opción')] + TIPO_CLIENTE,
         widget=forms.Select(
             attrs={
-                'class': 'form-select form-control ps-5 h-55 select2',
+                'class': 'form-select form-control',
                 'id': 'id_tipo_cliente',
             }
         ), required=True)
+
+    PAGO_NOMINA = [
+        ('1', 'Semanal'),
+        ('2', 'Quincenal'),
+        ('3', 'Mensual'),
+    ]
+    periodicidad_pago = forms.ChoiceField(
+        label='PERIODICIDAD DE PAGO',
+        choices=[('', 'Seleccione una opción')] + PAGO_NOMINA,
+        widget=forms.Select(
+            attrs={
+                'class': 'form-select form-control ps-5 h-55 select2',
+                'id': 'id_periodicidad_pago',
+            }
+        ), required=False)
+
+    referencias_laborales = forms.IntegerField(
+        label='REFERENCIAS LABORALES',
+        required=False,
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Referencias Laborales'
+            }
+        ))
+
+    cantidad_colaboradores = forms.IntegerField(
+        label='CANTIDAD DE COLABORADORES',
+        required=False,
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Cantidad de Colaboradores'
+            }
+        ))
+
+    contacto_cargo = forms.CharField(
+        label='CARGO DEL CONTACTO',
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Cargo del Contacto'
+            }
+        )
+    )
+
+    direccion_cargo = forms.CharField(
+        label='DIRECCIÓN DEL CONTACTO',
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Dirección del Contacto'
+            }
+        )
+    )
 
     def __init__(self, *args, **kwargs):
         super(ClienteFormEdit, self).__init__(*args, **kwargs)
@@ -408,7 +463,7 @@ class ClienteFormEdit(forms.Form):
             choices=city_choices,
             widget=forms.Select(
                 attrs={
-                    'class': 'form-select form-control ps-5 h-55 select2',
+                    'class': 'form-select form-control select2',
                     'id': 'id_ciudad_id_004',
                 }
             ), required=True)
@@ -421,7 +476,7 @@ class ClienteFormEdit(forms.Form):
             choices=activity_choices,
             widget=forms.Select(
                 attrs={
-                    'class': 'form-select form-control ps-5 h-55 select2',
+                    'class': 'form-select form-control select2',
                     'id': 'id_actividad_economica',
                 }
             ), required=True)
@@ -454,35 +509,40 @@ class ClienteFormEdit(forms.Form):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    Div('tipo_cliente', css_class='col'),
-                    css_class='row'
+                    Div(
+                        HTML("<h4 class='mb-3 text-primary'>Información Principal</h4>"),  
+                        Div('tipo_cliente', css_class='col-4'),
+                        Div('nit', css_class='col-4'),
+                        Div('razon_social', css_class='col-4'),
+                        Div('ciudad_id_004', css_class='col-6'),
+                        Div('logo', css_class='col-6'),
+                        Div('perfil_empresarial', css_class='col-12'),
+                        Div('actividad_economica', css_class='col-12'),
+                        css_class='row'
+                    ),
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  
                 ),
                 Div(
-                    Div('nit', css_class='col form-control-solid mb-3 mb-lg-0'),
-                    Div('razon_social', css_class='col'),
-                    css_class='row'
+                    Div(
+                        HTML("<h4 class='mb-3 text-primary'>Información Contacto</h4>"),  
+                        Div('contacto', css_class='col-12'),
+                        Div('contacto_cargo', css_class='col-12'),
+                        Div('direccion_cargo', css_class='col-4'),
+                        Div('email', css_class='col-4'),
+                        Div('telefono', css_class='col-4'),
+                        css_class='row'
+                    ),
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  
                 ),
                 Div(
-                    Div('ciudad_id_004', css_class='col'),
-                    Div('email', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('contacto', css_class='col'),
-                    Div('telefono', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('logo', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('perfil_empresarial', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('actividad_economica', css_class='col'),
-                    css_class='row'
+                    Div(
+                        HTML("<h4 class='mb-3 text-primary'>Información Adicional</h4>"),  
+                        Div('periodicidad_pago', css_class='col'),
+                        Div('referencias_laborales', css_class='col'),
+                        Div('cantidad_colaboradores', css_class='col'),
+                        css_class='row'
+                    ),
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  
                 ),
             )
         )
@@ -498,29 +558,44 @@ class ClienteFormEdit(forms.Form):
         logo = cleaned_data.get('logo')
         actividad_economica = cleaned_data.get('actividad_economica')
         tipo_cliente = cleaned_data.get('tipo_cliente')
+        periodicidad_pago = cleaned_data.get('periodicidad_pago')
+        referencias_laborales = cleaned_data.get('referencias_laborales')
+        cantidad_colaboradores = cleaned_data.get('cantidad_colaboradores')
+        contacto_cargo = cleaned_data.get('contacto_cargo')
+        direccion_cargo = cleaned_data.get('direccion_cargo')
+
+        if not contacto_cargo:
+            self.add_error('contacto_cargo', 'El Cargo del Contacto no puede estar vacío.')
+        else:
+            self.cleaned_data['contacto_cargo'] = contacto_cargo.upper()
+
+        if not direccion_cargo:
+            self.add_error('direccion_cargo', 'La Dirección del Contacto no puede estar vacía.')
+        else:
+            self.cleaned_data['direccion_cargo'] = direccion_cargo.upper()
 
         if not tipo_cliente:
-            self.add_error('tipo_cliente', 'Debe seleccionar un tipo de cliente.')
+            self.errors['tipo_cliente'] = self.error_class(['Debe seleccionar un tipo de cliente.'])
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', razon_social):
             self.add_error('razon_social', "El nombre solo puede contener letras.")
         else:
             self.cleaned_data['razon_social'] = razon_social.upper()
-
+        
         if not re.match(r'^\d{9}$', nit):
-            self.add_error('nit', 'El NIT debe contener solo números y tener 9 dígitos.')
+            self.add_error('nit','El NIT debe contener solo números y tener  9 dígitos.')
 
         if not re.match(r'^\d{10}$', telefono):
-            self.add_error('telefono', 'El teléfono debe contener solo números y tener 10 dígitos.')
+            self.add_error('telefono','El teléfono debe contener solo números y tener 10 dígitos.')
 
         if len(perfil_empresarial.split()) < 10:
-            self.add_error('perfil_empresarial', 'La descripción debe contener al menos 10 palabras')
+            self.add_error('perfil_empresarial','La descripción debe contener al menos 10 palabras')
 
         if email and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-            self.add_error('email', 'El email no es válido.')
+            self.add_error('email','El email no es válido.')
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', contacto):
-            self.add_error('contacto', 'El Nombre del Contacto solo puede contener letras.')
+            self.add_error('contacto','El Nombre del Contacto solo puede contener letras.')
         else:
             self.cleaned_data['contacto'] = contacto.upper()
 
@@ -530,17 +605,26 @@ class ClienteFormEdit(forms.Form):
 
         if logo:
             if logo.size > tamanio_maximo:
-                self.add_error('logo', 'El tamaño del archivo supera el tamaño permitido.')
+                self.add_error('logo','El tamaño del archivo supera el tamaño permitido.')
 
             extension = os.path.splitext(logo.name)[1].lower()
             if extension not in listado_extensiones:
-                self.add_error('logo', 'El archivo no es válido.')
+                self.add_error('logo','El archivo no es válido.')
 
             if Cli051Cliente.objects.filter(logo=logo.name).exists():
-                self.add_error('logo', 'Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
+                self.add_error('logo','Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
 
         if not actividad_economica:
             self.add_error('actividad_economica', 'Debe seleccionar una actividad económica.')
+
+        if not periodicidad_pago:
+            self.add_error('periodicidad_pago', 'Debe seleccionar una periodicidad de pago.')
+
+        if referencias_laborales is None:
+            self.add_error('referencias_laborales', 'Debe ingresar el número de referencias laborales.')
+
+        if cantidad_colaboradores is None:
+            self.add_error('cantidad_colaboradores', 'Debe ingresar la cantidad de colaboradores.')
 
         return cleaned_data
 
@@ -556,4 +640,51 @@ class ClienteFormEdit(forms.Form):
         cliente.logo = self.cleaned_data.get('logo')
         cliente.actividad_economica = Cli065ActividadEconomica.objects.get(id=self.cleaned_data['actividad_economica'])
         cliente.tipo_cliente = self.cleaned_data['tipo_cliente']
+        cliente.periodicidad_pago = self.cleaned_data['periodicidad_pago']
+        cliente.referencias_laborales = self.cleaned_data['referencias_laborales']
+        cliente.cantidad_colaboradores = self.cleaned_data['cantidad_colaboradores']
+        cliente.contacto_cargo = self.cleaned_data['contacto_cargo']
+        cliente.direccion_cargo = self.cleaned_data['direccion_cargo']
         cliente.save()
+
+
+class ClienteFormPoliticas(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(ClienteFormPoliticas, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_cliente_politicas'
+
+        politicas = Cli067PoliticasInternas.objects.filter(estado=1).order_by('descripcion')
+        politicas_choices = [('', 'Seleccione una politica')] + [(politica.id, f"{politica.descripcion}") for politica in politicas]
+
+        self.fields['politicas'] = forms.ChoiceField(
+            label='POLITICAS',
+            choices=politicas_choices,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select form-control select2',
+                    'id': 'id_politicas',
+                }
+            ), required=True)
+
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Políticas internas</h4>"),
+                    Div('politicas', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            )
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        politicas = cleaned_data.get('politicas')
+
+        if not politicas:
+            self.add_error('politicas', 'Debe seleccionar una política.')
+        
+        return cleaned_data

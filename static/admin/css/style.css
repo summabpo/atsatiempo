@@ -20791,3 +20791,65 @@ Swiper Slider Style
   color: red !important;
 }
 
+/* Contenedor principal de Tagify */
+.tagify {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+  min-height: 38px !important; /* Ajuste de altura mínima */
+  max-width: 100%;
+  border-radius: var(--bs-border-radius) !important;
+  font-size: var(--bs-body-font-size) !important;
+  border: 1px solid var(--bs-border-color) !important;
+  padding: 5px 10px !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important; /* Permite que el contenido se expanda */
+  max-height: 200px !important; /* Ajusta el límite de crecimiento */
+}
+
+/* Contenedor interno donde se renderizan los tags */
+.tagify__wrapper {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  gap: 4px; /* Espaciado entre tags */
+}
+
+/* Ajustar los tags para que no se desborden */
+.tagify__tag {
+  font-size: 0.85rem !important;
+  border-radius: var(--bs-border-radius-sm) !important;
+  padding: 2px 6px !important;
+  background-color: var(--bs-light-bg-subtle) !important;
+  color: var(--bs-body-color) !important;
+  white-space: nowrap !important;
+  margin: 2px !important; /* Espaciado entre los tags */
+}
+
+/* Hacer que el input de Tagify se expanda y no colapse */
+.tagify__input {
+  flex-grow: 1 !important;
+  min-width: 100px !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 2px !important;
+}
+
+/* Evitar que el input desaparezca cuando hay muchos tags */
+.tagify__input::after {
+  content: "\200b"; /* Espaciado invisible para evitar colapsos */
+}
+
+/* Ajustar el campo cuando está en foco */
+.tagify--focus {
+  border-color: var(--bs-primary) !important;
+  box-shadow: 0 0 5px rgba(var(--bs-primary-rgb), 0.2) !important;
+}
+
+
+
+
+
+
+

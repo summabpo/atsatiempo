@@ -11,11 +11,14 @@ from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, C
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.models import Permiso
-from ..models import Cli051Cliente, Cli064AsignacionCliente
+from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli065ActividadEconomica,  Cli051ClientePoliticas
 
 #form
 from applications.vacante.forms.VacanteForms import VacanteForm
-from ..forms.ClienteForms import ClienteForm
+from ..forms.ClienteForms import ClienteForm, ClienteFormEdit, ClienteFormPoliticas
+
+#query
+from applications.services.service_client import query_client_detail
 
 
 #views
@@ -72,54 +75,110 @@ def ver_cliente(request):
 # Mostrar todos los clientes todos
 @login_required
 # @validar_permisos(*Permiso.obtener_nombres())
-def detalle_cliente(request, pk):
-    cliente = Cli051Cliente.objects.filter(id=pk).prefetch_related(
-        "actividad_economica",
-        "ciudad_id_004",
-        "estado_id_001"
-    ).first()
-
-    if not cliente:
-        return None  # Cliente no encontrado
-
-    # Obtener asignaciones del cliente (como maestro o asignado)
-    asignaciones = Cli064AsignacionCliente.objects.filter(
-        id_cliente_maestro=cliente
-    ).select_related("id_cliente_asignado")
-
-    data = {
-        "cliente": {
-            "id": cliente.id,
-            "nit": cliente.nit,
-            "razon_social": cliente.razon_social,
-            "email": cliente.email,
-            "contacto": cliente.contacto,
-            "telefono": cliente.telefono,
-            "perfil_empresarial": cliente.perfil_empresarial,
-            "tipo_cliente": cliente.get_tipo_cliente_display(),
-            "actividad_economica": cliente.actividad_economica.descripcion if cliente.actividad_economica else "No definida",
-            "ciudad": cliente.ciudad_id_004.nombre,
-            "estado": cliente.estado_id_001.nombre,
-            "logo": cliente.logo.url if cliente.logo else None,
-            "cargo": cliente.contacto_cargo,
-            "direccion": cliente.direccion_cargo,
-            "referencias_laborales": cliente.referencias_laborales,
-            "cantidad_colaboradores": cliente.cantidad_colaboradores,
-        },
-        "asignaciones": [
-            {
-                "id": a.id,
-                "cliente_asignado": a.id_cliente_asignado.razon_social,
-                "tipo_asignacion": a.get_tipo_asignacion_display(),
-                "fecha_asignacion": a.fecha_asignacion
-            }
-            for a in asignaciones
-        ]
-    }
-
-    print(data)
+def client_detail(request, pk):
+    
+    data = query_client_detail(pk)
 
     contexto = {
         'data' : data,
     }
     return render(request, 'admin/client/admin_user/client_detail.html', contexto)
+
+#mostrar información del cliente a editar
+@login_required
+# @validar_permisos(*Permiso.obtener_nombres())
+def client_detail_info(request, pk):
+    # Data cliente a mostrar
+    data = query_client_detail(pk)
+
+    cliente = Cli051Cliente.objects.get(id=pk)
+    # Define los datos iniciales que quieres pasar al formulario
+    initial_data = {
+        'estado_id_001': cliente.estado_id_001.id if cliente.estado_id_001 else '',
+        'nit': cliente.nit,
+        'razon_social': cliente.razon_social,
+        'ciudad_id_004': cliente.ciudad_id_004.id if cliente.ciudad_id_004 else '',
+        'email': cliente.email,
+        'contacto': cliente.contacto,
+        'telefono': cliente.telefono,
+        'perfil_empresarial': cliente.perfil_empresarial,
+        'logo': cliente.logo.url if cliente.logo else '',
+        'tipo_cliente': cliente.tipo_cliente,
+        'actividad_economica': cliente.actividad_economica.id if cliente.actividad_economica else '',
+        'periodicidad_pago': cliente.periodicidad_pago,
+        'referencias_laborales': cliente.referencias_laborales,
+        'cantidad_colaboradores': cliente.cantidad_colaboradores,
+        'contacto_cargo': cliente.contacto_cargo,
+        'direccion_cargo': cliente.direccion_cargo,
+    }
+
+    form_cliente = ClienteFormEdit(initial=initial_data)
+
+    #logica para mostrar el form
+    if request.method == 'POST':
+        form_cliente = ClienteFormEdit(request.POST, request.FILES)
+        if form_cliente.is_valid():
+            cliente.razon_social = form_cliente.cleaned_data['razon_social']
+            cliente.nit = form_cliente.cleaned_data['nit']
+            cliente.email = form_cliente.cleaned_data['email']
+            cliente.contacto = form_cliente.cleaned_data['contacto']
+            cliente.telefono = form_cliente.cleaned_data['telefono']
+            cliente.perfil_empresarial = form_cliente.cleaned_data['perfil_empresarial']
+            cliente.ciudad_id_004 = Cat004Ciudad.objects.get(id=form_cliente.cleaned_data['ciudad_id_004'])
+            cliente.tipo_cliente = form_cliente.cleaned_data['tipo_cliente']
+            cliente.actividad_economica = Cli065ActividadEconomica.objects.get(id=form_cliente.cleaned_data['actividad_economica'])
+            cliente.periodicidad_pago = form_cliente.cleaned_data['periodicidad_pago']
+            cliente.referencias_laborales = form_cliente.cleaned_data['referencias_laborales']
+            cliente.cantidad_colaboradores = form_cliente.cleaned_data['cantidad_colaboradores']
+            cliente.contacto_cargo = form_cliente.cleaned_data['contacto_cargo']
+            cliente.direccion_cargo = form_cliente.cleaned_data['direccion_cargo']
+
+            # Manejo del campo logo (imagen)
+            if form_cliente.cleaned_data.get('logo'):
+                cliente.logo = form_cliente.cleaned_data['logo']
+
+            cliente.save()
+
+            messages.success(request, 'El cliente ha sido actualizado con éxito.')
+            return redirect('clientes:cliente_info', pk=cliente.id)
+
+        else:
+            messages.error(request, form_cliente.errors)  
+    else:
+        form_cliente = ClienteFormEdit(initial=initial_data)
+    
+    contexto = {
+        'data' : data,
+        'form_cliente': form_cliente,
+    }
+    return render(request, 'admin/client/admin_user/client_detail_info.html', contexto)
+
+#mostrar información del cliente de sus politicas
+@login_required
+# @validar_permisos(*Permiso.obtener_nombres())
+def client_detail_politics(request, pk):
+    # Data cliente a mostrar
+    data = query_client_detail(pk)
+
+    # Obtener las políticas del cliente
+    politicas_cliente = Cli051ClientePoliticas.objects.filter(cliente_id=pk)
+    form = ClienteFormPoliticas()
+    contexto = {
+        'data': data,
+        'politicas_cliente': politicas_cliente,
+        'form': form,
+    }
+
+    return render(request, 'admin/client/admin_user/client_detail_politics.html', contexto)
+
+#mostrar información del cliente de sus pruebas
+@login_required
+# @validar_permisos(*Permiso.obtener_nombres())
+def client_detail_test(request, pk):
+    # Data cliente a mostrar
+    data = query_client_detail(pk)
+    
+    contexto = {
+        'data' : data,
+    }
+    return render(request, 'admin/client/admin_user/client_detail_test.html', contexto)
