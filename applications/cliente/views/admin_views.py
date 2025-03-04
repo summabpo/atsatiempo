@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.shortcuts import render, redirect # type: ignore
 import json
 from django.contrib import messages # type: ignore
@@ -11,11 +12,11 @@ from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, C
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.models import Permiso
-from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli065ActividadEconomica,  Cli051ClientePoliticas
+from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli065ActividadEconomica,  Cli051ClientePoliticas, Cli067PoliticasInternas, Cli051ClientePruebas, Cli066PruebasPsicologicas
 
 #form
 from applications.vacante.forms.VacanteForms import VacanteForm
-from ..forms.ClienteForms import ClienteForm, ClienteFormEdit, ClienteFormPoliticas
+from ..forms.ClienteForms import ClienteForm, ClienteFormEdit, ClienteFormPoliticas, ClienteFormPruebas
 
 #query
 from applications.services.service_client import query_client_detail
@@ -157,12 +158,38 @@ def client_detail_info(request, pk):
 @login_required
 # @validar_permisos(*Permiso.obtener_nombres())
 def client_detail_politics(request, pk):
+
+    
     # Data cliente a mostrar
     data = query_client_detail(pk)
 
     # Obtener las políticas del cliente
     politicas_cliente = Cli051ClientePoliticas.objects.filter(cliente_id=pk)
     form = ClienteFormPoliticas()
+
+    if request.method == 'POST':
+        form = ClienteFormPoliticas(request.POST)
+        print('aqui vaaaa')
+        if form.is_valid():
+            politica = form.cleaned_data['politicas']
+            politica_cliente = Cli051ClientePoliticas(
+                cliente=Cli051Cliente.objects.get(id=pk),
+                politica_interna=Cli067PoliticasInternas.objects.get(id=politica),
+                estado = Cat001Estado.objects.get(id=1)
+            )
+            politica_cliente.save()
+                
+
+            messages.success(request, 'Las políticas han sido asignadas con éxito.')
+            return redirect('clientes:cliente_politicas', pk=pk)
+
+        else:
+            messages.error(request, form.errors)
+            print("Errores en el formulario:", form.errors)
+    else:
+        form = ClienteFormPoliticas()
+        
+
     contexto = {
         'data': data,
         'politicas_cliente': politicas_cliente,
@@ -177,8 +204,35 @@ def client_detail_politics(request, pk):
 def client_detail_test(request, pk):
     # Data cliente a mostrar
     data = query_client_detail(pk)
-    
+
+    # Obtener las pruebas del cliente
+    pruebas_cliente = Cli051ClientePruebas.objects.filter(cliente_id=pk)
+    form = ClienteFormPruebas()
+
+    if request.method == 'POST':
+        form = ClienteFormPruebas(request.POST)
+        if form.is_valid():
+            prueba = form.cleaned_data['pruebas']
+            prueba_cliente = Cli051ClientePruebas(
+                cliente=Cli051Cliente.objects.get(id=pk),
+                prueba_psicologica=Cli066PruebasPsicologicas.objects.get(id=prueba),
+                estado=Cat001Estado.objects.get(id=1)
+            )
+            prueba_cliente.save()
+
+            messages.success(request, 'Las pruebas han sido asignadas con éxito.')
+            return redirect('clientes:cliente_pruebas', pk=pk)
+
+        else:
+            messages.error(request, form.errors)
+            print("Errores en el formulario:", form.errors)
+    else:
+        form = ClienteFormPruebas()
+
     contexto = {
-        'data' : data,
+        'data': data,
+        'pruebas_cliente': pruebas_cliente,
+        'form': form,
     }
+
     return render(request, 'admin/client/admin_user/client_detail_test.html', contexto)

@@ -223,3 +223,17 @@ class Cli051ClientePoliticas(models.Model):
 
     def __str__(self):
         return f"{self.cliente.razon_social} - {self.politica_interna.nombre}"
+    
+class Cli068Cargos(models.Model):
+    nombre_cargo = models.CharField(max_length=100)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
+    fecha_creado = models.DateField(auto_now_add=True)
+    cliente = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.nombre_cargo
+
+    class Meta:
+        db_table = 'cli_068_cargos'
+        verbose_name = 'CARGO'
+        verbose_name_plural = 'CARGOS'

@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Count
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
+from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli068Cargos
 from applications.candidato.models import Can101Candidato
 from applications.usuarios.models import UsuarioBase
 

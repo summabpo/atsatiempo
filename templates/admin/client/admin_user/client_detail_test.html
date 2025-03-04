@@ -2,6 +2,11 @@
 
 {% load static %}
 {% load crispy_forms_tags %}
+
+{% block title %}
+Politicas Cliente 
+{% endblock %}
+
 {% block content %}
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
@@ -36,7 +41,58 @@
 			{% include 'admin/client/admin_user/common_template/client_metrics.html' %}
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
-                    
+                    <div class="card bg-white border-0 rounded-3 mb-4">
+                        <div class="card-body p-4">
+                            <form method="post" id="form_cliente_politicas">
+                                {% csrf_token %}
+                                {% crispy form %}
+                                <button id="form_cliente_politicas" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_cliente_politicas">Guardar</button>
+                            </form>
+                        </div>
+                    </div>
+        
+                    <div class="card bg-white border-0 rounded-3 mb-4">
+                        <div class="card-body p-4">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="default-table-area all-products">
+                                        <div class="table-responsive">
+                                            <table class="table align-middle" id="myTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">ID</th>
+                                                        <th scope="col">PRUEBA</th>
+                                                        <th scope="col">DESCRIPCIÓN</th>
+                                                        <th scope="col">FECHA</th>
+                                                        <th scope="col">ESTADO</th>
+                                                        <th scope="col"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for e in pruebas_cliente %}
+                                                    <tr>
+                                                        <td class="text-body">{{ e.id }}</td>
+                                                        <td class="text-body">{{ e.prueba_psicologica.nombre }}</td>
+                                                        <td class="text-body">{{ e.prueba_psicologica.descripcion }}</td>
+                                                        <td class="text-body">{{ e.fecha_asignacion }}</td>
+                                                        <td class="text-body">{{ e.estado }}</td>
+                                                        <td>
+                                                            <div class="d-flex align-items-center gap-1">
+                                                                <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">
+                                                                    <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                                                </button>
+                                                            </div>
+                                                        </td> 
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 				</div>
 			</div>
 		</div>
@@ -70,5 +126,8 @@
             ]
         });
     });
+
+    // Initialize select2 for specific fields
+    initializeSelect2('#id_pruebas');
 </script>  
 {% endblock js %}

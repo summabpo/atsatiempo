@@ -3,7 +3,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field , Div, HTML
 from applications.common.models import Cat004Ciudad, Cat001Estado
-from ..models import Cli051Cliente, Cli065ActividadEconomica, Cli067PoliticasInternas
+from ..models import Cli051Cliente, Cli065ActividadEconomica, Cli067PoliticasInternas, Cli066PruebasPsicologicas
 
 
 class ClienteForm(forms.Form):
@@ -686,5 +686,46 @@ class ClienteFormPoliticas(forms.Form):
 
         if not politicas:
             self.add_error('politicas', 'Debe seleccionar una política.')
-        
+
+        return cleaned_data
+
+class ClienteFormPruebas(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(ClienteFormPruebas, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_cliente_pruebas'
+
+        pruebas = Cli066PruebasPsicologicas.objects.filter(estado=1).order_by('descripcion')
+        pruebas_choices = [('', 'Seleccione una prueba')] + [(prueba.id, f"{prueba.nombre}") for prueba in pruebas]
+
+        self.fields['pruebas'] = forms.ChoiceField(
+            label='PRUEBAS',
+            choices=pruebas_choices,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select form-control select2',
+                    'id': 'id_pruebas',
+                }
+            ), required=True)
+
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Pruebas</h4>"),
+                    Div('pruebas', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            )
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        pruebas = cleaned_data.get('pruebas')
+
+        if not pruebas:
+            self.add_error('pruebas', 'Debe seleccionar una política.')
+
         return cleaned_data
