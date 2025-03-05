@@ -15,7 +15,7 @@ class Cli051Cliente(models.Model):
     contacto = models.CharField(max_length=50, blank=False)
     telefono = models.CharField(max_length=20, blank=False)
     perfil_empresarial = models.TextField(blank=True)  # Nuevo campo de texto
-    logo = models.ImageField(upload_to='cliente', blank=True, null=True)  # Nuevo campo de imagen
+    logo = models.ImageField(upload_to='media_uploads/cliente', blank=True, null=True)  # Nuevo campo de imagen
 
     def __str__(self):
         return self.razon_social + ' - ' + str(self.nit)
