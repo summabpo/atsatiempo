@@ -39,8 +39,13 @@ LOCAL_APPS = [
     'applications.pruebas_psi',
     'applications.usuarios',
     'applications.vacante',
+
+    #'candidate',
+    #'client',
+
     'applications.entrevista',
     'applications.reclutado',
+
 
 ]
 
