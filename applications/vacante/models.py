@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Count
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli068Cargos
+from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli068Cargo
 from applications.candidato.models import Can101Candidato
 from applications.usuarios.models import UsuarioBase
 
@@ -45,6 +45,112 @@ class Cli055ProfesionEstudio(models.Model):
         verbose_name = 'PROFESION_ESTUDIO'
         verbose_name_plural = 'PROFESIONES_ESTUDIOS'
 
+class Cli072FuncionesResponsabilidades(models.Model):
+    nombre = models.CharField(max_length=200)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        db_table = 'cli_072_funciones_responsabilidades'
+        verbose_name = 'FUNCION_RESPONSABILIDAD'
+        verbose_name_plural = 'FUNCIONES_RESPONSABILIDADES'
+
+class Cli073PerfilVacante(models.Model):
+    GENERO_CHOICES = [
+        ('M', 'Masculino'),
+        ('F', 'Femenino'),
+    ]
+
+    MODALIDAD_CHOICES = [
+        ('R', 'Remoto'),
+        ('P', 'Presencial'),
+        ('H', 'Hibrido'),
+    ]
+
+    JORNADA_CHOICES = [
+        ('T', 'Diurna'),   
+        ('P', 'Nocturna'),
+        ('R', 'Rotativa'),
+
+    ]
+
+    TIPO_SALARIO_CHOICES = [
+        ('F', 'Fijo'),
+        ('M', 'Mixto'),
+        ('I', 'Integral'),
+        ('H', 'Por Hora'),
+        ('C', 'Convenio'),
+    ]
+
+    TERMINO_CONTRATO_CHOICES = [
+        ('F', 'Fijo'),
+        ('I', 'Indefinido'),
+        ('O', 'Obra Labor'),
+    ]
+
+    EDAD_CHOICES = [
+        ('1', '19-24 años'),
+        ('2', '25-29 años'),
+        ('3', '30-34 años'),
+        ('4', '35-39 años'),
+        ('5', '40-44 años'),
+        ('6', '45-50 años'),
+    ]
+
+    TIEMPO_EXPERIENCIA_CHOICES = [
+        (1, 'Sin experiencia'),
+        (2, '1 año'),
+        (3, '2 años'),
+        (4, '3 años'),
+        (5, '4 años'),
+        (6, '5 años o más'),
+    ]
+
+    FRECUENCIA_PAGO_CHOICES = [
+        ('S', 'Semanal'),
+        ('Q', 'Quincenal'),
+        ('M', 'Mensual'),
+    ]
+
+    NIVEL_ESTUDIO_CHOICES = [
+        (1, 'Sin estudios'),
+        (2, 'Primaria'),
+        (3, 'Secundaria/Bachillerato'),
+        (4, 'Técnico'),
+        (5, 'Tecnólogo'),
+        (6, 'Universitario'),
+        (7, 'Postgrado'),
+    ]
+
+    edad = models.CharField(max_length=1, choices=EDAD_CHOICES)
+    genero = models.CharField(max_length=1, choices=GENERO_CHOICES)
+    tiempo_experiencia = models.IntegerField(choices=TIEMPO_EXPERIENCIA_CHOICES, help_text="Tiempo de experiencia en años")
+    horario = models.CharField(max_length=100)
+    modalidad = models.CharField(max_length=1, choices=MODALIDAD_CHOICES)
+    jornada = models.CharField(max_length=1, choices=JORNADA_CHOICES)
+    salario = models.DecimalField(max_digits=10, decimal_places=2)
+    tipo_salario = models.CharField(max_length=1, choices=TIPO_SALARIO_CHOICES)
+    frecuencia_pago = models.CharField(max_length=1, choices=FRECUENCIA_PAGO_CHOICES)
+    salario_adicional = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    idioma = models.CharField(max_length=100)
+    profesion_estudio = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE)
+    nivel_estudio = models.IntegerField(choices=NIVEL_ESTUDIO_CHOICES)
+    lugar_trabajo = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
+    termino_contrato = models.CharField(max_length=1, choices=TERMINO_CONTRATO_CHOICES)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
+    fecha_creacion = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Perfil Vacante {self.id} - {self.profesion_estudio}"
+
+    class Meta:
+        db_table = 'cli_072_perfil_vacante'
+        verbose_name = 'PERFIL_VACANTE'
+        verbose_name_plural = 'PERFILES_VACANTES'
+
 class Cli052Vacante(models.Model):
     ESTADO_VACANTE = [
         (1, 'Activa'),
@@ -70,20 +176,20 @@ class Cli052Vacante(models.Model):
 
     titulo = models.CharField(max_length=200)
     numero_posiciones = models.IntegerField()
-    profesion_estudio_id_055 = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE)
-    experiencia_requerida = models.IntegerField(choices=EXPERIENCIA_TIEMPO)
+    # profesion_estudio_id_055 = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE)
+    # experiencia_requerida = models.IntegerField(choices=EXPERIENCIA_TIEMPO)
     soft_skills_id_053 = models.ManyToManyField(Cli053SoftSkill)
     hard_skills_id_054 = models.ManyToManyField(Cli054HardSkill)
-    funciones_responsabilidades = models.TextField()
-    ciudad = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
-    salario = models.IntegerField(null=True, blank=True)  # Opcional
+    # ciudad = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
+    # salario = models.IntegerField(null=True, blank=True)  # Opcional
     estado_vacante = models.IntegerField(choices=ESTADO_VACANTE, default=1)
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
-    cliente_id_051 = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, null=True, blank=True)
+    # cliente_id_051 = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_cierre = models.DateTimeField(null=True, blank=True)
     usuario_asignado = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True)
     asignacion_cliente_id_064 = models.ForeignKey(Cli064AsignacionCliente, on_delete=models.CASCADE, null=True, blank=True)
+    cargo = models.ForeignKey(Cli068Cargo, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.titulo
@@ -138,3 +244,18 @@ class Cli052VacanteSoftSkillsId053(models.Model):
         managed = False
         db_table = 'cli_052_vacante_soft_skills_id_053'
         unique_together = (('cli052vacante', 'cli053softskill'),)
+
+class Cli074AsignacionFunciones(models.Model):
+    vacante = models.ForeignKey(Cli052Vacante, on_delete=models.CASCADE)
+    funcion_responsabilidad = models.ForeignKey(Cli072FuncionesResponsabilidades, on_delete=models.CASCADE)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE)
+    fecha_asignacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.vacante} - {self.funcion_responsabilidad}"
+
+    class Meta:
+        db_table = 'cli_074_asignacion_funciones'
+        verbose_name = 'ASIGNACION_FUNCION'
+        verbose_name_plural = 'ASIGNACIONES_FUNCIONES'
+        unique_together = (('vacante', 'funcion_responsabilidad'),)

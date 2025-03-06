@@ -236,3 +236,15 @@ def client_detail_test(request, pk):
     }
 
     return render(request, 'admin/client/admin_user/client_detail_test.html', contexto)
+
+#mostrar información del cliente de sus pruebas
+@login_required
+# @validar_permisos(*Permiso.obtener_nombres())
+def client_detail_position(request, pk):
+
+
+    contexto = {
+        
+    }
+
+    return render(request, 'admin/client/admin_user/client_detail_position.html', contexto)
