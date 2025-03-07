@@ -17,7 +17,9 @@ urlpatterns = [
     path( url_principal+'detalle/informacion/<int:pk>/', admin_views.client_detail_info, name='cliente_info'),
     path( url_principal+'detalle/politicas/<int:pk>/', admin_views.client_detail_politics, name='cliente_politicas'),
     path( url_principal+'detalle/pruebas/<int:pk>/', admin_views.client_detail_test, name='cliente_pruebas'),
-    path( url_principal+'detalle/cargos/<int:pk>/', admin_views.client_detail_test, name='cliente_cargos'),
+    path( url_principal+'detalle/cargos/<int:pk>/', admin_views.client_detail_position, name='cliente_cargos'),
+    path( url_principal+'detalle/requisitos/<int:pk>/', admin_views.client_detail_required, name='cliente_requisitos'),
+    path( url_principal+'detalle/cargos/configuracion/<int:pk>/<int:cargo_id>/', admin_views.client_detail_position_config, name='cliente_cargos_configuracion'),
 
 
 

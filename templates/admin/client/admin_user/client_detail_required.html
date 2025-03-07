@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-Pruebas
+Requisitos 
 {% endblock %}
 
 {% block content %}
@@ -25,7 +25,7 @@ Pruebas
 					</a>
 				</li>
 				<li class="breadcrumb-item active" aria-current="page">
-					<span class="fw-medium">Detalle Cliente</span>
+					<span class="fw-medium">Requisitos</span>
 				</li>
 			</ol>
 		</nav>
@@ -50,7 +50,7 @@ Pruebas
 			</div>
 
             <div class="card bg-white border-0 rounded-3 mb-4">
-                <div class="card-body p-4">
+				<div class="card-body p-4">
                     <div class="row">
                         <div class="col-12">
                             <div class="default-table-area all-products">
@@ -59,20 +59,20 @@ Pruebas
                                         <thead>
                                             <tr>
                                                 <th scope="col">ID</th>
-                                                <th scope="col">PRUEBA</th>
-                                                <th scope="col">DESCRIPCIÓN</th>
+                                                <th scope="col">NOMBRE</th>
+                                                <th scope="col">DESCRIPCION</th>
                                                 <th scope="col">FECHA</th>
                                                 <th scope="col">ESTADO</th>
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for e in pruebas_cliente %}
+                                            {% for e in requisitos_cliente %}
                                             <tr>
                                                 <td class="text-body">{{ e.id }}</td>
-                                                <td class="text-body">{{ e.prueba_psicologica.nombre }}</td>
-                                                <td class="text-body">{{ e.prueba_psicologica.descripcion }}</td>
-                                                <td class="text-body">{{ e.fecha_asignacion }}</td>
+                                                <td class="text-body">{{ e.nombre }}</td>
+                                                <td class="text-body">{{ e.descripcion }}</td>
+                                                <td class="text-body">{{ e.fecha_creado }}</td>
                                                 <td class="text-body">{{ e.estado }}</td>
                                                 <td>
                                                     <div class="d-flex align-items-center gap-1">
@@ -90,7 +90,7 @@ Pruebas
                         </div>
                     </div>
                 </div>
-            </div>
+			</div>
 		</div>
 	</div>
 
@@ -100,7 +100,7 @@ Pruebas
 {% block js %} 
 <script>
     $(document).ready(function() {
-        $('#clientes_listado').DataTable({
+        $('#clientes_listado_politicas').DataTable({
             "language": {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron registros",
@@ -124,6 +124,6 @@ Pruebas
     });
 
     // Initialize select2 for specific fields
-    initializeSelect2('#id_pruebas');
+    initializeSelect2('#id_politicas');
 </script>  
 {% endblock js %}

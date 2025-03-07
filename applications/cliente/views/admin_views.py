@@ -12,11 +12,11 @@ from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, C
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.models import Permiso
-from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli065ActividadEconomica,  Cli051ClientePoliticas, Cli067PoliticasInternas, Cli051ClientePruebas, Cli066PruebasPsicologicas
+from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli065ActividadEconomica,  Cli051ClientePoliticas, Cli067PoliticasInternas, Cli051ClientePruebas, Cli066PruebasPsicologicas, Cli068Cargo, Cli069Requisito, Cli070AsignacionRequisito, Cli071AsignacionPrueba
 
 #form
 from applications.vacante.forms.VacanteForms import VacanteForm
-from ..forms.ClienteForms import ClienteForm, ClienteFormEdit, ClienteFormPoliticas, ClienteFormPruebas
+from ..forms.ClienteForms import ClienteForm, ClienteFormEdit, ClienteFormPoliticas, ClienteFormPruebas, ClienteFormCargos, ClienteFormRequisitos
 
 #query
 from applications.services.service_client import query_client_detail
@@ -241,10 +241,103 @@ def client_detail_test(request, pk):
 @login_required
 # @validar_permisos(*Permiso.obtener_nombres())
 def client_detail_position(request, pk):
+    # Data cliente a mostrar
+    data = query_client_detail(pk)
 
+    # Obtener los cargos del cliente
+    position_client = Cli068Cargo.objects.filter(cliente_id=pk)
+
+    if request.method == 'POST':
+        form = ClienteFormCargos(request.POST, cliente_id=pk)
+        if form.is_valid():
+            cargo = form.cleaned_data['cargo']
+            cargo_cliente = Cli068Cargo(
+                cliente=Cli051Cliente.objects.get(id=pk),
+                nombre_cargo=cargo.upper(),
+                estado=Cat001Estado.objects.get(id=1)
+            )
+            cargo_cliente.save()
+
+            messages.success(request, 'Los cargos han sido asignados con éxito.')
+            return redirect('clientes:cliente_cargos', pk=pk)
+
+        else:
+            messages.error(request, form.errors)
+            print("Errores en el formulario:", form.errors)
+    else:
+        form = ClienteFormCargos(cliente_id=pk)
 
     contexto = {
-        
+        'data': data,
+        'position_client': position_client,
+        'form': form,     
     }
 
     return render(request, 'admin/client/admin_user/client_detail_position.html', contexto)
+
+#mostrar información del cliente de sus pruebas y requisitos
+@login_required
+# @validar_permisos(*Permiso.obtener_nombres())
+def client_detail_position_config(request, pk, cargo_id):
+    # Data cliente a mostrar
+    data = query_client_detail(pk)
+
+    # Obtener el cargo específico del cliente
+    cargo_cliente = get_object_or_404(Cli068Cargo, id=cargo_id)
+
+    # Obtener las asignaciones de requisitos y pruebas del cargo
+    asignaciones_requisitos = Cli070AsignacionRequisito.objects.filter(cargo=cargo_id, cliente_id=pk)
+    asignaciones_pruebas = Cli071AsignacionPrueba.objects.filter(cargo=cargo_id, cliente_id=pk)
+
+    
+
+    contexto = {
+        'data': data,
+        'cargo_cliente': cargo_cliente,
+        'asignaciones_requisitos': asignaciones_requisitos,
+        'asignaciones_pruebas': asignaciones_pruebas,
+    }
+
+    return render(request, 'admin/client/admin_user/client_detail_position_config.html', contexto)
+
+#mostrar información de los requisitos del clinete
+@login_required
+# @validar_permisos(*Permiso.obtener_nombres())
+def client_detail_required(request, pk):
+    # Data cliente a mostrar
+    data = query_client_detail(pk)
+
+    # Obtener los requisitos del cliente
+    requisitos_cliente = Cli069Requisito.objects.filter(cliente=pk)
+
+    form = ClienteFormRequisitos()
+
+    if request.method == 'POST':
+        form = ClienteFormRequisitos(request.POST, cliente_id=pk)
+        if form.is_valid():
+            requisito = form.cleaned_data['requisitos']
+            descripcion = form.cleaned_data['descripcion']
+            requisito_cliente = Cli069Requisito(
+                cliente=Cli051Cliente.objects.get(id=pk),
+                descripcion=descripcion,
+                estado=Cat001Estado.objects.get(id=1),
+                nombre=requisito.upper()
+            )
+            requisito_cliente.save()
+
+            messages.success(request, 'Los requisitos han sido asignados con éxito.')
+            return redirect('clientes:cliente_requisitos', pk=pk)
+
+        else:
+            messages.error(request, form.errors)
+            print("Errores en el formulario:", form.errors)
+    else:
+        form = ClienteFormRequisitos(cliente_id=pk)
+
+    contexto = {
+        'data': data,
+        'requisitos_cliente': requisitos_cliente,
+        'form': form,
+    }
+
+    return render(request, 'admin/client/admin_user/client_detail_required.html', contexto)

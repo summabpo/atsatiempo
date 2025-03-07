@@ -48,11 +48,11 @@
             <i class="ri-user-line fs-18"></i>
             <span>Clientes</span>
         </a>
-        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+        <a href="{% url 'clientes:cliente_cargos' data.cliente.id %}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'cliente_cargos' or request.resolver_match.url_name == 'cliente_cargos_configuracion' %}active{% endif %}">
             <i class="ri-user-settings-line fs-18"></i>
             <span>Cargos</span>
         </a>
-        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+        <a href="{% url 'clientes:cliente_requisitos' data.cliente.id %}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'cliente_requisitos'  %}active{% endif %}">
             <i class="ri-file-list-3-line fs-18"></i>
             <span>Requisitos</span>
         </a>

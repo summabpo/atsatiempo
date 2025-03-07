@@ -20847,9 +20847,48 @@ Swiper Slider Style
   box-shadow: 0 0 5px rgba(var(--bs-primary-rgb), 0.2) !important;
 }
 
+/* Estilo general de la tarjeta */
+.card {
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
 
+.card:hover {
+  transform: scale(1.0009);
+}
 
+/* Estilo de la cabecera */
+.card-header {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-50) 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
 
+.card-title {
+    font-size: 1rem;
+    font-weight: 400;
+}
 
+/* Estilo del cuerpo */
+.card-body {
+    background-color: var(--bs-light-bg-subtle);
+    padding: 1.5rem;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
 
-
+/* Agregar un borde lateral sutil para resaltar */
+.card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--bs-primary);
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
