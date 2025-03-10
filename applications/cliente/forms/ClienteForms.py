@@ -3,7 +3,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field , Div, HTML
 from applications.common.models import Cat004Ciudad, Cat001Estado
-from ..models import Cli051Cliente, Cli065ActividadEconomica, Cli067PoliticasInternas, Cli066PruebasPsicologicas
+from ..models import Cli051Cliente, Cli065ActividadEconomica, Cli067PoliticasInternas, Cli066PruebasPsicologicas, Cli068Cargo, Cli069Requisito
 
 
 class ClienteForm(forms.Form):
@@ -647,7 +647,6 @@ class ClienteFormEdit(forms.Form):
         cliente.direccion_cargo = self.cleaned_data['direccion_cargo']
         cliente.save()
 
-
 class ClienteFormPoliticas(forms.Form):
 
     def __init__(self, *args, **kwargs):
@@ -727,5 +726,117 @@ class ClienteFormPruebas(forms.Form):
 
         if not pruebas:
             self.add_error('pruebas', 'Debe seleccionar una política.')
+
+        return cleaned_data
+    
+class ClienteFormCargos(forms.Form):
+    
+    def __init__(self, *args, cliente_id=None, **kwargs):
+        super(ClienteFormCargos, self).__init__(*args, **kwargs)
+        self.cliente_id = cliente_id
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_cliente_cargos'
+
+        self.fields['cargo'] = forms.CharField(
+            label='CARGOS',
+            required=True,
+            widget=forms.TextInput(
+                attrs={
+                    'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                    'placeholder': 'Cargos'
+                }
+            )
+        )
+
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Cargos</h4>"),
+                    Div('cargo', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            )
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        cargo = cleaned_data.get('cargo')
+        
+        if not cargo:
+            self.add_error('cargo', 'Debe ingresar un cargo.')
+        else:
+            # Verifica si el cargo ya está registrado para el mismo cliente
+            cargo = cargo.upper()
+            if Cli068Cargo.objects.filter(nombre_cargo=cargo, cliente_id=self.cliente_id).exists():
+                self.add_error('cargo', 'El cargo ya está registrado para este cliente.')
+
+        return cleaned_data
+    
+class ClienteFormRequisitos(forms.Form):
+
+    def __init__(self, *args, cliente_id=None, **kwargs):
+        super(ClienteFormRequisitos, self).__init__(*args, **kwargs)
+        self.cliente_id = cliente_id
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_cliente_requisitos'
+
+        self.fields['requisitos'] = forms.CharField(
+            label='NOMBRE',
+            required=True,
+            widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Nombre'
+            }
+            )
+        )
+
+        self.fields['descripcion'] = forms.CharField(
+            label='DESCRIPCIÓN',
+            required=True,
+            widget=forms.Textarea(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Descripción',
+                'rows': 5,
+                'cols': 40,
+            }
+            )
+        )
+
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Requisitos</h4>"),
+                    Div('requisitos', css_class='col-12'),
+                    Div('descripcion', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            )
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        requisitos = cleaned_data.get('requisitos')
+        descripcion = cleaned_data.get('descripcion')
+
+        if not requisitos:
+            self.add_error('requisitos', 'Debe ingresar un requisito.')
+        else:
+            requisitos = requisitos.upper()
+            # Verifica si el requisito ya está registrado para el mismo cliente
+            if Cli069Requisito.objects.filter(nombre=requisitos, cliente_id=self.cliente_id).exists():
+                self.add_error('requisitos', 'El requisito ya está registrado para este cliente.')
+
+        if not descripcion:
+            self.add_error('descripcion', 'Debe ingresar una descripción.')
+        elif len(descripcion.split()) < 10:
+            self.add_error('descripcion', 'La descripción debe contener al menos 10 palabras.')
 
         return cleaned_data

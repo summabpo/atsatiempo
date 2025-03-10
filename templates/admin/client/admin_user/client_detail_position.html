@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-Pruebas
+Cliente
 {% endblock %}
 
 {% block content %}
@@ -25,7 +25,12 @@ Pruebas
 					</a>
 				</li>
 				<li class="breadcrumb-item active" aria-current="page">
-					<span class="fw-medium">Detalle Cliente</span>
+					<a href="{% url 'clientes:cliente_detalle' data.cliente.id %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Detalle Cliente</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Cargos</span>
 				</li>
 			</ol>
 		</nav>
@@ -41,14 +46,13 @@ Pruebas
 			{% include 'admin/client/admin_user/common_template/client_metrics.html' %}
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
-                    <form method="post" id="form_cliente_politicas">
+                    <form method="post" id="form_cliente_cargos">
                         {% csrf_token %}
                         {% crispy form %}
-                        <button id="form_cliente_politicas" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_cliente_politicas">Guardar</button>
+                        <button id="form_cliente_cargos" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_cliente_cargos">Guardar</button>
                     </form>
 				</div>
 			</div>
-
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-body p-4">
                     <div class="row">
@@ -59,26 +63,22 @@ Pruebas
                                         <thead>
                                             <tr>
                                                 <th scope="col">ID</th>
-                                                <th scope="col">PRUEBA</th>
-                                                <th scope="col">DESCRIPCIÓN</th>
                                                 <th scope="col">FECHA</th>
-                                                <th scope="col">ESTADO</th>
-                                                <th scope="col"></th>
+                                                <th scope="col">CARGO</th>
+                                                <th scope="col">CONFIGURAR</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for e in pruebas_cliente %}
+                                            {% for e in position_client %}
                                             <tr>
                                                 <td class="text-body">{{ e.id }}</td>
-                                                <td class="text-body">{{ e.prueba_psicologica.nombre }}</td>
-                                                <td class="text-body">{{ e.prueba_psicologica.descripcion }}</td>
-                                                <td class="text-body">{{ e.fecha_asignacion }}</td>
-                                                <td class="text-body">{{ e.estado }}</td>
+                                                <td class="text-body">{{ e.fecha_creado|date:"Y-m-d" }}</td>
+                                                <td class="text-body">{{ e.nombre_cargo }}</td>
                                                 <td>
                                                     <div class="d-flex align-items-center gap-1">
-                                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">
-                                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
-                                                        </button>
+                                                        <a href = "{% url 'clientes:cliente_cargos_configuracion' e.cliente.id e.id %}" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">
+                                                            <i class="material-symbols-outlined fs-16 text-body">visibility</i>
+                                                        </a>
                                                     </div>
                                                 </td> 
                                             </tr>

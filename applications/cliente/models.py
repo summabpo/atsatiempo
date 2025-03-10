@@ -224,7 +224,7 @@ class Cli051ClientePoliticas(models.Model):
     def __str__(self):
         return f"{self.cliente.razon_social} - {self.politica_interna.nombre}"
     
-class Cli068Cargos(models.Model):
+class Cli068Cargo(models.Model):
     nombre_cargo = models.CharField(max_length=100)
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
     fecha_creado = models.DateField(auto_now_add=True)
@@ -237,3 +237,48 @@ class Cli068Cargos(models.Model):
         db_table = 'cli_068_cargos'
         verbose_name = 'CARGO'
         verbose_name_plural = 'CARGOS'
+
+class Cli069Requisito(models.Model):
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=100, null=True, blank=True)
+    descripcion = models.TextField(null=True, blank=True)
+    fecha_creado = models.DateField(auto_now_add=True)
+    cliente = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return self.nombre if self.nombre else "Requisito sin nombre"
+
+    class Meta:
+        db_table = 'cli_069_requisito'
+        verbose_name = 'REQUISITO'
+        verbose_name_plural = 'REQUISITOS'
+
+class Cli070AsignacionRequisito(models.Model):
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE)
+    cargo = models.ForeignKey(Cli068Cargo, on_delete=models.CASCADE)
+    requisito = models.ForeignKey(Cli069Requisito, on_delete=models.CASCADE)
+    fecha_asignacion = models.DateField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'cli_070_asignacion_requisito'
+        verbose_name = 'ASIGNACION_REQUISITO'
+        verbose_name_plural = 'ASIGNACIONES_REQUISITOS'
+        unique_together = (('cargo', 'requisito'),)
+
+    def __str__(self):
+        return f"{self.cargo.nombre_cargo} - {self.requisito.nombre}"
+
+class Cli071AsignacionPrueba(models.Model):
+    cargo = models.ForeignKey(Cli068Cargo, on_delete=models.CASCADE)
+    cliente_prueba = models.ForeignKey(Cli051ClientePruebas, on_delete=models.CASCADE)
+    fecha_asignacion = models.DateField(auto_now_add=True)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
+
+    class Meta:
+        db_table = 'cli_071_asignacion_prueba'
+        verbose_name = 'ASIGNACION_PRUEBA'
+        verbose_name_plural = 'ASIGNACIONES_PRUEBAS'
+        unique_together = (('cliente_prueba', 'cargo'),)
+
+    def __str__(self):
+        return f"{self.cliente_prueba} - {self.fecha_asignacion}"
