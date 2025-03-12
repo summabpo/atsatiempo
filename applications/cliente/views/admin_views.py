@@ -16,7 +16,7 @@ from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, 
 
 #form
 from applications.vacante.forms.VacanteForms import VacanteForm
-from ..forms.ClienteForms import ClienteForm, ClienteFormEdit, ClienteFormPoliticas, ClienteFormPruebas, ClienteFormCargos, ClienteFormRequisitos
+from ..forms.ClienteForms import ClienteForm, ClienteFormAsignacionPrueba, ClienteFormEdit, ClienteFormPoliticas, ClienteFormPruebas, ClienteFormCargos, ClienteFormRequisitos, ClienteFormAsignacionRequisito
 
 #query
 from applications.services.service_client import query_client_detail
@@ -34,8 +34,9 @@ def crear_cliente(request):
             messages.success(request, 'Cliente Creado!')
             return redirect('clientes:cliente_ver')  # Cambia a la vista deseada después de guardar
         else:
-            messages.error(request, "Errores en el formulario:", form.errors)
-            print("Errores en el formulario:", form.errors) 
+            errores = "\n".join([f"{field}: {', '.join(errors)}" for field, errors in form.errors.items()])
+            messages.error(request, f"Errores en el formulario:\n{errores}")
+            print("Errores en el formulario:", errores) 
     else:
         form = ClienteForm()
     
@@ -286,16 +287,54 @@ def client_detail_position_config(request, pk, cargo_id):
     cargo_cliente = get_object_or_404(Cli068Cargo, id=cargo_id)
 
     # Obtener las asignaciones de requisitos y pruebas del cargo
-    asignaciones_requisitos = Cli070AsignacionRequisito.objects.filter(cargo=cargo_id, cliente_id=pk)
-    asignaciones_pruebas = Cli071AsignacionPrueba.objects.filter(cargo=cargo_id, cliente_id=pk)
+    asignaciones_requisitos = Cli070AsignacionRequisito.objects.filter(cargo=cargo_id, cargo__cliente_id=pk)
+    asignaciones_pruebas = Cli071AsignacionPrueba.objects.filter(
+        cargo_id=cargo_id, 
+        cliente_prueba__cliente__id=pk
+    )
 
-    
+    form = ClienteFormAsignacionRequisito(cliente_id=pk, cargo_id=cargo_id)
+    form1 = ClienteFormAsignacionPrueba(cliente_id=pk, cargo_id=cargo_id)
+
+    if request.method == 'POST':
+        form = ClienteFormAsignacionRequisito(request.POST, cliente_id=pk, cargo_id=cargo_id)
+        form1 = ClienteFormAsignacionPrueba(request.POST, cliente_id=pk, cargo_id=cargo_id)
+        
+        if form.is_valid():
+            requisito = form.cleaned_data['requisito']
+            Cli070AsignacionRequisito.objects.create(
+                cargo=Cli068Cargo.objects.get(id=cargo_id), 
+                requisito=Cli069Requisito.objects.get(id=requisito),
+                estado=Cat001Estado.objects.get(id=1)
+            )
+            messages.success(request, 'El requisito ha sido asignado con éxito.')
+        
+        if form1.is_valid():
+            prueba = form1.cleaned_data['prueba']
+            asignacion_prueba = Cli051ClientePruebas.objects.get(prueba_psicologica=prueba, cliente=pk)
+            Cli071AsignacionPrueba.objects.create(
+                cargo=Cli068Cargo.objects.get(id=cargo_id),
+                cliente_prueba=Cli051ClientePruebas.objects.get(id=asignacion_prueba.id),
+                estado=Cat001Estado.objects.get(id=1)
+            )
+            messages.success(request, 'La prueba ha sido asignada con éxito.')
+        
+        if form.is_valid() or form1.is_valid():
+            return redirect('clientes:cliente_cargos_configuracion', pk=pk, cargo_id=cargo_id)
+        else:
+            messages.error(request, form.errors)
+            print("Errores en el formulario:", form.errors)
+    else:
+        form = ClienteFormAsignacionRequisito(cliente_id=pk, cargo_id=cargo_id)
+        form1 = ClienteFormAsignacionPrueba(cliente_id=pk, cargo_id=cargo_id)
 
     contexto = {
         'data': data,
         'cargo_cliente': cargo_cliente,
         'asignaciones_requisitos': asignaciones_requisitos,
         'asignaciones_pruebas': asignaciones_pruebas,
+        'form': form,
+        'form1': form1,
     }
 
     return render(request, 'admin/client/admin_user/client_detail_position_config.html', contexto)
@@ -341,3 +380,20 @@ def client_detail_required(request, pk):
     }
 
     return render(request, 'admin/client/admin_user/client_detail_required.html', contexto)
+
+
+@login_required
+# @validar_permisos(*Permiso.obtener_nombres())
+def cliente_detail_vacancy(request, pk):
+    # Data cliente a mostrar
+    data = query_client_detail(pk)
+
+    # Obtener las vacantes del cliente
+    vacantes_cliente = Cli052Vacante.objects.filter(cliente=pk)
+
+    contexto = {
+        'data': data,
+        'vacantes_cliente': vacantes_cliente,
+    }
+
+    return render(request, 'admin/client/admin_user/client_detail_vacancy.html', contexto)
