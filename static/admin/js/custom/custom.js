@@ -397,6 +397,8 @@
 		let x = new RdataTB('myTable');
 	}
 
+	
+
 	// Calendar JS
 	try {
 		const getHeaderssBurgerMenuId = document.getElementById('calendar-body');

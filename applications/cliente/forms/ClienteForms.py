@@ -3,7 +3,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field , Div, HTML
 from applications.common.models import Cat004Ciudad, Cat001Estado
-from ..models import Cli051Cliente, Cli065ActividadEconomica, Cli067PoliticasInternas, Cli066PruebasPsicologicas, Cli068Cargo, Cli069Requisito
+from ..models import Cli051Cliente, Cli051ClientePruebas, Cli065ActividadEconomica, Cli067PoliticasInternas, Cli066PruebasPsicologicas, Cli068Cargo, Cli069Requisito, Cli070AsignacionRequisito, Cli071AsignacionPrueba
 
 
 class ClienteForm(forms.Form):
@@ -838,5 +838,112 @@ class ClienteFormRequisitos(forms.Form):
             self.add_error('descripcion', 'Debe ingresar una descripción.')
         elif len(descripcion.split()) < 10:
             self.add_error('descripcion', 'La descripción debe contener al menos 10 palabras.')
+
+        return cleaned_data
+    
+class ClienteFormAsignacionRequisito(forms.Form):
+
+    def __init__(self, *args, cliente_id=None, cargo_id=None, **kwargs):
+        super(ClienteFormAsignacionRequisito, self).__init__(*args, **kwargs)
+        self.cliente_id = cliente_id
+        self.cargo_id = cargo_id
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_cliente_asignacion_requisitos'
+
+        requisitos = Cli069Requisito.objects.filter(cliente_id=cliente_id).exclude(
+            id__in=Cli070AsignacionRequisito.objects.filter(cargo_id=cargo_id).values_list('requisito_id', flat=True)
+        ).order_by('nombre')
+
+        requisitos_choices = [('', 'Seleccione un Requisito')] + [(requisito.id, f"{requisito.nombre}") for requisito in requisitos]
+
+        self.fields['requisito'] = forms.ChoiceField(
+            label='REQUISITO',
+            choices=requisitos_choices,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select form-control select2',
+                    'id': 'id_requisito',
+                }
+            ), required=True)
+
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Asignación de Requisitos</h4>"),
+                    Div('requisito', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            )
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        requisito = cleaned_data.get('requisito')
+        cargo = self.cargo_id
+
+        if not cargo:
+            self.add_error('requisito', 'El cargo no puede estar vacío.')
+
+        if cargo and requisito:
+            if Cli070AsignacionRequisito.objects.filter(cargo_id=cargo, requisito_id=requisito).exists():
+                self.add_error('requisito', 'El requisito ya está asignado a este cargo.')
+
+        return cleaned_data
+
+class ClienteFormAsignacionPrueba(forms.Form):
+
+    def __init__(self, *args, cliente_id=None, cargo_id=None, **kwargs):
+        super(ClienteFormAsignacionPrueba, self).__init__(*args, **kwargs)
+        self.cliente_id = cliente_id
+        self.cargo_id = cargo_id
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_cliente_asignacion_prueba'
+
+        pruebas = Cli066PruebasPsicologicas.objects.filter(
+            estado__id=1,
+            id__in=Cli051ClientePruebas.objects.filter(cliente_id=cliente_id).values_list('prueba_psicologica_id', flat=True)
+        ).exclude(
+            id__in=Cli071AsignacionPrueba.objects.filter(cargo_id=cargo_id).values_list('cliente_prueba__prueba_psicologica_id', flat=True)
+        ).order_by('nombre')
+
+        pruebas_choices = [('', 'Seleccione una Prueba')] + [(prueba.id, f"{prueba.nombre}") for prueba in pruebas]
+
+        self.fields['prueba'] = forms.ChoiceField(
+            label='PRUEBA',
+            choices=pruebas_choices,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select form-control select2',
+                    'id': 'id_prueba',
+                }
+            ), required=True)
+
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Asignación de Pruebas</h4>"),
+                    Div('prueba', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            )
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        prueba = cleaned_data.get('prueba')
+        cargo = self.cargo_id
+
+        if not cargo:
+            self.add_error('prueba', 'El cargo no puede estar vacío.')
+
+        if cargo and prueba:
+            if Cli071AsignacionPrueba.objects.filter(cargo_id=cargo, cliente_prueba_id=prueba).exists():
+                self.add_error('prueba', 'La prueba ya está asignada a este cargo.')
 
         return cleaned_data

@@ -66,8 +66,14 @@ Cliente
                             <h5 class="card-title mb-0">Requisitos</h5>
                         </div>
                         <div class="card-body p-4">
+                            <form method="post" id="form_cliente_asignacion_requisitos">
+                                {% csrf_token %}
+                                {% crispy form %}
+                                <button id="form_cliente_asignacion_requisitos" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_cliente_asignacion_requisitos">Guardar</button>
+                            </form>
+                            <hr>
                             <div class="table-responsive">
-                                <table class="table align-middle" id="myTable">
+                                <table class="table align-middle" id="requisitos">
                                     <thead>
                                         <tr>
                                             <th scope="col">ID</th>
@@ -104,55 +110,49 @@ Cliente
                             <h5 class="card-title mb-0">Pruebas</h5>
                         </div>
                         <div class="card-body p-4">
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            
-            
-            <div class="card bg-white border-0 rounded-3 mb-4">
-                <div class="card-body p-4">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="default-table-area all-products">
-                                <div class="table-responsive">
-                                    <table class="table align-middle" id="myTable">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">ID</th>
-                                                <th scope="col">FECHA</th>
-                                                <th scope="col">CARGO</th>
-                                                <th scope="col">CONFIGURAR</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for e in position_client %}
-                                            <tr>
-                                                <td class="text-body">{{ e.id }}</td>
-                                                <td class="text-body">{{ e.fecha_creado|date:"Y-m-d" }}</td>
-                                                <td class="text-body">{{ e.nombre_cargo }}</td>
-                                                <td>
-                                                    <div class="d-flex align-items-center gap-1">
-                                                        <a href = "" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">
-                                                            <i class="material-symbols-outlined fs-16 text-body">visibility</i>
-                                                        </a>
-                                                        <a href = "" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">
-                                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
-                                                        </a>
-                                                    </div>
-                                                </td> 
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <form method="post" id="form_cliente_asignacion_prueba">
+                                {% csrf_token %}
+                                {% crispy form1 %}
+                                <button id="form_cliente_asignacion_prueba" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_cliente_asignacion_prueba">Guardar</button>
+                            </form>
+                            <hr>
+                            <div class="table-responsive">
+                                <table class="table align-middle" id="pruebas">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">FECHA</th>
+                                            <th scope="col">PRUEBA</th>
+                                            <th scope="col">CONFIGURAR</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for e in asignaciones_pruebas %}
+                                        <tr>
+                                            <td class="text-body">{{ e.id }}</td>
+                                            <td class="text-body">{{ e.fecha_asignacion|date:"Y-m-d" }}</td>
+                                            <td class="text-body">{{ e.cliente_prueba.prueba_psicologica.nombre }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-1">
+                                                    <a href = "" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">
+                                                        <i class="material-symbols-outlined fs-16 text-body">visibility</i>
+                                                    </a>
+                                                    
+                                                </div>
+                                            </td> 
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            
+            
+            
+            
 		</div>
 	</div>
 
@@ -161,31 +161,20 @@ Cliente
 
 {% block js %} 
 <script>
-    $(document).ready(function() {
-        $('#clientes_listado').DataTable({
-            "language": {
-                "lengthMenu": "Mostrar _MENU_ registros por página",
-                "zeroRecords": "No se encontraron registros",
-                "info": "Mostrando página _PAGE_ de _PAGES_",
-                "infoEmpty": "No hay registros disponibles",
-                "infoFiltered": "(filtrado de _MAX_ registros totales)",
-                "search": "Buscar:",
-                "paginate": {
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                }
-            },
-            "columnDefs": [
-                {
-                    "targets": -1,
-                    "orderable": false,
-                    "searchable": false
-                }
-            ]
-        });
-    });
+    const pruebas = document.getElementById('pruebas');
+	if (pruebas) {
+		let x = new RdataTB('pruebas');
+	}
+
+    const requisitos = document.getElementById('requisitos');
+	if (requisitos) {
+		let x = new RdataTB('requisitos');
+	}
 
     // Initialize select2 for specific fields
-    initializeSelect2('#id_pruebas');
+    initializeSelect2('#id_requisito');
+
+    // Initialize select2 for specific fields
+    initializeSelect2('#id_prueba');
 </script>  
 {% endblock js %}
