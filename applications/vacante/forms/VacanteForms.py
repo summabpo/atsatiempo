@@ -1,6 +1,6 @@
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset
+from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset, Div, HTML
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio
 from applications.common.models import Cat004Ciudad
 from applications.cliente.models import Cli051Cliente
@@ -687,5 +687,72 @@ class VacanteAdicionalForms(forms.Form):
             cleaned_data['salario'] = None
             
                 
+
+        return cleaned_data
+    
+
+class VacancyFormAll(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(VacancyFormAll, self).__init__(*args, **kwargs)
+        
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_vacante_todos'
+
+
+        TIPO_CLIENTE = [('', 'Seleccione un tipo de cliente')] + [(str(tipo[0]), tipo[1]) for tipo in Cli051Cliente.TIPO_CLIENTE]
+
+        self.fields['tipo_cliente'] = forms.ChoiceField(
+            label='TIPO DE CLIENTE',
+            choices=TIPO_CLIENTE,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',  # Clases CSS del campo  
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccion una opción',
+            }
+            ), required=True)
+
+        clientes = Cli051Cliente.objects.all().order_by('razon_social')
+        cliente_choices = [('', '----------')] + [(cliente.id, f"{cliente.razon_social}") for cliente in clientes]
+
+        self.fields['cliente'] = forms.ChoiceField(
+            label='CLIENTE',
+            choices=cliente_choices,
+            widget=forms.Select(
+            attrs={
+            'class': 'form-select form-select-solid',  # Clases CSS del campo  
+            'data-control': 'select2',
+            'data-placeholder': 'Seleccion una opción',
+            }
+        ), required=True)
+
+        self.helper.layout = Layout(
+            Div(
+            Div(
+                HTML("<h4 class='mb-3 text-primary'>Datos Principales</h4>"),
+                Div('tipo_cliente', css_class='col-12'),
+                Div('cliente', css_class='col-12'),
+                css_class='row'
+            ),
+            css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            )
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Validate tipo_cliente
+        tipo_cliente = cleaned_data.get('tipo_cliente')
+        if not tipo_cliente:
+            self.add_error('tipo_cliente', 'El tipo de cliente es obligatorio.')
+
+        # Validate cliente_id_051
+        cliente_id_051 = cleaned_data.get('cliente_id_051')
+        if not cliente_id_051:
+            self.add_error('cliente_id_051', 'El cliente es obligatorio.')
+
+        # Add other validation logic as needed
 
         return cleaned_data
