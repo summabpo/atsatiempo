@@ -11,7 +11,8 @@ URLS_CLIENTES = [
     'cliente_pruebas',
     'cliente_cargos',
     'cliente_cargos_configuracion',
-    'cliente_requisitos'
+    'cliente_requisitos',
+    'vacantes_propias'
 ]
 
 @register.filter(name='is_active_url_cliente_all')
