@@ -67,9 +67,8 @@ def create_vacanty_from_client(request, pk):
         asignacion_cliente_id_064__id_cliente_asignado=pk,
         asignacion_cliente_id_064__tipo_asignacion='1'  # Aquí va el campo correcto
     )
-    form = VacanteForm()
 
-    
+    form = VacancyFormAll(cliente_id=pk)
 
     context = {
         'data': data,
@@ -78,4 +77,3 @@ def create_vacanty_from_client(request, pk):
     }
 
     return render(request, 'admin/vacancy/admin_user/client_detail_vacancy.html', context)
-

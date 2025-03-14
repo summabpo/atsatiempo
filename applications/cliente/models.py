@@ -51,8 +51,6 @@ class Cli051Cliente(models.Model):
     contacto_cargo = models.CharField(max_length=100, blank=True, null=True)
     direccion_cargo = models.CharField(max_length=100, blank=True, null=True)
 
-
-
     def __str__(self):
         return self.razon_social + ' - ' + str(self.nit)
     class Meta:

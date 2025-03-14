@@ -190,6 +190,7 @@ class Cli052Vacante(models.Model):
     usuario_asignado = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True)
     asignacion_cliente_id_064 = models.ForeignKey(Cli064AsignacionCliente, on_delete=models.CASCADE, null=True, blank=True)
     cargo = models.ForeignKey(Cli068Cargo, on_delete=models.CASCADE, null=True, blank=True)
+    perfil_vacante = models.ForeignKey(Cli073PerfilVacante, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.titulo

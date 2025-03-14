@@ -3,7 +3,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset, Div, HTML
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio
 from applications.common.models import Cat004Ciudad
-from applications.cliente.models import Cli051Cliente
+from applications.cliente.models import Cli051Cliente, Cli068Cargo
 from applications.usuarios.models import UsuarioBase
 from applications.vacante.models import Cli052Vacante
 
@@ -690,15 +690,27 @@ class VacanteAdicionalForms(forms.Form):
 
         return cleaned_data
     
-
 class VacancyFormAll(forms.Form):
-    def __init__(self, *args, **kwargs):
+    
+    titulo = forms.CharField(label='TITULO DE LA VACANTE',
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid',  # Clases CSS del campo  
+            }
+        ), required=True)
+    numero_posiciones = forms.IntegerField(label="NUMERO VACANTES",
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid',  # Clases CSS del campo  
+            }
+        ), required=True)
+    
+    def __init__(self, *args, cliente_id=None, **kwargs):
         super(VacancyFormAll, self).__init__(*args, **kwargs)
-        
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.form_id = 'form_vacante_todos'
+        self.helper.form_id = 'form_vacante_cliente'
 
 
         TIPO_CLIENTE = [('', 'Seleccione un tipo de cliente')] + [(str(tipo[0]), tipo[1]) for tipo in Cli051Cliente.TIPO_CLIENTE]
@@ -728,12 +740,276 @@ class VacancyFormAll(forms.Form):
             }
         ), required=True)
 
+        if cliente_id:
+            cargos = Cli068Cargo.objects.filter(cliente=cliente_id).order_by('nombre_cargo')
+        else:
+            cargos = Cli068Cargo.objects.none()
+
+        cargo_choices = [('', '----------')] + [(cargo.id, f"{cargo.nombre_cargo}") for cargo in cargos]
+        self.fields['cargo'] = forms.ChoiceField(
+            label='CARGO',
+            choices=cargo_choices,
+            widget=forms.Select(
+            attrs={
+            'class': 'form-select form-select-solid',  # Clases CSS del campo  
+            'data-control': 'select2',
+            'data-placeholder': 'Seleccion una opción',
+            }
+        ), required=True)
+
+        EDAD_CHOICES = [
+            ('1', '18-25'),
+            ('2', '26-35'),
+            ('3', '36-45'),
+            ('4', '46-55'),
+            ('5', '56+'),
+        ]
+
+        GENERO_CHOICES = [
+            ('M', 'Masculino'),
+            ('F', 'Femenino'),
+            ('O', 'Otro'),
+        ]
+
+        TIEMPO_EXPERIENCIA_CHOICES = [
+            (0, 'Sin experiencia'),
+            (1, '1 año'),
+            (2, '2 años'),
+            (3, '3 años'),
+            (4, '4 años'),
+            (5, '5 años o más'),
+        ]
+
+        MODALIDAD_CHOICES = [
+            ('P', 'Presencial'),
+            ('R', 'Remoto'),
+            ('H', 'Híbrido'),
+        ]
+
+        JORNADA_CHOICES = [
+            ('C', 'Completa'),
+            ('P', 'Parcial'),
+        ]
+
+        TIPO_SALARIO_CHOICES = [
+            ('M', 'Mensual'),
+            ('Q', 'Quincenal'),
+            ('S', 'Semanal'),
+            ('D', 'Diario'),
+        ]
+
+        FRECUENCIA_PAGO_CHOICES = [
+            ('M', 'Mensual'),
+            ('Q', 'Quincenal'),
+            ('S', 'Semanal'),
+            ('D', 'Diario'),
+        ]
+
+        NIVEL_ESTUDIO_CHOICES = [
+            (1, 'Primaria'),
+            (2, 'Secundaria'),
+            (3, 'Técnico'),
+            (4, 'Tecnólogo'),
+            (5, 'Profesional'),
+            (6, 'Especialización'),
+            (7, 'Maestría'),
+            (8, 'Doctorado'),
+        ]
+
+        TERMINO_CONTRATO_CHOICES = [
+            ('F', 'Fijo'),
+            ('I', 'Indefinido'),
+            ('O', 'Obra o labor'),
+        ]
+
+        self.fields['edad'] = forms.ChoiceField(
+            label='EDAD',
+            choices=EDAD_CHOICES,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ), required=True)
+
+        self.fields['genero'] = forms.ChoiceField(
+            label='GÉNERO',
+            choices=GENERO_CHOICES,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ), required=True)
+
+        self.fields['tiempo_experiencia'] = forms.ChoiceField(
+            label='TIEMPO DE EXPERIENCIA',
+            choices=TIEMPO_EXPERIENCIA_CHOICES,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ), required=True)
+
+        self.fields['horario'] = forms.CharField(
+            label='HORARIO',
+            widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid',
+                'placeholder': 'Ingrese el horario',
+            }
+            ), required=True)
+
+        self.fields['modalidad'] = forms.ChoiceField(
+            label='MODALIDAD',
+            choices=MODALIDAD_CHOICES,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ), required=True)
+
+        self.fields['jornada'] = forms.ChoiceField(
+            label='JORNADA',
+            choices=JORNADA_CHOICES,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ), required=True)
+
+        self.fields['salario'] = forms.DecimalField(
+            label='SALARIO',
+            widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control form-control-solid',
+                'placeholder': 'Ingrese el salario',
+            }
+            ), required=True)
+
+        self.fields['tipo_salario'] = forms.ChoiceField(
+            label='TIPO DE SALARIO',
+            choices=TIPO_SALARIO_CHOICES,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ), required=True)
+
+        self.fields['frecuencia_pago'] = forms.ChoiceField(
+            label='FRECUENCIA DE PAGO',
+            choices=FRECUENCIA_PAGO_CHOICES,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ), required=True)
+
+        self.fields['salario_adicional'] = forms.DecimalField(
+            label='SALARIO ADICIONAL',
+            widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control form-control-solid',
+                'placeholder': 'Ingrese el salario adicional',
+            }
+            ), required=False)
+
+        self.fields['idioma'] = forms.CharField(
+            label='IDIOMA',
+            widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid',
+                'placeholder': 'Ingrese el idioma',
+            }
+            ), required=True)
+
+        self.fields['profesion_estudio'] = forms.ModelChoiceField(
+            label='PROFESIÓN O ESTUDIO',
+            queryset=Cli055ProfesionEstudio.objects.all(),
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ), required=True)
+
+        self.fields['nivel_estudio'] = forms.ChoiceField(
+            label='NIVEL DE ESTUDIO',
+            choices=NIVEL_ESTUDIO_CHOICES,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ), required=True)
+
+        self.fields['lugar_trabajo'] = forms.ModelChoiceField(
+            label='LUGAR DE TRABAJO',
+            queryset=Cat004Ciudad.objects.all(),
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ), required=True)
+
+        self.fields['termino_contrato'] = forms.ChoiceField(
+            label='TÉRMINO DE CONTRATO',
+            choices=TERMINO_CONTRATO_CHOICES,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ), required=True)
+
         self.helper.layout = Layout(
             Div(
             Div(
                 HTML("<h4 class='mb-3 text-primary'>Datos Principales</h4>"),
+                Div('titulo', css_class='col-12'),
+                Div('cargo', css_class='col-6'),
+                Div('numero_posiciones', css_class='col-6'),
                 Div('tipo_cliente', css_class='col-12'),
                 Div('cliente', css_class='col-12'),
+                css_class='row'
+            ),
+            css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+            Div(
+            Div(
+                HTML("<h4 class='mb-3 text-primary'>Detalles Adicionales</h4>"),
+                Div('edad', css_class='col-6'),
+                Div('genero', css_class='col-6'),
+                Div('tiempo_experiencia', css_class='col-6'),
+                Div('horario', css_class='col-6'),
+                Div('modalidad', css_class='col-6'),
+                Div('jornada', css_class='col-6'),
+                Div('salario', css_class='col-6'),
+                Div('tipo_salario', css_class='col-6'),
+                Div('frecuencia_pago', css_class='col-6'),
+                Div('salario_adicional', css_class='col-6'),
+                Div('idioma', css_class='col-6'),
+                Div('profesion_estudio', css_class='col-6'),
+                Div('nivel_estudio', css_class='col-6'),
+                Div('lugar_trabajo', css_class='col-6'),
+                Div('termino_contrato', css_class='col-6'),
                 css_class='row'
             ),
             css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"

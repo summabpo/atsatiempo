@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-Politicas Cliente 
+Vacantes Propias
 {% endblock %}
 
 {% block content %}
@@ -41,11 +41,11 @@ Politicas Cliente
 			{% include 'admin/client/admin_user/common_template/client_metrics.html' %}
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
-                    {% comment %} <form method="post" id="form_cliente_politicas">
+                    <form method="post" id="form_cliente_politicas">
                         {% csrf_token %}
                         {% crispy form %}
                         <button id="form_cliente_politicas" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_cliente_politicas">Guardar</button>
-                    </form> {% endcomment %}
+                    </form>
 				</div>
 			</div>
 
@@ -124,6 +124,6 @@ Politicas Cliente
     });
 
     // Initialize select2 for specific fields
-    initializeSelect2('#id_politicas');
+    initializeSelect2('#id_cargo');
 </script>  
 {% endblock js %}

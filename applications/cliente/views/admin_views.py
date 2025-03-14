@@ -380,20 +380,3 @@ def client_detail_required(request, pk):
     }
 
     return render(request, 'admin/client/admin_user/client_detail_required.html', contexto)
-
-
-@login_required
-# @validar_permisos(*Permiso.obtener_nombres())
-def cliente_detail_vacancy(request, pk):
-    # Data cliente a mostrar
-    data = query_client_detail(pk)
-
-    # Obtener las vacantes del cliente
-    vacantes_cliente = Cli052Vacante.objects.filter(cliente=pk)
-
-    contexto = {
-        'data': data,
-        'vacantes_cliente': vacantes_cliente,
-    }
-
-    return render(request, 'admin/client/admin_user/client_detail_vacancy.html', contexto)
