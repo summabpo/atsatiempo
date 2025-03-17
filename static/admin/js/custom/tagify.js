@@ -26,7 +26,7 @@ function TagifyList(campoId, listaSugerencias = []) {
 }
 
 // Funcionalidad por Tagify
-function Tagify(campoId) {
+function inicializarTagify(campoId) {
     let input = document.getElementById(campoId);
 
     if (!input) {

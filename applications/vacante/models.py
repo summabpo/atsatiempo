@@ -5,6 +5,9 @@ from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, 
 from applications.candidato.models import Can101Candidato
 from applications.usuarios.models import UsuarioBase
 
+#choices
+from applications.services.choices import EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC
+
 # Create your models here.
 class Cli053SoftSkill(models.Model):
     nombre = models.CharField(max_length=200)
@@ -59,87 +62,23 @@ class Cli072FuncionesResponsabilidades(models.Model):
         verbose_name_plural = 'FUNCIONES_RESPONSABILIDADES'
 
 class Cli073PerfilVacante(models.Model):
-    GENERO_CHOICES = [
-        ('M', 'Masculino'),
-        ('F', 'Femenino'),
-    ]
+    
 
-    MODALIDAD_CHOICES = [
-        ('R', 'Remoto'),
-        ('P', 'Presencial'),
-        ('H', 'Hibrido'),
-    ]
-
-    JORNADA_CHOICES = [
-        ('T', 'Diurna'),   
-        ('P', 'Nocturna'),
-        ('R', 'Rotativa'),
-
-    ]
-
-    TIPO_SALARIO_CHOICES = [
-        ('F', 'Fijo'),
-        ('M', 'Mixto'),
-        ('I', 'Integral'),
-        ('H', 'Por Hora'),
-        ('C', 'Convenio'),
-    ]
-
-    TERMINO_CONTRATO_CHOICES = [
-        ('F', 'Fijo'),
-        ('I', 'Indefinido'),
-        ('O', 'Obra Labor'),
-    ]
-
-    EDAD_CHOICES = [
-        ('1', '19-24 años'),
-        ('2', '25-29 años'),
-        ('3', '30-34 años'),
-        ('4', '35-39 años'),
-        ('5', '40-44 años'),
-        ('6', '45-50 años'),
-    ]
-
-    TIEMPO_EXPERIENCIA_CHOICES = [
-        (1, 'Sin experiencia'),
-        (2, '1 año'),
-        (3, '2 años'),
-        (4, '3 años'),
-        (5, '4 años'),
-        (6, '5 años o más'),
-    ]
-
-    FRECUENCIA_PAGO_CHOICES = [
-        ('S', 'Semanal'),
-        ('Q', 'Quincenal'),
-        ('M', 'Mensual'),
-    ]
-
-    NIVEL_ESTUDIO_CHOICES = [
-        (1, 'Sin estudios'),
-        (2, 'Primaria'),
-        (3, 'Secundaria/Bachillerato'),
-        (4, 'Técnico'),
-        (5, 'Tecnólogo'),
-        (6, 'Universitario'),
-        (7, 'Postgrado'),
-    ]
-
-    edad = models.CharField(max_length=1, choices=EDAD_CHOICES)
-    genero = models.CharField(max_length=1, choices=GENERO_CHOICES)
-    tiempo_experiencia = models.IntegerField(choices=TIEMPO_EXPERIENCIA_CHOICES, help_text="Tiempo de experiencia en años")
+    edad = models.CharField(max_length=1, choices=EDAD_CHOICES_STATIC)
+    genero = models.CharField(max_length=1, choices=GENERO_CHOICES_STATIC)
+    tiempo_experiencia = models.IntegerField(choices=TIEMPO_EXPERIENCIA_CHOICES_STATIC, help_text="Tiempo de experiencia en años")
     horario = models.CharField(max_length=100)
-    modalidad = models.CharField(max_length=1, choices=MODALIDAD_CHOICES)
-    jornada = models.CharField(max_length=1, choices=JORNADA_CHOICES)
+    modalidad = models.CharField(max_length=1, choices=MODALIDAD_CHOICES_STATIC)
+    jornada = models.CharField(max_length=1, choices=JORNADA_CHOICES_STATIC)
     salario = models.DecimalField(max_digits=10, decimal_places=2)
-    tipo_salario = models.CharField(max_length=1, choices=TIPO_SALARIO_CHOICES)
-    frecuencia_pago = models.CharField(max_length=1, choices=FRECUENCIA_PAGO_CHOICES)
+    tipo_salario = models.CharField(max_length=1, choices=TIPO_SALARIO_CHOICES_STATIC)
+    frecuencia_pago = models.CharField(max_length=1, choices=FRECUENCIA_PAGO_CHOICES_STATIC)
     salario_adicional = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     idioma = models.CharField(max_length=100)
     profesion_estudio = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE)
-    nivel_estudio = models.IntegerField(choices=NIVEL_ESTUDIO_CHOICES)
+    nivel_estudio = models.IntegerField(choices=NIVEL_ESTUDIO_CHOICES_STATIC)
     lugar_trabajo = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
-    termino_contrato = models.CharField(max_length=1, choices=TERMINO_CONTRATO_CHOICES)
+    termino_contrato = models.CharField(max_length=1, choices=TERMINO_CONTRATO_CHOICES_STATIC)
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
     fecha_creacion = models.DateField(auto_now_add=True)
 

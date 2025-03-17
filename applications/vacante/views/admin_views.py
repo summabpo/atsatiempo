@@ -70,6 +70,17 @@ def create_vacanty_from_client(request, pk):
 
     form = VacancyFormAll(cliente_id=pk)
 
+    if request.method == 'POST':
+        form = VacancyFormAll(request.POST, cliente_id=pk)
+
+        if form.is_valid():
+            
+            # form.save()
+            # messages.success(request, 'Vacante creada correctamente')
+            # return redirect('vacantes_propias', pk=pk)
+    else:
+        form = VacancyFormAll(cliente_id=pk)
+
     context = {
         'data': data,
         'vacantes': vacantes,

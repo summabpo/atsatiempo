@@ -20757,7 +20757,7 @@ Swiper Slider Style
 
 /* Fix the alignment of the dropdown arrow */
 .select2-container--default .select2-selection--single .select2-selection__arrow {
-  height: 60px !important;
+  height: 50px !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
   right: 10px !important;

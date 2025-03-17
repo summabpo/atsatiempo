@@ -1,0 +1,94 @@
+from django.db import models
+
+NIVEL_CHOICHES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('0', 'BASICO'),
+    ('1', 'INTERMEDIO'),
+    ('2', 'SUPERIOR'),
+]
+
+TIPO_CLIENTE_STATIC = [('', 'Seleccione una opción...')] + [
+        ('1', 'Cliente Standard'),
+        ('2', 'Cliente Headhunter'),
+        ('3', 'Cliente Asignado Headhunter'),
+    ]
+
+PAGO_NOMINA_STATIC = [
+        ('', 'Sin Definir'),
+        ('1', 'Semanal'),
+        ('2', 'Quincenal'),
+        ('3', 'Mensual'),
+    ]
+
+ESTADO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+        ('p', 'Pendiente'),
+        ('r', 'Realizado'),
+    ]
+
+TIPO_ASIGNACION_STATIC = [('', 'Seleccione una opción...')] + [
+        ('1', 'Asignación Cliente'),
+        ('2', 'Asignación Headhunter'),
+    ]
+
+GENERO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('M', 'Masculino'),
+    ('F', 'Femenino'),
+]
+
+MODALIDAD_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('R', 'Remoto'),
+    ('P', 'Presencial'),
+    ('H', 'Hibrido'),
+]
+
+JORNADA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('T', 'Diurna'),   
+    ('P', 'Nocturna'),
+    ('R', 'Rotativa'),
+]
+
+TIPO_SALARIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('F', 'Fijo'),
+    ('M', 'Mixto'),
+    ('I', 'Integral'),
+    ('H', 'Por Hora'),
+    ('C', 'Convenio'),
+]
+
+TERMINO_CONTRATO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('F', 'Fijo'),
+    ('I', 'Indefinido'),
+    ('O', 'Obra Labor'),
+]
+
+EDAD_CHOICES_STATIC = [('', 'Seleccione una opción... ')] + [
+    ('1', '19-24 años'),
+    ('2', '25-29 años'),
+    ('3', '30-34 años'),
+    ('4', '35-39 años'),
+    ('5', '40-44 años'),
+    ('6', '45-50 años'),
+]
+
+TIEMPO_EXPERIENCIA_CHOICES_STATIC = [('', 'Seleccione una opción... ')] + [
+    (2, '1 año'),
+    (3, '2 años'),
+    (4, '3 años'),
+    (5, '4 años'),
+    (6, '5 años o más'),
+]
+
+FRECUENCIA_PAGO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('S', 'Semanal'),
+    ('Q', 'Quincenal'),
+    ('M', 'Mensual'),
+]
+
+NIVEL_ESTUDIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    (1, 'Sin estudios'),
+    (2, 'Primaria'),
+    (3, 'Secundaria/Bachillerato'),
+    (4, 'Técnico'),
+    (5, 'Tecnólogo'),
+    (6, 'Universitario'),
+    (7, 'Postgrado'),
+]
