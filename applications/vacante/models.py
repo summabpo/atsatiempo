@@ -62,7 +62,6 @@ class Cli072FuncionesResponsabilidades(models.Model):
         verbose_name_plural = 'FUNCIONES_RESPONSABILIDADES'
 
 class Cli073PerfilVacante(models.Model):
-    
 
     edad = models.CharField(max_length=1, choices=EDAD_CHOICES_STATIC)
     genero = models.CharField(max_length=1, choices=GENERO_CHOICES_STATIC)

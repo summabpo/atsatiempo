@@ -51,7 +51,7 @@ function inicializarTagify(campoId) {
 }
 
 
-function initializeTagify(fieldId, whitelist) {
+function incializarTagifyLista(fieldId, whitelist) {
     var input = document.getElementById(fieldId);
     if (input) {
         var tagify = new Tagify(input, {

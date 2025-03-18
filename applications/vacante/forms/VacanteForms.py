@@ -8,7 +8,7 @@ from applications.usuarios.models import UsuarioBase
 from applications.vacante.models import Cli052Vacante
 
 #choices
-from applications.services.choices import TIPO_CLIENTE_STATIC, EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC, HORARIO_CHOICES_STATIC
+from applications.services.choices import NIVEL_CHOICHES_STATIC, TIPO_CLIENTE_STATIC, EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC, HORARIO_CHOICES_STATIC
 
 class VacanteForm(forms.Form):
     # EXPERIENCIA_TIEMPO = [
@@ -937,6 +937,19 @@ class VacancyFormAll(forms.Form):
             ),
             required=False
         )
+
+        self.fields['nivel_idioma'] = forms.ChoiceField(
+            label='NIVEL DE IDIOMA',
+            choices=NIVEL_CHOICHES_STATIC,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select form-select-solid',
+                    'data-control': 'select2',
+                    'data-placeholder': 'Seleccione una opción',
+                }
+            ),
+            required=False
+        )
         
         self.helper.layout = Layout(
             # 🏗️ DATOS GENERALES
@@ -974,6 +987,7 @@ class VacancyFormAll(forms.Form):
                     Div('soft_skills', css_class='col-6'),  # Habilidades blandas
                     Div('hard_skills', css_class='col-6'),  # Habilidades duras
                     Div('idioma', css_class='col-6'),  # Idioma
+                    Div('nivel_idioma', css_class='col-6'),  # nivel_idioma
                     Div('profesion_estudio', css_class='col-6'),  # Profesión o estudio
                     Div('nivel_estudio', css_class='col-6'),  # Nivel de estudio
                     Div('edad', css_class='col-6'),  # Edad
@@ -1073,6 +1087,9 @@ class VacancyFormAll(forms.Form):
 
         # Validate idioma
         idioma = cleaned_data.get('idioma')
+
+        # Validate nivel_idioma
+        nivel_idioma = cleaned_data.get('nivel_idioma')
 
         # Validate profesion_estudio
         profesion_estudio = cleaned_data.get('profesion_estudio')

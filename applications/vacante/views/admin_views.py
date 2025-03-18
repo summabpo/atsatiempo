@@ -79,6 +79,7 @@ def create_vacanty_from_client(request, pk):
             titulo = form.cleaned_data['titulo'] 
             cargo = form.cleaned_data['cargo']
             numero_posiciones = form.cleaned_data['numero_posiciones']
+            descripcion_vacante = form.cleaned_data['descripcion_vacante']
 
             #detalles del trabajo
             tiempo_experiencia = form.cleaned_data['tiempo_experiencia']
@@ -92,6 +93,7 @@ def create_vacanty_from_client(request, pk):
             soft_skills = form.cleaned_data['soft_skills']
             hard_skills = form.cleaned_data['hard_skills']
             idioma = form.cleaned_data['idioma']
+            nivel_idioma = form.cleaned_data['nivel_idioma']
             profesion_estudio = form.cleaned_data['profesion_estudio']
             nivel_estudio = form.cleaned_data['nivel_estudio']
             edad = form.cleaned_data['edad']
@@ -108,23 +110,24 @@ def create_vacanty_from_client(request, pk):
             
             #creacion del perfil de la vacante
             perfil_vacante = Cli073PerfilVacante.objects.create(
-                edad='1',  # Assuming default value
-                genero='1',  # Assuming default value
-                tiempo_experiencia=1,  # Assuming default value
+                edad=edad,
+                genero=genero,
+                tiempo_experiencia=tiempo_experiencia,
                 horario=horario,
-                modalidad='1',  # Assuming default value
-                jornada='1',  # Assuming default value
-                salario=1,
-                tipo_salario='1',  # Assuming default value
-                frecuencia_pago='1',  # Assuming default value
-                salario_adicional=None,  # Assuming default value
-                idioma='1',  # Assuming default value
-                profesion_estudio=Cli055ProfesionEstudio.objects.get(id=1),  # Assuming default value
-                nivel_estudio=1,  # Assuming default value
-                lugar_trabajo=Cat004Ciudad.objects.get(id=1),
-                termino_contrato=1,  # Assuming default value
+                modalidad=modalidad,
+                jornada=jornada,
+                salario=salario,
+                tipo_salario=tipo_salario,
+                frecuencia_pago=frecuencia_pago,
+                salario_adicional=salario_adicional,
+                idioma=idioma,
+                nivel_idioma=nivel_idioma,
+                profesion_estudio=Cli055ProfesionEstudio.objects.get(id=profesion_estudio),
+                nivel_estudio=nivel_estudio,
+                lugar_trabajo=Cat004Ciudad.objects.get(id=lugar_trabajo),
+                termino_contrato=termino_contrato,
                 estado=Cat001Estado.objects.get(id=1),
-                fecha_creacion=1
+                fecha_creacion=1  # Assuming default value
             )
 
 
@@ -138,7 +141,8 @@ def create_vacanty_from_client(request, pk):
                 usuario_asignado=request.user,
                 asignacion_cliente_id_064=Cli064AsignacionCliente.objects.get(id=pk),
                 cargo=Cli068Cargo.objects.get(id=cargo),  # Fetching the cargo object
-                perfil_vacante=perfil_vacante  
+                perfil_vacante=perfil_vacante,
+                descripcion_vacante=descripcion_vacante
             )
 
             vacante.soft_skills_id_053.set(form.cleaned_data['soft_skills'])
