@@ -8,7 +8,7 @@ from applications.usuarios.models import UsuarioBase
 from applications.vacante.models import Cli052Vacante
 
 #choices
-from applications.services.choices import TIPO_CLIENTE_STATIC, EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC
+from applications.services.choices import TIPO_CLIENTE_STATIC, EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC, HORARIO_CHOICES_STATIC
 
 class VacanteForm(forms.Form):
     # EXPERIENCIA_TIEMPO = [
@@ -19,7 +19,7 @@ class VacanteForm(forms.Form):
     #     (4, 'Sin experiencia'),
     # ]
 
-    EXPERIENCIA_TIEMPO = [('', 'Seleccione una opción... ')] + Cli052Vacante.EXPERIENCIA_TIEMPO
+    
 
     titulo = forms.CharField(label='TITULO DE LA VACANTE',
         widget=forms.TextInput(
@@ -42,7 +42,7 @@ class VacanteForm(forms.Form):
             }
         ), required=True)
 
-    experiencia_requerida = forms.ChoiceField(label='EXPERIENCIA ', choices = EXPERIENCIA_TIEMPO, widget = forms.Select( attrs={ 'class': 'form-select form-select-solid fw-bold'}), required=True)
+    experiencia_requerida = forms.ChoiceField(label='EXPERIENCIA ', choices = TIEMPO_EXPERIENCIA_CHOICES_STATIC, widget = forms.Select( attrs={ 'class': 'form-select form-select-solid fw-bold'}), required=True)
     soft_skills_id_053 = forms.CharField(label='HABILIDADES BLANDAS', 
         widget=forms.TextInput(
             attrs={
@@ -236,15 +236,7 @@ class VacanteForm(forms.Form):
 
         return cleaned_data  
 class VacanteFormEdit(forms.Form):
-    # EXPERIENCIA_TIEMPO = [
-    #     ('', 'Seleccione una opción... '),
-    #     (1, '0 a 6 Meses'),
-    #     (2, '1 año a 2 años'),
-    #     (3, 'Más de 2 años'),
-    #     (4, 'Sin experiencia'),
-    # ]
-
-    EXPERIENCIA_TIEMPO = [('', 'Seleccione una opción... ')] + Cli052Vacante.EXPERIENCIA_TIEMPO
+    
 
     titulo = forms.CharField(label='TITULO DE LA VACANTE',
         widget=forms.TextInput(
@@ -264,7 +256,7 @@ class VacanteFormEdit(forms.Form):
                 'class': 'form-control form-control-solid',  # Clases CSS del campo  
             }
         ), required=True)
-    experiencia_requerida = forms.ChoiceField(label='EXPERIENCIA ', choices = EXPERIENCIA_TIEMPO, widget = forms.Select( attrs={ 'class': 'form-select form-select-solid fw-bold'}), required=True)
+    experiencia_requerida = forms.ChoiceField(label='EXPERIENCIA ', choices = TIEMPO_EXPERIENCIA_CHOICES_STATIC, widget = forms.Select( attrs={ 'class': 'form-select form-select-solid fw-bold'}), required=True)
     soft_skills_id_053 = forms.CharField(label='HABILIDADES BLANDAS', 
         widget=forms.TextInput(
             attrs={
@@ -454,15 +446,7 @@ class VacanteFormEdit(forms.Form):
 
         return cleaned_data
 class VacanteAdicionalForms(forms.Form):
-    # EXPERIENCIA_TIEMPO = [
-    #     ('', 'Seleccione una opción... '),
-    #     (1, '0 a 6 Meses'),
-    #     (2, '1 año a 2 años'),
-    #     (3, 'Más de 2 años'),
-    #     (4, 'Sin experiencia'),
-    # ]
-
-    EXPERIENCIA_TIEMPO = [('', 'Seleccione una opción... ')] + Cli052Vacante.EXPERIENCIA_TIEMPO
+    
 
     titulo = forms.CharField(label='TITULO DE LA VACANTE',
         widget=forms.TextInput(
@@ -482,7 +466,7 @@ class VacanteAdicionalForms(forms.Form):
                 'class': 'form-control form-control-solid',  # Clases CSS del campo  
             }
         ), required=True)
-    experiencia_requerida = forms.ChoiceField(label='EXPERIENCIA ', choices = EXPERIENCIA_TIEMPO, widget = forms.Select( attrs={ 'class': 'form-select form-select-solid fw-bold'}), required=True)
+    experiencia_requerida = forms.ChoiceField(label='EXPERIENCIA ', choices = TIEMPO_EXPERIENCIA_CHOICES_STATIC, widget = forms.Select( attrs={ 'class': 'form-select form-select-solid fw-bold'}), required=True)
     soft_skills_id_053 = forms.CharField(label='HABILIDADES BLANDAS', 
         widget=forms.TextInput(
             attrs={
@@ -703,13 +687,23 @@ class VacancyFormAll(forms.Form):
             attrs={
                 'class': 'form-control form-control-solid',  # Clases CSS del campo  
             }
-        ), required=True)
+        ), required=False)
     numero_posiciones = forms.IntegerField(label="NUMERO VACANTES",
         widget=forms.TextInput(
             attrs={
                 'class': 'form-control form-control-solid',  # Clases CSS del campo  
             }
-        ), required=True)
+        ), required=False)
+    
+    funciones_responsabilidades = forms.CharField( label='FUNCIONES Y RESPONSABILIDADES', required=False,
+        widget=forms.Textarea(
+            attrs={
+                'class': 'form-control form-control-solid',
+                'placeholder': 'Ingrese las funciones y responsabilidades',
+                'id': 'id_funciones_responsabilidades'  # Asegura que coincida con el ID en el JS
+            }
+        )
+    )
     
     def __init__(self, *args, cliente_id=None, **kwargs):
         super(VacancyFormAll, self).__init__(*args, **kwargs)
@@ -730,7 +724,7 @@ class VacancyFormAll(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccion una opción',
             }
-            ), required=True)
+            ), required=False)
 
 
         if cliente_id:
@@ -748,7 +742,7 @@ class VacancyFormAll(forms.Form):
             'data-control': 'select2',
             'data-placeholder': 'Seleccion una opción',
             }
-        ), required=True)
+        ), required=False)
 
         
 
@@ -761,7 +755,7 @@ class VacancyFormAll(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=True)
+            ), required=False)
 
         self.fields['genero'] = forms.ChoiceField(
             label='GÉNERO',
@@ -772,7 +766,7 @@ class VacancyFormAll(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=True)
+            ), required=False)
 
         self.fields['tiempo_experiencia'] = forms.ChoiceField(
             label='TIEMPO DE EXPERIENCIA',
@@ -783,27 +777,23 @@ class VacancyFormAll(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=True)
+            ), required=False)
 
         self.fields['horario'] = forms.CharField(
-            label='HORARIO',
-            widget=forms.TextInput(
-            attrs={
-                'class': 'form-control form-control-solid',
-                'placeholder': 'Ingrese el horario',
-            }
-            ), required=True)
+            widget=forms.TextInput(attrs={
+            'id': 'id_horario',  # ID personalizado para que el JS lo seleccione
+            'class': 'tagify--custom-dropdown', 
+            'placeholder': 'Por favor ingrese los días del horario de trabajo ',
+            }),
+            required=True
+        )
 
         self.fields['modalidad'] = forms.ChoiceField(
             label='MODALIDAD',
             choices=MODALIDAD_CHOICES_STATIC,
             widget=forms.Select(
-            attrs={
-                'class': 'form-select form-select-solid',
-                'data-control': 'select2',
-                'data-placeholder': 'Seleccione una opción',
-            }
-            ), required=True)
+            
+            ), required=False)
 
         self.fields['jornada'] = forms.ChoiceField(
             label='JORNADA',
@@ -814,7 +804,7 @@ class VacancyFormAll(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=True)
+            ), required=False)
 
         self.fields['salario'] = forms.DecimalField(
             label='SALARIO',
@@ -823,7 +813,7 @@ class VacancyFormAll(forms.Form):
                 'class': 'form-control form-control-solid',
                 'placeholder': 'Ingrese el salario',
             }
-            ), required=True)
+            ), required=False)
 
         self.fields['tipo_salario'] = forms.ChoiceField(
             label='TIPO DE SALARIO',
@@ -834,7 +824,7 @@ class VacancyFormAll(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=True)
+            ), required=False)
 
         self.fields['frecuencia_pago'] = forms.ChoiceField(
             label='FRECUENCIA DE PAGO',
@@ -845,7 +835,7 @@ class VacancyFormAll(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=True)
+            ), required=False)
 
         self.fields['salario_adicional'] = forms.DecimalField(
             label='SALARIO ADICIONAL',
@@ -863,7 +853,7 @@ class VacancyFormAll(forms.Form):
                 'class': 'form-control form-control-solid',
                 'placeholder': 'Ingrese el idioma',
             }
-            ), required=True)
+            ), required=False)
 
         PROFESION_CHIOCE = [('', 'Seleccione una opción... ')] + [(profesion.id, profesion.nombre) for profesion in Cli055ProfesionEstudio.objects.all()]
         self.fields['profesion_estudio'] = forms.ChoiceField(
@@ -875,7 +865,7 @@ class VacancyFormAll(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=True)
+            ), required=False)
 
         self.fields['nivel_estudio'] = forms.ChoiceField(
             label='NIVEL DE ESTUDIO',
@@ -886,7 +876,7 @@ class VacancyFormAll(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=True)
+            ), required=False)
 
         self.fields['lugar_trabajo'] = forms.ModelChoiceField(
             label='LUGAR DE TRABAJO',
@@ -897,7 +887,7 @@ class VacancyFormAll(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=True)
+            ), required=False)
 
         self.fields['termino_contrato'] = forms.ChoiceField(
             label='TÉRMINO DE CONTRATO',
@@ -908,7 +898,7 @@ class VacancyFormAll(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=True)
+            ), required=False)
         
         self.fields['soft_skills'] = forms.CharField(
             label='HABILIDADES BLANDAS',
@@ -919,7 +909,7 @@ class VacancyFormAll(forms.Form):
                 'id': 'id_soft_skills'  # Asegura que coincida con el ID en el JS
             }
             ),
-            required=True
+            required=False
         )
 
         self.fields['hard_skills'] = forms.CharField(
@@ -931,67 +921,175 @@ class VacancyFormAll(forms.Form):
                 'id': 'id_hard_skills'  # Asegura que coincida con el ID en el JS
             }
             ),
-            required=True
+            required=False
+        )
+
+        self.fields['descripcion_vacante'] = forms.CharField(
+            label='DESCRIPCIÓN DE LA VACANTE',
+            widget=forms.Textarea(
+                attrs={
+                    'class': 'form-control form-control-solid',
+                    'placeholder': 'Ingrese la descripción de la vacante',
+                    'rows': 5,
+                    'cols': 30,
+                    'id': 'id_descripcion_vacante'
+                }
+            ),
+            required=False
         )
         
-
         self.helper.layout = Layout(
+            # 🏗️ DATOS GENERALES
             Div(
                 Div(
                     HTML("<h4 class='mb-3 text-primary'>Datos Principales</h4>"),
-                    Div('titulo', css_class='col-12'),
-                    Div('cargo', css_class='col-6'),
-                    Div('numero_posiciones', css_class='col-6'),
+                    Div('titulo', css_class='col-12'),  # Título
+                    Div('cargo', css_class='col-6'),  # Cargo
+                    Div('numero_posiciones', css_class='col-6'),  # Número de vacantes
+                    Div('descripcion_vacante', css_class='col-12'),  # Número de vacantes
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             ),
+
+            # 💼 DETALLES DEL TRABAJO
             Div(
                 Div(
-                    HTML("<h4 class='mb-3 text-primary'>Habilidades Vacante</h4>"),
-                    Div('soft_skills', css_class='col-6'),
-                    Div('hard_skills', css_class='col-6'),
+                    HTML("<h4 class='mb-3 text-primary'>Detalles del Trabajo</h4>"),
+                    Div('termino_contrato', css_class='col-6'),  # Término de contrato
+                    Div('lugar_trabajo', css_class='col-6'),  # Lugar de trabajo
+                    Div('tiempo_experiencia', css_class='col-4'),  # Tiempo de experiencia
+                    Div('modalidad', css_class='col-4'),  # Modalidad
+                    Div('jornada', css_class='col-4'),  # Jornada
+                    Div('horario', css_class='col-12'),  # Horario
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             ),
+
+            # 🛠️ REQUISITOS Y HABILIDADES
             Div(
                 Div(
-                    HTML("<h4 class='mb-3 text-primary'>Detalles Adicionales</h4>"),
-                    Div('edad', css_class='col-6'),
-                    Div('genero', css_class='col-6'),
-                    Div('tiempo_experiencia', css_class='col-6'),
-                    Div('horario', css_class='col-6'),
-                    Div('modalidad', css_class='col-6'),
-                    Div('jornada', css_class='col-6'),
-                    Div('salario', css_class='col-6'),
-                    Div('tipo_salario', css_class='col-6'),
-                    Div('frecuencia_pago', css_class='col-6'),
-                    Div('salario_adicional', css_class='col-6'),
-                    Div('idioma', css_class='col-6'),
-                    Div('profesion_estudio', css_class='col-6'),
-                    Div('nivel_estudio', css_class='col-6'),
-                    Div('lugar_trabajo', css_class='col-6'),
-                    Div('termino_contrato', css_class='col-6'),
+                    HTML("<h4 class='mb-3 text-primary'>Requisitos y Habilidades</h4>"),
+                    Div('soft_skills', css_class='col-6'),  # Habilidades blandas
+                    Div('hard_skills', css_class='col-6'),  # Habilidades duras
+                    Div('idioma', css_class='col-6'),  # Idioma
+                    Div('profesion_estudio', css_class='col-6'),  # Profesión o estudio
+                    Div('nivel_estudio', css_class='col-6'),  # Nivel de estudio
+                    Div('edad', css_class='col-6'),  # Edad
+                    Div('genero', css_class='col-6'),  # genero
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
-            )
+            ),
+
+            # 💰 INFORMACIÓN SALARIAL
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Información Salarial</h4>"),
+                    Div('salario', css_class='col-6'),  # Salario
+                    Div('tipo_salario', css_class='col-6'),  # Tipo de salario
+                    Div('frecuencia_pago', css_class='col-6'),  # Frecuencia de pago
+                    Div('salario_adicional', css_class='col-6'),  # Salario adicional
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+
+            # 📑 RESPONSABILIDADES DEL CARGO
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Responsabilidades del Cargo</h4>"),
+                    Div('funciones_responsabilidades', css_class='col-12'),  # Funciones y responsabilidades
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
         )
 
+        
     def clean(self):
         cleaned_data = super().clean()
+        # Validate titulo
+        titulo = cleaned_data.get('titulo')
+        if not titulo:
+            self.add_error('titulo', 'El título es obligatorio.')
+        elif len(titulo.split()) > 10:
+            self.add_error('titulo', 'El título no puede exceder las 10 palabras.')
 
+        #validate cargo
+        cargo = cleaned_data.get('cargo')
+        if not cargo:
+            self.add_error('cargo', 'El cargo es obligatorio.')
+
+
+        # Validate descripcion_vacante
+        descripcion_vacante = cleaned_data.get('descripcion_vacante')
+        if not descripcion_vacante:
+            self.add_error('descripcion_vacante', 'La descripción de la vacante es obligatoria.')
+        elif len(descripcion_vacante.split()) < 5:
+            self.add_error('descripcion_vacante', 'La descripción de la vacante debe tener al menos 5 palabras.')
+
+        # Validate funciones_responsabilidades
+        funciones_responsabilidades = cleaned_data.get('funciones_responsabilidades')
+        if not funciones_responsabilidades:
+            self.add_error('funciones_responsabilidades', 'Las funciones y responsabilidades son obligatorias.')
+
+        # Validate horario
+        horario = cleaned_data.get('horario')
+        if not horario:
+            self.add_error('horario', 'El horario es obligatorio.')
+
+        
         # Validate tipo_cliente
         tipo_cliente = cleaned_data.get('tipo_cliente')
-        if not tipo_cliente:
-            self.add_error('tipo_cliente', 'El tipo de cliente es obligatorio.')
 
-        # Validate cliente_id_051
-        cliente_id_051 = cleaned_data.get('cliente_id_051')
-        if not cliente_id_051:
-            self.add_error('cliente_id_051', 'El cliente es obligatorio.')
+        # Validate edad
+        edad = cleaned_data.get('edad')
 
-        # Add other validation logic as needed
+        # Validate genero
+        genero = cleaned_data.get('genero')
+
+        # Validate tiempo_experiencia
+        tiempo_experiencia = cleaned_data.get('tiempo_experiencia')
+
+        # Validate modalidad
+        modalidad = cleaned_data.get('modalidad')
+
+        # Validate jornada
+        jornada = cleaned_data.get('jornada')
+
+        # Validate salario
+        salario = cleaned_data.get('salario')
+
+        # Validate tipo_salario
+        tipo_salario = cleaned_data.get('tipo_salario')
+
+        # Validate frecuencia_pago
+        frecuencia_pago = cleaned_data.get('frecuencia_pago')
+
+        # Validate salario_adicional
+        salario_adicional = cleaned_data.get('salario_adicional')
+
+        # Validate idioma
+        idioma = cleaned_data.get('idioma')
+
+        # Validate profesion_estudio
+        profesion_estudio = cleaned_data.get('profesion_estudio')
+
+        # Validate nivel_estudio
+        nivel_estudio = cleaned_data.get('nivel_estudio')
+
+        # Validate lugar_trabajo
+        lugar_trabajo = cleaned_data.get('lugar_trabajo')
+
+        # Validate termino_contrato
+        termino_contrato = cleaned_data.get('termino_contrato')
+
+        # Validate soft_skills
+        soft_skills = cleaned_data.get('soft_skills')
+
+        # Validate hard_skills
+        hard_skills = cleaned_data.get('hard_skills')
 
         return cleaned_data

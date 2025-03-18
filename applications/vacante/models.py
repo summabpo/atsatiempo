@@ -6,7 +6,7 @@ from applications.candidato.models import Can101Candidato
 from applications.usuarios.models import UsuarioBase
 
 #choices
-from applications.services.choices import EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC
+from applications.services.choices import EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC , ESTADO_VACANTE_CHOICHES_STATIC
 
 # Create your models here.
 class Cli053SoftSkill(models.Model):
@@ -75,6 +75,7 @@ class Cli073PerfilVacante(models.Model):
     frecuencia_pago = models.CharField(max_length=1, choices=FRECUENCIA_PAGO_CHOICES_STATIC)
     salario_adicional = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     idioma = models.CharField(max_length=100)
+    nivel_idioma = models.CharField(max_length=1, choices=NIVEL_ESTUDIO_CHOICES_STATIC, blank=True, null=True)
     profesion_estudio = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE)
     nivel_estudio = models.IntegerField(choices=NIVEL_ESTUDIO_CHOICES_STATIC)
     lugar_trabajo = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
@@ -91,45 +92,20 @@ class Cli073PerfilVacante(models.Model):
         verbose_name_plural = 'PERFILES_VACANTES'
 
 class Cli052Vacante(models.Model):
-    ESTADO_VACANTE = [
-        (1, 'Activa'),
-        (2, 'En Proceso'),
-        (3, 'Finalizada'),
-        (4, 'Cancelada'),
-    ]
-
-    EXPERIENCIA_TIEMPO = [
-        (1, '0 a 6 Meses'),
-        (2, '1 año a 2 años'),
-        (3, '2 años de 3 años'),
-        (4, 'Sin Experiencia'),
-        (5, '3 años de 4 años'),
-        (6, '4 años de 5 años'),
-        (7, '5 años de 6 años'),
-        (8, '6 años de 7 años'),
-        (9, '7 años de 8 años'),
-        (10, '8 años de 9 años'),
-        (11, '9 años de 10 años'),
-        (12, '10 años o más'),
-    ]
-
+    
     titulo = models.CharField(max_length=200)
     numero_posiciones = models.IntegerField()
-    # profesion_estudio_id_055 = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE)
-    # experiencia_requerida = models.IntegerField(choices=EXPERIENCIA_TIEMPO)
     soft_skills_id_053 = models.ManyToManyField(Cli053SoftSkill)
     hard_skills_id_054 = models.ManyToManyField(Cli054HardSkill)
-    # ciudad = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
-    # salario = models.IntegerField(null=True, blank=True)  # Opcional
-    estado_vacante = models.IntegerField(choices=ESTADO_VACANTE, default=1)
+    estado_vacante = models.IntegerField(choices=ESTADO_VACANTE_CHOICHES_STATIC, default=1)
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
-    # cliente_id_051 = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_cierre = models.DateTimeField(null=True, blank=True)
     usuario_asignado = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True)
     asignacion_cliente_id_064 = models.ForeignKey(Cli064AsignacionCliente, on_delete=models.CASCADE, null=True, blank=True)
     cargo = models.ForeignKey(Cli068Cargo, on_delete=models.CASCADE, null=True, blank=True)
     perfil_vacante = models.ForeignKey(Cli073PerfilVacante, on_delete=models.CASCADE, null=True, blank=True)
+    descripcion_vacante = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.titulo

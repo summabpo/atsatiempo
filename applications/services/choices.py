@@ -1,9 +1,9 @@
 from django.db import models
 
 NIVEL_CHOICHES_STATIC = [('', 'Seleccione una opción...')] + [
-    ('0', 'BASICO'),
-    ('1', 'INTERMEDIO'),
-    ('2', 'SUPERIOR'),
+    ('B', 'BASICO'),
+    ('I', 'INTERMEDIO'),
+    ('S', 'SUPERIOR'),
 ]
 
 TIPO_CLIENTE_STATIC = [('', 'Seleccione una opción...')] + [
@@ -12,7 +12,7 @@ TIPO_CLIENTE_STATIC = [('', 'Seleccione una opción...')] + [
         ('3', 'Cliente Asignado Headhunter'),
     ]
 
-PAGO_NOMINA_STATIC = [
+PAGO_NOMINA_STATIC = [('', 'Seleccione una opción...')] + [
         ('', 'Sin Definir'),
         ('1', 'Semanal'),
         ('2', 'Quincenal'),
@@ -30,6 +30,7 @@ TIPO_ASIGNACION_STATIC = [('', 'Seleccione una opción...')] + [
     ]
 
 GENERO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('S', 'Sin Especificar'),
     ('M', 'Masculino'),
     ('F', 'Femenino'),
 ]
@@ -61,7 +62,8 @@ TERMINO_CONTRATO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
 ]
 
 EDAD_CHOICES_STATIC = [('', 'Seleccione una opción... ')] + [
-    ('1', '19-24 años'),
+    ('7', 'Sin especificar'),
+    ('1', '18-24 años'),
     ('2', '25-29 años'),
     ('3', '30-34 años'),
     ('4', '35-39 años'),
@@ -70,11 +72,12 @@ EDAD_CHOICES_STATIC = [('', 'Seleccione una opción... ')] + [
 ]
 
 TIEMPO_EXPERIENCIA_CHOICES_STATIC = [('', 'Seleccione una opción... ')] + [
-    (2, '1 año'),
-    (3, '2 años'),
-    (4, '3 años'),
-    (5, '4 años'),
-    (6, '5 años o más'),
+    (6, 'Sin Experiencia'),
+    (1, '1 año'),
+    (2, '2 años'),
+    (3, '3 años'),
+    (4, '4 años'),
+    (5, '5 años o más'),
 ]
 
 FRECUENCIA_PAGO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
@@ -91,4 +94,21 @@ NIVEL_ESTUDIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     (5, 'Tecnólogo'),
     (6, 'Universitario'),
     (7, 'Postgrado'),
+]
+
+HORARIO_CHOICES_STATIC =  [
+    ('1', 'Lunes'),
+    ('2', 'Martes'),
+    ('3', 'Miércoles'),
+    ('4', 'Jueves'),
+    ('5', 'Viernes'),
+    ('6', 'Sábado'),
+    ('7', 'Domingo'),
+]
+
+ESTADO_VACANTE_CHOICHES_STATIC = [
+    (1, 'Activa'),
+    (2, 'En Proceso'),
+    (3, 'Finalizada'),
+    (4, 'Cancelada'),
 ]
