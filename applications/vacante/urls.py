@@ -18,8 +18,6 @@ urlpatterns = [
     #Vacante New
     path( url_principal+'buscar/', VacanteViews.find_vacanty, name='find_vacanty'),
 
-
-
     path( url_principal+'', VacanteViews.buscar_vacante, name='buscar_vacante'),
     path( url_principal+'emparejamiento/<int:candidato_id>/<int:vacante_id>/', VacanteViews.vacante_candidato_emparejamiento, name='vacante_candidato_emparejamiento'),
     

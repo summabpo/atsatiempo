@@ -96,14 +96,14 @@ NIVEL_ESTUDIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     (7, 'Postgrado'),
 ]
 
-HORARIO_CHOICES_STATIC =  [
-    ('1', 'Lunes'),
-    ('2', 'Martes'),
-    ('3', 'Miércoles'),
-    ('4', 'Jueves'),
-    ('5', 'Viernes'),
-    ('6', 'Sábado'),
-    ('7', 'Domingo'),
+HORARIO_CHOICES_STATIC =  [('', 'Seleccione una opción...')] + [
+    ('L', 'Lunes'),
+    ('M', 'Martes'),
+    ('X', 'Miércoles'),
+    ('J', 'Jueves'),
+    ('V', 'Viernes'),
+    ('S', 'Sábado'),
+    ('D', 'Domingo'),
 ]
 
 ESTADO_VACANTE_CHOICHES_STATIC = [
@@ -111,4 +111,13 @@ ESTADO_VACANTE_CHOICHES_STATIC = [
     (2, 'En Proceso'),
     (3, 'Finalizada'),
     (4, 'Cancelada'),
+]
+
+NIVEL_IDIOMA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('A1', 'A1 - Principiante'),
+    ('A2', 'A2 - Básico'),
+    ('B1', 'B1 - Intermedio'),
+    ('B2', 'B2 - Intermedio Alto'),
+    ('C1', 'C1 - Avanzado'),
+    ('C2', 'C2 - Nativo o Bilingüe'),
 ]

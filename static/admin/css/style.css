@@ -20797,6 +20797,7 @@ Swiper Slider Style
   flex-wrap: wrap !important;
   align-items: center !important; /* Centrar verticalmente */
   height: auto !important; /* Ajuste de altura automática */
+  min-height: 40px !important; /* Altura mínima */
   max-width: 100%;
   border-radius: var(--bs-border-radius) !important;
   font-size: 15px; /* var(--bs-body-font-size) !important; */

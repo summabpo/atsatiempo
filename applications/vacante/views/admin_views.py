@@ -87,7 +87,10 @@ def create_vacanty_from_client(request, pk):
             jornada = form.cleaned_data['jornada']
             lugar_trabajo = form.cleaned_data['lugar_trabajo']
             termino_contrato = form.cleaned_data['termino_contrato']
-            horario = form.cleaned_data['horario']
+            horario_inicio = form.cleaned_data['horario_inicio']
+            horario_final = form.cleaned_data['horario_final']
+            hora_inicio = form.cleaned_data['hora_inicio']
+            hora_final = form.cleaned_data['hora_final']
             
             #requisitos y habilidades
             soft_skills = form.cleaned_data['soft_skills']
@@ -98,6 +101,7 @@ def create_vacanty_from_client(request, pk):
             nivel_estudio = form.cleaned_data['nivel_estudio']
             edad = form.cleaned_data['edad']
             genero = form.cleaned_data['genero']
+            
 
             #informacion salarial
             salario = form.cleaned_data['salario']
@@ -113,7 +117,6 @@ def create_vacanty_from_client(request, pk):
                 edad=edad,
                 genero=genero,
                 tiempo_experiencia=tiempo_experiencia,
-                horario=horario,
                 modalidad=modalidad,
                 jornada=jornada,
                 salario=salario,
@@ -124,10 +127,14 @@ def create_vacanty_from_client(request, pk):
                 nivel_idioma=nivel_idioma,
                 profesion_estudio=Cli055ProfesionEstudio.objects.get(id=profesion_estudio),
                 nivel_estudio=nivel_estudio,
+                estado_estudio=False,  # Assuming default value
                 lugar_trabajo=Cat004Ciudad.objects.get(id=lugar_trabajo),
                 termino_contrato=termino_contrato,
                 estado=Cat001Estado.objects.get(id=1),
-                fecha_creacion=1  # Assuming default value
+                horario_inicio=horario_inicio,  # Assuming default value
+                horario_final=horario_final,  # Assuming default value
+                hora_inicio=hora_inicio,  # Assuming default value
+                hora_final=hora_final  # Assuming default value
             )
 
 
@@ -149,7 +156,7 @@ def create_vacanty_from_client(request, pk):
             vacante.hard_skills_id_054.set(form.cleaned_data['hard_skills'])
             
             print(titulo)
-            print(horario)
+            
             print(funciones_responsabilidades)
             
             

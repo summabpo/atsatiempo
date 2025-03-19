@@ -779,13 +779,54 @@ class VacancyFormAll(forms.Form):
             }
             ), required=False)
 
-        self.fields['horario'] = forms.CharField(
-            widget=forms.TextInput(attrs={
-            'id': 'id_horario',  # ID personalizado para que el JS lo seleccione
-            'class': 'tagify--custom-dropdown', 
-            'placeholder': 'Por favor ingrese los días del horario de trabajo ',
-            }),
-            required=True
+        self.fields['horario_inicio'] = forms.ChoiceField(
+            label='HORARIO INICIO',
+            choices=HORARIO_CHOICES_STATIC,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ),
+            required=False
+        )
+
+        self.fields['horario_final'] = forms.ChoiceField(
+            label='HORARIO FINAL',
+            choices=HORARIO_CHOICES_STATIC,
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ),
+            required=False
+        )
+
+        self.fields['hora_inicio'] = forms.TimeField(
+            label='HORA INICIO',
+            widget=forms.TimeInput(
+            attrs={
+            'class': 'form-control form-control-solid',
+            'placeholder': 'Ingrese la hora de inicio',
+            'type': 'time'
+            }
+            ),
+            required=False
+        )
+
+        self.fields['hora_final'] = forms.TimeField(
+            label='HORA FINAL',
+            widget=forms.TimeInput(
+            attrs={
+            'class': 'form-control form-control-solid',
+            'placeholder': 'Ingrese la hora final',
+            'type': 'time'
+            }
+            ),
+            required=False
         )
 
         self.fields['modalidad'] = forms.ChoiceField(
@@ -878,14 +919,17 @@ class VacancyFormAll(forms.Form):
             }
             ), required=False)
 
-        self.fields['lugar_trabajo'] = forms.ModelChoiceField(
+        lugares_trabajo = Cat004Ciudad.objects.all().order_by('nombre')
+        lugar_trabajo_choices = [('', '----------')] + [(lugar.id, f"{lugar.nombre}") for lugar in lugares_trabajo]
+
+        self.fields['lugar_trabajo'] = forms.ChoiceField(
             label='LUGAR DE TRABAJO',
-            queryset=Cat004Ciudad.objects.all(),
+            choices=lugar_trabajo_choices,
             widget=forms.Select(
             attrs={
-                'class': 'form-select form-select-solid',
-                'data-control': 'select2',
-                'data-placeholder': 'Seleccione una opción',
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+            'data-placeholder': 'Seleccione una opción',
             }
             ), required=False)
 
@@ -950,6 +994,30 @@ class VacancyFormAll(forms.Form):
             ),
             required=False
         )
+
+        self.fields['estudios_complementarios'] = forms.CharField(
+            label='ESTUDIOS COMPLEMENTARIOS',
+            widget=forms.TextInput(
+                attrs={
+                    'class': 'form-control form-control-solid',
+                    'placeholder': 'Ingrese los estudios complementarios',
+                }
+            ),
+            required=False
+        )
+
+        self.fields['estudios_complementarios_certificado'] = forms.ChoiceField(
+            label='CERTIFICADO',
+            choices=[(True, 'Sí'), (False, 'No')],
+            widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }
+            ),
+            required=False
+        )
         
         self.helper.layout = Layout(
             # 🏗️ DATOS GENERALES
@@ -974,7 +1042,10 @@ class VacancyFormAll(forms.Form):
                     Div('tiempo_experiencia', css_class='col-4'),  # Tiempo de experiencia
                     Div('modalidad', css_class='col-4'),  # Modalidad
                     Div('jornada', css_class='col-4'),  # Jornada
-                    Div('horario', css_class='col-12'),  # Horario
+                    Div('horario_inicio', css_class='col-3'),  # Horario
+                    Div('horario_final', css_class='col-3'),  # Horario
+                    Div('hora_inicio', css_class='col-3'),  # Horario
+                    Div('hora_final', css_class='col-3'),  # Horario
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -992,6 +1063,8 @@ class VacancyFormAll(forms.Form):
                     Div('nivel_estudio', css_class='col-6'),  # Nivel de estudio
                     Div('edad', css_class='col-6'),  # Edad
                     Div('genero', css_class='col-6'),  # genero
+                    Div('estudios_complementarios', css_class='col-9'),  # estudios_complementarios
+                    Div('estudios_complementarios_certificado', css_class='col-3'),  # estudios_complementarios_certificado
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -1049,11 +1122,17 @@ class VacancyFormAll(forms.Form):
         if not funciones_responsabilidades:
             self.add_error('funciones_responsabilidades', 'Las funciones y responsabilidades son obligatorias.')
 
-        # Validate horario
-        horario = cleaned_data.get('horario')
-        if not horario:
-            self.add_error('horario', 'El horario es obligatorio.')
-
+        # Validate horario_inicio
+        horario_inicio = cleaned_data.get('horario_inicio')
+        
+        # Validate horario_final
+        horario_final = cleaned_data.get('horario_final')
+        
+        # Validate hora_inicio
+        hora_inicio = cleaned_data.get('hora_inicio')
+        
+        # Validate hora_final
+        hora_final = cleaned_data.get('hora_final')
         
         # Validate tipo_cliente
         tipo_cliente = cleaned_data.get('tipo_cliente')
@@ -1108,5 +1187,15 @@ class VacancyFormAll(forms.Form):
 
         # Validate hard_skills
         hard_skills = cleaned_data.get('hard_skills')
+
+        # Validate estudios_complementarios
+        estudios_complementarios = cleaned_data.get('estudios_complementarios')
+        if estudios_complementarios and len(estudios_complementarios) > 255:
+            self.add_error('estudios_complementarios', 'Los estudios complementarios no pueden exceder los 255 caracteres.')
+
+        # Validate estudios_complementarios_certificado
+        estudios_complementarios_certificado = cleaned_data.get('estudios_complementarios_certificado')
+        if estudios_complementarios and estudios_complementarios_certificado is None:
+            self.add_error('estudios_complementarios_certificado', 'Debe indicar si los estudios complementarios están certificados.')
 
         return cleaned_data
