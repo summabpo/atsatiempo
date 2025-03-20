@@ -52,7 +52,6 @@ TIPO_SALARIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     ('M', 'Mixto'),
     ('I', 'Integral'),
     ('H', 'Por Hora'),
-    ('C', 'Convenio'),
 ]
 
 TERMINO_CONTRATO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
@@ -120,4 +119,22 @@ NIVEL_IDIOMA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     ('B2', 'B2 - Intermedio Alto'),
     ('C1', 'C1 - Avanzado'),
     ('C2', 'C2 - Nativo o Bilingüe'),
+]
+
+IDIOMA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('ES', 'Español'),
+    ('EN', 'Inglés'),
+    ('FR', 'Francés'),
+    ('DE', 'Alemán'),
+    ('IT', 'Italiano'),
+    ('PT', 'Portugués'),
+    ('RU', 'Ruso'),
+    ('ZH', 'Chino'),
+    ('JP', 'Japonés'),
+    ('AR', 'Árabe'),
+    ('OT', 'Otro'),
+]
+
+EDAD_SELECT_CHOICES_STATIC = [('', 'Seleccione una opción... ')] + [
+    (str(age), f'{age} años') for age in range(18, 51)
 ]
