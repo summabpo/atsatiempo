@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli073PerfilVacante, Cli068Cargo
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import Permiso
@@ -79,7 +79,7 @@ def create_vacanty_from_client(request, pk):
             titulo = form.cleaned_data['titulo']                            #perfil de la vacante
             cargo = form.cleaned_data['cargo']                              #perfil de la vacante
             numero_posiciones = form.cleaned_data['numero_posiciones']      #perfil de la vacante
-            numero_posiciones = form.cleaned_data['cantidad_presentar']     #perfil de la vacante    
+            cantidad_presentar = form.cleaned_data['cantidad_presentar']     #perfil de la vacante    
             fecha_presentacion = form.cleaned_data['fecha_presentacion']    #vacante
             
 
@@ -123,8 +123,7 @@ def create_vacanty_from_client(request, pk):
 
             #descripcion de la vacante
             descripcion_vacante = form.cleaned_data['descripcion_vacante']
-    
-            
+
             #creacion del perfil de la vacante
             perfil_vacante, perfil_vacante_nuevo = Cli073PerfilVacante.objects.get_or_create(
                 edad_inicial=edad_inicial,
@@ -154,36 +153,76 @@ def create_vacanty_from_client(request, pk):
                 url_mapa=url_mapa  # Assuming default value
             )
 
-            if perfil_vacante_nuevo:
-                print(f"Nuevo perfil creado: {perfil_vacante.id}")
-            else:
-                print(f"Perfil ya existente: {perfil_vacante.id}")
-
+        
+            #verificacion de asignación vacante
+            asignacion_cliente, asignacion_cliente_created = Cli064AsignacionCliente.objects.get_or_create(
+                id_cliente_maestro=Cli051Cliente.objects.get(id=1000),
+                id_cliente_asignado=Cli051Cliente.objects.get(id=pk),
+                defaults={'tipo_asignacion': '1', 'estado': Cat001Estado.objects.get(id=1)}
+            )
 
             #creacion de la vacante
             vacante = Cli052Vacante.objects.create(
                 titulo=titulo,
-                numero_posiciones=numero_posiciones,  # Assuming default value
-                estado_vacante=1,  # Assuming default value
+                numero_posiciones=numero_posiciones,
+                cantidad_presentar=cantidad_presentar,
+                estado_vacante=1,
                 estado_id_001=Cat001Estado.objects.get(id=1),
-                fecha_cierre=1,
-                usuario_asignado=request.user,
-                asignacion_cliente_id_064=Cli064AsignacionCliente.objects.get(id=pk),
-                cargo=Cli068Cargo.objects.get(id=cargo),  # Fetching the cargo object
+                fecha_presentacion=fecha_presentacion,
+                # usuario_asignado=request.user,
+                asignacion_cliente_id_064=asignacion_cliente,
+                cargo=Cli068Cargo.objects.get(id=cargo),
                 perfil_vacante=perfil_vacante,
                 descripcion_vacante=descripcion_vacante
             )
 
-            vacante.soft_skills_id_053.set(form.cleaned_data['soft_skills'])
-            vacante.hard_skills_id_054.set(form.cleaned_data['hard_skills'])
+            # Convertir el string JSON en un objeto Python (lista de diccionarios)
+            skills = json.loads(soft_skills)
             
-            print(titulo)
+            # Ahora puedes iterar sobre la lista de diccionarios
+            for skill in skills:
+                # Intentar obtener el objeto soft_skills
+                soft_skills, created = Cli053SoftSkill.objects.get_or_create(
+                    nombre = skill['value'],
+                    defaults={'estado_id_001': Cat001Estado.objects.get(id=1)}
+                )
+
+                Cli052VacanteSoftSkillsId053.objects.create(
+                    cli052vacante=vacante,
+                    cli053softskill=soft_skills
+                )
+
+
+            # Convertir el string JSON en un objeto Python (lista de diccionarios)
+            skills = json.loads(hard_skills)
             
-            print(funciones_responsabilidades)
-            
-            
-            
-            
+            # Ahora puedes iterar sobre la lista de diccionarios
+            for skill in skills:
+                # Intentar obtener el objeto hard_skills
+                hard_skills, created = Cli054HardSkill.objects.get_or_create(
+                    nombre = skill['value'],
+                    defaults={'estado_id_001': Cat001Estado.objects.get(id=1)}
+                )
+
+                Cli052VacanteHardSkillsId054.objects.create(
+                    cli052vacante=vacante,
+                    cli054hardskill=hard_skills
+                )
+
+            # Iteraciones con las funciones y la vacante
+            funciones_responsabilidades = json.loads(funciones_responsabilidades)
+            for funcion in funciones_responsabilidades:
+                funcion_responsabilidad, created = Cli072FuncionesResponsabilidades.objects.get_or_create(
+                    nombre=funcion['value'],
+                    defaults={'estado': Cat001Estado.objects.get(id=1)}
+                )
+
+                Cli074AsignacionFunciones.objects.create(
+                    vacante=vacante,
+                    funcion_responsabilidad=funcion_responsabilidad,
+                    estado=Cat001Estado.objects.get(id=1)
+                )
+
             # form.save()
             messages.success(request, 'Vacante creada correctamente')
             # return redirect('vacantes_propias', pk=pk)
@@ -197,6 +236,29 @@ def create_vacanty_from_client(request, pk):
         'data': data,
         'vacantes': vacantes,
         'form': form
+    }
+
+    return render(request, 'admin/vacancy/admin_user/client_detail_vacancy_create.html', context) 
+
+
+#crear vacante
+@login_required
+# @validar_permisos(*Permiso.obtener_nombres())
+def create_vacanty_from_client(request, pk):
+
+    # Data cliente a mostrar
+    data = query_client_detail(pk)
+
+    vacantes = Cli052Vacante.objects.select_related(
+        'asignacion_cliente_id_064__id_cliente_asignado'
+    ).filter(
+        asignacion_cliente_id_064__id_cliente_asignado=pk,
+        asignacion_cliente_id_064__tipo_asignacion='1'  # Aquí va el campo correcto
+    )
+
+    context = {
+        'data': data,
+        'vacantes': vacantes,
     }
 
     return render(request, 'admin/vacancy/admin_user/client_detail_vacancy.html', context) 
