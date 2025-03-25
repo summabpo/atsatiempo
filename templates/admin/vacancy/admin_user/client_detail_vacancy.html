@@ -43,16 +43,20 @@ Vacantes Propias
 				<div class="card-body p-4">
                     <div class="row">
                         <div class="col-12">
+                            <a href="{% url 'vacantes:vacantes_crear_propias' data.cliente.id %}" class="btn btn-primary mb-3">Crear Vacante</a>
+                        </div>
+                        <div class="col-12">
                             <div class="default-table-area all-products">
                                 <div class="table-responsive">
                                     <table class="table align-middle" id="myTable">
                                         <thead>
                                             <tr>
                                                 <th scope="col">ID</th>
-                                                <th scope="col">NOMBRE</th>
-                                                <th scope="col">PREGUNTA</th>
+                                                <th scope="col">VACANTE</th>
+                                                <th scope="col">CARGO</th>
                                                 <th scope="col">FECHA</th>
-                                                <th scope="col">ESTADO</th>
+                                                <th scope="col">ANALISTA ASIGNADO</th>
+                                                <th scope="col">ESTADO VACANTE</th>
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>
@@ -60,10 +64,11 @@ Vacantes Propias
                                             {% for e in vacantes %}
                                             <tr>
                                                 <td class="text-body">{{ e.id }}</td>
-                                                <td class="text-body">{{ e.politica_interna.nombre }}</td>
-                                                <td class="text-body">{{ e.politica_interna.descripcion }}</td>
-                                                <td class="text-body">{{ e.fecha_asignacion }}</td>
-                                                <td class="text-body">{{ e.estado }}</td>
+                                                <td class="text-body">{{ e.titulo }}</td>
+                                                <td class="text-body">{{ e.cargo.nombre_cargo }}</td>
+                                                <td class="text-body">{{ e.fecha_creacion|date:"Y-m-d" }}</td>
+                                                <td class="text-body">{{ e.nombre_completo }}</td>
+                                                <td class="text-body">{{ e.vacante_estado }}</td>
                                                 <td>
                                                     <div class="d-flex align-items-center gap-1">
                                                         <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">

@@ -1215,7 +1215,7 @@ class VacancyFormAll(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         # Validate titulo
-        titulo = cleaned_data.get('titulo')
+        titulo = cleaned_data.get('titulo').upper() if cleaned_data.get('titulo') else ''
         if not titulo:
             self.add_error('titulo', 'El título es obligatorio.')
         elif len(titulo.split()) > 10:

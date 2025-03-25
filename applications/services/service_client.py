@@ -1,4 +1,6 @@
+from django.db.models import F, Count, Q, Value, Case, When, CharField
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
+from applications.services.choices import TIPO_CLIENTE_STATIC
 
 #consulta de detalle de cliente
 def query_client_detail(id):
@@ -47,3 +49,13 @@ def query_client_detail(id):
     }
 
     return data
+
+def query_client_all():
+
+    clientes = Cli051Cliente.objects.select_related(
+        'ciudad_id_004',
+        'actividad_economica',
+        'estado_id_001'
+    )
+    
+    return clientes

@@ -25,7 +25,12 @@ Vacantes Propias
 					</a>
 				</li>
 				<li class="breadcrumb-item active" aria-current="page">
-					<span class="fw-medium">Vacantes Propias</span>
+					<a href="{% url 'vacantes:vacantes_propias' data.cliente.id %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Crear Vacante</span>
 				</li>
 			</ol>
 		</nav>

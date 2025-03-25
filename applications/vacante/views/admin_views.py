@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import F, Count, Q
+from django.db.models import F, Count, Q, Value, Case, When, CharField
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones
@@ -13,12 +13,13 @@ from django.http import JsonResponse
 import json
 from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
+from django.db.models.functions import Concat
 
 #forms
 from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit, VacancyFormAll
 
 #views
-
+from applications.services.service_vacanty import query_vacanty_all
 
 #query
 from applications.services.service_client import query_client_detail
@@ -44,14 +45,13 @@ def create_vacanty(request):
 # @validar_permisos(*Permiso.obtener_nombres())
 def list_vacanty_all(request):
 
-    vacantes = Cli052Vacante.objects.all()
+    vacantes = query_vacanty_all()
 
     context = {
         'vacantes': vacantes
     }
 
     return render(request, 'admin/vacancy/admin_user/vacancy_all.html', context)
-
 
 #crear vacante
 @login_required
@@ -225,7 +225,7 @@ def create_vacanty_from_client(request, pk):
 
             # form.save()
             messages.success(request, 'Vacante creada correctamente')
-            # return redirect('vacantes_propias', pk=pk)
+            return redirect('vacantes:vacantes_propias', pk=pk)
 
         else:
             print(form.errors)
@@ -244,17 +244,21 @@ def create_vacanty_from_client(request, pk):
 #crear vacante
 @login_required
 # @validar_permisos(*Permiso.obtener_nombres())
-def create_vacanty_from_client(request, pk):
+def list_vacanty_from_client(request, pk):
 
     # Data cliente a mostrar
     data = query_client_detail(pk)
 
-    vacantes = Cli052Vacante.objects.select_related(
-        'asignacion_cliente_id_064__id_cliente_asignado'
-    ).filter(
+    # Data
+    vacantes = query_vacanty_all()
+
+    #filtro para mostrar solo las vacantes del cliente
+    vacantes = vacantes.filter(
         asignacion_cliente_id_064__id_cliente_asignado=pk,
-        asignacion_cliente_id_064__tipo_asignacion='1'  # Aquí va el campo correcto
+        asignacion_cliente_id_064__tipo_asignacion='1'
     )
+
+    print(vacantes)
 
     context = {
         'data': data,

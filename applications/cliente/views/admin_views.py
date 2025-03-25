@@ -19,7 +19,7 @@ from applications.vacante.forms.VacanteForms import VacanteForm
 from ..forms.ClienteForms import ClienteForm, ClienteFormAsignacionPrueba, ClienteFormEdit, ClienteFormPoliticas, ClienteFormPruebas, ClienteFormCargos, ClienteFormRequisitos, ClienteFormAsignacionRequisito
 
 #query
-from applications.services.service_client import query_client_detail
+from applications.services.service_client import query_client_all, query_client_detail
 
 
 #views
@@ -50,7 +50,8 @@ def crear_cliente(request):
 @login_required
 # @validar_permisos(*Permiso.obtener_nombres())
 def ver_cliente(request):
-    clientes = Cli051Cliente.objects.filter(estado_id_001=1).order_by('-id')
+    cliente = query_client_all()
+    clientes = cliente.filter(estado_id_001=1).order_by('-id')
     form_errors = False
 
     if request.method == 'POST':

@@ -24,8 +24,6 @@ class Cli065ActividadEconomica(models.Model):
 
 class Cli051Cliente(models.Model):
 
-    
-
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     nit = models.IntegerField(blank=False)
     razon_social = models.CharField(max_length=100, blank=False)
