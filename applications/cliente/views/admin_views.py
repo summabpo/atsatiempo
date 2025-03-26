@@ -161,7 +161,6 @@ def client_detail_info(request, pk):
 # @validar_permisos(*Permiso.obtener_nombres())
 def client_detail_politics(request, pk):
 
-    
     # Data cliente a mostrar
     data = query_client_detail(pk)
 
@@ -170,8 +169,7 @@ def client_detail_politics(request, pk):
     form = ClienteFormPoliticas()
 
     if request.method == 'POST':
-        form = ClienteFormPoliticas(request.POST)
-        print('aqui vaaaa')
+        form = ClienteFormPoliticas(request.POST, cliente_id=pk)
         if form.is_valid():
             politica = form.cleaned_data['politicas']
             politica_cliente = Cli051ClientePoliticas(
@@ -180,7 +178,6 @@ def client_detail_politics(request, pk):
                 estado = Cat001Estado.objects.get(id=1)
             )
             politica_cliente.save()
-                
 
             messages.success(request, 'Las políticas han sido asignadas con éxito.')
             return redirect('clientes:cliente_politicas', pk=pk)
@@ -189,7 +186,7 @@ def client_detail_politics(request, pk):
             messages.error(request, form.errors)
             print("Errores en el formulario:", form.errors)
     else:
-        form = ClienteFormPoliticas()
+        form = ClienteFormPoliticas(cliente_id=pk)
         
 
     contexto = {
@@ -212,7 +209,7 @@ def client_detail_test(request, pk):
     form = ClienteFormPruebas()
 
     if request.method == 'POST':
-        form = ClienteFormPruebas(request.POST)
+        form = ClienteFormPruebas(request.POST, cliente_id=pk)
         if form.is_valid():
             prueba = form.cleaned_data['pruebas']
             prueba_cliente = Cli051ClientePruebas(
@@ -229,7 +226,7 @@ def client_detail_test(request, pk):
             messages.error(request, form.errors)
             print("Errores en el formulario:", form.errors)
     else:
-        form = ClienteFormPruebas()
+        form = ClienteFormPruebas(cliente_id=pk)
 
     contexto = {
         'data': data,

@@ -114,6 +114,7 @@ def create_vacanty_from_client(request, pk):
 
             #informacion salarial
             salario = form.cleaned_data['salario']
+            
             tipo_salario = form.cleaned_data['tipo_salario']
             frecuencia_pago = form.cleaned_data['frecuencia_pago']
             salario_adicional = form.cleaned_data['salario_adicional']

@@ -6,6 +6,8 @@ from applications.common.models import Cat004Ciudad
 from applications.cliente.models import Cli051Cliente, Cli068Cargo
 from applications.usuarios.models import UsuarioBase
 from applications.vacante.models import Cli052Vacante
+from crispy_forms.bootstrap import PrependedText
+from decimal import Decimal
 
 #choices
 from applications.services.choices import EDAD_SELECT_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_CHOICHES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIPO_CLIENTE_STATIC, EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC, HORARIO_CHOICES_STATIC
@@ -216,19 +218,20 @@ class VacanteForm(forms.Form):
 
         # Si salario es un valor vacío (None o ''), lo asignamos como None
         # Validate salario
-        salario = self.cleaned_data.get('salario')
-    
+        salario = cleaned_data.get('salario')
+
+        print(salario)
+
         if salario:
-            # Eliminar puntos y espacios si están presentes
-            salario = salario.replace('.', '').replace(' ', '')
-            
-            # Verificar si el salario es un número válido
-            if not salario.isdigit():
+            # Quitar comas, puntos (separador de miles) y signos de dólar
+            salario_str = str(salario).replace(',', '').replace('.', '').replace('$', '').replace(' ', '')
+
+            # Asegurarse que sea numérico
+            if not salario_str.isdigit():
                 raise forms.ValidationError("Ingrese un número válido para el salario.")
 
-            # Convertir el salario a un entero
-            cleaned_data['salario'] =  int(salario)
-        
+            # Convertir a Decimal y guardar
+            cleaned_data['salario'] = Decimal(salario_str)
         else:
             cleaned_data['salario'] = None
             
@@ -428,20 +431,12 @@ class VacanteFormEdit(forms.Form):
 
         # Validate salario
         salario = self.cleaned_data.get('salario')
-    
-        if salario:
-            # Eliminar puntos y espacios si están presentes
-            salario = salario.replace('.', '').replace(' ', '')
-            
-            # Verificar si el salario es un número válido
-            if not salario.isdigit():
-                raise forms.ValidationError("Ingrese un número válido para el salario.")
-
-            # Convertir el salario a un entero
-            cleaned_data['salario'] =  int(salario)
         
+        if salario:
+            salario = salario.replace('.', '')
+            salario = salario.replace(',', '.')  # Reemplazar la coma por un punto    
         else:
-            cleaned_data['salario'] = None
+            salario = None
         
 
         return cleaned_data
@@ -865,13 +860,16 @@ class VacancyFormAll(forms.Form):
             }
             ), required=False)
 
-        self.fields['salario'] = forms.DecimalField(
+        self.fields['salario'] = forms.CharField(
             label='SALARIO',
-            widget=forms.NumberInput(
+            widget=forms.TextInput(
             attrs={
                 'class': 'form-control form-control-solid',
                 'placeholder': 'Ingrese el salario',
-            }
+                'x-data': '{}',
+                'x-mask:dynamic': "$money($input, ',', '.', 0)",  # <-- sin decimales si no los necesitas
+                'id': 'id_salario'
+                }
             ), required=False)
 
         self.fields['tipo_salario'] = forms.ChoiceField(
@@ -898,10 +896,13 @@ class VacancyFormAll(forms.Form):
 
         self.fields['salario_adicional'] = forms.DecimalField(
             label='SALARIO ADICIONAL',
-            widget=forms.NumberInput(
+            widget=forms.TextInput(
             attrs={
                 'class': 'form-control form-control-solid',
                 'placeholder': 'Ingrese el salario adicional',
+                'x-data': '{}',
+                'x-mask:dynamic': "$money($input, ',', '.', 4)",  # <-- sin decimales si no los necesitas
+                'id': 'id_salario_adicional'
             }
             ), required=False)
 
@@ -1181,10 +1182,16 @@ class VacancyFormAll(forms.Form):
             Div(
                 Div(
                     HTML("<h4 class='mb-3 text-primary'>Información Salarial</h4>"),
-                    Div('salario', css_class='col-6'),  # Salario
+                    Div(
+                        PrependedText('salario', '$', placeholder='0.00'),
+                        css_class='col-6'
+                    ),  # Salario
                     Div('tipo_salario', css_class='col-6'),  # Tipo de salario
                     Div('frecuencia_pago', css_class='col-6'),  # Frecuencia de pago
-                    Div('salario_adicional', css_class='col-6'),  # Salario adicional
+                    Div(
+                        PrependedText('salario_adicional', '$', placeholder='0.00'),
+                        css_class='col-6'
+                    ),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -1293,8 +1300,13 @@ class VacancyFormAll(forms.Form):
 
         # Validate salario
         salario = cleaned_data.get('salario')
-        if not salario:
-            self.add_error('salario', 'El salario es obligatorio.')
+        if salario:
+            salario = salario.replace('.', '')
+            salario = salario.replace(',', '.')
+            print(salario)
+        else:
+            print('No hay salario')
+            
 
         # Validate tipo_salario
         tipo_salario = cleaned_data.get('tipo_salario')
@@ -1308,6 +1320,18 @@ class VacancyFormAll(forms.Form):
 
         # Validate salario_adicional
         salario_adicional = cleaned_data.get('salario_adicional')
+        if salario_adicional:
+            # Eliminar puntos y signo $
+            salario_adicional = str(salario_adicional).replace('.', '').replace('$', '').replace(' ', '')
+            
+            # Verificar si el salario adicional es un número válido
+            if not salario_adicional.isdigit():
+                self.add_error('salario_adicional', 'Ingrese un número válido para el salario adicional.')
+            else:
+                # Convertir el salario adicional a un decimal
+                cleaned_data['salario_adicional'] = Decimal(salario_adicional)
+        else:
+            cleaned_data['salario_adicional'] = None
     
         # Validate idioma
         idioma = cleaned_data.get('idioma')
