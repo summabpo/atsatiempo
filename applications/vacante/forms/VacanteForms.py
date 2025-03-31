@@ -1304,6 +1304,7 @@ class VacancyFormAll(forms.Form):
             salario = salario.replace('.', '')
             salario = salario.replace(',', '.')
             print(salario)
+            cleaned_data['salario'] = salario
         else:
             print('No hay salario')
             
