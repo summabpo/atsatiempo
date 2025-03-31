@@ -48,7 +48,8 @@
         </a>
         <a 
             href="{% url 'vacantes:vacantes_propias' data.cliente.id %}" 
-            class="list-group-item list-group-item-action d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'vacantes_propias' or request.resolver_match.url_name == 'vacantes_crear_propias' %}active{% endif %}">
+            class="list-group-item list-group-item-action d-flex align-items-center gap-2 
+            {% if request.resolver_match.url_name == 'vacantes_propias' or request.resolver_match.url_name == 'vacantes_crear_propias' or request.resolver_match.url_name == 'vacantes_editar_propias'  %}active{% endif %}">
             <i class="ri-briefcase-line fs-18"></i>
             <span>Vacantes Propias</span>
         </a>

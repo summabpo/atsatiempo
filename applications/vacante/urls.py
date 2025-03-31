@@ -15,6 +15,7 @@ urlpatterns = [
     path( url_principal+'listar/', admin_views.list_vacanty_all, name='vacantes_todas'),
     path( url_principal+'mis_vacantes/<int:pk>/', admin_views.list_vacanty_from_client, name='vacantes_propias'),
     path( url_principal+'mis_vacantes/crear/<int:pk>/', admin_views.create_vacanty_from_client, name='vacantes_crear_propias'),
+    path( url_principal+'mis_vacantes/editar/<int:pk>/<int:vacante_id>/', admin_views.edit_vacanty_from_client, name='vacantes_editar_propias'),
 
     #Vacante New
     path( url_principal+'buscar/', VacanteViews.find_vacanty, name='find_vacanty'),
