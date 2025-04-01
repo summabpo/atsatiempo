@@ -267,13 +267,13 @@
                         <div class="dropdown admin-profile">
                             <div class="d-xxl-flex align-items-center bg-transparent border-0 text-start p-0 cursor dropdown-toggle" data-bs-toggle="dropdown">
                                 <div class="flex-shrink-0">
-                                    <img class="rounded-circle wh-40 administrator" src="/static/admin/images/administrator.jpg" alt="admin">
+                                    <img class="rounded-circle wh-40 administrator" src="{{ request.session.imagen_url }}" alt="admin">
                                 </div>
                                 <div class="flex-grow-1 ms-2">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="d-none d-xxl-block">
                                             <div class="d-flex align-content-center">
-                                                <h3 style="color:#FFF">Olivia</h3>
+                                                <h3 style="color:#FFF">{{request.session.primer_nombre}}</h3>
                                             </div>
                                         </div>
                                     </div>
@@ -283,18 +283,18 @@
                             <div style ="color="#FFF" class="dropdown-menu border-0 bg-white dropdown-menu-end">
                                 <div class="d-flex align-items-center info">
                                     <div class="flex-shrink-0">
-                                        <img class="rounded-circle wh-30 administrator" src="/static/admin/images/administrator.jpg" alt="admin">
+                                        <img class="rounded-circle wh-30 administrator" src="{{ request.session.imagen_url }}" alt="admin">
                                     </div>
                                     <div class="flex-grow-1 ms-2">
-                                        <h3 class="fw-medium">William John</h3>
-                                        <span class="fs-12">Marketing Manager</span>
+                                        <h3 class="fw-medium">{{request.session.primer_nombre}}</h3>
+                                        <span class="fs-12">{{request.session.tipo_cliente}}</span>
                                     </div>
                                 </div>
                                 <ul class="admin-link ps-0 mb-0 list-unstyled">
                                     <li>
                                         <a class="dropdown-item d-flex align-items-center text-body" href="my-profile.html">
                                             <i class="material-symbols-outlined">account_circle</i>
-                                            <span class="ms-2">Miperfil</span>
+                                            <span class="ms-2">Mi Perfil</span>
                                         </a>
                                     </li>
                                     {% comment %} <li>
@@ -336,7 +336,7 @@
                                         </a>
                                     </li> {% endcomment %}
                                     <li>
-                                        <a class="dropdown-item d-flex align-items-center text-body" href="login.html">
+                                        <a class="dropdown-item d-flex align-items-center text-body" href="{% url 'accesses:logout' %}">
                                             <i class="material-symbols-outlined">logout</i>
                                             <span class="ms-2">Logout</span>
                                         </a>

@@ -269,7 +269,6 @@ def dashboard_begin(request):
     # Puedes imprimir las variables de sesión para debug
     print("Variables de sesión:", session_variables)
 
-
     # valida 
     #ats portal interno
     if session_variables['grupo_id'] == 1:
@@ -279,7 +278,7 @@ def dashboard_begin(request):
     if session_variables['grupo_id'] == 3:
         print('Sesion Cliente')
         cliente_id = request.session.get('cliente_id')
-        vacantes_pendiente_cliente = info_vacantes_pendientes(cliente_id)
+        # vacantes_pendiente_cliente = info_vacantes_pendientes(cliente_id)
     else:
         vacantes_pendiente_cliente = None  
 
@@ -287,8 +286,8 @@ def dashboard_begin(request):
     if session_variables['grupo_id'] == 2:
         
         candidato_id = request.session.get('candidato_id')
-        entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
-        asignacion_vacante = consulta_asignacion_vacante_candidato(candidato_id)
+        # entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
+        # asignacion_vacante = consulta_asignacion_vacante_candidato(candidato_id)
     else:
         entrevistas_pendiente_candidato = None
         asignacion_vacante = None
@@ -297,9 +296,9 @@ def dashboard_begin(request):
     context = {
         'session_variables': session_variables,
         'permisos' : permisos_usuario,
-        'vacantes_pendiente_cliente': vacantes_pendiente_cliente,
-        'entrevistas_pendiente_candidato': entrevistas_pendiente_candidato,
-        'asignacion_vacante': asignacion_vacante,
+        # 'vacantes_pendiente_cliente': vacantes_pendiente_cliente,
+        # 'entrevistas_pendiente_candidato': entrevistas_pendiente_candidato,
+        # 'asignacion_vacante': asignacion_vacante,
     }
     
     return render(request, 'admin/dashboard.html', context)
@@ -344,6 +343,13 @@ def login_view(request):
                                 request.session['imagen_url'] = cliente.logo.url
                             else:
                                 request.session['imagen_url'] = '/static/media/avatars/blank.png'
+
+                            if cliente.tipo_cliente == '1':
+                                request.session['tipo_cliente'] = 'Standard'
+                            elif cliente.tipo_cliente == '2':
+                                request.session['tipo_cliente'] = 'Headhunter'
+                            elif cliente.tipo_cliente == '3':
+                                request.session['tipo_cliente'] = 'Asignado'
                             
                             request.session['tipo_usuario'] = 'Cliente'
 
