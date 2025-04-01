@@ -26,7 +26,7 @@ function TagifyList(campoId, listaSugerencias = []) {
 }
 
 // Funcionalidad por Tagify
-function Tagify(campoId) {
+function inicializarTagify(campoId) {
     let input = document.getElementById(campoId);
 
     if (!input) {
@@ -48,4 +48,39 @@ function Tagify(campoId) {
             element.style.height = "auto";
         });
     });
+}
+
+
+function incializarTagifyLista(fieldId, whitelist) {
+    var input = document.getElementById(fieldId);
+    if (input) {
+        var tagify = new Tagify(input, {
+            whitelist: whitelist,
+            enforceWhitelist: true, // Solo permitir valores de la lista
+            maxTags: 10,
+            dropdown: {
+                maxItems: 20,
+                classname: 'tags-look',
+                enabled: 0,
+                closeOnSelect: false
+            }
+        });
+
+        // 👉 Ordenar automáticamente las etiquetas al añadirlas
+        tagify.on('add', function(e) {
+            // 🛑 Desactivar el evento para evitar el bucle
+            tagify.off('add');
+
+            let sortedTags = tagify.value
+                .map(tag => tag.value)
+                .sort(); // Ordena alfabéticamente
+
+            // Reemplazar las etiquetas ordenadas
+            tagify.removeAllTags(); // ✅ Elimina las etiquetas actuales
+            tagify.addTags(sortedTags); // ✅ Añade las etiquetas ordenadas
+
+            // ✅ Reactivar el evento después de actualizar
+            tagify.on('add', this);
+        });
+    }
 }

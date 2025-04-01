@@ -5,6 +5,9 @@ from django.core.validators import MinValueValidator, MaxValueValidator # type: 
 from django.utils import timezone # type: ignore
 
 
+#choices
+from applications.services.choices import TIPO_CLIENTE_STATIC, PAGO_NOMINA_STATIC, ESTADO_CHOICES_STATIC, TIPO_ASIGNACION_STATIC
+
 # Create your models here.
 class Cli065ActividadEconomica(models.Model):
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE)
@@ -21,19 +24,6 @@ class Cli065ActividadEconomica(models.Model):
 
 class Cli051Cliente(models.Model):
 
-    TIPO_CLIENTE = [
-        ('1', 'Cliente Standard'),
-        ('2', 'Cliente Headhunter'),
-        ('3', 'Cliente Asignado Headhunter'),
-    ]
-
-    PAGO_NOMINA = [
-        ('', 'Sin Definir'),
-        ('1', 'Semanal'),
-        ('2', 'Quincenal'),
-        ('3', 'Mensual'),
-    ]
-
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     nit = models.IntegerField(blank=False)
     razon_social = models.CharField(max_length=100, blank=False)
@@ -43,15 +33,13 @@ class Cli051Cliente(models.Model):
     telefono = models.CharField(max_length=20, blank=False)
     perfil_empresarial = models.TextField(blank=True)  # Nuevo campo de texto
     logo = models.ImageField(upload_to='cliente', blank=True, null=True)  # Nuevo campo de imagen
-    tipo_cliente = models.CharField(max_length=1, choices=TIPO_CLIENTE, default='1')
+    tipo_cliente = models.CharField(max_length=1, choices=TIPO_CLIENTE_STATIC, default='1')
     actividad_economica = models.ForeignKey(Cli065ActividadEconomica, on_delete=models.CASCADE, null=True, blank=True)
-    periodicidad_pago = models.CharField(max_length=1, choices=PAGO_NOMINA, default='1', blank=True, null=True)
+    periodicidad_pago = models.CharField(max_length=1, choices=PAGO_NOMINA_STATIC, default='1', blank=True, null=True)
     referencias_laborales = models.IntegerField(blank=True, null=True)
     cantidad_colaboradores = models.IntegerField(blank=True, null=True)
     contacto_cargo = models.CharField(max_length=100, blank=True, null=True)
     direccion_cargo = models.CharField(max_length=100, blank=True, null=True)
-
-
 
     def __str__(self):
         return self.razon_social + ' - ' + str(self.nit)
@@ -111,15 +99,12 @@ class Cli060CuestionarioPregunta(models.Model):
         unique_together = (('cli059cuestionario', 'cli058pregunta'),)
 
 class Cli061AsignacionCandidatoCuestionario(models.Model):
-    ESTADO_CHOICES = [
-        ('p', 'Pendiente'),
-        ('r', 'Realizado'),
-    ]
+    
     
     candidato = models.ForeignKey(Can101Candidato, on_delete=models.CASCADE)
     cuestionario = models.ForeignKey(Cli059Cuestionario, on_delete=models.CASCADE)
     estado_relacion = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE)
-    estado = models.CharField(max_length=1, choices=ESTADO_CHOICES, default='p')
+    estado = models.CharField(max_length=1, choices=ESTADO_CHOICES_STATIC, default='p')
 
     def __str__(self):
         return str(self.id)
@@ -150,15 +135,12 @@ class Cli062Respuesta(models.Model):
         verbose_name_plural = 'RESPUESTAS'
 
 class Cli064AsignacionCliente(models.Model):
-    TIPO_ASIGNACION = [
-        ('1', 'Asignación Cliente'),
-        ('2', 'Asignación Headhunter'),
-    ]
+    
 
     id_cliente_maestro = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, related_name='cliente_maestro')
     id_cliente_asignado = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, related_name='cliente_asignado')
     fecha_asignacion = models.DateField(auto_now_add=True)
-    tipo_asignacion = models.CharField(max_length=1, choices=TIPO_ASIGNACION, default='1')
+    tipo_asignacion = models.CharField(max_length=1, choices=TIPO_ASIGNACION_STATIC, default='1')
     estado = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
     def __str__(self):
         return f"{self.id_cliente_maestro} asignado a {self.id_cliente_asignado}"

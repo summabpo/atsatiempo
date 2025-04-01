@@ -5,6 +5,9 @@ from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, 
 from applications.candidato.models import Can101Candidato
 from applications.usuarios.models import UsuarioBase
 
+#choices
+from applications.services.choices import EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, HORARIO_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC , ESTADO_VACANTE_CHOICHES_STATIC
+
 # Create your models here.
 class Cli053SoftSkill(models.Model):
     nombre = models.CharField(max_length=200)
@@ -59,89 +62,33 @@ class Cli072FuncionesResponsabilidades(models.Model):
         verbose_name_plural = 'FUNCIONES_RESPONSABILIDADES'
 
 class Cli073PerfilVacante(models.Model):
-    GENERO_CHOICES = [
-        ('M', 'Masculino'),
-        ('F', 'Femenino'),
-    ]
 
-    MODALIDAD_CHOICES = [
-        ('R', 'Remoto'),
-        ('P', 'Presencial'),
-        ('H', 'Hibrido'),
-    ]
-
-    JORNADA_CHOICES = [
-        ('T', 'Diurna'),   
-        ('P', 'Nocturna'),
-        ('R', 'Rotativa'),
-
-    ]
-
-    TIPO_SALARIO_CHOICES = [
-        ('F', 'Fijo'),
-        ('M', 'Mixto'),
-        ('I', 'Integral'),
-        ('H', 'Por Hora'),
-        ('C', 'Convenio'),
-    ]
-
-    TERMINO_CONTRATO_CHOICES = [
-        ('F', 'Fijo'),
-        ('I', 'Indefinido'),
-        ('O', 'Obra Labor'),
-    ]
-
-    EDAD_CHOICES = [
-        ('1', '19-24 años'),
-        ('2', '25-29 años'),
-        ('3', '30-34 años'),
-        ('4', '35-39 años'),
-        ('5', '40-44 años'),
-        ('6', '45-50 años'),
-    ]
-
-    TIEMPO_EXPERIENCIA_CHOICES = [
-        (1, 'Sin experiencia'),
-        (2, '1 año'),
-        (3, '2 años'),
-        (4, '3 años'),
-        (5, '4 años'),
-        (6, '5 años o más'),
-    ]
-
-    FRECUENCIA_PAGO_CHOICES = [
-        ('S', 'Semanal'),
-        ('Q', 'Quincenal'),
-        ('M', 'Mensual'),
-    ]
-
-    NIVEL_ESTUDIO_CHOICES = [
-        (1, 'Sin estudios'),
-        (2, 'Primaria'),
-        (3, 'Secundaria/Bachillerato'),
-        (4, 'Técnico'),
-        (5, 'Tecnólogo'),
-        (6, 'Universitario'),
-        (7, 'Postgrado'),
-    ]
-
-    edad = models.CharField(max_length=1, choices=EDAD_CHOICES)
-    genero = models.CharField(max_length=1, choices=GENERO_CHOICES)
-    tiempo_experiencia = models.IntegerField(choices=TIEMPO_EXPERIENCIA_CHOICES, help_text="Tiempo de experiencia en años")
-    horario = models.CharField(max_length=100)
-    modalidad = models.CharField(max_length=1, choices=MODALIDAD_CHOICES)
-    jornada = models.CharField(max_length=1, choices=JORNADA_CHOICES)
-    salario = models.DecimalField(max_digits=10, decimal_places=2)
-    tipo_salario = models.CharField(max_length=1, choices=TIPO_SALARIO_CHOICES)
-    frecuencia_pago = models.CharField(max_length=1, choices=FRECUENCIA_PAGO_CHOICES)
-    salario_adicional = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    idioma = models.CharField(max_length=100)
+    edad_inicial = models.IntegerField(blank=True, null=True)
+    edad_final = models.IntegerField(blank=True, null=True)
+    genero = models.CharField(max_length=1, choices=GENERO_CHOICES_STATIC)
+    tiempo_experiencia = models.IntegerField(choices=TIEMPO_EXPERIENCIA_CHOICES_STATIC, help_text="Tiempo de experiencia en años")
+    modalidad = models.CharField(max_length=1, choices=MODALIDAD_CHOICES_STATIC)
+    jornada = models.CharField(max_length=1, choices=JORNADA_CHOICES_STATIC)
+    salario = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    tipo_salario = models.CharField(max_length=1, choices=TIPO_SALARIO_CHOICES_STATIC)
+    frecuencia_pago = models.CharField(max_length=1, choices=FRECUENCIA_PAGO_CHOICES_STATIC)
+    salario_adicional = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    idioma = models.CharField(max_length=100, choices=IDIOMA_CHOICES_STATIC)
+    nivel_idioma = models.CharField(max_length=2, choices=NIVEL_IDIOMA_CHOICES_STATIC, blank=True, null=True)
     profesion_estudio = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE)
-    nivel_estudio = models.IntegerField(choices=NIVEL_ESTUDIO_CHOICES)
+    nivel_estudio = models.CharField(max_length=1, choices=NIVEL_ESTUDIO_CHOICES_STATIC)
+    estado_estudio = models.BooleanField(default=False, blank=True, null=True)
     lugar_trabajo = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
-    termino_contrato = models.CharField(max_length=1, choices=TERMINO_CONTRATO_CHOICES)
+    barrio  = models.CharField(max_length=100, blank=True, null=True)
+    direccion = models.CharField(max_length=100, blank=True, null=True)
+    url_mapa = models.URLField(blank=True, null=True)
+    termino_contrato = models.CharField(max_length=1, choices=TERMINO_CONTRATO_CHOICES_STATIC)
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
     fecha_creacion = models.DateField(auto_now_add=True)
+    horario_inicio = models.CharField(max_length=1, choices=HORARIO_CHOICES_STATIC, blank=True, null=True)
+    horario_final = models.CharField(max_length=1, choices=HORARIO_CHOICES_STATIC, blank=True, null=True)
+    hora_inicio = models.TimeField(blank=True, null=True)
+    hora_final = models.TimeField(blank=True, null=True)
 
     def __str__(self):
         return f"Perfil Vacante {self.id} - {self.profesion_estudio}"
@@ -152,44 +99,24 @@ class Cli073PerfilVacante(models.Model):
         verbose_name_plural = 'PERFILES_VACANTES'
 
 class Cli052Vacante(models.Model):
-    ESTADO_VACANTE = [
-        (1, 'Activa'),
-        (2, 'En Proceso'),
-        (3, 'Finalizada'),
-        (4, 'Cancelada'),
-    ]
-
-    EXPERIENCIA_TIEMPO = [
-        (1, '0 a 6 Meses'),
-        (2, '1 año a 2 años'),
-        (3, '2 años de 3 años'),
-        (4, 'Sin Experiencia'),
-        (5, '3 años de 4 años'),
-        (6, '4 años de 5 años'),
-        (7, '5 años de 6 años'),
-        (8, '6 años de 7 años'),
-        (9, '7 años de 8 años'),
-        (10, '8 años de 9 años'),
-        (11, '9 años de 10 años'),
-        (12, '10 años o más'),
-    ]
-
+    
     titulo = models.CharField(max_length=200)
     numero_posiciones = models.IntegerField()
-    # profesion_estudio_id_055 = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE)
-    # experiencia_requerida = models.IntegerField(choices=EXPERIENCIA_TIEMPO)
+    cantidad_presentar = models.IntegerField(blank=True, null=True)
     soft_skills_id_053 = models.ManyToManyField(Cli053SoftSkill)
     hard_skills_id_054 = models.ManyToManyField(Cli054HardSkill)
-    # ciudad = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
-    # salario = models.IntegerField(null=True, blank=True)  # Opcional
-    estado_vacante = models.IntegerField(choices=ESTADO_VACANTE, default=1)
+    estudios_complementarios = models.CharField(max_length=100, blank=True, null=True)
+    estudios_complementarios_certificado = models.BooleanField(default=False, blank=True, null=True)
+    estado_vacante = models.IntegerField(choices=ESTADO_VACANTE_CHOICHES_STATIC, default=1)
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
-    # cliente_id_051 = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_presentacion = models.DateTimeField(null=True, blank=True)
     fecha_cierre = models.DateTimeField(null=True, blank=True)
     usuario_asignado = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True)
     asignacion_cliente_id_064 = models.ForeignKey(Cli064AsignacionCliente, on_delete=models.CASCADE, null=True, blank=True)
     cargo = models.ForeignKey(Cli068Cargo, on_delete=models.CASCADE, null=True, blank=True)
+    perfil_vacante = models.ForeignKey(Cli073PerfilVacante, on_delete=models.CASCADE, null=True, blank=True)
+    descripcion_vacante = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.titulo

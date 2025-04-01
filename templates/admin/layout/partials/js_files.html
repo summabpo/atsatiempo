@@ -16,11 +16,6 @@
 <script src="/static/admin/js/world-merc.js"></script>
 <script src="/static/admin/js/moment.min.js"></script>
 <script src="/static/admin/js/lightpick.js"></script>
-<script src="/static/admin/js/custom/apexcharts.js"></script>
-<script src="/static/admin/js/custom/echarts.js"></script>
-<script src="/static/admin/js/custom/custom.js"></script>
-<script src="/static/admin/js/custom/tagify.js"></script>
-<script src="/static/admin/js/custom/select2.js"></script>
 
 <!-- jQuery (requerido por Select2) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -30,3 +25,23 @@
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <!-- Tagify JS -->
 <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+
+
+<script src="/static/admin/js/custom/apexcharts.js"></script>
+<script src="/static/admin/js/custom/echarts.js"></script>
+<script src="/static/admin/js/custom/custom.js"></script>
+<script src="/static/admin/js/custom/tagify.js"></script>
+<script src="/static/admin/js/custom/select2.js"></script>
+
+
+<!-- Alpine Plugins -->
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
+ 
+<!-- Alpine Core -->
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.plugin(window.mask);
+    });
+</script>

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import VacanteViews, EntrevistaView
+from .views import VacanteViews, EntrevistaView, admin_views
 from applications.vacante.views.usuario_candidato import VacanteCandidatoView
 from applications.vacante.views.usuario_cliente import VacanteClienteView
 
@@ -9,10 +9,16 @@ url_principal = 'vacante/'
 
 urlpatterns = [
 
+    #new
+    #admin_user
+    path( url_principal+'crear/', admin_views.create_vacanty, name='vacantes_crear'),
+    path( url_principal+'listar/', admin_views.list_vacanty_all, name='vacantes_todas'),
+    path( url_principal+'mis_vacantes/<int:pk>/', admin_views.list_vacanty_from_client, name='vacantes_propias'),
+    path( url_principal+'mis_vacantes/crear/<int:pk>/', admin_views.create_vacanty_from_client, name='vacantes_crear_propias'),
+    path( url_principal+'mis_vacantes/editar/<int:pk>/<int:vacante_id>/', admin_views.edit_vacanty_from_client, name='vacantes_editar_propias'),
+
     #Vacante New
     path( url_principal+'buscar/', VacanteViews.find_vacanty, name='find_vacanty'),
-
-
 
     path( url_principal+'', VacanteViews.buscar_vacante, name='buscar_vacante'),
     path( url_principal+'emparejamiento/<int:candidato_id>/<int:vacante_id>/', VacanteViews.vacante_candidato_emparejamiento, name='vacante_candidato_emparejamiento'),

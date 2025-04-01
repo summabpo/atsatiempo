@@ -19,7 +19,7 @@ from applications.vacante.forms.VacanteForms import VacanteForm
 from ..forms.ClienteForms import ClienteForm, ClienteFormAsignacionPrueba, ClienteFormEdit, ClienteFormPoliticas, ClienteFormPruebas, ClienteFormCargos, ClienteFormRequisitos, ClienteFormAsignacionRequisito
 
 #query
-from applications.services.service_client import query_client_detail
+from applications.services.service_client import query_client_all, query_client_detail
 
 
 #views
@@ -50,7 +50,8 @@ def crear_cliente(request):
 @login_required
 # @validar_permisos(*Permiso.obtener_nombres())
 def ver_cliente(request):
-    clientes = Cli051Cliente.objects.filter(estado_id_001=1).order_by('-id')
+    cliente = query_client_all()
+    clientes = cliente.filter(estado_id_001=1).order_by('-id')
     form_errors = False
 
     if request.method == 'POST':
@@ -160,7 +161,6 @@ def client_detail_info(request, pk):
 # @validar_permisos(*Permiso.obtener_nombres())
 def client_detail_politics(request, pk):
 
-    
     # Data cliente a mostrar
     data = query_client_detail(pk)
 
@@ -169,8 +169,7 @@ def client_detail_politics(request, pk):
     form = ClienteFormPoliticas()
 
     if request.method == 'POST':
-        form = ClienteFormPoliticas(request.POST)
-        print('aqui vaaaa')
+        form = ClienteFormPoliticas(request.POST, cliente_id=pk)
         if form.is_valid():
             politica = form.cleaned_data['politicas']
             politica_cliente = Cli051ClientePoliticas(
@@ -179,7 +178,6 @@ def client_detail_politics(request, pk):
                 estado = Cat001Estado.objects.get(id=1)
             )
             politica_cliente.save()
-                
 
             messages.success(request, 'Las políticas han sido asignadas con éxito.')
             return redirect('clientes:cliente_politicas', pk=pk)
@@ -188,7 +186,7 @@ def client_detail_politics(request, pk):
             messages.error(request, form.errors)
             print("Errores en el formulario:", form.errors)
     else:
-        form = ClienteFormPoliticas()
+        form = ClienteFormPoliticas(cliente_id=pk)
         
 
     contexto = {
@@ -211,7 +209,7 @@ def client_detail_test(request, pk):
     form = ClienteFormPruebas()
 
     if request.method == 'POST':
-        form = ClienteFormPruebas(request.POST)
+        form = ClienteFormPruebas(request.POST, cliente_id=pk)
         if form.is_valid():
             prueba = form.cleaned_data['pruebas']
             prueba_cliente = Cli051ClientePruebas(
@@ -228,7 +226,7 @@ def client_detail_test(request, pk):
             messages.error(request, form.errors)
             print("Errores en el formulario:", form.errors)
     else:
-        form = ClienteFormPruebas()
+        form = ClienteFormPruebas(cliente_id=pk)
 
     contexto = {
         'data': data,
@@ -380,20 +378,3 @@ def client_detail_required(request, pk):
     }
 
     return render(request, 'admin/client/admin_user/client_detail_required.html', contexto)
-
-
-@login_required
-# @validar_permisos(*Permiso.obtener_nombres())
-def cliente_detail_vacancy(request, pk):
-    # Data cliente a mostrar
-    data = query_client_detail(pk)
-
-    # Obtener las vacantes del cliente
-    vacantes_cliente = Cli052Vacante.objects.filter(cliente=pk)
-
-    contexto = {
-        'data': data,
-        'vacantes_cliente': vacantes_cliente,
-    }
-
-    return render(request, 'admin/client/admin_user/client_detail_vacancy.html', contexto)

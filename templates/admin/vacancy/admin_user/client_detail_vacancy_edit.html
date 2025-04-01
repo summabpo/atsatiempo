@@ -1,0 +1,101 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Vacantes Propias
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">CLIENTE: {{data.cliente.razon_social}}</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="#" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'clientes:cliente_ver' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Listado de Clientes</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_propias' data.cliente.id %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Editar Vacante</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<div class="row">
+		<div class="col-3">
+			<div class="card bg-white border-0 rounded-3 mb-4">
+                {% include 'admin/client/admin_user/common_template/client_menu_lateral.html' %}
+			</div>
+		</div>
+		<div class="col-9">
+			{% include 'admin/client/admin_user/common_template/client_metrics.html' %}
+            <div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+                    <form method="post" id="form_vacante_edit">
+                        {% csrf_token %}
+                        {% crispy form %}
+                        <button id="form_vacante_edit" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_vacante_edit">Guardar Cambios</button>
+                    </form>
+				</div>
+			</div>
+        </div>
+	</div>
+
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    // Initialize select2 for specific fields
+    initializeSelect2('#id_cargo');
+    initializeSelect2('#id_edad');
+    initializeSelect2('#id_genero');
+    initializeSelect2('#id_tiempo_experiencia');
+    initializeSelect2('#id_modalidad');
+    initializeSelect2('#id_jornada');
+    initializeSelect2('#id_tipo_salario');
+    initializeSelect2('#id_nivel_estudio');
+    initializeSelect2('#id_lugar_trabajo');
+    initializeSelect2('#id_termino_contrato');
+    initializeSelect2('#id_profesion_estudio');
+    initializeSelect2('#id_frecuencia_pago');
+    initializeSelect2('#id_nivel_idioma');
+    initializeSelect2('#id_horario_final');
+    initializeSelect2('#id_horario_inicio');
+    initializeSelect2('#id_estudios_complementarios_certificado');
+    initializeSelect2('#id_numero_posiciones');
+    initializeSelect2('#id_cantidad_presentar');
+    initializeSelect2('#id_estado_estudio');
+    initializeSelect2('#id_idioma');
+    initializeSelect2('#id_edad_inicial');
+    initializeSelect2('#id_edad_final');
+
+    inicializarTagify('id_soft_skills');
+    inicializarTagify('id_hard_skills');
+    inicializarTagify('id_funciones_responsabilidades');
+    inicializarTagify('id_estudios_complementarios');
+
+    // Lista personalizada para el campo 2
+    const semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    incializarTagifyLista('id_horario', semana);
+
+    
+    
+
+</script>  
+{% endblock js %}

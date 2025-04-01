@@ -3,7 +3,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field , Div, HTML
 from applications.common.models import Cat004Ciudad, Cat001Estado
-from ..models import Cli051Cliente, Cli051ClientePruebas, Cli065ActividadEconomica, Cli067PoliticasInternas, Cli066PruebasPsicologicas, Cli068Cargo, Cli069Requisito, Cli070AsignacionRequisito, Cli071AsignacionPrueba
+from ..models import Cli051Cliente, Cli051ClientePruebas, Cli065ActividadEconomica, Cli067PoliticasInternas, Cli066PruebasPsicologicas, Cli068Cargo, Cli069Requisito, Cli070AsignacionRequisito, Cli071AsignacionPrueba, Cli051ClientePoliticas
 
 
 class ClienteForm(forms.Form):
@@ -297,9 +297,13 @@ class ClienteForm(forms.Form):
 
         if referencias_laborales is None:
             self.add_error('referencias_laborales', 'Debe ingresar el número de referencias laborales.')
+        elif referencias_laborales < 0:
+            self.add_error('referencias_laborales', 'El número de referencias laborales no puede ser negativo.')
 
         if cantidad_colaboradores is None:
             self.add_error('cantidad_colaboradores', 'Debe ingresar la cantidad de colaboradores.')
+        elif cantidad_colaboradores < 1:
+            self.add_error('cantidad_colaboradores', 'La cantidad de colaboradores no puede ser negativa.')
 
         return cleaned_data
 
@@ -649,13 +653,20 @@ class ClienteFormEdit(forms.Form):
 
 class ClienteFormPoliticas(forms.Form):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, cliente_id=None, **kwargs):
         super(ClienteFormPoliticas, self).__init__(*args, **kwargs)
+        self.cliente_id = cliente_id
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_id = 'form_cliente_politicas'
 
-        politicas = Cli067PoliticasInternas.objects.filter(estado=1).order_by('descripcion')
+        
+        politicas = Cli067PoliticasInternas.objects.filter(
+            estado=1
+        ).exclude(
+            id__in=Cli051ClientePoliticas.objects.filter(cliente_id=cliente_id).values_list('politica_interna_id', flat=True)
+        ).order_by('descripcion')
         politicas_choices = [('', 'Seleccione una politica')] + [(politica.id, f"{politica.descripcion}") for politica in politicas]
 
         self.fields['politicas'] = forms.ChoiceField(
@@ -690,13 +701,19 @@ class ClienteFormPoliticas(forms.Form):
 
 class ClienteFormPruebas(forms.Form):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, cliente_id=None, **kwargs):
         super(ClienteFormPruebas, self).__init__(*args, **kwargs)
+        self.cliente_id = cliente_id
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_id = 'form_cliente_pruebas'
 
-        pruebas = Cli066PruebasPsicologicas.objects.filter(estado=1).order_by('descripcion')
+        pruebas = Cli066PruebasPsicologicas.objects.filter(
+            estado__id=1
+        ).exclude(
+            id__in=Cli051ClientePruebas.objects.filter(cliente_id=self.cliente_id).values_list('prueba_psicologica_id', flat=True)
+        ).order_by('descripcion')
         pruebas_choices = [('', 'Seleccione una prueba')] + [(prueba.id, f"{prueba.nombre}") for prueba in pruebas]
 
         self.fields['pruebas'] = forms.ChoiceField(

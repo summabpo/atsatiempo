@@ -20732,13 +20732,13 @@ Swiper Slider Style
 /*# sourceMappingURL=style.css.map */
 /* Ensure Select2 has the same height, padding, and font size */
 .select2-container .select2-selection--single {
-  height: 60px !important;
+  height: 50px !important;
   border-radius: 6px !important;
   border: 1px solid #dee2e6 !important;
   display: flex;
   align-items: center;
   padding-left: 12px !important;
-  font-size: 16px !important;
+  font-size: 15px !important;
   background-color: white !important;
 }
 
@@ -20750,14 +20750,14 @@ Swiper Slider Style
 
 /* Ensure the text inside Select2 is vertically aligned */
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-  line-height: 58px !important;
-  font-size: 16px !important;
+  line-height: 48px !important;
+  font-size: 15px !important;
   color: #495057 !important;
 }
 
 /* Fix the alignment of the dropdown arrow */
 .select2-container--default .select2-selection--single .select2-selection__arrow {
-  height: 60px !important;
+  height: 40px !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
   right: 10px !important;
@@ -20772,7 +20772,7 @@ Swiper Slider Style
 /* Adjust dropdown item appearance */
 .select2-results__option {
   padding: 12px !important;
-  font-size: 16px !important;
+  font-size: 15px !important;
   color: #495057 !important;
 }
 
@@ -20783,7 +20783,7 @@ Swiper Slider Style
   top: 50%;
   transform: translateY(-50%);
   color: #ffffff !important;
-  font-size: 16px !important;
+  font-size: 15px !important;
   cursor: pointer;
 }
 
@@ -20795,11 +20795,12 @@ Swiper Slider Style
 .tagify {
   display: flex !important;
   flex-wrap: wrap !important;
-  align-items: flex-start !important;
-  min-height: 38px !important; /* Ajuste de altura mínima */
+  align-items: center !important; /* Centrar verticalmente */
+  height: auto !important; /* Ajuste de altura automática */
+  min-height: 40px !important; /* Altura mínima */
   max-width: 100%;
   border-radius: var(--bs-border-radius) !important;
-  font-size: var(--bs-body-font-size) !important;
+  font-size: 15px; /* var(--bs-body-font-size) !important; */
   border: 1px solid var(--bs-border-color) !important;
   padding: 5px 10px !important;
   box-sizing: border-box !important;
@@ -20811,7 +20812,7 @@ Swiper Slider Style
 .tagify__wrapper {
   display: flex !important;
   flex-wrap: wrap !important;
-  align-items: flex-start !important;
+  align-items: center !important; /* Centrar verticalmente */
   width: 100% !important;
   gap: 4px; /* Espaciado entre tags */
 }
@@ -20834,6 +20835,7 @@ Swiper Slider Style
   max-width: 100% !important;
   height: auto !important;
   margin: 2px !important;
+  align-self: center !important; /* Centrar verticalmente */
 }
 
 /* Evitar que el input desaparezca cuando hay muchos tags */
