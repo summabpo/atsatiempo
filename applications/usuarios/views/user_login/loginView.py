@@ -264,7 +264,7 @@ def dashboard_begin(request):
     # Accedemos a los permisos guardados en el request
     permisos_usuario = getattr(request, 'permisos_usuario', [])
 
-    #print(permisos_usuario)
+    print(permisos_usuario)
     
     # Puedes imprimir las variables de sesión para debug
     print("Variables de sesión:", session_variables)

@@ -27,7 +27,7 @@ from applications.services.service_client import query_client_detail
 
 #crear todas las vacantes
 @login_required
-# @validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_cliente')
 def create_vacanty(request):
 
     vacantes = Cli052Vacante.objects.all()
@@ -39,3 +39,52 @@ def create_vacanty(request):
     }
 
     return render(request, 'admin/vacancy/client_user/vacancy_create.html', context)
+
+#listar todas las vacantes del cliente
+@login_required
+@validar_permisos('acceso_cliente')
+def list_vacanty_all(request):
+
+    # Verificar si el cliente_id está en la sesión
+    cliente_id = request.session.get('cliente_id')
+    
+    # Obtener el cliente correspondiente al ID
+    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+
+    vacantes = query_vacanty_all()
+    vacantes = vacantes.filter(
+        estado_id_001=1,  # Asumiendo que ese es el campo correcto para el estado
+        asignacion_cliente_id_064__id_cliente_asignado=cliente
+    )
+
+    print(vacantes)
+
+    context ={
+        'vacantes': vacantes,
+    }
+
+    return render(request, 'admin/vacancy/client_user/vacancy_list.html', context)
+
+#detalle de la vacante
+@login_required
+@validar_permisos('acceso_cliente')
+def detail_vacanty(request, pk):
+    # Verificar si el cliente_id está en la sesión
+    cliente_id = request.session.get('cliente_id')
+    
+    # Obtener el cliente correspondiente al ID
+    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+
+    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    vacantes = query_vacanty_all()
+    vacantes = vacantes.filter(
+        estado_id_001=1,  # Asumiendo que ese es el campo correcto para el estado
+        asignacion_cliente_id_064__id_cliente_asignado=cliente
+    )
+
+    context ={
+        'vacante': vacante,
+        'vacantes': vacantes,
+    }
+
+    return render(request, 'admin/vacancy/client_user/vacancy_detail.html', context)

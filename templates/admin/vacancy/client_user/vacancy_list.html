@@ -1,0 +1,109 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Listado de vacantes
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">LISTADO DE LAS VACANTES: </h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="#" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Listado Vacante</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+    <div class="row">
+		<div class="col-12">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-body p-4">
+                    <div class="default-table-area all-projects">
+                        <div class="table-responsive">
+                            <table class="table align-middle" id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">VACANTE</th>
+                                        <th scope="col">CARGO</th>
+                                        <th scope="col"># POSICIONES</th>
+                                        <th scope="col">F. CREACIÓN</th>
+                                        <th scope="col">F. PRESENTACIÓN</th>
+                                        <th scope="col">F. CIERRE</th>
+                                        <th scope="col">ASIGNADO A</th>
+                                        <th scope="col">ESTADO</th>
+                                        <th scope="col">ACCIONES</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for e in vacantes %}
+                                    <tr>
+                                        <td class="text-body">{{e.id}}</td>
+                                        <td>
+                                            <a href="ticket-details.html" class="fw-medium">{{e.titulo}}</a>
+                                        </td>
+                                        <td class="text-secondary center">{{e.cargo.nombre_cargo}}</td>
+                                        <td class="text-secondary">{{e.numero_posiciones}}</td>
+                                        <td class="text-secondary">{{ e.fecha_creacion|date:"Y-m-d" }}</td>
+                                        <td class="text-secondary">{{ e.fecha_presentacion|date:"Y-m-d" }}</td>
+                                        <td class="text-secondary">{{ e.fecha_cierre|date:"Y-m-d" }}</td>
+                                        <td class="text-secondary">{{ e.usuario_asignado.primer_nombre }}</td>
+                                        <td>
+                                            {% if e.estado_vacante == 1 %}
+                                                <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">Activa</span>
+                                            {% elif e.estado_vacante == 2 %}
+                                                <span class="badge bg-warning bg-opacity-10 text-warning p-2 fs-12 fw-normal">En Proceso</span>
+                                            {% elif e.estado_vacante == 3 %}
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary p-2 fs-12 fw-normal">Finalizada</span>
+                                            {% elif e.estado_vacante == 4 %}
+                                                <span class="badge bg-danger bg-opacity-10 text-danger p-2 fs-12 fw-normal">Cancelada</span>
+                                            {% else %}
+                                                <span class="badge bg-light bg-opacity-10 text-dark p-2 fs-12 fw-normal">Desconocido</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-1">
+                                                <!-- 
+                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                    <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                                </a>
+                                                -->
+                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                    <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                                </a>
+                                                <!-- 
+                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                    <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                                </a>
+                                                -->
+                                            </div>
+                                        </td> 
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    
+</script>  
+{% endblock js %}
