@@ -21,6 +21,8 @@ urlpatterns = [
     path( url_principal+'crear_vacante/', client_views.create_vacanty, name='vacantes_crear_cliente'),
     path( url_principal+'listado/', client_views.list_vacanty_all, name='vacantes_listado_cliente'),
     path( url_principal+'detalle/<int:pk>/', client_views.detail_vacanty, name='vacantes_detalle_cliente'),
+    path( url_principal+'detalle/<int:pk>/', client_views.detail_vacanty, name='vacantes_reclutados_cliente'),
+    path( url_principal+'detalle/<int:pk>/', client_views.detail_vacanty, name='vacantes_entrevista_cliente'),
 
     #Vacante New
     path( url_principal+'buscar/', VacanteViews.find_vacanty, name='find_vacanty'),

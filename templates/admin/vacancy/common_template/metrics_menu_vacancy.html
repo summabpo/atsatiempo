@@ -73,3 +73,10 @@
         </div>
     </div>
 </div>
+
+<!-- Menu -->
+<div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+    <a href="#" class="btn {% if request.resolver_match.url_name == 'vacantes_detalle_cliente' %}btn-primary {% else %} btn-outline-primary {% endif %} py-2 px-3 fw-medium">Información</a>
+    <a href="#" class="btn {% if request.resolver_match.url_name == 'vacantes_reclutados_cliente' %}btn-primary {% else %} btn-outline-primary {% endif %}y py-2 px-3 fw-medium">Recluados</a>
+    <a href="#" class="btn {% if request.resolver_match.url_name == 'vacantes_entrevista_cliente' %}btn-primary {% else %} btn-outline-primary {% endif %} py-2 px-3 fw-medium">Entrevistas</a>
+</div>
