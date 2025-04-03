@@ -19,7 +19,7 @@ from django.db.models.functions import Concat
 from applications.vacante.forms.VacanteForms import VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll
 
 #views
-from applications.services.service_vacanty import query_vacanty_all
+from applications.services.service_vacanty import query_vacanty_all, query_vacanty_detail
 
 #query
 from applications.services.service_client import query_client_detail
@@ -72,19 +72,14 @@ def detail_vacanty(request, pk):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
     
-    # Obtener el cliente correspondiente al ID
-    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+    # Obtener información de la vacante
+    vacante = get_object_or_404(query_vacanty_all(), id=pk)
+    print(vacante)
 
-    vacante = get_object_or_404(Cli052Vacante, pk=pk)
-    vacantes = query_vacanty_all()
-    vacantes = vacantes.filter(
-        estado_id_001=1,  # Asumiendo que ese es el campo correcto para el estado
-        asignacion_cliente_id_064__id_cliente_asignado=cliente
-    )
+    vacante = query_vacanty_detail().get(id=pk)
 
     context ={
         'vacante': vacante,
-        'vacantes': vacantes,
     }
 
     return render(request, 'admin/vacancy/client_user/vacancy_detail.html', context)

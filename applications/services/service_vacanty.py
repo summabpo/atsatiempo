@@ -28,3 +28,11 @@ def query_vacanty_all():
             output_field=CharField()  # Definir el tipo de campo de salida
         ),
     )
+
+def query_vacanty_detail():
+    return  Cli052Vacante.objects.select_related(
+        'perfil_vacante',
+        'cargo',
+        'asignacion_cliente_id_064__id_cliente_asignado',
+        'usuario_asignado'
+    )
