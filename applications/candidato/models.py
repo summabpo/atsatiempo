@@ -21,6 +21,7 @@ class Can101Candidato(models.Model):
     skills = models.ManyToManyField('Can104Skill', through='Can101CandidatoSkill', related_name='candidatos_skill')
     imagen_perfil = models.ImageField(upload_to='candidato/', blank=True, null=True, verbose_name="Imagen de Perfil")
     hoja_de_vida = models.FileField(upload_to='hoja_de_vida/', blank=True, null=True, verbose_name="Hoja de Vida")
+    numero_documento = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.email

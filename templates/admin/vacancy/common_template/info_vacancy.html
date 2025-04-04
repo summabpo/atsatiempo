@@ -94,21 +94,21 @@
             {% if vacante.perfil_vacante %}
                 <li class="mb-2">
                     <span class="d-inline-block rounded-circle" style="width: 7px; height: 7px; background-color: #B10022;"></span>
-                    <span class="ms-1">Ciudad: {{ vacante.perfil_vacante.lugar_trabajo }}</span>
+                    <span class="ms-1">Ciudad: <b>{{ vacante.perfil_vacante.lugar_trabajo }}</b></span>
                 </li>
                 {% if vacante.perfil_vacante.barrio %}
                 <li class="mb-2">
                     <span class="d-inline-block rounded-circle" style="width: 7px; height: 7px; background-color: #B10022;"></span>
-                    <span class="ms-1">Barrio: {{ vacante.perfil_vacante.barrio }}</span>
+                    <span class="ms-1">Barrio: <b>{{ vacante.perfil_vacante.barrio }}</b></span>
                 </li>
                 {% endif %}
                 <li class="mb-2">
                     <span class="d-inline-block rounded-circle" style="width: 7px; height: 7px; background-color: #B10022;"></span>
-                    <span class="ms-1">Dirección: {{ vacante.perfil_vacante.direccion }}</span>
+                    <span class="ms-1">Dirección: <b>{{ vacante.perfil_vacante.direccion }}</b></span>
                 </li>
                 <li class="mb-2">
                     <span class="d-inline-block rounded-circle" style="width: 7px; height: 7px; background-color: #B10022;"></span>
-                    <span class="ms-1">Tipo de contrato: {{ vacante.perfil_vacante.get_termino_contrato_display }}</span>
+                    <span class="ms-1">Tipo de contrato: <b>{{ vacante.perfil_vacante.get_termino_contrato_display }}</b></span>
                 </li>
             {% endif %}
         </ul>

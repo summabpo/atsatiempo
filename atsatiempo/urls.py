@@ -10,6 +10,7 @@ urlpatterns = [
     re_path('', include(('applications.common.urls', 'common'))),
     re_path('', include(('applications.usuarios.urls', 'accesses'))),
     re_path('', include(('applications.vacante.urls', 'vacantes'))),
+    re_path('', include(('applications.reclutado.urls', 'reclutados'))),
     re_path('', include(('applications.entrevista.urls', 'entrevistas'))),
     # re_path('', include(('applications.pruebas_psi.urls', 'pruebas_psi'))),
     

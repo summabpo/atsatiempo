@@ -6,6 +6,7 @@
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'vacantes_crear_cliente' %}open{% endif %}
     {% if request.resolver_match.url_name == 'vacantes_listado_cliente' %}open{% endif %}
+    {% if request.resolver_match.url_name|is_active_url_cliente_vacante %}open{% endif %}
     
     ">
     <a href="javascript:void(0);" class="menu-link menu-toggle active">
@@ -19,7 +20,10 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{% url 'vacantes:vacantes_listado_cliente' %}"  class="menu-link  {% if request.resolver_match.url_name == 'vacantes_listado_cliente' %}active{% endif %} ">
+            <a href="{% url 'vacantes:vacantes_listado_cliente' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'vacantes_listado_cliente' %}active{% endif %} 
+            {% if request.resolver_match.url_name|is_active_url_cliente_vacante %}active{% endif %}
+            ">
                 Ver Todas las Vacantes
             </a>
         </li>

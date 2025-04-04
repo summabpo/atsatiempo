@@ -28,6 +28,7 @@ class Cli056AplicacionVacante(models.Model):
     fecha_aplicacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     estado_aplicacion = models.IntegerField(choices=ESTADO_APLICACION, default=1)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.SET_NULL, null=True, blank=True, related_name='aplicaciones_vacante')
 
     def __str__(self):
         return str(self.id)
