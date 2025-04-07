@@ -1,0 +1,218 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Detalle vacante
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">DETALLE VACANTE: </h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+                <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Listado de Vacantes</span>
+					</a>
+				</li>
+                <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'reclutados:vacantes_reclutados_cliente' vacante.id %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Personal Reclutado</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Detalle Persona Reclutada</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+    <div class="row">
+		<div class="col-3">
+            {% include "admin/vacancy/common_template/info_vacancy.html" %}
+        </div>
+		<div class="col-9">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    {% if candidato.imagen_perfil %}
+                                        <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2 wh-75" alt="user">
+                                    {% else %}
+                                        <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2 wh-75" alt="user">
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="fs-17 mb-1 fw-semibold">{{ candidato.nombre_completo }}</h4>
+                                    
+                                    <span class="fs-14">Marketing Manager</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="row">
+                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div class="flex-shrink-0">
+                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-primary bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Aplicó</h4>
+                                            <span>{{reclutado.fecha_aplicacion}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div class="flex-shrink-0">
+                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-warning bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Actualización</h4>
+                                            <span>{{reclutado.fecha_actualizacion}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div class="flex-shrink-0">
+                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-{{reclutado.obtener_estado_con_color.color}} bg-gary-light rounded-circle bg-for-dark-mode">person_alert</i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="fs-14 fw-semibold mb-1">Estado</h4>
+                                            <span></span>
+                                            <span class="badge bg-opacity-10 bg-{{reclutado.obtener_estado_con_color.color}} py-1 px-2 text-{{reclutado.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{reclutado.obtener_estado_con_color.estado}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card bg-white border-0 rounded-3 mb-4">
+                        <div class="card-body p-4">
+                            <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Entrevistas</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Pruebas</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                                    
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            <!-- Button trigger modal -->
+                                            <button type="button" class="btn btn-success text-white py-2 px-4 fw-semibold" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                                Crear Entrevista
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {% crispy form_entrevista %}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Close</button>
+                                                    <button type="button" class="btn btn-primary text-white">Understood</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="default-table-area all-projects">
+                                        <div class="table-responsive">
+                                            <table class="table align-middle" id="myTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">ID</th>
+                                                        <th scope="col">FECHA ASIGNACIÓN</th>
+                                                        <th scope="col">ENTREVISTADOR</th>
+                                                        <th scope="col">FECHA</th>
+                                                        <th scope="col">HORA</th>
+                                                        <th scope="col">TIPO ENTREVISTA</th>
+                                                        <th scope="col">ESTADO</th>
+                                                        <th scope="col">ACCIONES</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for e in entrevista %}
+                                                    <tr>
+                                                        <td class="text-body">{{e.id}}</td>
+                                                        <td class="text-body">{{e.fecha_asignacion}}</td>
+                                                        <td class="text-body">{{e.usuario_asignado.primer_nombre}} {{e.usuario_asignado.primer_apellido}}</td>
+                                                        <td class="text-body">{{e.fecha_entrevista}}</td>
+                                                        <td class="text-body">{{e.hora_entrevista}}</td>
+                                                        <td class="text-body">{{e.get_tipo_entrevista_display}}</td>
+                                                        <td class="text-body">
+                                                            <span class="badge bg-opacity-10 bg-{{e.obtener_nombre_estado_color.color}} py-1 px-2 text-{{e.obtener_nombre_estado_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_nombre_estado_color.estado}}</span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-flex align-items-center gap-1">
+                                                                <!-- 
+                                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                                    <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                                                </a>
+                                                                -->
+                                                                <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                                    <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                                                </a>
+                                                                
+                                                                <!-- 
+                                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                                    <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                                                </a>
+                                                                -->
+                                                            </div>
+                                                        </td> 
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                                    <p>This is some placeholder content the Home tab's associated content. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling. You can use it with tabs, pills, and any other .nav-powered navigation.</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    // Initialize select2 for specific fields
+    initializeSelect2('#id_tipo_entrevista');
+    initializeSelect2('#id_cliente');
+</script>  
+{% endblock js %}

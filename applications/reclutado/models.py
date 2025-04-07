@@ -75,6 +75,24 @@ class Cli056AplicacionVacante(models.Model):
             'seleccionados': {'cantidad': seleccionados, 'porcentaje': porcentaje_seleccionados},
             'total_aplicaciones': total_aplicaciones,
         }
+    
+    def obtener_estado_con_color(self):
+        colores_estado = {
+            1: ('Aplicado', 'warning'),
+            2: ('Entrevista Programada', 'info'),
+            3: ('Entrevista Aprobada', 'success'),
+            4: ('Entrevista No Aprobada', 'danger'),
+            5: ('Prueba Programada', 'info'),
+            6: ('Prueba Superada', 'success'),
+            7: ('Prueba No Superada', 'danger'),
+            8: ('Seleccionado', 'success'),
+            9: ('Finalizada', 'primary'),
+            10: ('Cancelada', 'secondary'),
+            11: ('Desiste', 'secondary'),
+            12: ('No Apto', 'danger'),
+        }
+        estado_nombre, color = colores_estado.get(self.estado_aplicacion, ('Desconocido', 'gris'))
+        return {'estado': estado_nombre, 'color': color}
     class Meta:
         db_table = 'cli_056_aplicacion_vacante'
         verbose_name = 'APLICACIÓN A VACANTE'

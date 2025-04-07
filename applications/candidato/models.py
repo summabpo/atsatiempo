@@ -59,6 +59,10 @@ class Can101Candidato(models.Model):
         # Definir el porcentaje mínimo para aplicar
         porcentaje_minimo = 80
         return self.calcular_porcentaje() >= porcentaje_minimo
+    
+    def nombre_completo(self):
+        nombres = [self.primer_nombre, self.segundo_nombre, self.primer_apellido, self.segundo_apellido]
+        return " ".join(filter(None, nombres))
 
 class Can102Experiencia(models.Model):
     

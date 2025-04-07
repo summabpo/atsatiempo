@@ -35,6 +35,7 @@ class EntrevistaCrearForm(forms.Form):
         widget=forms.Select(attrs={
             'class': 'form-select form-select-solid',
             'data-control': 'select2',
+            
         })
     )
 

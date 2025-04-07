@@ -66,6 +66,16 @@ class Cli057AsignacionEntrevista(models.Model):
         elif self.estado_asignacion == 5:
             return 'Cancelado'
 
+    def obtener_nombre_estado_color(self):
+        estados = {
+            1: ('Pendiente', 'warning'),  # Naranja
+            2: ('Apto', 'success'),       # Verde
+            3: ('No Apto', 'danger'),    # Verde
+            4: ('Seleccionado', 'success'),  # Verde
+            5: ('Cancelado', 'secondary'),  # Rojo
+        }
+        estado_nombre, color = estados.get(self.estado_aplicacion, ('Desconocido', 'gris'))
+        return {'estado': estado_nombre, 'color': color}
     
     class Meta:
         db_table = 'cli_057_asignacion_entrevista'
