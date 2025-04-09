@@ -65,8 +65,20 @@ Detalle vacante
                                     <tr>
                                         <td class="text-body">{{e.id}}</td>
                                         <td class="text-body">{{e.candidato_documento}}</td>
+
                                         <td>
-                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="fw-medium">{{e.candidato_nombre}}</a>
+											<div class="d-flex align-items-center">
+												{% if e.candidato_imagen_perfil %}
+													<img src="/media_uploads/{{ e.candidato_imagen_perfil.url }}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
+												{% else %}
+													<img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
+												{% endif %}
+                                                
+                                                <div class="ms-2 ps-1">
+                                                    <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="fw-medium">{{e.candidato_nombre}}</a>
+                                                </div>
+                                            </div>
+                                            
                                         </td>
                                         <td class="text-secondary">{{ e.fecha_aplicacion|date:"Y-m-d" }}</td>
                                         <td class="text-secondary">{{ e.fecha_actualizacion|date:"Y-m-d" }}</td>

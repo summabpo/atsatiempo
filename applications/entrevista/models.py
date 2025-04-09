@@ -74,7 +74,7 @@ class Cli057AsignacionEntrevista(models.Model):
             4: ('Seleccionado', 'success'),  # Verde
             5: ('Cancelado', 'secondary'),  # Rojo
         }
-        estado_nombre, color = estados.get(self.estado_aplicacion, ('Desconocido', 'gris'))
+        estado_nombre, color = estados.get(self.estado_asignacion, ('Desconocido', 'gris'))
         return {'estado': estado_nombre, 'color': color}
     
     class Meta:

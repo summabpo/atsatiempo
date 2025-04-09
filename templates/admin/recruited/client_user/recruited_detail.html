@@ -47,7 +47,7 @@ Detalle vacante
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0">
                                     {% if candidato.imagen_perfil %}
-                                        <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2 wh-75" alt="user">
+                                        <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2 wh-75" alt="{{ candidato.imagen_perfil.url }}">
                                     {% else %}
                                         <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2 wh-75" alt="user">
                                     {% endif %}
@@ -118,27 +118,30 @@ Detalle vacante
                                     <div class="row">
                                         <div class="col-12 text-center">
                                             <!-- Button trigger modal -->
-                                            <button type="button" class="btn btn-success text-white py-2 px-4 fw-semibold" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                            <button type="button" class="btn btn-success text-white py-2 px-4 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalEntrevista">
                                                 Crear Entrevista
                                             </button>
                                         </div>
                                     </div>
 
                                     <!-- Modal -->
-                                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                    <div class="modal fade" id="modalEntrevista" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
-                                                <div class="modal-body">
-                                                    {% crispy form_entrevista %}
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Close</button>
-                                                    <button type="button" class="btn btn-primary text-white">Understood</button>
-                                                </div>
+                                                <form method="post" id="form_crear_entrevista">
+                                                    <div class="modal-body">
+                                                        {% csrf_token %}
+                                                        {% crispy form %}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cerrar</button>
+                                                        <button type="submit" id="form_crear_entrevista" class="btn btn-primary text-white"  form="form_crear_entrevista">Crear</button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -213,6 +216,6 @@ Detalle vacante
 <script>
     // Initialize select2 for specific fields
     initializeSelect2('#id_tipo_entrevista');
-    initializeSelect2('#id_cliente');
+    initializeSelect2('#id_entrevistador');
 </script>  
 {% endblock js %}

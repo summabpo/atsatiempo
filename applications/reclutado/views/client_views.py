@@ -3,6 +3,7 @@ from django.db.models import F, Count, Q, Value, Case, When, CharField
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 
 
+from applications.common.views.EnvioCorreo import enviar_correo
 from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones
 from applications.reclutado.models import Cli056AplicacionVacante
@@ -121,12 +122,21 @@ def detail_recruited(request, pk):
                 usuario_asignado.email,
                 info_candidato.email
             ]
+
+            # Envio de correo
+            enviar_correo('asignacion_entrevista_entrevista', contexto_email_1, f'Asginación de Entrevista ID: {asignacion_entrevista.id}', lista_correos, correo_remitente=None)
+
+            frase_aleatoria = 'Se ha asignado entrevista correctamente.'
+            messages.success(request, frase_aleatoria)
+
+            return redirect('reclutados:reclutados_detalle_cliente', pk=vacante.id)
         else:
             messages.error(request, 'Error al crear la asignación')
     else:
         form = EntrevistaCrearForm(grupo_id=4, cliente_id=cliente_id)
+
     context ={
-        'form_entrevista': form,
+        'form': form,
         'vacante': vacante,
         'reclutados': reclutados,
         'candidato': info_candidato,

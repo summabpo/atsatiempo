@@ -38,6 +38,7 @@ def query_recruited_vacancy_id(vacante_id):
         cliente_razon_social=F('vacante_id_052__asignacion_cliente_id_064__id_cliente_asignado__razon_social'),
         candidato_id=F('candidato_101__id'),
         candidato_documento=F('candidato_101__numero_documento'),
+        candidato_imagen_perfil=F('candidato_101__imagen_perfil'),
         candidato_nombre=Concat(
             F('candidato_101__primer_nombre'), Value(' '),
             F('candidato_101__segundo_nombre'), Value(' '),

@@ -9,12 +9,13 @@ from datetime import datetime, time
 
 class EntrevistaCrearForm(forms.Form):
     # Campos del usuario
-    fecha_entrevista = forms.CharField(
+    fecha_entrevista = forms.DateField(
         label='Fecha de Entrevista',
         required=True,
-        widget=forms.TextInput(attrs={
+        widget=forms.DateInput(attrs={
             'class': 'form-control form-control-solid mb-3 mb-lg-0',
-            'id': 'kt_daterangepicker_1' 
+            'type': 'date',
+            'id': 'kt_datepicker_1'
         })
     )
 
@@ -35,7 +36,8 @@ class EntrevistaCrearForm(forms.Form):
         widget=forms.Select(attrs={
             'class': 'form-select form-select-solid',
             'data-control': 'select2',
-            
+            'data-dropdown-parent': '#modalEntrevista',
+            'placeholder': 'Seleccione el tipo de entrevista',
         })
     )
 
@@ -82,6 +84,7 @@ class EntrevistaCrearForm(forms.Form):
             widget=forms.Select(attrs={
                 'class': 'form-select form-select-solid',
                 'data-control': 'select2',
+                'data-dropdown-parent': '#modalEntrevista',
             })
         )
         
