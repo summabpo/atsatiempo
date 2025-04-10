@@ -31,7 +31,7 @@ Listado de vacantes
                 <div class="card-body p-4">
                     <div class="default-table-area all-projects">
                         <div class="table-responsive">
-                            <table class="table align-middle" id="myTable">
+                            <table class="table align-middle text-center" id="myTable">
                                 <thead>
                                     <tr>
                                         <th scope="col">ID</th>
@@ -53,7 +53,7 @@ Listado de vacantes
                                         <td>
                                             <a href="ticket-details.html" class="fw-medium">{{e.titulo}}</a>
                                         </td>
-                                        <td class="text-secondary center">{{e.cargo.nombre_cargo}}</td>
+                                        <td class="text-secondary">{{e.cargo.nombre_cargo}}</td>
                                         <td class="text-secondary">{{e.numero_posiciones}}</td>
                                         <td class="text-secondary">{{ e.fecha_creacion|date:"Y-m-d" }}</td>
                                         <td class="text-secondary">{{ e.fecha_presentacion|date:"Y-m-d" }}</td>
@@ -73,20 +73,17 @@ Listado de vacantes
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <div class="d-flex align-items-center gap-1">
-                                                <!-- 
-                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                                                    <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
-                                                </a>
-                                                -->
-                                                <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                                                    <i class="material-symbols-outlined fs-16 text-body">edit</i>
-                                                </a>
-                                                <!-- 
-                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                                                    <i class="material-symbols-outlined fs-16 text-danger">delete</i>
-                                                </a>
-                                                -->
+                                            <div class="d-flex justify-content-center align-items-center gap-1">
+                                                <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                    <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                        <i class="material-symbols-outlined fs-16 text-danger">edit</i>
+                                                    </a>
+                                                </div>
+                                                <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Asignar Candidatos">
+                                                    <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="btn bg-info bg-opacity-10 fw-medium text-info py-2 px-4">
+                                                        <i class="material-symbols-outlined fs-16 text-info">manage_accounts</i>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </td> 
                                     </tr>

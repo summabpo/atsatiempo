@@ -47,7 +47,7 @@ Detalle vacante
                 <div class="card-body p-4">
                     <div class="default-table-area all-projects">
                         <div class="table-responsive">
-                            <table class="table align-middle" id="myTable">
+                            <table class="table align-middle text-center" id="myTable">
                                 <thead>
                                     <tr>
                                         <th scope="col">ID</th>
@@ -67,12 +67,12 @@ Detalle vacante
                                         <td class="text-body">{{e.candidato_documento}}</td>
 
                                         <td>
-											<div class="d-flex align-items-center">
-												{% if e.candidato_imagen_perfil %}
-													<img src="/media_uploads/{{ e.candidato_imagen_perfil.url }}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
-												{% else %}
-													<img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
-												{% endif %}
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                {% if e.candidato_imagen_perfil %}
+                                                    <img src="/media_uploads/{{ e.candidato_imagen_perfil}}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
+                                                {% else %}
+                                                    <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
+                                                {% endif %}
                                                 
                                                 <div class="ms-2 ps-1">
                                                     <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="fw-medium">{{e.candidato_nombre}}</a>
@@ -87,16 +87,18 @@ Detalle vacante
                                             <span class="badge bg-opacity-10 bg-{{e.obtener_estado_con_color.color}} py-1 px-2 text-{{e.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_estado_con_color.estado}}</span>
                                         </td>
                                         <td>
-                                            <div class="d-flex align-items-center gap-1">
+                                            <div class="d-flex align-items-center justify-content-center gap-1">
                                                 <!-- 
                                                 <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
                                                     <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
                                                 </a>
                                                 -->
-                                                <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                                                    <i class="material-symbols-outlined fs-16 text-body">edit</i>
-                                                </a>
-												
+                                                <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                    <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                        <i class="material-symbols-outlined fs-16 text-danger">manage_accounts</i>
+                                                    </a>
+                                                </div>
+                                                
                                                 <!-- 
                                                 <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
                                                     <i class="material-symbols-outlined fs-16 text-danger">delete</i>

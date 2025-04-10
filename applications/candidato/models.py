@@ -65,8 +65,6 @@ class Can101Candidato(models.Model):
         return " ".join(filter(None, nombres))
 
 class Can102Experiencia(models.Model):
-    
-    
 
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     entidad = models.CharField(max_length=100)

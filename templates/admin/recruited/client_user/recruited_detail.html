@@ -148,47 +148,36 @@ Detalle vacante
 
                                     <div class="default-table-area all-projects">
                                         <div class="table-responsive">
-                                            <table class="table align-middle" id="myTable">
+                                            <table class="table align-middle text-center" id="myTable">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">ID</th>
-                                                        <th scope="col">FECHA ASIGNACIÓN</th>
-                                                        <th scope="col">ENTREVISTADOR</th>
-                                                        <th scope="col">FECHA</th>
-                                                        <th scope="col">HORA</th>
-                                                        <th scope="col">TIPO ENTREVISTA</th>
-                                                        <th scope="col">ESTADO</th>
-                                                        <th scope="col">ACCIONES</th>
+                                                        <th scope="col" class="text-center">ID</th>
+                                                        <th scope="col" class="text-center">FECHA ASIGNACIÓN</th>
+                                                        <th scope="col" class="text-center">ENTREVISTADOR</th>
+                                                        <th scope="col" class="text-center">FECHA</th>
+                                                        <th scope="col" class="text-center">HORA</th>
+                                                        <th scope="col" class="text-center">TIPO ENTREVISTA</th>
+                                                        <th class="text-center">ESTADO</th>
+                                                        <th scope="col" class="text-center">ACCIONES</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {% for e in entrevista %}
                                                     <tr>
-                                                        <td class="text-body">{{e.id}}</td>
+                                                        <td class="text-body text-center">{{e.id}}</td>
                                                         <td class="text-body">{{e.fecha_asignacion}}</td>
                                                         <td class="text-body">{{e.usuario_asignado.primer_nombre}} {{e.usuario_asignado.primer_apellido}}</td>
                                                         <td class="text-body">{{e.fecha_entrevista}}</td>
                                                         <td class="text-body">{{e.hora_entrevista}}</td>
                                                         <td class="text-body">{{e.get_tipo_entrevista_display}}</td>
-                                                        <td class="text-body">
+                                                        <td class="text-center">
                                                             <span class="badge bg-opacity-10 bg-{{e.obtener_nombre_estado_color.color}} py-1 px-2 text-{{e.obtener_nombre_estado_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_nombre_estado_color.estado}}</span>
                                                         </td>
                                                         <td>
-                                                            <div class="d-flex align-items-center gap-1">
-                                                                <!-- 
-                                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                                                                    <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                                            <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                                <a href="{% url 'entrevistas:entrevistar_gestionar_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                                    <i class="material-symbols-outlined fs-16 text-danger">edit_document</i>
                                                                 </a>
-                                                                -->
-                                                                <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                                                                    <i class="material-symbols-outlined fs-16 text-body">edit</i>
-                                                                </a>
-                                                                
-                                                                <!-- 
-                                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                                                                    <i class="material-symbols-outlined fs-16 text-danger">delete</i>
-                                                                </a>
-                                                                -->
                                                             </div>
                                                         </td> 
                                                     </tr>
@@ -196,6 +185,7 @@ Detalle vacante
                                                 </tbody>
                                             </table>
                                         </div>
+                                    </div>
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">

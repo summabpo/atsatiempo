@@ -129,7 +129,7 @@ def detail_recruited(request, pk):
             frase_aleatoria = 'Se ha asignado entrevista correctamente.'
             messages.success(request, frase_aleatoria)
 
-            return redirect('reclutados:reclutados_detalle_cliente', pk=vacante.id)
+            return redirect('reclutados:reclutados_detalle_cliente', pk=pk)
         else:
             messages.error(request, 'Error al crear la asignación')
     else:

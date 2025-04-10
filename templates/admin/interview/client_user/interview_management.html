@@ -1,0 +1,143 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Detalle vacante
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">DETALLE VACANTE: </h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+                <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Listado de Vacantes</span>
+					</a>
+				</li>
+                <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'reclutados:vacantes_reclutados_cliente' vacante.id %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Personal Reclutado</span>
+					</a>
+				</li>
+                <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'reclutados:reclutados_detalle_cliente' reclutado.id %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Detalle Persona Reclutada</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Gestión Entrevista</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+    <div class="row">
+		<div class="col-3">
+            {% include "admin/vacancy/common_template/info_vacancy.html" %}
+        </div>
+		<div class="col-9">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    {% if candidato.imagen_perfil %}
+                                        <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2 wh-75" alt="{{ candidato.imagen_perfil.url }}">
+                                    {% else %}
+                                        <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2 wh-75" alt="user">
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="fs-17 mb-1 fw-semibold">{{ candidato.nombre_completo }}</h4>
+                                    
+                                    <span class="fs-14">Marketing Manager</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="row">
+                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div class="flex-shrink-0">
+                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-primary bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Aplicó</h4>
+                                            <span>{{reclutado.fecha_aplicacion}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div class="flex-shrink-0">
+                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-warning bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Actualización</h4>
+                                            <span>{{reclutado.fecha_actualizacion}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div class="flex-shrink-0">
+                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-{{reclutado.obtener_estado_con_color.color}} bg-gary-light rounded-circle bg-for-dark-mode">person_alert</i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="fs-14 fw-semibold mb-1">Estado</h4>
+                                            <span></span>
+                                            <span class="badge bg-opacity-10 bg-{{reclutado.obtener_estado_con_color.color}} py-1 px-2 text-{{reclutado.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{reclutado.obtener_estado_con_color.estado}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card bg-white border-0 rounded-3 mb-4">
+                        <div class="card-header border-bottom-0">
+                            <h5 class="card-title mb-0">Gestión de la entrevista</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row">
+                                <div class="col-3">
+                                </div>    
+                                <div class="col-6">
+                                    <form method="post" id="form_gestion_entrevista">
+                                        <div class="modal-body">
+                                            {% csrf_token %}
+                                            {% crispy form %}
+                                        </div>
+                                        <button type="submit" id="form_gestion_entrevista" class="btn btn-primary text-white"  form="form_gestion_entrevista">Gestionar</button>
+                                    </form>
+                                </div>    
+                                <div class="col-3">
+                                </div>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    // Initialize select2 for specific fields
+    initializeSelect2('#id_estado_asignacion');
+</script>  
+{% endblock js %}
