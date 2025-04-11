@@ -49,73 +49,95 @@
         <h3 class="mb-3">Descripción</h3>
         <p class="ps-0 mb-md-5 mb-4 list-unstyled">{{vacante.descripcion_vacante}}</p>
 
-        <h3 class="mb-3">Características de la Vacante</h3>
-        <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
-            {% if vacante.perfil_vacante %}
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">calendar_month</span>
-            <span>Edad entre <b>{{ vacante.perfil_vacante.edad_inicial }} y {{ vacante.perfil_vacante.edad_final }} años</b></span>
-            </li>
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">wc</span>
-            <span>Género requerido: <b>{{ vacante.perfil_vacante.get_genero_display }}</b></span>
-            </li>
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">work_history</span>
-            <span>Experiencia mínima: <b>{{ vacante.perfil_vacante.get_tiempo_experiencia_display }}</b></span>
-            </li>
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">desktop_windows</span>
-            <span>Modalidad: <b>{{ vacante.perfil_vacante.get_modalidad_display }}</b></span>
-            </li>
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">schedule</span>
-            <span>Jornada: <b>{{ vacante.perfil_vacante.get_jornada_display }}</b></span>
-            </li>
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">translate</span>
-            <span>Idioma requerido: <b>{{ vacante.perfil_vacante.get_idioma_display }} (Nivel: {{ vacante.perfil_vacante.get_nivel_idioma_display }})</b></span>
-            </li>
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
-            <span>Profesión o estudio: <b>{{ vacante.perfil_vacante.profesion_estudio.nombre }}</b></span>
-            </li>
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
-            <span>Nivel de estudio: <b>{{ vacante.perfil_vacante.get_nivel_estudio_display }}</b></span>
-            </li>
-            {% else %}
-            <li>No se ha definido un perfil de vacante para esta vacante.</li>
-            {% endif %}
-        </ul>
-        
-        <h3 class="mb-3">Ubicación y Contrato</h3>
-        <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
-            {% if vacante.perfil_vacante %}
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">location_on</span>
-            <span>Ciudad: <b>{{ vacante.perfil_vacante.lugar_trabajo }}</b></span>
-            </li>
-            {% if vacante.perfil_vacante.barrio %}
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">map</span>
-            <span>Barrio: <b>{{ vacante.perfil_vacante.barrio }}</b></span>
-            </li>
-            {% endif %}
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">home_pin</span>
-            <span>Dirección: <b>{{ vacante.perfil_vacante.direccion }}</b></span>
-            </li>
-            <li class="mb-2 d-flex align-items-center">
-            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">description</span>
-            <span>Tipo de contrato: <b>{{ vacante.perfil_vacante.get_termino_contrato_display }}</b></span>
-            </li>
-            {% endif %}
-        </ul>
-        
-
         <h3 class="mb-3">Ubicación</h3>
         <iframe src="{{vacante.perfil_vacante.url_mapa}}" class="d-block w-100 rounded-3 mb-md-5 mb-4" style="height: 250px;"></iframe>
+
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn btn-primary py-2 px-4 text-white fw-semibold" data-bs-toggle="modal" data-bs-target="#staticBackdrop3">
+            Ver Detalle Vacante
+        </button>
+            
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop3Label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Información de la Vacante</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h3 class="mb-3">Características de la Vacante</h3>
+                        <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
+                            {% if vacante.perfil_vacante %}
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">calendar_month</span>
+                            <span>Edad entre <b>{{ vacante.perfil_vacante.edad_inicial }} y {{ vacante.perfil_vacante.edad_final }} años</b></span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">wc</span>
+                            <span>Género requerido: <b>{{ vacante.perfil_vacante.get_genero_display }}</b></span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">work_history</span>
+                            <span>Experiencia mínima: <b>{{ vacante.perfil_vacante.get_tiempo_experiencia_display }}</b></span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">desktop_windows</span>
+                            <span>Modalidad: <b>{{ vacante.perfil_vacante.get_modalidad_display }}</b></span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">schedule</span>
+                            <span>Jornada: <b>{{ vacante.perfil_vacante.get_jornada_display }}</b></span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">translate</span>
+                            <span>Idioma requerido: <b>{{ vacante.perfil_vacante.get_idioma_display }} (Nivel: {{ vacante.perfil_vacante.get_nivel_idioma_display }})</b></span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
+                            <span>Profesión o estudio: <b>{{ vacante.perfil_vacante.profesion_estudio.nombre }}</b></span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
+                            <span>Nivel de estudio: <b>{{ vacante.perfil_vacante.get_nivel_estudio_display }}</b></span>
+                            </li>
+                            {% else %}
+                            <li>No se ha definido un perfil de vacante para esta vacante.</li>
+                            {% endif %}
+                        </ul>
+                        
+                        <h3 class="mb-3">Ubicación y Contrato</h3>
+                        <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
+                            {% if vacante.perfil_vacante %}
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">location_on</span>
+                            <span>Ciudad: <b>{{ vacante.perfil_vacante.lugar_trabajo }}</b></span>
+                            </li>
+                            {% if vacante.perfil_vacante.barrio %}
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">map</span>
+                            <span>Barrio: <b>{{ vacante.perfil_vacante.barrio }}</b></span>
+                            </li>
+                            {% endif %}
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">home_pin</span>
+                            <span>Dirección: <b>{{ vacante.perfil_vacante.direccion }}</b></span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                            <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">description</span>
+                            <span>Tipo de contrato: <b>{{ vacante.perfil_vacante.get_termino_contrato_display }}</b></span>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
 
     </div>
 </div>

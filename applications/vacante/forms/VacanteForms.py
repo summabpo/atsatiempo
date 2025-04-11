@@ -1997,6 +1997,7 @@ class VacancyFormEdit(forms.Form):
         cleaned_data = super().clean()
         # Validate titulo
         titulo = cleaned_data.get('titulo').upper() if cleaned_data.get('titulo') else ''
+        
         if not titulo:
             self.add_error('titulo', 'El título es obligatorio.')
         elif len(titulo.split()) > 10:
@@ -2006,7 +2007,6 @@ class VacancyFormEdit(forms.Form):
         cargo = cleaned_data.get('cargo')
         if not cargo:
             self.add_error('cargo', 'El cargo es obligatorio.')
-
 
         # Validate descripcion_vacante
         descripcion_vacante = cleaned_data.get('descripcion_vacante')
@@ -2158,3 +2158,55 @@ class VacancyFormEdit(forms.Form):
             self.add_error('estudios_complementarios_certificado', 'Debe indicar si los estudios complementarios están certificados.')
 
         return cleaned_data
+    
+
+class VacancyAssingForm(forms.Form):
+
+    
+    def __init__(self, *args, cliente_id=None, **kwargs):
+        super(VacancyAssingForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_vacante_asignar'
+
+        analistas = UsuarioBase.objects.filter(group__id=6, cliente_id_051=cliente_id).order_by('primer_apellido')
+        analista_choices = [('', '----------')] + [(analista.id, f"{analista.primer_nombre} {analista.segundo_nombre} {analista.primer_apellido} {analista.segundo_apellido}") for analista in analistas]
+
+
+        self.fields['analista_asignado'] = forms.ChoiceField(
+            label='ANALISTA RESPONSABLE',
+            choices=analista_choices,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select form-select-solid',
+                    'data-control': 'select2',
+                    'data-placeholder': 'Seleccione una opción',
+                }
+            ),
+            required=True
+        )
+
+        self.helper.layout = Layout(
+            # 🏗️ DATOS GENERALES
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Datos Principales</h4>"),
+                    Div('analista_asignado', css_class='col-12'),  # Título
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+        )
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Validate analista_asignado
+        analista_asignado = cleaned_data.get('analista_asignado')
+        if not analista_asignado:
+            self.add_error('analista_asignado', 'El analista asignado es obligatorio.')
+
+        return cleaned_data
+

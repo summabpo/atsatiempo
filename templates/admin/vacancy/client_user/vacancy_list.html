@@ -34,32 +34,32 @@ Listado de vacantes
                             <table class="table align-middle text-center" id="myTable">
                                 <thead>
                                     <tr>
-                                        <th scope="col">ID</th>
-                                        <th scope="col">VACANTE</th>
-                                        <th scope="col">CARGO</th>
-                                        <th scope="col"># POSICIONES</th>
-                                        <th scope="col">F. CREACIÓN</th>
-                                        <th scope="col">F. PRESENTACIÓN</th>
-                                        <th scope="col">F. CIERRE</th>
-                                        <th scope="col">ASIGNADO A</th>
-                                        <th scope="col">ESTADO</th>
-                                        <th scope="col">ACCIONES</th>
+                                        <th scope="col" class="text-center">ID</th>
+                                        <th scope="col" class="text-center">VACANTE</th>
+                                        <th scope="col" class="text-center">CARGO</th>
+                                        <th scope="col" class="text-center"># POSICIONES</th>
+                                        <th scope="col" class="text-center">F. CREACIÓN</th>
+                                        <th scope="col" class="text-center">F. PRESENTACIÓN</th>
+                                        <th scope="col" class="text-center">F. CIERRE</th>
+                                        <th scope="col" class="text-center">ASIGNADO A</th>
+                                        <th scope="col" class="text-center">ESTADO</th>
+                                        <th scope="col" class="text-center">ACCIONES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for e in vacantes %}
                                     <tr>
-                                        <td class="text-body">{{e.id}}</td>
-                                        <td>
-                                            <a href="ticket-details.html" class="fw-medium">{{e.titulo}}</a>
+                                        <td class="text-body text-center">{{e.id}}</td>
+                                        <td class="text-center">
+                                            <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="fw-medium">{{e.titulo}}</a>
                                         </td>
-                                        <td class="text-secondary">{{e.cargo.nombre_cargo}}</td>
-                                        <td class="text-secondary">{{e.numero_posiciones}}</td>
-                                        <td class="text-secondary">{{ e.fecha_creacion|date:"Y-m-d" }}</td>
-                                        <td class="text-secondary">{{ e.fecha_presentacion|date:"Y-m-d" }}</td>
-                                        <td class="text-secondary">{{ e.fecha_cierre|date:"Y-m-d" }}</td>
-                                        <td class="text-secondary">{{ e.usuario_asignado.primer_nombre }}</td>
-                                        <td>
+                                        <td class="text-secondary text-center">{{e.cargo.nombre_cargo}}</td>
+                                        <td class="text-secondary text-center">{{e.numero_posiciones}}</td>
+                                        <td class="text-secondary text-center">{{ e.fecha_creacion|date:"Y-m-d" }}</td>
+                                        <td class="text-secondary text-center">{{ e.fecha_presentacion|date:"Y-m-d" }}</td>
+                                        <td class="text-secondary text-center">{{ e.fecha_cierre|date:"Y-m-d" }}</td>
+                                        <td class="text-secondary text-center">{{ e.usuario_asignado.primer_nombre }}</td>
+                                        <td class="text-center">
                                             {% if e.estado_vacante == 1 %}
                                                 <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">Activa</span>
                                             {% elif e.estado_vacante == 2 %}
@@ -72,7 +72,7 @@ Listado de vacantes
                                                 <span class="badge bg-light bg-opacity-10 text-dark p-2 fs-12 fw-normal">Desconocido</span>
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             <div class="d-flex justify-content-center align-items-center gap-1">
                                                 <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
                                                     <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
@@ -80,8 +80,8 @@ Listado de vacantes
                                                     </a>
                                                 </div>
                                                 <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Asignar Candidatos">
-                                                    <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="btn bg-info bg-opacity-10 fw-medium text-info py-2 px-4">
-                                                        <i class="material-symbols-outlined fs-16 text-info">manage_accounts</i>
+                                                    <a href="{% url 'vacantes:vacantes_asignar_analista_cliente' e.id  %}" class="btn bg-info bg-opacity-10 fw-medium text-info py-2 px-4">
+                                                        <i class="material-symbols-outlined fs-16 text-info">assignment_ind</i>
                                                     </a>
                                                 </div>
                                             </div>

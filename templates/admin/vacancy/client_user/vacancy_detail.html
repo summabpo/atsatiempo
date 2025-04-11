@@ -38,7 +38,16 @@ Detalle vacante
             {% include "admin/vacancy/common_template/metrics_menu_vacancy.html" %}
 
             <!-- Inicio de Contenido -->
-            
+            <div class="card border-0 rounded-2 p-4 bg-white mb-4">
+                <div class="card-body p-4">
+					<form method="post" id="form_vacante_edit">
+                        {% csrf_token %}
+                        {% crispy form %}
+                        <button id="form_vacante_edit" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_vacante_edit">Guardar</button>
+                    </form>
+				</div>
+			</div>
+			<!-- Fin de Contenido -->
         </div>
     </div>
 </div>
@@ -46,6 +55,38 @@ Detalle vacante
 
 {% block js %} 
 <script>
-    
+    // Initialize select2 for specific fields
+    // Initialize select2 for specific fields
+    initializeSelect2('#id_cargo');
+    initializeSelect2('#id_edad');
+    initializeSelect2('#id_genero');
+    initializeSelect2('#id_tiempo_experiencia');
+    initializeSelect2('#id_modalidad');
+    initializeSelect2('#id_jornada');
+    initializeSelect2('#id_tipo_salario');
+    initializeSelect2('#id_nivel_estudio');
+    initializeSelect2('#id_lugar_trabajo');
+    initializeSelect2('#id_termino_contrato');
+    initializeSelect2('#id_profesion_estudio');
+    initializeSelect2('#id_frecuencia_pago');
+    initializeSelect2('#id_nivel_idioma');
+    initializeSelect2('#id_horario_final');
+    initializeSelect2('#id_horario_inicio');
+    initializeSelect2('#id_estudios_complementarios_certificado');
+    initializeSelect2('#id_numero_posiciones');
+    initializeSelect2('#id_cantidad_presentar');
+    initializeSelect2('#id_estado_estudio');
+    initializeSelect2('#id_idioma');
+    initializeSelect2('#id_edad_inicial');
+    initializeSelect2('#id_edad_final');
+
+    inicializarTagify('id_soft_skills');
+    inicializarTagify('id_hard_skills');
+    inicializarTagify('id_funciones_responsabilidades');
+    inicializarTagify('id_estudios_complementarios');
+
+    // Lista personalizada para el campo 2
+    const semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    incializarTagifyLista('id_horario', semana);
 </script>  
 {% endblock js %}
