@@ -19,8 +19,14 @@ class Can101Candidato(models.Model):
     fecha_nacimiento = models.DateField(null=True, blank=True) 
     telefono = models.CharField(max_length=10, blank=True, null=True)
     skills = models.ManyToManyField('Can104Skill', through='Can101CandidatoSkill', related_name='candidatos_skill')
+<<<<<<< HEAD
     imagen_perfil = models.ImageField(upload_to='media_uploads/candidato/', blank=True, null=True, verbose_name="Imagen de Perfil")
     hoja_de_vida = models.FileField(upload_to='media_uploads/hoja_de_vida/', blank=True, null=True, verbose_name="Hoja de Vida")
+=======
+    imagen_perfil = models.ImageField(upload_to='candidato/', blank=True, null=True, verbose_name="Imagen de Perfil")
+    hoja_de_vida = models.FileField(upload_to='hoja_de_vida/', blank=True, null=True, verbose_name="Hoja de Vida")
+    numero_documento = models.CharField(max_length=20, blank=True, null=True)
+>>>>>>> origin/Fernando
 
     def __str__(self):
         return self.email
@@ -58,10 +64,12 @@ class Can101Candidato(models.Model):
         # Definir el porcentaje mínimo para aplicar
         porcentaje_minimo = 80
         return self.calcular_porcentaje() >= porcentaje_minimo
+    
+    def nombre_completo(self):
+        nombres = [self.primer_nombre, self.segundo_nombre, self.primer_apellido, self.segundo_apellido]
+        return " ".join(filter(None, nombres))
 
 class Can102Experiencia(models.Model):
-    
-    
 
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     entidad = models.CharField(max_length=100)

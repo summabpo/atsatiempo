@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import VacanteViews, EntrevistaView, admin_views
+from .views import VacanteViews, EntrevistaView, admin_views, client_views
 from applications.vacante.views.usuario_candidato import VacanteCandidatoView
 from applications.vacante.views.usuario_cliente import VacanteClienteView
 
@@ -16,6 +16,13 @@ urlpatterns = [
     path( url_principal+'mis_vacantes/<int:pk>/', admin_views.list_vacanty_from_client, name='vacantes_propias'),
     path( url_principal+'mis_vacantes/crear/<int:pk>/', admin_views.create_vacanty_from_client, name='vacantes_crear_propias'),
     path( url_principal+'mis_vacantes/editar/<int:pk>/<int:vacante_id>/', admin_views.edit_vacanty_from_client, name='vacantes_editar_propias'),
+    
+    #client_user
+    path( url_principal+'crear_vacante/', client_views.create_vacanty, name='vacantes_crear_cliente'),
+    path( url_principal+'listado/', client_views.list_vacanty_all, name='vacantes_listado_cliente'),
+    path( url_principal+'detalle/<int:pk>/', client_views.detail_vacancy, name='vacantes_detalle_cliente'),
+    path( url_principal+'detalle/entrevistas/<int:pk>/', client_views.detail_vacancy_interview, name='vacantes_entrevista_cliente'),
+    path( url_principal+'asignar_analista/<int:pk>/', client_views.detail_vacancy_assign, name='vacantes_asignar_analista_cliente'),
 
     #Vacante New
     path( url_principal+'buscar/', VacanteViews.find_vacanty, name='find_vacanty'),

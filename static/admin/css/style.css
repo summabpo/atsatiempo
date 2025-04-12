@@ -20856,9 +20856,9 @@ Swiper Slider Style
     transition: transform 0.2s ease-in-out;
 }
 
-.card:hover {
+/* .card:hover {
   transform: scale(1.0009);
-}
+} */
 
 /* Estilo de la cabecera */
 .card-header {
@@ -20883,7 +20883,7 @@ Swiper Slider Style
 }
 
 /* Agregar un borde lateral sutil para resaltar */
-.card::before {
+/* .card::before {
     content: "";
     position: absolute;
     left: 0;
@@ -20893,4 +20893,4 @@ Swiper Slider Style
     background: var(--bs-primary);
     border-top-left-radius: 12px;
     border-bottom-left-radius: 12px;
-}
+} */

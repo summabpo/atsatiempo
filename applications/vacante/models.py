@@ -81,7 +81,7 @@ class Cli073PerfilVacante(models.Model):
     lugar_trabajo = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
     barrio  = models.CharField(max_length=100, blank=True, null=True)
     direccion = models.CharField(max_length=100, blank=True, null=True)
-    url_mapa = models.URLField(blank=True, null=True)
+    url_mapa = models.URLField(max_length=1000, blank=True, null=True)
     termino_contrato = models.CharField(max_length=1, choices=TERMINO_CONTRATO_CHOICES_STATIC)
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
     fecha_creacion = models.DateField(auto_now_add=True)

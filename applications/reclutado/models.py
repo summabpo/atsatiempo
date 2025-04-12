@@ -28,6 +28,7 @@ class Cli056AplicacionVacante(models.Model):
     fecha_aplicacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     estado_aplicacion = models.IntegerField(choices=ESTADO_APLICACION, default=1)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.SET_NULL, null=True, blank=True, related_name='aplicaciones_vacante')
 
     def __str__(self):
         return str(self.id)
@@ -74,6 +75,24 @@ class Cli056AplicacionVacante(models.Model):
             'seleccionados': {'cantidad': seleccionados, 'porcentaje': porcentaje_seleccionados},
             'total_aplicaciones': total_aplicaciones,
         }
+    
+    def obtener_estado_con_color(self):
+        colores_estado = {
+            1: ('Aplicado', 'warning'),
+            2: ('Entrevista Programada', 'info'),
+            3: ('Entrevista Aprobada', 'success'),
+            4: ('Entrevista No Aprobada', 'danger'),
+            5: ('Prueba Programada', 'info'),
+            6: ('Prueba Superada', 'success'),
+            7: ('Prueba No Superada', 'danger'),
+            8: ('Seleccionado', 'success'),
+            9: ('Finalizada', 'primary'),
+            10: ('Cancelada', 'secondary'),
+            11: ('Desiste', 'secondary'),
+            12: ('No Apto', 'danger'),
+        }
+        estado_nombre, color = colores_estado.get(self.estado_aplicacion, ('Desconocido', 'gris'))
+        return {'estado': estado_nombre, 'color': color}
     class Meta:
         db_table = 'cli_056_aplicacion_vacante'
         verbose_name = 'APLICACIÓN A VACANTE'

@@ -1,0 +1,104 @@
+{% load custom_tags %}
+<!-- CLIENTES -->
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">CLIENTES</span>
+</li>
+<li class="menu-item 
+    {% if request.resolver_match.url_name|is_active_url_cliente_all %}open{% endif %}
+    {% if request.resolver_match.url_name == 'cliente_crear' %}open{% endif %}
+    ">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon red">crowdsource</span>
+        <span class="title">Clientes</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="{% url 'clientes:cliente_crear' %}" class="menu-link 
+                {% if request.path == '/cliente/crear/' %}active{% endif %}
+                
+            ">
+                Crear
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{% url 'clientes:cliente_ver' %}" 
+            class="menu-link 
+                {% if request.resolver_match.url_name|is_active_url_cliente_all %}active{% endif %}
+            ">
+                Ver Todos Clientes
+            </a>
+        </li>
+    </ul>
+</li>
+<li class="menu-item {% if request.path == '//' or request.path == '/dashboard/' %}open{% endif %}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon">partner_exchange</span>
+        <span class="title">Clientes Standard</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="#" class="menu-link {% if request.path == '/clientes/' %}active{% endif %}">
+                Ver Clientes
+            </a>
+        </li>
+    </ul>
+</li>
+<li class="menu-item {% if request.path == '//' or request.path == '/dashboard/' %}open{% endif %}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon">handshake</span>
+        <span class="title">Clientes Headhunter</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="#" class="menu-link {% if request.path == '/clientes/' %}active{% endif %}">
+                Ver Clientes
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="#" class="menu-link {% if request.path == '/clientes/' %}active{% endif %}">
+                Asignación Clientes
+            </a>
+        </li>
+    </ul>
+</li>
+<!-- CLIENTES -->
+
+<!-- VACANTES -->
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">VACANTES</span>
+</li>
+<li class="menu-item {% if request.resolver_match.url_name == 'vacantes_crear' %}open{% endif %} {% if request.resolver_match.url_name == 'vacantes_todas' %}open{% endif %} ">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon">work</span>
+        <span class="title">Buscar Vacantes</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="{% url 'vacantes:vacantes_crear' %}" class="menu-link {% if request.resolver_match.url_name == 'vacantes_crear' %}active{% endif %}">
+                Crear
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{% url 'vacantes:vacantes_todas' %}" class="menu-link {% if request.resolver_match.url_name == 'vacantes_todas' %}active{% endif %}">
+                Ver Todas
+            </a>
+        </li>
+    </ul>
+</li>
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">OTROS</span>
+</li>
+<li class="menu-item">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon">settings</span>
+        <span class="title">Configuraciones</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="/account-settings" class="menu-link {% if request.path == '/account-settings/' %}active{% endif %}">
+                Configuración Cuenta
+            </a>
+        </li>
+    </ul>
+</li>
+<!-- VACANTES -->
