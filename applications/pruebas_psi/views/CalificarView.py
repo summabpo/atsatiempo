@@ -25,7 +25,7 @@ def calificar_prueba(request, candidato_id):
             )
             # Avanzar a la siguiente pregunta
             request.session['pregunta_id'] = pregunta_id + 1
-            return redirect('calificar_prueba', candidato_id=candidato.id)
+            return redirect('pruebas_psi:calificar_prueba', candidato_id=candidato.id)
     else:
         form = CalificarPreguntaForm(pregunta_obj=pregunta)
 
