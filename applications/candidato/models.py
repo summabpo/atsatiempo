@@ -19,13 +19,8 @@ class Can101Candidato(models.Model):
     fecha_nacimiento = models.DateField(null=True, blank=True) 
     telefono = models.CharField(max_length=10, blank=True, null=True)
     skills = models.ManyToManyField('Can104Skill', through='Can101CandidatoSkill', related_name='candidatos_skill')
-<<<<<<< HEAD
     imagen_perfil = models.ImageField(upload_to='media_uploads/candidato/', blank=True, null=True, verbose_name="Imagen de Perfil")
     hoja_de_vida = models.FileField(upload_to='media_uploads/hoja_de_vida/', blank=True, null=True, verbose_name="Hoja de Vida")
-=======
-    imagen_perfil = models.ImageField(upload_to='candidato/', blank=True, null=True, verbose_name="Imagen de Perfil")
-    hoja_de_vida = models.FileField(upload_to='hoja_de_vida/', blank=True, null=True, verbose_name="Hoja de Vida")
->>>>>>> Fernando
     numero_documento = models.CharField(max_length=20, blank=True, null=True)
 
 
