@@ -30,3 +30,19 @@ def create_internal_client(request):
     }
 
     return render(request, 'admin/users/client_user/group_work_list.html', context)
+
+@login_required 
+@validar_permisos('acceso_cliente')
+def detail_internal_client(request, pk):
+    url_actual = f"{request.scheme}://{request.get_host()}"
+    # Verificar si el cliente_id está en la sesión
+    cliente_id = request.session.get('cliente_id')
+
+    #Obtener usuarios internos 
+    usuarios_internos = UsuarioBase.objects.filter(id=pk, group__in=[6], is_active=True, cliente_id_051=cliente_id)
+
+    context = {
+        'usuarios_internos': usuarios_internos,
+    }
+
+    return render(request, 'admin/users/client_user/group_work_list.html', context)
