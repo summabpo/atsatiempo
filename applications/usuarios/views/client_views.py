@@ -23,7 +23,7 @@ def create_internal_client(request):
     cliente_id = request.session.get('cliente_id')
 
     #Obtener usuarios internos 
-    usuarios_internos = UsuarioBase.objects.filter(group__in=[4,5,6], is_active=True, cliente_id_051=cliente_id)
+    usuarios_internos = UsuarioBase.objects.filter(group__in=[4,5], is_active=True, cliente_id_051=cliente_id)
 
     form = CrearUsuarioInternoForm()
 
