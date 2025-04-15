@@ -6,29 +6,13 @@
     <div class="container">
         <div class="border-bottom pb-150">
             <div class="row">
-                <div class="unlock-content">
-                    <h2>
-                        Encuentra al mejor talento en cualquier lugar, en cualquier momento con <span style="color: #B10022;">TALENT TRAY</span>
-                    </h2>
-                    <p>
-                        Nuestra plataforma avanzada convierte perfiles complejos en decisiones de contratación efectivas, brindándote la información que necesitas para elegir a los candidatos ideales con confianza.
-                    </p>
-                    <a href="/contact" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">
-                        <i class="ri-user-line fs-18"></i>
-                        <span class="ms-1" >Empieza ahora — Es gratis</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="border-bottom pb-150">
-            <div class="row">
                 <div class="col-lg-6 mx-auto text-center">
                     <div class="card bg-white border-0 rounded-3 mb-4">
                         <div class="card-body p-4">
                             <h3 class="card-title">Registrar Empresa</h3>
                             <img src="{% static 'admin/images/event-7.jpg' %}" class="img-fluid mb-3" alt="Registrar Empresa">
                             <p class="card-text">Registra tu empresa para acceder a los mejores talentos disponibles.</p>
-                            <a href="/register/empresa" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">Registrar Empresa</a>
+                            <a href="{% url 'accesses:company_registration' %}" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">Registrar Empresa</a>
                         </div>
                     </div>
                 </div>
@@ -38,7 +22,7 @@
                             <h3 class="card-title">Registrar Candidato</h3>
                             <img src="{% static 'admin/images/event-9.jpg' %}" class="img-fluid mb-3" alt="Registrar Candidato">
                             <p class="card-text">Registra tu perfil para ser considerado en las mejores oportunidades laborales.</p>
-                            <a href="/register/candidato" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">Registrar Candidato</a>
+                            <a href="{% url 'accesses:candidate_registration' %}" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">Registrar Candidato</a>
                         </div>
                     </div>
                 </div>
@@ -55,7 +39,7 @@
                     <p>
                         Nuestra plataforma avanzada convierte perfiles complejos en decisiones de contratación efectivas, brindándote la información que necesitas para elegir a los candidatos ideales con confianza.
                     </p>
-                    <a href="/contact" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">
+                    <a href="{% url 'accesses:login' %}" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">
                         <i class="ri-user-line fs-18"></i>
                         <span class="ms-1" >Empieza ahora — Es gratis</span>
                     </a>

@@ -6,7 +6,6 @@
 >
 	<div class="container">
 			<img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="logo" width="150px" />
-			<img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="logo" width="150px" />
 		</a>
 		<button
 			class="navbar-toggler"
@@ -60,7 +59,7 @@
 				<li class="nav-item">
 					<a
 						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4"
-						href="/dashboard"
+						href="{% url 'accesses:inicio' %}"
 						>Admin</a
 					>
 				</li>
@@ -71,7 +70,7 @@
 					<i class="ri-login-box-line fs-18 position-relative top-2" ></i>
 					<span class="ms-1">Login</span>
 				</a>
-				<a href="{% url 'accesses:login' %}" class="btn btn-primary-div py-2 px-4 fw-medium fs-16 text-white ms-3 rounded-3">
+				<a href="{% url 'accesses:registration' %}" class="btn btn-primary-div py-2 px-4 fw-medium fs-16 text-white ms-3 rounded-3">
 					<i class="ri-user-line fs-18"></i>
 					<span class="ms-1">Register</span>
 				</a>
