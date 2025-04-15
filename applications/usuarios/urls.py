@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views.usuariosInternosATS import CreacionUsuarioInternoView
+from .views import client_views
 from applications.common.views import PruebasView
 from .views import login
 
@@ -17,6 +18,10 @@ urlpatterns = [
     path('registro/candidato', loginView.candidate_registration, name='candidate_registration'),
     path('inicio/', loginView.dashboard_begin, name='inicio'),
     path('logout_view/', loginView.logout_view, name='logout'),
+
+
+    #client
+    path('cliente/grupo_trabajo_interno', client_views.create_internal_client, name='users_client'),
 
     # Seguridad
     # path('inicio', login.inicio_app, name='inicio'),
