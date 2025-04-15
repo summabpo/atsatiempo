@@ -23,10 +23,58 @@ def create_internal_client(request):
     cliente_id = request.session.get('cliente_id')
 
     #Obtener usuarios internos 
-    usuarios_internos = UsuarioBase.objects.filter(group__in=[6], is_active=True, cliente_id_051=cliente_id)
+    usuarios_internos = UsuarioBase.objects.filter(group__in=[4,5,6], is_active=True, cliente_id_051=cliente_id)
+
+    form = CrearUsuarioInternoForm()
+
+    if request.method == 'POST':
+        form = CrearUsuarioInternoForm(request.POST)
+        if form.is_valid():
+            primer_nombre = form.cleaned_data['primer_nombre']
+            segundo_nombre = form.cleaned_data['segundo_nombre']
+            primer_apellido = form.cleaned_data['primer_apellido']
+            segundo_apellido = form.cleaned_data['segundo_apellido']
+            correo = form.cleaned_data['correo']
+            rol = form.cleaned_data['rol']
+
+            grupo = get_object_or_404(Grupo, id=rol)
+
+            passwordoriginal = generate_random_password()
+
+            user = UsuarioBase.objects.create_user(
+                username=correo,
+                email=correo,
+                primer_nombre=primer_nombre.capitalize(),
+                segundo_nombre=segundo_nombre.capitalize(),
+                primer_apellido=primer_apellido.capitalize(),
+                segundo_apellido=segundo_apellido.capitalize(),
+                password=passwordoriginal,
+                is_verificado=True,
+                group=grupo,
+            )
+
+            contexto_mail = {
+                'name': primer_nombre.capitalize(),
+                'last_name': primer_apellido.capitalize(),
+                'user': correo,
+                'email': correo,
+                'password': passwordoriginal,
+                'url': url_actual,
+            }
+
+            enviar_correo('creacion_usuario_cliente', contexto_mail, 'Creación de Usuario Interno ATS', [correo], correo_remitente=None)
+
+            messages.success(request, 'Usuario interno creado exitosamente.')
+            return redirect('accesses:users_client')
+        else:
+            print(form.errors)
+            messages.error(request, 'Error al crear el usuario interno.')
+    else:
+        form = CrearUsuarioInternoForm()
 
     context = {
         'usuarios_internos': usuarios_internos,
+        'form': form,
     }
 
     return render(request, 'admin/users/client_user/group_work_list.html', context)
@@ -39,10 +87,14 @@ def detail_internal_client(request, pk):
     cliente_id = request.session.get('cliente_id')
 
     #Obtener usuarios internos 
-    usuarios_internos = UsuarioBase.objects.filter(id=pk, group__in=[6], is_active=True, cliente_id_051=cliente_id)
+    usuarios_detalle = UsuarioBase.objects.get(id=pk, group__in=[6], is_active=True, cliente_id_051=cliente_id)
+
+    print(usuarios_detalle)
+
+    
 
     context = {
-        'usuarios_internos': usuarios_internos,
+        'usuarios_detalle': usuarios_detalle
     }
 
-    return render(request, 'admin/users/client_user/group_work_list.html', context)
+    return render(request, 'admin/users/client_user/group_work_detail.html', context)

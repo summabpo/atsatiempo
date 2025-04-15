@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-Detalle vacante
+Grupo de Trabajo
 {% endblock %}
 
 {% block content %}
@@ -42,19 +42,25 @@ Detalle vacante
 
                         <!-- Modal -->
                         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                            <div class="modal-dialog">
+                            <div class="modal-dialog modal-xl">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
+                                    <form method="post" id="form_crear_usuario">
                                     <div class="modal-body">
-                                        Hello Modal
+                                        
+                                            <div class="modal-body">
+                                                {% csrf_token %}
+                                                {% crispy form %}
+                                            </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary text-white">Understood</button>
+                                        <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cerrar</button>
+                                        <button type="submit" id="form_crear_usuario" class="btn btn-primary text-white"  form="form_crear_usuario">Guardar</button>
                                     </div>
+                                </form>
                                 </div>
                             </div>
                         </div>
@@ -83,7 +89,7 @@ Detalle vacante
                                         <a href="{% url 'accesses:users_client_detail' e.id %}" class="text-decoration-none text-secondary fw-medium fs-16 mb-1">
                                             {{ e.primer_nombre }} {{ e.segundo_nombre }} {{ e.primer_apellido }} {{ e.segundo_apellido }}
                                         </a>
-                                        <span class="d-block">Analista Selección</span>
+                                        <span class="d-block">{{e.group.name}}</span>
                                     </div>
                                 </div>
 
