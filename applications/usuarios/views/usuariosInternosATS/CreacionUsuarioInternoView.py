@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from applications.usuarios.models import UsuarioBase, Grupo
 from applications.cliente.models import Cli051Cliente
-from applications.cliente.forms.CreacionUsuariosForm import CrearUsuarioInternoForm, CrearUsuarioInternoAtsForm
+from applications.usuarios.forms.CreacionUsuariosForm import CrearUsuarioInternoForm, CrearUsuarioInternoAtsForm
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 import random

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from applications.usuarios.models import UsuarioBase, Grupo
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.cliente.models import Cli051Cliente
-from applications.cliente.forms.CreacionUsuariosForm import CrearUsuarioInternoForm
+from applications.usuarios.forms.CreacionUsuariosForm import CrearUsuarioInternoForm
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import make_password

@@ -3,7 +3,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit, HTML
 from applications.common.models import Cat004Ciudad
-from applications.usuarios.models import UsuarioBase
+from applications.usuarios.models import Grupo, UsuarioBase
 from django.db.models import Q
 
 class CrearUsuarioInternoForm(forms.Form):
@@ -71,11 +71,12 @@ class CrearUsuarioInternoForm(forms.Form):
             'class': 'form-select form-select-solid',
             'data-control': 'select2',
             'data-placeholder': 'Seleccione un rol',
-            'data-tags':'true',
             'data-dropdown-parent': '#modal_grupo_trabajo',
-            'data-hide-search': 'true' ,
+            
         })
     )
+
+    imagen_perfil = forms.ImageField(label='Imagen Perfil', required=False)
 
     # campo de ciudad
     def __init__(self, *args, **kwargs):
@@ -85,6 +86,7 @@ class CrearUsuarioInternoForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_id = 'form_crear_usuario'
+        self.helper.enctype = 'multipart/form-data'
         self.helper.form_class = 'w-200'
 
         self.helper.layout = Layout(
@@ -103,6 +105,10 @@ class CrearUsuarioInternoForm(forms.Form):
                 Column('rol', css_class='form-group mb-0'),
                 css_class='fw-semibold fs-6 mb-2'
             ),
+            Row(
+                Column('imagen_perfil', css_class='form-group mb-0'),
+                css_class='fw-semibold fs-6 mb-2'
+            ),
         )
 
     def clean(self):
@@ -113,6 +119,8 @@ class CrearUsuarioInternoForm(forms.Form):
         primer_apellido  = cleaned_data.get('primer_apellido')
         segundo_apellido = cleaned_data.get('segundo_apellido')
         correo = cleaned_data.get('correo')
+        rol = cleaned_data.get('rol')
+        imagen_perfil = cleaned_data.get('imagen_perfil')
 
         # Función auxiliar para validar que un campo contenga solo letras
         def validar_solo_letras(valor, campo):
@@ -150,8 +158,28 @@ class CrearUsuarioInternoForm(forms.Form):
             if UsuarioBase.objects.filter(username=correo).exists():
                 self.add_error('correo', 'Este correo electrónico ya está registrado.')
         
+        # Validar rol (obligatorio)
+        if not rol:
+            self.add_error('rol', 'El rol del usuario es obligatorio.')
+        else:
+            try:
+                grupo = Grupo.objects.get(id=rol)
+            except Grupo.DoesNotExist:
+                self.add_error('rol', 'Rol no válido.')
+
+        #validar_imagen_perfil
+        if imagen_perfil:
+            # Verificar la extensión del archivo
+            extension = os.path.splitext(imagen_perfil.name)[1].lower()
+            if extension not in ['.jpg', '.jpeg', '.png']:
+                self.add_error('imagen_perfil', 'Formato de imagen no válido. Solo se permiten JPG, JPEG y PNG.')
+            # Verificar el tamaño del archivo (5 MB máximo)
+            if imagen_perfil.size > 5 * 1024 * 1024:
+                self.add_error('imagen_perfil', 'El tamaño de la imagen no debe exceder los 5 MB.')
         return super().clean()
-    
+
+
+
 class CrearUsuarioInternoAtsForm(forms.Form):
     # Campos del usuario
     primer_nombre = forms.CharField(

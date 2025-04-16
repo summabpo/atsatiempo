@@ -1,7 +1,8 @@
+import traceback
 from django.shortcuts import render, redirect, get_object_or_404
 from applications.usuarios.models import UsuarioBase, Grupo
 from applications.cliente.models import Cli051Cliente
-from applications.cliente.forms.CreacionUsuariosForm import CrearUsuarioInternoForm, CrearUsuarioInternoAtsForm
+from applications.usuarios.forms.CreacionUsuariosForm import CrearUsuarioInternoForm, CrearUsuarioInternoAtsForm
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 import random
@@ -28,7 +29,7 @@ def create_internal_client(request):
     form = CrearUsuarioInternoForm()
 
     if request.method == 'POST':
-        form = CrearUsuarioInternoForm(request.POST)
+        form = CrearUsuarioInternoForm(request.POST, request.FILES)
         if form.is_valid():
             primer_nombre = form.cleaned_data['primer_nombre']
             segundo_nombre = form.cleaned_data['segundo_nombre']
@@ -36,6 +37,7 @@ def create_internal_client(request):
             segundo_apellido = form.cleaned_data['segundo_apellido']
             correo = form.cleaned_data['correo']
             rol = form.cleaned_data['rol']
+            imagen_perfil = form.cleaned_data['imagen_perfil']
 
             grupo = get_object_or_404(Grupo, id=rol)
 
@@ -51,6 +53,8 @@ def create_internal_client(request):
                 password=passwordoriginal,
                 is_verificado=True,
                 group=grupo,
+                imagen_perfil=imagen_perfil,
+                cliente_id_051_id=cliente_id,
             )
 
             contexto_mail = {
@@ -62,7 +66,12 @@ def create_internal_client(request):
                 'url': url_actual,
             }
 
-            enviar_correo('creacion_usuario_cliente', contexto_mail, 'Creación de Usuario Interno ATS', [correo], correo_remitente=None)
+            try:
+                enviar_correo('creacion_usuario_cliente', contexto_mail, 'Creación de Usuario Interno ATS', [correo], correo_remitente=None)
+                print(f"Resultado del envío: {'Éxito' if enviar_correo else 'Falló'}")
+            except Exception as e:
+                print(f"Error al enviar correo: {e}")
+                traceback.print_exc()
 
             messages.success(request, 'Usuario interno creado exitosamente.')
             return redirect('accesses:users_client')
@@ -87,11 +96,9 @@ def detail_internal_client(request, pk):
     cliente_id = request.session.get('cliente_id')
 
     #Obtener usuarios internos 
-    usuarios_detalle = UsuarioBase.objects.get(id=pk, group__in=[6], is_active=True, cliente_id_051=cliente_id)
+    usuarios_detalle = UsuarioBase.objects.get(id=pk, group__in=[4,5], is_active=True, cliente_id_051=cliente_id)
 
     print(usuarios_detalle)
-
-    
 
     context = {
         'usuarios_detalle': usuarios_detalle
