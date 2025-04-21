@@ -159,7 +159,7 @@ def company_registration(request):
                         # login(request, user)
                         frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
                         messages.success(request, frase_aleatoria)
-                        return redirect('accesses:signup')  
+                        return redirect('accesses:login')  
                 else:
                     frase_aleatoria = random.choice(frases_error_contrasena)
                     messages.error(request, frase_aleatoria)
@@ -242,7 +242,7 @@ def candidate_registration(request):
                     frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
                     messages.success(request, frase_aleatoria)
 
-                    return redirect('accesses:signup_candidato') 
+                    return redirect('accesses:login') 
             else:
                 frase_aleatoria = random.choice(frases_error_contrasena)
                 messages.error(request, frase_aleatoria)

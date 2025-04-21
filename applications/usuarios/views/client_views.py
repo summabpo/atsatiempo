@@ -2,7 +2,7 @@ import traceback
 from django.shortcuts import render, redirect, get_object_or_404
 from applications.usuarios.models import UsuarioBase, Grupo
 from applications.cliente.models import Cli051Cliente
-from applications.usuarios.forms.CreacionUsuariosForm import CrearUsuarioInternoForm, CrearUsuarioInternoAtsForm
+from applications.usuarios.forms.CreacionUsuariosForm import CrearUsuarioInternoForm, CrearUsuarioInternoAtsForm, EditUsuarioInternoForm
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 import random
@@ -98,10 +98,56 @@ def detail_internal_client(request, pk):
     #Obtener usuarios internos 
     usuarios_detalle = UsuarioBase.objects.get(id=pk, group__in=[4,5], is_active=True, cliente_id_051=cliente_id)
 
+    initial_data = {
+        'primer_nombre': usuarios_detalle.primer_nombre,
+        'segundo_nombre': usuarios_detalle.segundo_nombre,
+        'primer_apellido': usuarios_detalle.primer_apellido,
+        'segundo_apellido': usuarios_detalle.segundo_apellido,
+        'correo': usuarios_detalle.email,
+        'rol': usuarios_detalle.group.id,
+        'imagen_perfil': usuarios_detalle.imagen_perfil,
+    }
+
+    
+
+    if request.method == 'POST':
+        form = EditUsuarioInternoForm(request.POST, request.FILES, usuario=usuarios_detalle, initial=initial_data)
+        if form.is_valid():
+            primer_nombre = form.cleaned_data['primer_nombre']
+            segundo_nombre = form.cleaned_data['segundo_nombre']
+            primer_apellido = form.cleaned_data['primer_apellido']
+            segundo_apellido = form.cleaned_data['segundo_apellido']
+            correo = form.cleaned_data['correo']
+            rol = form.cleaned_data['rol']
+            imagen_perfil = form.cleaned_data['imagen_perfil']
+
+            grupo = get_object_or_404(Grupo, id=rol)
+
+            # Actualizar el usuario
+            usuarios_detalle.primer_nombre = primer_nombre.capitalize()
+            usuarios_detalle.segundo_nombre = segundo_nombre.capitalize()
+            usuarios_detalle.primer_apellido = primer_apellido.capitalize()
+            usuarios_detalle.segundo_apellido = segundo_apellido.capitalize()
+            usuarios_detalle.email = correo
+            usuarios_detalle.group = grupo
+            if imagen_perfil:
+                usuarios_detalle.imagen_perfil = imagen_perfil
+            
+            usuarios_detalle.save()
+
+            messages.success(request, 'Usuario interno actualizado exitosamente.')
+            return redirect('accesses:users_client_detail', pk=usuarios_detalle.id)
+        else:
+            print(form.errors)
+            messages.error(request, 'Error al actualizar el usuario interno.')
+    else:
+        form = EditUsuarioInternoForm(initial=initial_data)
+
     print(usuarios_detalle)
 
     context = {
-        'usuarios_detalle': usuarios_detalle
+        'usuarios_detalle': usuarios_detalle,
+        'form': form,
     }
 
     return render(request, 'admin/users/client_user/group_work_detail.html', context)

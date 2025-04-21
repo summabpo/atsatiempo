@@ -73,7 +73,13 @@ Detalle Colaborador
                 <span class="bg-danger rounded-top-3 position-absolute z-n1 top-0 d-block w-100" style="height: 120px;"></span>
                 <img src="{% static 'admin/images/shape-9.png' %}" class="position-absolute top-0 start-0" alt="shape">
                 <div class="card-body px-4 pb-4" style="padding-top: 35px;">
-                    
+                    <form method="post" id="form_editar_usuario" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            {% crispy form %}
+                        </div>
+                        <button type="submit" id="form_editar_usuario" class="btn btn-primary text-white"  form="form_editar_usuario">Gestionar</button>
+                    </form>
 
                 </div>
             </div>
@@ -86,7 +92,7 @@ Detalle Colaborador
 {% block js %} 
 <script>
     // Initialize select2 for specific fields
-    initializeSelect2('#id_tipo_entrevista');
+    initializeSelect2('#id_rol');
     initializeSelect2('#id_entrevistador');
 </script>  
 {% endblock js %}

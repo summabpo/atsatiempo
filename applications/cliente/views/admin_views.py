@@ -24,7 +24,7 @@ from applications.services.service_client import query_client_all, query_client_
 
 #views
 @login_required
-# @validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def crear_cliente(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST, request.FILES)
@@ -45,10 +45,9 @@ def crear_cliente(request):
     }
     return render(request, 'admin/client/admin_user/client_create.html', context)
 
-
 # Mostrar todos los clientes todos
 @login_required
-# @validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def ver_cliente(request):
     cliente = query_client_all()
     clientes = cliente.filter(estado_id_001=1).order_by('-id')
@@ -77,7 +76,7 @@ def ver_cliente(request):
 
 # Mostrar todos los clientes todos
 @login_required
-# @validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def client_detail(request, pk):
     
     data = query_client_detail(pk)
@@ -89,7 +88,7 @@ def client_detail(request, pk):
 
 #mostrar información del cliente a editar
 @login_required
-# @validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def client_detail_info(request, pk):
     # Data cliente a mostrar
     data = query_client_detail(pk)
@@ -158,7 +157,7 @@ def client_detail_info(request, pk):
 
 #mostrar información del cliente de sus politicas
 @login_required
-# @validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def client_detail_politics(request, pk):
 
     # Data cliente a mostrar
@@ -199,7 +198,7 @@ def client_detail_politics(request, pk):
 
 #mostrar información del cliente de sus pruebas
 @login_required
-# @validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def client_detail_test(request, pk):
     # Data cliente a mostrar
     data = query_client_detail(pk)
@@ -238,7 +237,7 @@ def client_detail_test(request, pk):
 
 #mostrar información del cliente de sus pruebas
 @login_required
-# @validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def client_detail_position(request, pk):
     # Data cliente a mostrar
     data = query_client_detail(pk)
@@ -276,7 +275,7 @@ def client_detail_position(request, pk):
 
 #mostrar información del cliente de sus pruebas y requisitos
 @login_required
-# @validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def client_detail_position_config(request, pk, cargo_id):
     # Data cliente a mostrar
     data = query_client_detail(pk)
@@ -339,7 +338,7 @@ def client_detail_position_config(request, pk, cargo_id):
 
 #mostrar información de los requisitos del clinete
 @login_required
-# @validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def client_detail_required(request, pk):
     # Data cliente a mostrar
     data = query_client_detail(pk)
