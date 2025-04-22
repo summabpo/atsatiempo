@@ -365,7 +365,10 @@ def signup_view(request):
                         }
 
                         # Envia el metodo
-                        enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
+                        if enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None):
+                            messages.success(request, 'Se ha enviado correo electrónico')
+                        else:
+                            messages.error(request, 'Error al enviar el correo de bienvenida.')
                         
                         # login(request, user)
                         frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'

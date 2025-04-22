@@ -155,9 +155,11 @@ def company_registration(request):
 
                         # Envia el metodo
                         if enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None):
-                            messages.success(request, frase_aleatoria)
+                            messages.success(request, 'Se ha enviado correo electrónico')
+                            print('Se ha enviado correo electrónico')
                         else:
                             messages.error(request, 'Error al enviar el correo de bienvenida. Por favor, intenta más tarde.')
+                            print('Se ha enviado correo electrónico')
                         
                         # login(request, user)
                         frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
