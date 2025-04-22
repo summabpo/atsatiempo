@@ -30,7 +30,7 @@
 							/>
 						</div>
 						<h3 class="fs-28 mb-2">Bievenido a Talent Tray!</h3>
-						<p class="fw-medium fs-16 mb-4">
+						{% comment %} <p class="fw-medium fs-16 mb-4">
 							Puede ingresar con sus redes sociales
 						</p>
 						<div class="row justify-content-center">
@@ -73,7 +73,7 @@
 									/>
 								</a>
 							</div>
-						</div>
+						</div> {% endcomment %}
 						{% csrf_token %}
 						{% crispy form %}
                         <div class="form-group">

@@ -59,9 +59,9 @@ Cliente
                                                 <td class="text-body">{{ e.fecha_creado|date:"Y-m-d" }}</td>
                                                 <td class="text-body">{{ e.nombre_cargo }}</td>
                                                 <td>
-                                                    <div class="d-flex justify-content-center align-items-center gap-1">
-                                                        <a href = "{% url 'clientes:cliente_cargos_configuracion' e.cliente.id e.id %}" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">
-                                                            <i class="material-symbols-outlined fs-16 text-body">visibility</i>
+                                                    <div class="d-flex justify-content-center align-items-center gap-1" alt="Configurar Cargo">
+                                                        <a href="#" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                            <i class="material-symbols-outlined fs-16 text-danger">person_pin</i>
                                                         </a>
                                                     </div>
                                                 </td> 
