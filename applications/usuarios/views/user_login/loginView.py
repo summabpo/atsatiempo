@@ -334,6 +334,16 @@ def login_view(request):
                         login(request, user)
                         request.session['primer_nombre'] = f'{usuario.primer_nombre} {usuario.primer_apellido}'
                         request.session['email'] = usuario.username
+                        request.session['user_login'] = {
+                            'id': usuario.id,
+                            'username': usuario.username,
+                            'email': usuario.email,
+                            'primer_nombre': usuario.primer_nombre,
+                            'segundo_nombre': usuario.segundo_nombre,
+                            'primer_apellido': usuario.primer_apellido,
+                            'segundo_apellido': usuario.segundo_apellido,
+                            'grupo_id': usuario.group.id,
+                        }
                         
                         # Valida el usuario es de grupo cliente para mostrar el id cliente. 
                         if usuario.group.id == 4:
@@ -357,6 +367,15 @@ def login_view(request):
                                 request.session['tipo_cliente'] = 'Asignado'
                             
                             request.session['tipo_usuario'] = 'Cliente'
+                        
+                        if usuario.group.id == 5:
+                            request.session['imagen_url'] = usuario.imagen_perfil.url
+                            request.session['tipo_usuario'] = 'Analista Selección'
+                            request.session['cliente_id'] = usuario.cliente_id_051.id
+                        
+                        if usuario.group.id == 6:
+                            request.session['imagen_url'] = usuario.imagen_perfil.url
+                            request.session['tipo_usuario'] = 'Analista Selección ATS'
 
                         if usuario.group.id == 2:
                             candidato_id = usuario.candidato_id_101.id

@@ -69,8 +69,8 @@
         </li>
         
     </ul>
-    <li class="menu-item open">
-        <a href="{% url 'clientes:cargos_cliente' %}" class="menu-link {% if request.resolver_match.url_name == 'cargos_cliente' %}active{% endif %}">
+    <li class="menu-item open"> 
+        <a href="{% url 'clientes:cargos_cliente' %}" class="menu-link {% if request.resolver_match.url_name == 'cargos_cliente' or request.resolver_match.url_name == 'cargos_cliente_detalle' %}active{% endif %}">
             <span class="material-symbols-outlined menu-icon">work</span>
             <span class="title">Cargos</span>
         </a>

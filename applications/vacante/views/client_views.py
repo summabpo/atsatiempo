@@ -241,7 +241,7 @@ def list_vacanty_all(request):
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats')
 def detail_vacancy(request, pk):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
@@ -383,7 +383,7 @@ def detail_vacancy(request, pk):
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats')
 def detail_vacancy_interview(request, pk):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')

@@ -264,3 +264,70 @@ def client_required(request):
     }
 
     return render(request, 'admin/client/client_user/client_required.html', contexto)
+
+#mostrar información del cliente de sus pruebas y requisitos
+@login_required
+@validar_permisos('acceso_cliente')
+def client_position_config(request, cargo_id):
+
+    cliente_id = request.session.get('cliente_id')
+
+    # Data cliente a mostrar
+    data = query_client_detail(cliente_id)
+
+    # Obtener el cargo específico del cliente
+    cargo_cliente = get_object_or_404(Cli068Cargo, id=cargo_id)
+
+    # Obtener las asignaciones de requisitos y pruebas del cargo
+    asignaciones_requisitos = Cli070AsignacionRequisito.objects.filter(cargo=cargo_id, cargo__cliente_id=cliente_id)
+    asignaciones_pruebas = Cli071AsignacionPrueba.objects.filter(
+        cargo_id=cargo_id, 
+        cliente_prueba__cliente__id=cliente_id
+    )
+
+    form = ClienteFormAsignacionRequisito(cliente_id=cliente_id, cargo_id=cargo_id)
+    form1 = ClienteFormAsignacionPrueba(cliente_id=cliente_id, cargo_id=cargo_id)
+
+    if request.method == 'POST':
+        form = ClienteFormAsignacionRequisito(request.POST, cliente_id=cliente_id, cargo_id=cargo_id)
+        form1 = ClienteFormAsignacionPrueba(request.POST, cliente_id=cliente_id, cargo_id=cargo_id)
+        
+        if form.is_valid():
+            requisito = form.cleaned_data['requisito']
+            Cli070AsignacionRequisito.objects.create(
+                cargo=Cli068Cargo.objects.get(id=cargo_id), 
+                requisito=Cli069Requisito.objects.get(id=requisito),
+                estado=Cat001Estado.objects.get(id=1)
+            )
+            messages.success(request, 'El requisito ha sido asignado con éxito.')
+        
+        if form1.is_valid():
+            prueba = form1.cleaned_data['prueba']
+            asignacion_prueba = Cli051ClientePruebas.objects.get(prueba_psicologica=prueba, cliente=cliente_id)
+            Cli071AsignacionPrueba.objects.create(
+                cargo=Cli068Cargo.objects.get(id=cargo_id),
+                cliente_prueba=Cli051ClientePruebas.objects.get(id=asignacion_prueba.id),
+                estado=Cat001Estado.objects.get(id=1)
+            )
+            messages.success(request, 'La prueba ha sido asignada con éxito.')
+        
+        if form.is_valid() or form1.is_valid():
+            return redirect('clientes:cargos_cliente_detalle', cargo_id=cargo_id)
+        else:
+            messages.error(request, form.errors)
+            print("Errores en el formulario:", form.errors)
+    else:
+        form = ClienteFormAsignacionRequisito(cliente_id=cliente_id, cargo_id=cargo_id)
+        form1 = ClienteFormAsignacionPrueba(cliente_id=cliente_id, cargo_id=cargo_id)
+
+    contexto = {
+        'data': data,
+        'cargo_cliente': cargo_cliente,
+        'asignaciones_requisitos': asignaciones_requisitos,
+        'asignaciones_pruebas': asignaciones_pruebas,
+        'form': form,
+        'form1': form1,
+    }
+
+    return render(request, 'admin/client/client_user/client_position_config.html', contexto)
+

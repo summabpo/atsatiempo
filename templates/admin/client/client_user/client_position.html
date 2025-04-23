@@ -60,7 +60,7 @@ Cliente
                                                 <td class="text-body">{{ e.nombre_cargo }}</td>
                                                 <td>
                                                     <div class="d-flex justify-content-center align-items-center gap-1" alt="Configurar Cargo">
-                                                        <a href="#" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                        <a href="{% url 'clientes:cargos_cliente_detalle' e.id %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
                                                             <i class="material-symbols-outlined fs-16 text-danger">person_pin</i>
                                                         </a>
                                                     </div>

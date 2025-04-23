@@ -49,13 +49,24 @@
         </li>
         <!-- PRINCIPAL -->
 
-        {% if request.session.tipo_usuario == 'Administrador' %}
+        <!-- ADMINISTRADOR -->
+        {% if request.session.grupo_id == 1 %}
             {% include "admin/layout/partials/menu_sidebar/dashboard_sidebar_admin.html" %}
         {% endif %}
         
-
-        {% if request.session.tipo_usuario == 'Cliente' %}
+        <!-- ADMINISTRADOR CLIENTE -->
+        {% if request.session.grupo_id == 3 %}
             {% include "admin/layout/partials/menu_sidebar/dashboard_sidebar_client.html" %}
+        {% endif %}
+
+        <!-- ANALISTA SELECCION CLIENTE -->
+        {% if request.session.grupo_id == 5 %}
+            {% include "admin/layout/partials/menu_sidebar/dashboard_sidebar_client_analyst.html" %}
+        {% endif %}
+
+        <!-- ANALISTA SELECCION ATS -->
+        {% if request.session.grupo_id == 6 %}
+            {% include "admin/layout/partials/menu_sidebar/dashboard_sidebar_client_analyst_internal.html" %}
         {% endif %}
 
         <!-- LOGOUT -->

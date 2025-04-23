@@ -28,7 +28,7 @@ from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats')
 def detail_vacancy_recruited(request, pk):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
@@ -48,14 +48,12 @@ def detail_vacancy_recruited(request, pk):
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats')
 def detail_recruited(request, pk):
     url_actual = f"{request.scheme}://{request.get_host()}"
     validar_registro = False
     usuario_id = request.session.get('_auth_user_id')
 
-
-    
     # verificar información de asignación de la vacante
     asignacion_vacante = get_object_or_404(Cli056AplicacionVacante, id=pk)
 
@@ -64,20 +62,23 @@ def detail_recruited(request, pk):
 
     # obtener los datos de las entrevistas
     entrevista = Cli057AsignacionEntrevista.objects.filter(asignacion_vacante=asignacion_vacante.id).order_by('-fecha_entrevista')
-    
 
-    # Verificar si el cliente_id está en la sesión
-    cliente_id = request.session.get('cliente_id')
-    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
-    
+
     # Obtener información de la vacante
     vacante = query_vacanty_detail().get(id=asignacion_vacante.vacante_id_052.id)
+
+    # Verificar si el cliente_id está en la sesión
+    if request.session.get('grupo_id') == 6:
+        cliente_id = vacante.asignacion_cliente_id_064.id_cliente_asignado.id
+    else:
+        cliente_id = request.session.get('cliente_id')
+    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
 
     # Obtener los reclutados asociados a la vacante
     reclutados = query_recruited_vacancy_id(vacante.id)
 
     form = EntrevistaCrearForm(request.POST, grupo_id=4, cliente_id=cliente_id)
-    
+
     if request.method == 'POST':
         if form.is_valid():
             fecha_entrevista = form.cleaned_data['fecha_entrevista']

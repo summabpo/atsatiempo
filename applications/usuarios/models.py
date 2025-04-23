@@ -20,7 +20,7 @@ class Permiso(models.Model):
     
     @classmethod
     def obtener_nombres(cls):
-        return list(cls.objects.values_list('nombre', flat=True))
+        return list(cls.objects.values_list('nombre', flat=True))   
 
 class Grupo(models.Model):
     name = models.CharField(max_length=255)
@@ -59,7 +59,7 @@ class UsuarioBase(AbstractUser):
     group = models.ForeignKey(Grupo, on_delete=models.CASCADE, null=True, blank=True)
     cliente_id_051 = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, on_delete=models.SET_NULL, null=True, blank=True, related_name='usuario')
-    imagen_perfil = models.ImageField(upload_to='usuario/', blank=True, null=True, verbose_name="Imagen de Perfil Usuario")
+    imagen_perfil = models.ImageField(upload_to='media_uploads/usuario/', blank=True, null=True, verbose_name="Imagen de Perfil Usuario")
 
     # Sobrescribimos estos campos para evitar conflictos
     groups = None

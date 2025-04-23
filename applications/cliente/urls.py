@@ -24,6 +24,7 @@ urlpatterns = [
     #client_user
     path( url_principal+'informacion_principal', client_views.client_detail_info, name='info_principal_cliente'),
     path( url_principal+'cargos', client_views.client_position, name='cargos_cliente'),
+    path( url_principal+'cargos/detalle/<int:cargo_id>/', client_views.client_position_config, name='cargos_cliente_detalle'),
     path( url_principal+'pruebas', client_views.client_test, name='pruebas_cliente'),
     path( url_principal+'politicas', client_views.client_politics, name='politicas_cliente'),
     path( url_principal+'requisitos', client_views.client_required, name='requisitos_cliente'),
