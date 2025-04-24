@@ -37,3 +37,18 @@ URLS_VACANTES = [
 @register.filter(name='is_active_url_cliente_vacante')
 def is_active_url(url_name):
     return url_name in URLS_VACANTES
+
+
+# Define una lista global de rutas activas
+URLS_VACANTES = [
+    'vacantes_gestion_analista_interno',
+    'vacantes_asignadas_analista_interno',
+    'entrevistar_gestionar_analista_interno',
+    'reclutados_analista_interno',
+    'reclutados_detalle_analista_interno',
+
+]
+
+@register.filter(name='is_active_url_analista_interno_vacante')
+def is_active_url(url_name):
+    return url_name in URLS_VACANTES

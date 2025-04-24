@@ -28,7 +28,7 @@ from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_analista_seleccion_ats')
 def detail_vacancy_recruited(request, pk):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
@@ -44,17 +44,15 @@ def detail_vacancy_recruited(request, pk):
         'reclutados': reclutados,
     }
 
-    return render(request, 'admin/vacancy/client_user/vacancy_detail_recruited.html', context)
+    return render(request, 'admin/vacancy/client_analyst_internal_user/vacancy_detail_recruited.html', context)
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_analista_seleccion_ats')
 def detail_recruited(request, pk):
     url_actual = f"{request.scheme}://{request.get_host()}"
     validar_registro = False
     usuario_id = request.session.get('_auth_user_id')
-
-
     
     # verificar información de asignación de la vacante
     asignacion_vacante = get_object_or_404(Cli056AplicacionVacante, id=pk)
@@ -65,13 +63,12 @@ def detail_recruited(request, pk):
     # obtener los datos de las entrevistas
     entrevista = Cli057AsignacionEntrevista.objects.filter(asignacion_vacante=asignacion_vacante.id).order_by('-fecha_entrevista')
     
-
-    # Verificar si el cliente_id está en la sesión
-    cliente_id = request.session.get('cliente_id')
-    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
-    
     # Obtener información de la vacante
     vacante = query_vacanty_detail().get(id=asignacion_vacante.vacante_id_052.id)
+
+    # Verificar si el cliente_id está en la sesión
+    cliente_id = vacante.asignacion_cliente_id_064.id_cliente_asignado.id
+    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
 
     # Obtener los reclutados asociados a la vacante
     reclutados = query_recruited_vacancy_id(vacante.id)
@@ -129,7 +126,7 @@ def detail_recruited(request, pk):
             frase_aleatoria = 'Se ha asignado entrevista correctamente.'
             messages.success(request, frase_aleatoria)
 
-            return redirect('reclutados:reclutados_detalle_cliente', pk=pk)
+            return redirect('reclutados:reclutados_detalle_analista_interno', pk=pk)
         else:
             messages.error(request, 'Error al crear la asignación')
     else:
@@ -144,4 +141,4 @@ def detail_recruited(request, pk):
         'entrevista': entrevista,
     }
 
-    return render(request, 'admin/recruited/client_user/recruited_detail.html', context)
+    return render(request, 'admin/vacancy/client_analyst_internal_user/recruited_detail.html', context)

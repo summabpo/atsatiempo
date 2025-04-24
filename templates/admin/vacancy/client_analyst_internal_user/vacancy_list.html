@@ -35,13 +35,13 @@ Listado de vacantes
                                 <thead>
                                     <tr>
                                         <th scope="col" class="text-center">ID</th>
+                                        <th scope="col" class="text-center">CLIENTE</th>
                                         <th scope="col" class="text-center">VACANTE</th>
                                         <th scope="col" class="text-center">CARGO</th>
                                         <th scope="col" class="text-center"># POSICIONES</th>
                                         <th scope="col" class="text-center">F. CREACIÓN</th>
                                         <th scope="col" class="text-center">F. PRESENTACIÓN</th>
                                         <th scope="col" class="text-center">F. CIERRE</th>
-                                        <th scope="col" class="text-center">ASIGNADO A</th>
                                         <th scope="col" class="text-center">ESTADO</th>
                                         <th scope="col" class="text-center">ACCIONES</th>
                                     </tr>
@@ -50,6 +50,7 @@ Listado de vacantes
                                     {% for e in vacantes %}
                                     <tr>
                                         <td class="text-body text-center">{{e.id}}</td>
+                                        <td class="text-secondary text-center">{{e.asignacion_cliente_id_064.id_cliente_asignado.razon_social}}</td>
                                         <td class="text-center">
                                             <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="fw-medium">{{e.titulo}}</a>
                                         </td>
@@ -75,7 +76,7 @@ Listado de vacantes
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center align-items-center gap-1">
                                                 <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
-                                                    <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                    <a href="{% url 'vacantes:vacantes_gestion_analista_interno' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
                                                         <i class="material-symbols-outlined fs-16 text-danger">edit</i>
                                                     </a>
                                                 </div>

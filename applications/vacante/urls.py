@@ -28,7 +28,9 @@ urlpatterns = [
     path( url_principal+'asignadas/', client_analyst_views.list_assigned_vacancies, name='vacantes_asignadas'),
 
     #client_analyst_internal_user
-    path( url_principal+'asignadas/analista', client_analyst_internal_views.list_assigned_vacancies, name='vacantes_asignadas_interno'),
+    path( url_principal+'asignadas/analista', client_analyst_internal_views.list_assigned_vacancies, name='vacantes_asignadas_analista_interno'),
+    path( url_principal+'gestion/analista/<int:pk>/', client_analyst_internal_views.detail_vacancy, name='vacantes_gestion_analista_interno'),
+
 
     #Vacante New
     path( url_principal+'buscar/', VacanteViews.find_vacanty, name='find_vacanty'),
