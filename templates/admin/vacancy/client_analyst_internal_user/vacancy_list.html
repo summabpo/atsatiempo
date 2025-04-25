@@ -42,6 +42,14 @@ Listado de vacantes
                                         <th scope="col" class="text-center">F. CREACIÓN</th>
                                         <th scope="col" class="text-center">F. PRESENTACIÓN</th>
                                         <th scope="col" class="text-center">F. CIERRE</th>
+                                        <th scope="col" class="text-center">TOTAL</th>
+                                        <th scope="col" class="text-center">APLICADOS</th>
+                                        <th scope="col" class="text-center">EN PROCESO</th>
+                                        <th scope="col" class="text-center">FINALIZADOS</th>
+                                        <th scope="col" class="text-center">CANCELADOS</th>
+                                        <th scope="col" class="text-center">DESISTIDOS</th>
+                                        <th scope="col" class="text-center">NO APTOS</th>
+                                        <th scope="col" class="text-center">SELECCIONADOS</th>
                                         <th scope="col" class="text-center">ESTADO</th>
                                         <th scope="col" class="text-center">ACCIONES</th>
                                     </tr>
@@ -59,14 +67,36 @@ Listado de vacantes
                                         <td class="text-secondary text-center">{{ e.fecha_creacion|date:"Y-m-d" }}</td>
                                         <td class="text-secondary text-center">{{ e.fecha_presentacion|date:"Y-m-d" }}</td>
                                         <td class="text-secondary text-center">{{ e.fecha_cierre|date:"Y-m-d" }}</td>
-                                        <td class="text-secondary text-center">{{ e.usuario_asignado.primer_nombre }}</td>
+                                        <td class="text-secondary text-center">{{ e.total_aplicaciones }}</td>
+                                        <td class="text-secondary text-center">
+                                            <span class="badge bg-warning bg-opacity-10 text-warning p-2 fs-12 fw-normal">{{ e.aplicadas }}</span>
+                                        </td>
+                                        <td class="text-secondary text-center">
+                                            <span class="badge bg-info bg-opacity-10 text-info p-2 fs-12 fw-normal">{{ e.en_proceso }}</span>
+                                        </td>
+                                        <td class="text-secondary text-center">
+                                            <span class="badge bg-primary bg-opacity-10 text-primary p-2 fs-12 fw-normal">{{ e.finalizadas }}</span>
+                                        </td>
+                                        <td class="text-secondary text-center">
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary p-2 fs-12 fw-normal">{{ e.canceladas }}</span>
+                                        </td>
+                                        <td class="text-secondary text-center">
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary p-2 fs-12 fw-normal">{{ e.desistidos }}</span>
+                                        </td>
+                                        <td class="text-secondary text-center">
+                                            <span class="badge bg-danger bg-opacity-10 text-danger p-2 fs-12 fw-normal">{{ e.no_aptas }}</span>
+                                        </td>
+                                        <td class="text-secondary text-center">
+                                            <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">{{ e.seleccionados }}</span>
+                                        </td>
+
                                         <td class="text-center">
                                             {% if e.estado_vacante == 1 %}
-                                                <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">Activa</span>
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary p-2 fs-12 fw-normal">Activa</span>
                                             {% elif e.estado_vacante == 2 %}
                                                 <span class="badge bg-warning bg-opacity-10 text-warning p-2 fs-12 fw-normal">En Proceso</span>
                                             {% elif e.estado_vacante == 3 %}
-                                                <span class="badge bg-secondary bg-opacity-10 text-secondary p-2 fs-12 fw-normal">Finalizada</span>
+                                                <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">Finalizada</span>
                                             {% elif e.estado_vacante == 4 %}
                                                 <span class="badge bg-danger bg-opacity-10 text-danger p-2 fs-12 fw-normal">Cancelada</span>
                                             {% else %}
@@ -80,11 +110,11 @@ Listado de vacantes
                                                         <i class="material-symbols-outlined fs-16 text-danger">edit</i>
                                                     </a>
                                                 </div>
-                                                <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Asignar Candidatos">
+                                                {% comment %} <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Asignar Candidatos">
                                                     <a href="{% url 'vacantes:vacantes_asignar_analista_cliente' e.id  %}" class="btn bg-info bg-opacity-10 fw-medium text-info py-2 px-4">
                                                         <i class="material-symbols-outlined fs-16 text-info">assignment_ind</i>
                                                     </a>
-                                                </div>
+                                                </div> {% endcomment %}
                                             </div>
                                         </td> 
                                     </tr>
