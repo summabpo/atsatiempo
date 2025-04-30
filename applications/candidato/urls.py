@@ -1,10 +1,15 @@
 from django.urls import path
-from .views import views, CandidatoView , LaboralView, EstudioView, HabilidadView
+from .views import views, CandidatoView , LaboralView, EstudioView, HabilidadView, candidate_views
 
 
 url_principal = 'candidato/'
 
 urlpatterns = [
+
+    #candidate_user
+
+    
+
     path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),
     # path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),
     path( url_principal+'listar', CandidatoView.candidatos_listar, name='candidato_listar'),
