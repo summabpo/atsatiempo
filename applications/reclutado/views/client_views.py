@@ -39,6 +39,9 @@ def detail_vacancy_recruited(request, pk):
     # Obtener los reclutados asociados a la vacante
     reclutados = query_recruited_vacancy_id(vacante.id)
 
+    # formulario para asignar candidato a la vacante
+    
+
     context ={
         'vacante': vacante,
         'reclutados': reclutados,

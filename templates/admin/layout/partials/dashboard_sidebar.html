@@ -54,8 +54,8 @@
             {% include "admin/layout/partials/menu_sidebar/dashboard_sidebar_admin.html" %}
         {% endif %}
 
-        <!-- ADMINISTRADOR -->
-        {% if request.session.grupo_id == 1 %}
+        <!-- CANDIDATO -->
+        {% if request.session.grupo_id == 2 %}
             {% include "admin/layout/partials/menu_sidebar/dashboard_sidebar_candidate.html" %}
         {% endif %}
         

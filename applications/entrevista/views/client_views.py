@@ -4,6 +4,7 @@ from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 
 
 from applications.common.views.EnvioCorreo import enviar_correo
+from applications.services.service_interview import query_interview_all
 from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm, EntrevistaGestionForm
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones
 from applications.reclutado.models import Cli056AplicacionVacante
@@ -101,3 +102,20 @@ def management_interview(request, pk):
     }
 
     return render(request, 'admin/interview/client_user/interview_management.html', context)
+
+#listado entrevistas por vacante
+@login_required
+@validar_permisos('acceso_cliente')
+def interview_list(request):
+    # Verificar si el cliente_id está en la sesión
+    cliente_id = request.session.get('cliente_id')
+
+    # Obtener información de las entrevistas por vacante
+    entrevistas = query_interview_all()
+    entrevistas = entrevistas.filter(asignacion_vacante__vacante_id_052__asignacion_cliente_id_064__id_cliente_asignado=cliente_id)
+
+    context = {
+        'entrevistas': entrevistas,
+    }
+
+    return render(request, 'admin/interview/client_user/interview_list.html', context)

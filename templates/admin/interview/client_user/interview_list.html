@@ -20,24 +20,13 @@ Detalle vacante
 					</a>
 				</li>
                 <li class="breadcrumb-item active" aria-current="page">
-					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
-						<span class="text-secondary fw-medium hover" >Listado de Vacantes</span>
-					</a>
-				</li>
-				<li class="breadcrumb-item active" aria-current="page">
-					<span class="fw-medium">Detalle Vacante</span>
+					<span class="fw-medium">Listado Entrevistas</span>
 				</li>
 			</ol>
 		</nav>
 	</div>
     <div class="row">
-		<div class="col-3">
-            {% include "admin/vacancy/common_template/info_vacancy.html" %}
-        </div>
-		<div class="col-9">
-            {% include "admin/vacancy/common_template/metrics_menu_vacancy.html" %}
-
-            <!-- Inicio de Contenido -->
+		<div class="col-12">
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-body p-4">
                     <div class="default-table-area all-projects">
@@ -46,6 +35,8 @@ Detalle vacante
                                 <thead>
                                     <tr>
                                         <th scope="col">ID</th>
+                                        <th scope="col">CLIENTE</th>
+                                        <th scope="col">VACANTE</th>
                                         <th scope="col">FECHA</th>
                                         <th scope="col">HORA</th>
                                         <th scope="col">LUGAR / ENLACE</th>
@@ -59,6 +50,8 @@ Detalle vacante
                                     {% for e in entrevistas %}
                                     <tr>
                                         <td class="text-body">{{e.id}}</td>
+                                        <td class="text-body">{{e.nombre_cliente}}</td>
+                                        <td class="text-body">{{e.titulo_vacante}}</td>
                                         <td class="text-body">{{e.fecha_entrevista}}</td>
                                         <td class="text-body">{{e.hora_entrevista}}</td>
 										<td class="text-body">{{e.lugar_enlace}}</td>
@@ -72,7 +65,7 @@ Detalle vacante
                                                 {% endif %}
                                                 
                                                 <div class="ms-2 ps-1">
-                                                    <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="fw-medium">{{e.nombre_candidato}}</a>
+                                                    {{e.nombre_candidato}}
                                                 </div>
                                             </div>
                                             
@@ -131,6 +124,7 @@ Detalle vacante
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 </div>
@@ -138,6 +132,7 @@ Detalle vacante
 
 {% block js %} 
 <script>
-    
+    // Initialize select2 for specific fields
+    initializeSelect2('#id_estado_asignacion');
 </script>  
 {% endblock js %}

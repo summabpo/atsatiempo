@@ -32,6 +32,13 @@ urlpatterns = [
     path( url_principal+'gestion/analista/<int:pk>/', client_analyst_internal_views.detail_vacancy, name='vacantes_gestion_analista_interno'),
 
 
+
+
+
+
+
+
+
     #Vacante New
     path( url_principal+'buscar/', VacanteViews.find_vacanty, name='find_vacanty'),
 
