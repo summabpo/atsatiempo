@@ -91,11 +91,15 @@ class ReclutadoCrearForm(forms.Form):
 
         # Validar si el número de documento ya existe en el modelo Cli056AplicacionVacante
         if Can101Candidato.objects.filter(numero_documento=numero_documento).exists():
+            print("El número de documento ya existe en el modelo Cli056AplicacionVacante")
             # Validar si el correo ya existe en el modelo Can101Candidato
             if Can101Candidato.objects.filter(email=email).exclude(numero_documento=numero_documento).exists():
-                raise forms.ValidationError("El correo electrónico ya está registrado con otro candidato.")
+                self.add_error('email', 'El correo electrónico ya está registrado con otro candidato.')
+                print("El correo electrónico ya está registrado con otro candidato.")
             # Validar si el teléfono ya existe en el modelo Can101Candidato
             if Can101Candidato.objects.filter(telefono=telefono).exclude(numero_documento=numero_documento).exists():
-                raise forms.ValidationError("El número de teléfono ya está registrado con otro candidato.")
+                print("El número de teléfono ya está registrado con otro candidato.")
+                self.add_error('telefono', 'El número de teléfono ya está registrado con otro candidato.')
+
 
         return cleaned_data   
