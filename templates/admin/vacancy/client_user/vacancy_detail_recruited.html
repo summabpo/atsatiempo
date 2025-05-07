@@ -45,6 +45,39 @@ Detalle vacante
             <!-- Inicio de Contenido -->
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-body p-4">
+                    <div class=row">
+                        <div class="col-12 d-flex justify-content-between align-items-center mb-4">
+                            
+                            <div class="d-flex justify-content-center w-100">
+                                <button type="button" class="btn btn-primary py-2 px-4 text-white fw-semibold" data-bs-toggle="modal" data-bs-target="#exampleModal4">
+                                    Reclutar Candidato
+                                </button>
+                            </div>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-xl">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Reclutar Candidato</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                                
+                                            <form method="post" id="form_crear_reclutado">
+                                                <div class="modal-body">
+                                                    {% csrf_token %}
+                                                    {% crispy form %}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button id="form_crear_reclutado" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_crear_reclutado">Guardar</button>
+                                                </div>
+                                            </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                     <div class="default-table-area all-projects">
                         <div class="table-responsive">
                             <table class="table align-middle text-center" id="myTable">
@@ -121,6 +154,73 @@ Detalle vacante
 
 {% block js %} 
 <script>
+    $(document).ready(function () {
+        const inputDocumento = $('#id_numero_documento');
+        const apiUrl = "{% url 'reclutados:api_canidate_document' %}";
+
+        inputDocumento.on('blur', function () {
+            const numeroDocumento = $(this).val().trim();
+
+            if (numeroDocumento.length > 0) {
+                $.ajax({
+                    url: apiUrl,
+                    method: 'POST',
+                    data: {
+                        numero_documento: numeroDocumento,
+                        vacante_id: '{{ vacante.id }}',
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        if (data.status == 'error') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message,
+                                confirmButtonText: 'Aceptar'
+                            });
+                            
+                            // Limpiar los campos si hay error
+                            $('#id_primer_nombre').val('');
+                            $('#id_segundo_nombre').val('');
+                            $('#id_primer_apellido').val('');
+                            $('#id_segundo_apellido').val('');
+                            $('#id_email').val('');
+                            $('#id_telefono').val('');
+                            return;
+                        }
+
+                        // Llenar campos
+                        $('#id_primer_nombre').val(data.primer_nombre || '');
+                        $('#id_segundo_nombre').val(data.segundo_nombre || '');
+                        $('#id_primer_apellido').val(data.primer_apellido || '');
+                        $('#id_segundo_apellido').val(data.segundo_apellido || '');
+                        $('#id_email').val(data.email || '');
+                        $('#id_telefono').val(data.telefono || '');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error al buscar candidato:', error);
+                        /*
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error al buscar candidato.',
+                            confirmButtonText: 'Aceptar'
+                        });
+                        */
+                        
+                        // Limpiar los campos si hay error
+                        $('#id_primer_nombre').val('');
+                        $('#id_segundo_nombre').val('');
+                        $('#id_primer_apellido').val('');
+                        $('#id_segundo_apellido').val('');
+                        $('#id_email').val('');
+                        $('#id_telefono').val('');
+                    }
+                });
+            }
+        });
+    });
+</script>
+
     
-</script>  
 {% endblock js %}
