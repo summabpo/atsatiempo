@@ -1,12 +1,10 @@
 from django.db import models
 from applications.common.models import Cat001Estado, Cat004Ciudad
+from applications.services.choices import GENERO_CHOICES_STATIC
 # Create your models here.
 class Can101Candidato(models.Model):
 
-    SEXO_CHOICES = (
-        ('1', 'FEMENINO'),
-        ('2', 'MASCULINO'),
-    )
+    
 
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     email = models.EmailField(unique=True)
@@ -15,13 +13,14 @@ class Can101Candidato(models.Model):
     primer_apellido = models.CharField(max_length=50, verbose_name="Primer Apellido", blank=True, null=False)
     segundo_apellido = models.CharField(max_length=50, verbose_name="Segundo Apellido", blank=True, null=True)
     ciudad_id_004 = models.ForeignKey(Cat004Ciudad, models.DO_NOTHING, db_column='ciudad_id_004', blank=True, null=True)
-    sexo = models.CharField(max_length=1, blank=True, null=True, choices=SEXO_CHOICES)
+    sexo = models.CharField(max_length=1, blank=True, null=True, choices=GENERO_CHOICES_STATIC)
     fecha_nacimiento = models.DateField(null=True, blank=True) 
     telefono = models.CharField(max_length=10, blank=True, null=True)
     skills = models.ManyToManyField('Can104Skill', through='Can101CandidatoSkill', related_name='candidatos_skill')
     imagen_perfil = models.ImageField(upload_to='media_uploads/candidato/', blank=True, null=True, verbose_name="Imagen de Perfil")
     hoja_de_vida = models.FileField(upload_to='media_uploads/hoja_de_vida/', blank=True, null=True, verbose_name="Hoja de Vida")
     numero_documento = models.CharField(max_length=20, blank=True, null=True)
+    direccion = models.CharField(max_length=255, blank=True, null=True, verbose_name="Dirección")
 
 
     def __str__(self):
