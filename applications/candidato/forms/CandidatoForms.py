@@ -453,7 +453,7 @@ class CandidateForm(forms.Form):
     )
     hoja_de_vida = forms.FileField(
         label='HOJA DE VIDA',
-        required=True,
+        required=False,
         widget=forms.ClearableFileInput(attrs={
             'class': 'form-control form-control-solid'
         })

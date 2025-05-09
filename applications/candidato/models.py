@@ -1,6 +1,6 @@
 from django.db import models
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.services.choices import GENERO_CHOICES_STATIC
+from applications.services.choices import GENERO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC
 # Create your models here.
 class Can101Candidato(models.Model):
 
@@ -87,15 +87,7 @@ class Can102Experiencia(models.Model):
         verbose_name_plural = 'EXPERIENCIAS'
 
 class Can103Educacion(models.Model):
-    TIPO_ESTUDIO_CHOICES = (
-        ('1', 'Primaria'),
-        ('2', 'Bachillerato'),
-        ('3', 'Técnico'),
-        ('4', 'Tecnólogo'),
-        ('5', 'Profesional'),
-        ('6', 'Maestría'),
-        ('7', 'Doctorado'),
-    )
+    
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     institucion = models.CharField(max_length=100, blank=False, null=False)
     fecha_inicial = models.DateField(blank=False, null=False)
@@ -106,7 +98,7 @@ class Can103Educacion(models.Model):
     fortaleza_adquiridas = models.TextField(blank=True, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
     ciudad_id_004 = models.ForeignKey(Cat004Ciudad, models.DO_NOTHING, db_column='ciudad_id_004', blank=True, null=True)
-    tipo_estudio = models.CharField(max_length=1, choices=TIPO_ESTUDIO_CHOICES, blank=True, null=True)
+    tipo_estudio = models.CharField(max_length=1, choices=NIVEL_ESTUDIO_CHOICES_STATIC, blank=True, null=True)
     def __str__(self):
         return self.institucion
     class Meta:

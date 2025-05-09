@@ -7,16 +7,13 @@ from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden, Div,
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato, Can103Educacion
 
+
+from crispy_forms.layout import Layout, Layout, Div, Submit, HTML, Row, Column, Fieldset
+
+from applications.services.choices import NIVEL_ESTUDIO_CHOICES_STATIC
+
 class EstudioCandidatoForm(forms.Form):
-    ESTUDIO_CHOICES = [
-        ('', '----------'),
-        ('1', 'Primaria'),
-        ('2', 'Secundaria'),
-        ('3', 'Técnico'),
-        ('4', 'Tecnológico'),
-        ('5', 'Universitario'),
-        ('6', 'Postgrado'),
-    ]
+    
 
     estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=False)
     institucion = forms.CharField(label='INSTITUCION', required=True , widget=forms.TextInput(attrs={'placeholder': 'Institución'}))
@@ -32,7 +29,7 @@ class EstudioCandidatoForm(forms.Form):
     carrera = forms.CharField(label='CARRERA', required=True , widget=forms.TextInput(attrs={'placeholder': 'Carrera'}))
     fortaleza_adquiridas = forms.CharField(label='LOGROS', required=False, widget=forms.Textarea(attrs={'placeholder': 'Descripción de la Fortalezas'}))
     ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)
-    tipo_estudio = forms.ChoiceField(label='TIPO DE ESTUDIO', choices=ESTUDIO_CHOICES, required=True)
+    tipo_estudio = forms.ChoiceField(label='TIPO DE ESTUDIO', choices=NIVEL_ESTUDIO_CHOICES_STATIC, required=True)
 
     def __init__(self, *args, **kwargs):
         self.candidato_id = kwargs.pop('candidato_id', None)
@@ -185,3 +182,143 @@ class EstudioCandidatoForm(forms.Form):
         )
 
         estudio.save()
+
+class candidateStudyForm(forms.Form):
+    institucion = forms.CharField(
+        label='INSTITUCIÓN',
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'Institución', 'class': 'form-control'})
+    )
+    fecha_inicial = forms.DateField(
+        label='FECHA INICIAL',
+        required=True,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    fecha_final = forms.DateField(
+        label='FECHA FINAL',
+        required=False,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    grado_en = forms.BooleanField(
+        label='¿GRADUADO?',
+        required=False,
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input',
+        })
+    )
+    titulo = forms.CharField(
+        label='TÍTULO',
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Título', 'class': 'form-control'})
+    )
+    carrera = forms.CharField(
+        label='CARRERA',
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Carrera', 'class': 'form-control'})
+    )
+    fortaleza_adquiridas = forms.CharField(
+        label='FORTALEZAS ADQUIRIDAS',
+        required=False,
+        widget=forms.Textarea(attrs={'placeholder': 'Descripción de las fortalezas', 'class': 'form-control'})
+    )
+    ciudad_id_004 = forms.ModelChoiceField(
+        label='CIUDAD',
+        queryset=Cat004Ciudad.objects.all(),
+        required=True,
+        widget=forms.Select(
+            attrs={
+                'class': 'form-select',
+                'data-control': 'select2',
+                'data-dropdown-parent': '#estudios_candidato',
+            }
+        )
+    )
+    tipo_estudio = forms.ChoiceField(
+        label='TIPO DE ESTUDIO',
+        choices=NIVEL_ESTUDIO_CHOICES_STATIC,
+        required=True,
+        widget=forms.Select(
+            attrs={
+                'class': 'form-select',
+                'data-control': 'select2',
+                'data-dropdown-parent': '#estudios_candidato',
+            }
+        )
+    )
+
+    def __init__(self, *args, instance=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.estudio = instance  # guardamos el candidato si se va a editar
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Información Académica</h4>"),
+                    Div('institucion', css_class='col-12'),
+                    Div('tipo_estudio', css_class='col-12'),
+                    Div('grado_en', css_class='col-12'),
+                    Div('titulo', css_class='col-12 campo-graduado'),
+                    Div('fecha_inicial', css_class='col-6'),
+                    Div('fecha_final', css_class='col-6 campo-graduado'),
+                    Div('ciudad_id_004', css_class='col-12'),
+                    Div('carrera', css_class='col-12'),
+                    Div('fortaleza_adquiridas', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+            
+        )
+
+    
+    def clean(self):
+        cleaned_data = super().clean()
+
+        institucion = cleaned_data.get('institucion')
+        fecha_inicial = cleaned_data.get('fecha_inicial')
+        fecha_final = cleaned_data.get('fecha_final')
+        grado_en = cleaned_data.get('grado_en')
+        titulo = cleaned_data.get('titulo')
+        carrera = cleaned_data.get('carrera')
+        fortaleza_adquiridas = cleaned_data.get('fortaleza_adquiridas')
+        tipo_estudio = cleaned_data.get('tipo_estudio')
+        
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', institucion):
+            self.add_error('institucion', "La Instirución solo puede contener letras.")
+        else:
+            self.cleaned_data['institucion'] = institucion.upper()
+
+        fecha_actual = timezone.now().date()
+
+        if fecha_inicial > fecha_actual:
+            self.add_error('fecha_inicial', "La fecha inicial no puede ser mayor que la fecha actual.")
+
+        if grado_en:
+            if fecha_final is None or fecha_final == '':
+                self.add_error('fecha_final', "La fecha final no puede ir vacía si esta graduado.")
+            elif fecha_final < fecha_inicial:
+                self.add_error('fecha_final', "La fecha final no puede ser menor que la fecha inicial.")
+
+            if titulo is None or titulo == '':
+                self.add_error('titulo', "El título no puede ir vacío si esta graduado.")
+
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', titulo):
+            self.add_error('titulo', "La Instirución solo puede contener letras.")
+        else:
+            self.cleaned_data['titulo'] = titulo.upper()
+
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', carrera):
+            self.add_error('carrera', "La Instirución solo puede contener letras.")
+        else:
+            self.cleaned_data['carrera'] = carrera.upper()
+        
+        if fortaleza_adquiridas and len(fortaleza_adquiridas.split()) < 5:
+            self.add_error('fortaleza_adquiridas', 'La descripción debe contener al menos 5 palabras')
+
+        return cleaned_data
