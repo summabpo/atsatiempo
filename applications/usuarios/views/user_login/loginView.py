@@ -154,12 +154,17 @@ def company_registration(request):
                         }
 
                         # Envia el metodo
-                        enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
+                        if enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None):
+                            messages.success(request, 'Se ha enviado correo electrónico')
+                            print('Se ha enviado correo electrónico')
+                        else:
+                            messages.error(request, 'Error al enviar el correo de bienvenida. Por favor, intenta más tarde.')
+                            print('Se ha enviado correo electrónico')
                         
                         # login(request, user)
                         frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
                         messages.success(request, frase_aleatoria)
-                        return redirect('accesses:signup')  
+                        return redirect('accesses:login')  
                 else:
                     frase_aleatoria = random.choice(frases_error_contrasena)
                     messages.error(request, frase_aleatoria)
@@ -242,7 +247,7 @@ def candidate_registration(request):
                     frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
                     messages.success(request, frase_aleatoria)
 
-                    return redirect('accesses:signup_candidato') 
+                    return redirect('accesses:login') 
             else:
                 frase_aleatoria = random.choice(frases_error_contrasena)
                 messages.error(request, frase_aleatoria)
@@ -329,6 +334,16 @@ def login_view(request):
                         login(request, user)
                         request.session['primer_nombre'] = f'{usuario.primer_nombre} {usuario.primer_apellido}'
                         request.session['email'] = usuario.username
+                        request.session['user_login'] = {
+                            'id': usuario.id,
+                            'username': usuario.username,
+                            'email': usuario.email,
+                            'primer_nombre': usuario.primer_nombre,
+                            'segundo_nombre': usuario.segundo_nombre,
+                            'primer_apellido': usuario.primer_apellido,
+                            'segundo_apellido': usuario.segundo_apellido,
+                            'grupo_id': usuario.group.id,
+                        }
                         
                         # Valida el usuario es de grupo cliente para mostrar el id cliente. 
                         if usuario.group.id == 4:
@@ -352,6 +367,15 @@ def login_view(request):
                                 request.session['tipo_cliente'] = 'Asignado'
                             
                             request.session['tipo_usuario'] = 'Cliente'
+                        
+                        if usuario.group.id == 5:
+                            request.session['imagen_url'] = usuario.imagen_perfil.url
+                            request.session['tipo_usuario'] = 'Analista Selección'
+                            request.session['cliente_id'] = usuario.cliente_id_051.id
+                        
+                        if usuario.group.id == 6:
+                            request.session['imagen_url'] = usuario.imagen_perfil.url
+                            request.session['tipo_usuario'] = 'Analista Selección ATS'
 
                         if usuario.group.id == 2:
                             candidato_id = usuario.candidato_id_101.id

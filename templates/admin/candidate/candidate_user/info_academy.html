@@ -1,0 +1,149 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Información Básica | Talent Tray
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">INFORMACIÓN ACADÉMICA</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="#" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Información Académica</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<!-- Start Your Code -->
+    <div class="row">
+		<div class="col-12">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+                    
+                    <!-- Button trigger modal -->
+                    <div class="d-flex justify-content-center w-100">
+                        <button type="button" class="btn btn-primary py-2 px-4 text-white fw-semibold" data-bs-toggle="modal" data-bs-target="#estudios_candidato">
+                            Crear Estudio
+                        </button>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="estudios_candidato" tabindex="-1" aria-labelledby="estudios_candidato" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Crear Estudio</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <form method="post" id="form_crear_reclutado">
+                                    <div class="modal-body">
+                                        {% csrf_token %}
+                                        {% crispy form %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="form_crear_reclutado" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_crear_reclutado">Guardar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="default-table-area all-projects">
+                        <div class="table-responsive">
+                            <table class="table align-middle text-center" id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">ID</th>
+                                        <th scope="col" class="text-center">INSTITUCIÓN</th>
+                                        <th scope="col" class="text-center">FECHA INICIAL</th>
+                                        <th scope="col" class="text-center">FECHA FINAL</th>
+                                        <th scope="col" class="text-center">GRADO OBTENIDO</th>
+                                        <th scope="col" class="text-center">TÍTULO</th>
+                                        <th scope="col" class="text-center">CARRERA</th>
+                                        <th scope="col" class="text-center">FORTALEZAS ADQUIRIDAS</th>
+                                        <th scope="col" class="text-center">CIUDAD</th>
+                                        <th scope="col" class="text-center">TIPO DE ESTUDIO</th>
+                                        <th scope="col" class="text-center">TÍTULO</th>
+                                        <th scope="col" class="text-center">ACCIONES</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for e in studies %}
+                                    <tr>
+                                        <td class="text-body text-center">{{e.id}}</td>
+                                        <td class="text-body text-center">{{e.institucion}}</td>
+                                        <td class="text-body text-center">{{e.fecha_inicial}}</td>
+                                        <td class="text-body text-center">{{ e.fecha_final }}</td>
+                                        <td class="text-body text-center">{{ e.grado_en|yesno:"Sí,No" }}</td>
+                                        <td class="text-body text-center">{{ e.carrera }}</td>
+                                        <td class="text-body text-center">{{ e.fortaleza_adquiridas }}</td>
+                                        <td class="text-body text-center">{{ e.ciudad_id_004 }}</td>
+                                        <td class="text-body text-center">{{ e.tipo_estudio }}</td>
+                                        <td class="text-body text-center">{{ e.titulo }}</td>
+
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center align-items-center gap-1">
+                                                <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                    <a href="{% url 'vacantes:vacantes_gestion_analista_interno' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                        <i class="material-symbols-outlined fs-16 text-danger">edit</i>
+                                                    </a>
+                                                </div>
+                                                {% comment %} <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Asignar Candidatos">
+                                                    <a href="{% url 'vacantes:vacantes_asignar_analista_cliente' e.id  %}" class="btn bg-info bg-opacity-10 fw-medium text-info py-2 px-4">
+                                                        <i class="material-symbols-outlined fs-16 text-info">assignment_ind</i>
+                                                    </a>
+                                                </div> {% endcomment %}
+                                            </div>
+                                        </td> 
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    
+    $(document).ready(function () {
+        function toggleGraduationFields() {
+            if ($('#id_grado_en').is(':checked')) {
+                $('.campo-graduado').show();
+            } else {
+                $('.campo-graduado').hide();
+            }
+        }
+
+        // Ejecutar al cargar
+        toggleGraduationFields();
+
+        // Ejecutar al cambiar el checkbox
+        $('#id_grado_en').change(toggleGraduationFields);
+    });
+
+    initializeSelect2('#id_tipo_estudio');
+    initializeSelect2('#id_ciudad_id_004');
+</script>
+{% endblock js %}

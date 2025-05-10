@@ -22,7 +22,7 @@ from applications.usuarios.models import UsuarioBase, Grupo
 #form
 from applications.vacante.forms.VacanteForms import VacanteForm
 from applications.cliente.forms.ClienteForms import ClienteForm
-from applications.cliente.forms.CreacionUsuariosForm import CrearUsuarioInternoForm
+from applications.usuarios.forms.CreacionUsuariosForm import CrearUsuarioInternoForm
 
 def consulta_asignacion_entrevista_todos():
     entrevista = 1

@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from applications.reclutado.models import Cli056AplicacionVacante
+from applications.reclutado.models import Cli056AplicacionVacante, Cli063AplicacionVacanteHistorial
 from applications.usuarios.decorators  import validar_permisos
 from django.db.models import F, Q, Case, When, Value, CharField
 from django.db.models.functions import Concat
@@ -80,3 +80,26 @@ def query_recruited_vacancy_id(vacante_id):
             output_field=CharField()
         )
     ).order_by('-id')
+
+
+def consultar_historial_aplicacion_vacante(aplicacion_vacante_id):
+    # Luego de obtener el candidato y demás datos...
+    historial_aplicaciones = (
+        Cli063AplicacionVacanteHistorial.objects
+        .filter(aplicacion_vacante_056__id=aplicacion_vacante_id)
+        .select_related('aplicacion_vacante_056', 'usuario_id_genero')
+        .order_by('-fecha')
+    )
+
+    return  [
+        {
+            'id': h.id,
+            'fecha': h.fecha,
+            'usuario': str(h.usuario_id_genero) if h.usuario_id_genero else "Sistema",
+            'estado': h.get_estado_display(),
+            'descripcion': h.descripcion,
+            'vacante': str(h.aplicacion_vacante_056.vacante_id_050) if hasattr(h.aplicacion_vacante_056, 'vacante_id_050') else '',
+            'aplicacion_id': h.aplicacion_vacante_056.id,
+        }
+        for h in historial_aplicaciones
+    ]

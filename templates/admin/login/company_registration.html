@@ -1,6 +1,6 @@
 {% extends 'admin/layout/auth_base.html' %} 
 {% load static %}
-{% block title %} Talent Tray | Login{% endblock %}
+{% block title %} Talent Tray | Registro Empresa{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
 <!-- Start Main Content Area -->
@@ -27,8 +27,8 @@
                         {% crispy form %}
                         <div class="form-group">
                             <p>
-                                Si no tiene una cuenta, por favor realice su registro.
-                                <a href="{% url 'accesses:registration' %}" class="fw-medium text-primary text-decoration-none">Registro</a>
+                                Si ya tiene una cuenta, por favor inicie sesión.
+                                <a href="{% url 'accesses:login' %}" class="fw-medium text-primary text-decoration-none">Ingresar</a>
                             </p>
                         </div>
 					</div>
@@ -66,5 +66,7 @@
             });
         {% endfor %}
     {% endif %}
+
+    initializeSelect2('#id_city');
 </script>  
 {% endblock js %} 

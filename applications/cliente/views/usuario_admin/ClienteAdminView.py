@@ -25,7 +25,7 @@ from applications.candidato.models import Can101Candidato, Can101CandidatoSkill,
 #form
 from applications.vacante.forms.VacanteForms import VacanteForm, VacanteFormEdit, VacanteAdicionalForms
 from applications.cliente.forms.ClienteForms import ClienteForm, ClienteFormEdit
-from applications.cliente.forms.CreacionUsuariosForm import CrearUsuarioInternoForm
+from applications.usuarios.forms.CreacionUsuariosForm import CrearUsuarioInternoForm
 
 #utils
 from applications.common.views.EnvioCorreo import enviar_correo, generate_token

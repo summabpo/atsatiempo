@@ -4,6 +4,8 @@ from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 
 
 from applications.common.views.EnvioCorreo import enviar_correo
+from applications.reclutado.forms.FormRecruited import ReclutadoCrearForm
+from applications.services.service_candidate import buscar_candidato
 from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones
 from applications.reclutado.models import Cli056AplicacionVacante
@@ -23,13 +25,14 @@ from applications.vacante.forms.VacanteForms import VacancyFormAll
 
 #query
 from applications.services.service_vacanty import  query_vacanty_detail
-from applications.services.service_recruited import query_recruited_vacancy_id
+from applications.services.service_recruited import consultar_historial_aplicacion_vacante, query_recruited_vacancy_id
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
 #detalle de la vacante
 @login_required
 @validar_permisos('acceso_admin', 'acceso_cliente')
 def detail_vacancy_recruited(request, pk):
+    form_errors = False
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
     
@@ -39,9 +42,72 @@ def detail_vacancy_recruited(request, pk):
     # Obtener los reclutados asociados a la vacante
     reclutados = query_recruited_vacancy_id(vacante.id)
 
+    # formulario para asignar candidato a la vacante
+
+    form = ReclutadoCrearForm()
+    if request.method == 'POST':
+        form = ReclutadoCrearForm(request.POST)
+        if form.is_valid():
+            numero_documento = form.cleaned_data['numero_documento']
+            primer_nombre = form.cleaned_data['primer_nombre']
+            segundo_nombre = form.cleaned_data['segundo_nombre']
+            primer_apellido = form.cleaned_data['primer_apellido']
+            segundo_apellido = form.cleaned_data['segundo_apellido']
+            telefono = form.cleaned_data['telefono']
+            email = form.cleaned_data['email']
+
+            #registro del candidato
+            candidato, created = Can101Candidato.objects.get_or_create(
+                numero_documento=numero_documento,
+                defaults={
+                    'primer_nombre': primer_nombre,
+                    'segundo_nombre': segundo_nombre,
+                    'primer_apellido': primer_apellido,
+                    'segundo_apellido': segundo_apellido,
+                    'telefono': telefono,
+                    'email': email,
+                    'estado_id_001': Cat001Estado.objects.get(id=1),  # Asumiendo que 1 es el estado por defecto
+                }
+            )
+
+            if created:
+                messages.success(request, 'Candidato creado exitosamente.')
+            else:
+                messages.info(request, 'Candidato ya existe. Se actualizarán los datos.')
+                # Actualizar los datos del candidato si ya existe
+                candidato.primer_nombre = primer_nombre
+                candidato.segundo_nombre = segundo_nombre
+                candidato.primer_apellido = primer_apellido
+                candidato.segundo_apellido = segundo_apellido
+                candidato.telefono = telefono
+                candidato.email = email
+                candidato.save()
+
+            # Validar que el candidato no esté ya registrado en la vacante
+            if Cli056AplicacionVacante.objects.filter(candidato_101=candidato, vacante_id_052=vacante).exists():
+                messages.error(request, 'El candidato ya está registrado en esta vacante.')
+                return redirect('reclutados:vacantes_reclutados_cliente', pk=pk)
+
+            #registro de la aplicacion de la vacante
+            aplicacion_vacante = Cli056AplicacionVacante.objects.create(
+                vacante_id_052=vacante,
+                candidato_101=candidato,
+                estado=Cat001Estado.objects.get(id=1),  # Asumiendo que 1 es el estado por defecto
+            )
+            messages.success(request, 'Candidato asignado en la vacante exitosamente.')
+            return redirect('reclutados:vacantes_reclutados_cliente', pk=pk)    
+        else:
+            form_errors = True
+            messages.error(request, 'Error al crear el candidato. Verifique los datos.')
+
+    else:
+        form = ReclutadoCrearForm()
+
     context ={
         'vacante': vacante,
         'reclutados': reclutados,
+        'form': form,
+        'form_errors' : form_errors,
     }
 
     return render(request, 'admin/vacancy/client_user/vacancy_detail_recruited.html', context)
@@ -61,7 +127,10 @@ def detail_recruited(request, pk):
 
     #obtener información del candidato
     info_candidato = get_object_or_404(Can101Candidato, id=asignacion_vacante.candidato_101.id)
+    info_detalle_candidato = buscar_candidato(asignacion_vacante.candidato_101.id)
 
+    #obtener información del historico de la vacante:
+    historico_vacante = consultar_historial_aplicacion_vacante(asignacion_vacante.id)
     # obtener los datos de las entrevistas
     entrevista = Cli057AsignacionEntrevista.objects.filter(asignacion_vacante=asignacion_vacante.id).order_by('-fecha_entrevista')
     
@@ -142,6 +211,8 @@ def detail_recruited(request, pk):
         'candidato': info_candidato,
         'reclutado': asignacion_vacante,
         'entrevista': entrevista,
+        'info_detalle_candidato': info_detalle_candidato,
+        'historial': historico_vacante,
     }
 
     return render(request, 'admin/recruited/client_user/recruited_detail.html', context)

@@ -32,7 +32,7 @@ class Cli051Cliente(models.Model):
     contacto = models.CharField(max_length=50, blank=False)
     telefono = models.CharField(max_length=20, blank=False)
     perfil_empresarial = models.TextField(blank=True)  # Nuevo campo de texto
-    logo = models.ImageField(upload_to='cliente', blank=True, null=True)  # Nuevo campo de imagen
+    logo = models.ImageField(upload_to='media_uploads/cliente/', blank=True, null=True)  # Nuevo campo de imagen
     tipo_cliente = models.CharField(max_length=1, choices=TIPO_CLIENTE_STATIC, default='1')
     actividad_economica = models.ForeignKey(Cli065ActividadEconomica, on_delete=models.CASCADE, null=True, blank=True)
     periodicidad_pago = models.CharField(max_length=1, choices=PAGO_NOMINA_STATIC, default='1', blank=True, null=True)

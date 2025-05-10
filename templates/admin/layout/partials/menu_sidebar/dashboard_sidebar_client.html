@@ -44,16 +44,74 @@
     </a>
     <ul class="menu-sub">
         <li class="menu-item">
-            <a href="{% url 'vacantes:vacantes_crear_cliente' %}" class="menu-link {% if request.resolver_match.url_name == 'vacantes_crear_cliente' %}active{% endif %} ">
-                Crear
-            </a>
-        </li>
-        <li class="menu-item">
             <a href="{% url 'accesses:users_client' %}"  class="menu-link {% if request.resolver_match.url_name == 'users_client' %}active{% endif %} OR {% if request.resolver_match.url_name == 'users_client_detail' %}active{% endif %} ">
                 Ver Grupo de Trabajo
             </a>
         </li>
     </ul>
+</li>
+
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">ENTREVISTAS</span>
+</li>
+<li class="menu-item 
+    {% if request.resolver_match.url_name == 'entrevistas_listado_cliente' %}open{% endif %}
+    ">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon red">event</span>
+        <span class="title">Entrevistas</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="{% url 'entrevistas:entrevistas_listado_cliente' %}"  class="menu-link {% if request.resolver_match.url_name == 'entrevistas_listado_cliente' %}active{% endif %}  ">
+                Ver Entrevistas
+            </a>
+        </li>
+    </ul>
+</li>
+
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">PARAMETRIZACIÓN</span>
+</li>
+<li class="menu-item 
+    {% if request.resolver_match.url_name == 'info_principal_cliente' %}open{% endif %}
+    ">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon red">admin_panel_settings</span>
+        <span class="title">Información Principal</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="{% url 'clientes:info_principal_cliente' %}"  class="menu-link {% if request.resolver_match.url_name == 'info_principal_cliente' %}active{% endif %} ">
+                Ver información Principal
+            </a>
+        </li>
+        
+    </ul>
+    <li class="menu-item open"> 
+        <a href="{% url 'clientes:cargos_cliente' %}" class="menu-link {% if request.resolver_match.url_name == 'cargos_cliente' or request.resolver_match.url_name == 'cargos_cliente_detalle' %}active{% endif %}">
+            <span class="material-symbols-outlined menu-icon">work</span>
+            <span class="title">Cargos</span>
+        </a>
+    </li>
+    <li class="menu-item open">
+        <a href="{% url 'clientes:pruebas_cliente' %}" class="menu-link {% if request.resolver_match.url_name == 'pruebas_cliente' %}active{% endif %}">
+            <span class="material-symbols-outlined menu-icon">quiz</span>
+            <span class="title">Pruebas</span>
+        </a>
+    </li>
+    <li class="menu-item open">
+        <a href="{% url 'clientes:politicas_cliente' %}" class="menu-link {% if request.resolver_match.url_name == 'politicas_cliente' %}active{% endif %}">
+            <span class="material-symbols-outlined menu-icon">policy</span>
+            <span class="title">Políticas Internas</span>
+        </a>
+    </li>
+    <li class="menu-item open">  
+        <a href="{% url 'clientes:requisitos_cliente' %}" class="menu-link {% if request.resolver_match.url_name == 'requisitos_cliente' %}active{% endif %}">
+            <span class="material-symbols-outlined menu-icon">checklist</span>
+            <span class="title">Requisitos</span>
+        </a>
+    </li>
 </li>
 
 {% comment %} <li class="menu-title small text-uppercase">

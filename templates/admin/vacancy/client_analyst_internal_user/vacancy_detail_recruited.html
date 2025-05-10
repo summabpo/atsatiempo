@@ -1,0 +1,228 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Detalle vacante
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">DETALLE VACANTE: </h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+                <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_asignadas_analista_interno' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Listado de Vacantes</span>
+					</a>
+				</li>
+                <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_gestion_analista_interno' vacante.id %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Detalle Vacante</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Reclutados</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+    <div class="row">
+		<div class="col-3">
+            {% include "admin/vacancy/common_template/info_vacancy.html" %}
+        </div>
+		<div class="col-9">
+            {% include "admin/vacancy/common_template/menu_vacancy_analist.html" %}
+
+            <!-- Inicio de Contenido -->
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-body p-4">
+                    <div class="col-12 d-flex justify-content-between align-items-center mb-4">
+                            
+                        <div class="d-flex justify-content-center w-100">
+                            <button type="button" class="btn btn-primary py-2 px-4 text-white fw-semibold" data-bs-toggle="modal" data-bs-target="#reclutadoCandidato">
+                                Reclutar Candidato
+                            </button>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="reclutadoCandidato" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Reclutar Candidato</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                            
+                                        <form method="post" id="form_crear_reclutado">
+                                            <div class="modal-body">
+                                                {% csrf_token %}
+                                                {% crispy form %}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button id="form_crear_reclutado" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_crear_reclutado">Guardar</button>
+                                            </div>
+                                        </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="default-table-area all-projects">
+                        <div class="table-responsive">
+                            <table class="table align-middle text-center" id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">DOCUMENTO</th>
+                                        <th scope="col">CANDIDATO</th>
+                                        <th scope="col">FECHA APLICADO</th>
+                                        <th scope="col">FECHA ÚLTIMA GESTIÓN</th>
+                                        <th scope="col">ANALISTA RESPONSABLE</th>
+                                        <th scope="col">ESTADO</th>
+                                        <th scope="col">ACCIONES</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for e in reclutados %}
+                                    <tr>
+                                        <td class="text-body">{{e.id}}</td>
+                                        <td class="text-body">{{e.candidato_documento}}</td>
+
+                                        <td>
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                {% if e.candidato_imagen_perfil %}
+                                                    <img src="/media_uploads/{{ e.candidato_imagen_perfil}}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
+                                                {% else %}
+                                                    <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
+                                                {% endif %}
+                                                
+                                                <div class="ms-2 ps-1">
+                                                    <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="fw-medium">{{e.candidato_nombre}}</a>
+                                                </div>
+                                            </div>
+                                            
+                                        </td>
+                                        <td class="text-secondary">{{ e.fecha_aplicacion|date:"Y-m-d" }}</td>
+                                        <td class="text-secondary">{{ e.fecha_actualizacion|date:"Y-m-d" }}</td>
+                                        <td class="text-secondary">{{ e.usuario_asignado_nombre }}</td>
+                                        <td>
+                                            <span class="badge bg-opacity-10 bg-{{e.obtener_estado_con_color.color}} py-1 px-2 text-{{e.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_estado_con_color.estado}}</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                <!-- 
+                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                    <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                                </a>
+                                                -->
+                                                <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                    <a href="{% url 'reclutados:reclutados_detalle_analista_interno' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                        <i class="material-symbols-outlined fs-16 text-danger">manage_accounts</i>
+                                                    </a>
+                                                </div>
+                                                
+                                                <!-- 
+                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                    <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                                </a>
+                                                -->
+                                            </div>
+                                        </td> 
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+
+    {% if form.errors %}
+        var myModal = new bootstrap.Modal(document.getElementById('reclutadoCandidato'));
+        myModal.show();
+    {% endif %}
+
+    $(document).ready(function () {
+        const inputDocumento = $('#id_numero_documento');
+        const apiUrl = "{% url 'reclutados:api_canidate_document' %}";
+
+        inputDocumento.on('blur', function () {
+            const numeroDocumento = $(this).val().trim();
+
+            if (numeroDocumento.length > 0) {
+                $.ajax({
+                    url: apiUrl,
+                    method: 'POST',
+                    data: {
+                        numero_documento: numeroDocumento,
+                        vacante_id: '{{ vacante.id }}',
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        if (data.status == 'error') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message,
+                                confirmButtonText: 'Aceptar'
+                            });
+                            
+                            // Limpiar los campos si hay error
+                            $('#id_primer_nombre').val('');
+                            $('#id_segundo_nombre').val('');
+                            $('#id_primer_apellido').val('');
+                            $('#id_segundo_apellido').val('');
+                            $('#id_email').val('');
+                            $('#id_telefono').val('');
+                            return;
+                        }
+
+                        // Llenar campos
+                        $('#id_primer_nombre').val(data.primer_nombre || '');
+                        $('#id_segundo_nombre').val(data.segundo_nombre || '');
+                        $('#id_primer_apellido').val(data.primer_apellido || '');
+                        $('#id_segundo_apellido').val(data.segundo_apellido || '');
+                        $('#id_email').val(data.email || '');
+                        $('#id_telefono').val(data.telefono || '');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error al buscar candidato:', error);
+                        /*
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error al buscar candidato.',
+                            confirmButtonText: 'Aceptar'
+                        });
+                        */
+                        
+                        // Limpiar los campos si hay error
+                        $('#id_primer_nombre').val('');
+                        $('#id_segundo_nombre').val('');
+                        $('#id_primer_apellido').val('');
+                        $('#id_segundo_apellido').val('');
+                        $('#id_email').val('');
+                        $('#id_telefono').val('');
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock js %}

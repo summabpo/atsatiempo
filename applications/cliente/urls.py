@@ -1,6 +1,6 @@
 from django.urls import path
 from applications.cliente.views import  ClienteView, CreacionUsuariosView
-from applications.cliente.views import admin_views
+from applications.cliente.views import admin_views, client_views
 from applications.cliente.views.preguntasView import PreguntasView
 
 #vistas del usuario administrador ATS
@@ -20,6 +20,14 @@ urlpatterns = [
     path( url_principal+'detalle/cargos/<int:pk>/', admin_views.client_detail_position, name='cliente_cargos'),
     path( url_principal+'detalle/requisitos/<int:pk>/', admin_views.client_detail_required, name='cliente_requisitos'),
     path( url_principal+'detalle/cargos/configuracion/<int:pk>/<int:cargo_id>/', admin_views.client_detail_position_config, name='cliente_cargos_configuracion'),
+    
+    #client_user
+    path( url_principal+'informacion_principal', client_views.client_detail_info, name='info_principal_cliente'),
+    path( url_principal+'cargos', client_views.client_position, name='cargos_cliente'),
+    path( url_principal+'cargos/detalle/<int:cargo_id>/', client_views.client_position_config, name='cargos_cliente_detalle'),
+    path( url_principal+'pruebas', client_views.client_test, name='pruebas_cliente'),
+    path( url_principal+'politicas', client_views.client_politics, name='politicas_cliente'),
+    path( url_principal+'requisitos', client_views.client_required, name='requisitos_cliente'),
 
 
 

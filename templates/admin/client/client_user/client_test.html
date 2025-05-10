@@ -1,0 +1,118 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Pruebas
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">PRUEBAS</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Pruebas</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<div class="row">
+		<div class="col-12">
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+                    <form method="post" id="form_cliente_politicas">
+                        {% csrf_token %}
+                        {% crispy form %}
+                        <button id="form_cliente_politicas" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_cliente_politicas">Guardar</button>
+                    </form>
+				</div>
+			</div>
+
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="default-table-area all-products">
+                                <div class="table-responsive">
+                                    <table class="table align-middle text-center" id="myTable">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">PRUEBA</th>
+                                                <th scope="col">DESCRIPCIÓN</th>
+                                                <th scope="col">FECHA</th>
+                                                <th scope="col">ESTADO</th>
+                                                <th scope="col"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for e in pruebas_cliente %}
+                                            <tr>
+                                                <td class="text-body">{{ e.id }}</td>
+                                                <td class="text-body">{{ e.prueba_psicologica.nombre }}</td>
+                                                <td class="text-body">{{ e.prueba_psicologica.descripcion }}</td>
+                                                <td class="text-body">{{ e.fecha_asignacion }}</td>
+                                                <td class="text-body">{{ e.estado }}</td>
+                                                <td>
+                                                    <div class="d-flex justify-content-center align-items-center gap-1">
+                                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">
+                                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                                        </button>
+                                                    </div>
+                                                </td> 
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		</div>
+	</div>
+
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    $(document).ready(function() {
+        $('#clientes_listado').DataTable({
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar:",
+                "paginate": {
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            },
+            "columnDefs": [
+                {
+                    "targets": -1,
+                    "orderable": false,
+                    "searchable": false
+                }
+            ]
+        });
+    });
+
+    // Initialize select2 for specific fields
+    initializeSelect2('#id_pruebas');
+</script>  
+{% endblock js %}

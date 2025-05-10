@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q, Value, Case, When, CharField
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 
+from applications.services.service_interview import query_interview_all
 from applications.services.service_recruited import query_recruited_vacancy_id
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones
 from applications.reclutado.models import Cli056AplicacionVacante
@@ -241,7 +242,7 @@ def list_vacanty_all(request):
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats')
 def detail_vacancy(request, pk):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
@@ -383,7 +384,7 @@ def detail_vacancy(request, pk):
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats')
 def detail_vacancy_interview(request, pk):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
@@ -391,8 +392,14 @@ def detail_vacancy_interview(request, pk):
     # Obtener información de la vacante
     vacante = query_vacanty_detail().get(id=pk)
 
+    # Obtener información de las entrevistas por vacante
+    entrevistas = query_interview_all()
+    entrevistas = entrevistas.filter(asignacion_vacante__vacante_id_052=pk)
+    
+
     context ={
         'vacante': vacante,
+        'entrevistas': entrevistas,
     }
 
     return render(request, 'admin/vacancy/client_user/vacancy_detail_interview.html', context)

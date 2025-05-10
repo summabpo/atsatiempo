@@ -1,0 +1,34 @@
+{% load custom_tags %}
+
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">VACANTES</span>
+</li>
+<li class="menu-item 
+    {% if request.resolver_match.url_name == 'vacantes_crear_cliente' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_listado_cliente' %}open{% endif %}
+    {% if request.resolver_match.url_name|is_active_url_cliente_vacante %}open{% endif %}
+    
+    ">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon red">work</span>
+        <span class="title">Vacantes</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="{% url 'vacantes:vacantes_asignadas' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'vacantes_listado_cliente' %}active{% endif %} 
+            {% if request.resolver_match.url_name|is_active_url_cliente_vacante %}active{% endif %}
+            ">
+                Mis Vacantes
+            </a>
+        </li>
+    </ul>
+</li>
+
+
+{% comment %} <li class="menu-title small text-uppercase">
+    <span class="menu-title-text">ENTREVISTAS</span>
+</li>
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">GRUPO DE TRABAJO</span>
+</li> {% endcomment %}

@@ -1,0 +1,71 @@
+{% load custom_tags %}
+
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">INFORMACIÓN PERSONAL </span>
+</li>
+<li class="menu-item 
+    {% if request.resolver_match.url_name == 'candidato_info_personal' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_academica' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_laboral' %}open{% endif %}
+    ">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon red">description</span>
+        <span class="title">Hoja de Vida</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="{% url 'candidatos:candidato_info_personal' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'candidato_info_personal' %}active{% endif %} 
+            ">
+                Información Básica
+            </a>
+            <a href="{% url 'candidatos:candidato_info_academica' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'candidato_info_academica' %}active{% endif %} 
+            ">
+                Información Académica
+            </a>
+            <a href="{% url 'candidatos:candidato_info_laboral' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'candidato_info_laboral' %}active{% endif %} 
+            ">
+                Experiencia Laboral
+            </a>
+        </li>
+    </ul>
+</li>
+
+
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">VACANTES </span>
+</li>
+<li class="menu-item 
+    {% if request.resolver_match.url_name == 'vacantes_asignadas_analista_interno' %}open{% endif %}
+    ">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon red">work</span>
+        <span class="title">Vacantes</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="#"  class="menu-link  
+            {% if request.resolver_match.url_name == 'vacantes_asignadas_analista_interno' %}active{% endif %} 
+            ">
+                Vacantes Aplicadas
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="#"  class="menu-link  
+            {% if request.resolver_match.url_name == 'vacantes_asignadas_analista_interno' %}active{% endif %} 
+            ">
+                Vacantes
+            </a>
+        </li>
+    </ul>
+</li>
+
+
+{% comment %} <li class="menu-title small text-uppercase">
+    <span class="menu-title-text">ENTREVISTAS</span>
+</li>
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">GRUPO DE TRABAJO</span>
+</li> {% endcomment %}
