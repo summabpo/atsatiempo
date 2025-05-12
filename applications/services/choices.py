@@ -86,13 +86,13 @@ FRECUENCIA_PAGO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
 ]
 
 NIVEL_ESTUDIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
-    (1, 'Sin estudios'),
-    (2, 'Primaria'),
-    (3, 'Secundaria/Bachillerato'),
-    (4, 'Técnico'),
-    (5, 'Tecnólogo'),
-    (6, 'Universitario'),
-    (7, 'Postgrado'),
+    ('1', 'Sin estudios'),
+    ('2', 'Primaria'),
+    ('3', 'Secundaria/Bachillerato'),
+    ('4', 'Técnico'),
+    ('5', 'Tecnólogo'),
+    ('6', 'Universitario'),
+    ('7', 'Postgrado'),
 ]
 
 HORARIO_CHOICES_STATIC =  [('', 'Seleccione una opción...')] + [
@@ -137,4 +137,10 @@ IDIOMA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
 
 EDAD_SELECT_CHOICES_STATIC = [('', 'Seleccione una opción... ')] + [
     (str(age), f'{age} años') for age in range(18, 51)
+]
+
+NIVEL_HABILIDAD_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    (1, 'Básico'),
+    (2, 'Intermedio'),
+    (3, 'Superior'),
 ]

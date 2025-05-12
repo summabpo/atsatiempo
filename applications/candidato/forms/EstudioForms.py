@@ -249,13 +249,13 @@ class candidateStudyForm(forms.Form):
         )
     )
 
-    def __init__(self, *args, instance=None, **kwargs):
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance', None)
         super().__init__(*args, **kwargs)
         
-        self.estudio = instance  # guardamos el candidato si se va a editar
-
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.helper.form_id = 'form_estudio'
         self.helper.layout = Layout(
             Div(
                 Div(
@@ -288,6 +288,7 @@ class candidateStudyForm(forms.Form):
         carrera = cleaned_data.get('carrera')
         fortaleza_adquiridas = cleaned_data.get('fortaleza_adquiridas')
         tipo_estudio = cleaned_data.get('tipo_estudio')
+        ciudad_id_004 = cleaned_data.get('ciudad_id_004')
         
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', institucion):
             self.add_error('institucion', "La Instirución solo puede contener letras.")
@@ -308,14 +309,14 @@ class candidateStudyForm(forms.Form):
             if titulo is None or titulo == '':
                 self.add_error('titulo', "El título no puede ir vacío si esta graduado.")
 
-        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', titulo):
-            self.add_error('titulo', "La Instirución solo puede contener letras.")
-        else:
-            self.cleaned_data['titulo'] = titulo.upper()
+            if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', titulo):
+                self.add_error('titulo', "El titulo solo puede contener letras.")
+            else:
+                self.cleaned_data['titulo'] = titulo.upper()
 
-        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', carrera):
-            self.add_error('carrera', "La Instirución solo puede contener letras.")
-        else:
+        if carrera and not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', carrera):
+            self.add_error('carrera', "La Carrera solo puede contener letras.")
+        elif carrera:
             self.cleaned_data['carrera'] = carrera.upper()
         
         if fortaleza_adquiridas and len(fortaleza_adquiridas.split()) < 5:

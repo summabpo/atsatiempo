@@ -6,7 +6,10 @@
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'candidato_info_personal' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_academica' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_academica_editar' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_laboral' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_laboral_editar' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_habilidades' %}open{% endif %}
     ">
     <a href="javascript:void(0);" class="menu-link menu-toggle active">
         <span class="material-symbols-outlined menu-icon red">description</span>
@@ -21,13 +24,20 @@
             </a>
             <a href="{% url 'candidatos:candidato_info_academica' %}"  class="menu-link  
             {% if request.resolver_match.url_name == 'candidato_info_academica' %}active{% endif %} 
+            {% if request.resolver_match.url_name == 'candidato_info_academica_editar' %}active{% endif %} 
             ">
                 Información Académica
             </a>
             <a href="{% url 'candidatos:candidato_info_laboral' %}"  class="menu-link  
             {% if request.resolver_match.url_name == 'candidato_info_laboral' %}active{% endif %} 
+            {% if request.resolver_match.url_name == 'candidato_info_laboral_editar' %}active{% endif %} 
             ">
                 Experiencia Laboral
+            </a>
+            <a href="{% url 'candidatos:candidato_info_habilidades' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'candidato_info_habilidades' %}active{% endif %} 
+            ">
+                Habilidades
             </a>
         </li>
     </ul>

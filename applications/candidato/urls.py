@@ -10,6 +10,10 @@ urlpatterns = [
     path( url_principal+'informacion/basica', candidate_views.candidate_info, name='candidato_info_personal'),
     path( url_principal+'informacion/academica', candidate_views.candidate_info_academy, name='candidato_info_academica'),
     path( url_principal+'informacion/laboral', candidate_views.candidate_info_job, name='candidato_info_laboral'),
+    path( url_principal+'informacion/habilidades', candidate_views.candidate_info_skills, name='candidato_info_habilidades'),
+
+    path( url_principal+'informacion/academica/editar/<int:pk>', candidate_views.candidate_info_academy_edit, name='candidato_info_academica_editar'),
+    path( url_principal+'informacion/laboral/editar/<int:pk>', candidate_views.candidate_info_job_edit, name='candidato_info_laboral_editar'),
     # path( url_principal+'informacion/skills', candidate_views.candidate_info_job, name='candidato_info_skills'),
     
 

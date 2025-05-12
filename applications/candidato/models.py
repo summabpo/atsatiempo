@@ -1,6 +1,6 @@
 from django.db import models
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.services.choices import GENERO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC
+from applications.services.choices import GENERO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, NIVEL_HABILIDAD_CHOICES_STATIC
 # Create your models here.
 class Can101Candidato(models.Model):
 
@@ -70,13 +70,12 @@ class Can102Experiencia(models.Model):
     entidad = models.CharField(max_length=100)
     sector = models.CharField(max_length=100)
     fecha_inicial = models.DateField(blank=True, null=True)
-    fecha_final = models.DateField(blank=True, null=False)
+    fecha_final = models.DateField(blank=True, null=True)
     activo = models.BooleanField(default=False)
     logro = models.TextField(blank=True, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
     cargo = models.CharField(max_length=100)
     
-
     def __str__(self):
         return self.entidad
     class Meta:
@@ -93,12 +92,16 @@ class Can103Educacion(models.Model):
     fecha_inicial = models.DateField(blank=False, null=False)
     fecha_final = models.DateField(blank=False, null=True)
     grado_en = models.BooleanField(default=False)
-    titulo = models.CharField(max_length=100, blank=False, null=False)
+    titulo = models.CharField(max_length=100, blank=True, null=True)
     carrera = models.CharField(max_length=100, blank=True, null=True)
     fortaleza_adquiridas = models.TextField(blank=True, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
     ciudad_id_004 = models.ForeignKey(Cat004Ciudad, models.DO_NOTHING, db_column='ciudad_id_004', blank=True, null=True)
     tipo_estudio = models.CharField(max_length=1, choices=NIVEL_ESTUDIO_CHOICES_STATIC, blank=True, null=True)
+
+    def mostrar_tipo_estudio(self):
+        return dict(NIVEL_ESTUDIO_CHOICES_STATIC).get(self.tipo_estudio, "No especificado")
+
     def __str__(self):
         return self.institucion
     class Meta:
@@ -122,11 +125,7 @@ class Can104Skill(models.Model):
 class Can101CandidatoSkill(models.Model):
     candidato_id_101 = models.ForeignKey(Can101Candidato, on_delete=models.CASCADE, db_column='candidato_id_101')
     skill_id_104 = models.ForeignKey(Can104Skill, on_delete=models.CASCADE, db_column='skill_id_104')
-    nivel= models.IntegerField(choices=[
-        (1, 'Básico'),
-        (2, 'Intermedio'),
-        (3, 'Superior')
-    ])
+    nivel= models.IntegerField(choices=NIVEL_HABILIDAD_CHOICES_STATIC)
 
     class Meta:
         # managed = False 

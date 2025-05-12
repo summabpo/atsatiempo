@@ -6,6 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden, Div, Submit, HTML
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato, Can104Skill, Can101CandidatoSkill
+from applications.services.choices import NIVEL_HABILIDAD_CHOICES_STATIC
 
 
 level_Choices = [
@@ -66,4 +67,23 @@ class HabilidadCandidatoForm(forms.Form):
 
         return cleaned_data
 
-    
+class habilidadForm(forms.Form):
+    skill_id_104 = forms.ModelChoiceField(
+        queryset=Can104Skill.objects.all(),
+        label='Habilidad',
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+            'data-placeholder': 'Seleccione una habilidad',
+        })
+    )
+    nivel = forms.ChoiceField(
+        choices=NIVEL_HABILIDAD_CHOICES_STATIC,
+        label='Nivel',
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+            
+        })
+    )
+

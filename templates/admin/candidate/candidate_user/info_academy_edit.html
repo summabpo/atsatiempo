@@ -1,0 +1,84 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Información Básica | Talent Tray
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">INFORMACIÓN ACADÉMICA</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="#" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+                <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'candidatos:candidato_info_academica' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Listado Experiencias</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Editar Registro</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<!-- Start Your Code -->
+    <div class="row">
+        <div class="col-2">
+        </div>
+		<div class="col-8">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+                    <form method="post" id="form_estudio">
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            {% crispy form %}
+                        </div>
+                        <div class="modal-footer">
+                            <button id="form_estudio" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_estudio">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    // Check if there are form errors and show the modal if true
+    $(document).ready(function () {
+        function toggleGraduationFields() {
+            if ($('#id_grado_en').is(':checked')) {
+                $('.campo-graduado').show();
+            } else {
+                $('.campo-graduado').hide();
+            }
+        }
+
+        // Ejecutar al cargar
+        toggleGraduationFields();
+
+        // Ejecutar al cambiar el checkbox
+        $('#id_grado_en').change(toggleGraduationFields);
+    });
+
+    initializeSelect2('#id_tipo_estudio');
+    initializeSelect2('#id_ciudad_id_004');
+</script>
+{% endblock js %}

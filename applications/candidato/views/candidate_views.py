@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 from applications.candidato.forms.EstudioForms import EstudioCandidatoForm, candidateStudyForm
+from applications.candidato.forms.ExperienciaForms import candidateJobForm
+from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.decorators  import validar_permisos
 
 #models
@@ -77,19 +79,44 @@ def candidate_info(request):
 @login_required
 @validar_permisos('acceso_candidato')
 def candidate_info_academy(request):
+    form_errors = False
     candidato_id = request.session.get('candidato_id')
 
     studies = Can103Educacion.objects.filter(candidato_id_101=candidato_id).order_by('-fecha_inicial')
     form = candidateStudyForm()
 
     if request.method == 'POST':
+        form = candidateStudyForm(request.POST)
         if form.is_valid():
-            
+            institucion = form.cleaned_data['institucion']
+            grado_en = form.cleaned_data['grado_en']
+            fecha_inicial = form.cleaned_data['fecha_inicial']
+            fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
+            titulo = form.cleaned_data['titulo'] if form.cleaned_data['titulo'] else None
+            carrera = form.cleaned_data['carrera']
+            fortaleza_adquiridas = form.cleaned_data['fortaleza_adquiridas']
+            candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
+            ciudad_obj_004 = form.cleaned_data['ciudad_id_004']
+            tipo_estudio = form.cleaned_data['tipo_estudio']
 
+            Can103Educacion.objects.create(
+                estado_id_001=Cat001Estado.objects.get(id=1),  # Cambia esto según tu lógica
+                institucion=institucion,
+                grado_en=grado_en,
+                fecha_inicial=fecha_inicial,
+                fecha_final=fecha_final,
+                titulo=titulo,
+                carrera=carrera,
+                fortaleza_adquiridas=fortaleza_adquiridas,
+                candidato_id_101=candidato_id_101,
+                ciudad_id_004=ciudad_obj_004,
+                tipo_estudio=tipo_estudio
+            )
             
             messages.success(request, 'Información académica actualizada exitosamente.')
             return redirect('candidatos:candidato_info_academica')
         else:
+            form_errors = True
             messages.error(request, 'Error al actualizar la información académica.')
     else:
         form = candidateStudyForm(request.POST or None)
@@ -97,20 +124,162 @@ def candidate_info_academy(request):
     context = {
         'studies': studies,
         'form': form,
+        'form_errors': form_errors,
     }
     return render(request, 'admin/candidate/candidate_user/info_academy.html', context)
 
 @login_required
 @validar_permisos('acceso_candidato')
+def candidate_info_academy_edit(request, pk):
+    study = get_object_or_404(Can103Educacion, pk=pk)
+    form_errors = False
+
+    initial = {
+        'institucion': study.institucion,
+        'fecha_inicial': study.fecha_inicial.strftime('%Y-%m-%d') if study.fecha_inicial else '',
+        'fecha_final': study.fecha_final.strftime('%Y-%m-%d') if study.fecha_final else '',
+        'grado_en': study.grado_en,
+        'titulo': study.titulo,
+        'carrera': study.carrera,
+        'fortaleza_adquiridas': study.fortaleza_adquiridas,
+        'ciudad_id_004': study.ciudad_id_004.id if study.ciudad_id_004 else None,
+        'tipo_estudio': study.tipo_estudio,
+    }
+
+    if request.method == 'POST':
+        form = candidateStudyForm(request.POST)
+        if form.is_valid():
+
+            study.institucion = form.cleaned_data['institucion']
+            study.grado_en = form.cleaned_data['grado_en']
+            study.fecha_inicial = form.cleaned_data['fecha_inicial']
+            study.fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
+            study.titulo = form.cleaned_data['titulo'] if form.cleaned_data['titulo'] else None
+            study.carrera = form.cleaned_data['carrera']
+            study.fortaleza_adquiridas = form.cleaned_data['fortaleza_adquiridas']
+            study.candidato_id_101 = Can101Candidato.objects.get(id=request.session.get('candidato_id'))
+            study.ciudad_id_004 = form.cleaned_data['ciudad_id_004']
+            study.tipo_estudio = form.cleaned_data['tipo_estudio']
+            study.save()
+
+            messages.success(request, 'Información académica actualizada exitosamente.')
+            return redirect('candidatos:candidato_info_academica')
+        else:
+            form_errors = True
+            messages.error(request, 'Error al actualizar la información académica.')
+    else:
+        form = candidateStudyForm(initial=initial)
+
+    context = {
+        'form': form,
+        'form_errors': form_errors,
+    }
+    return render(request, 'admin/candidate/candidate_user/info_academy_edit.html', context)
+
+@login_required
+@validar_permisos('acceso_candidato')
 def candidate_info_job(request):
+    form_errors = False
     candidato_id = request.session.get('candidato_id')
 
-    jobs = Can102Experiencia.objects.filter(candidato_id_101=candidato_id).order_by('-fecha_inicio')
+    jobs = Can102Experiencia.objects.filter(candidato_id_101=candidato_id).order_by('-fecha_inicial')
     
-    form = 25
+    if request.method == 'POST':
+        form = candidateJobForm(request.POST)
+        if form.is_valid():
+            entidad = form.cleaned_data['entidad']
+            sector = form.cleaned_data['sector']
+            fecha_inicial = form.cleaned_data['fecha_inicial']
+            fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
+            activo = form.cleaned_data['activo']
+            logro = form.cleaned_data['logro']
+            candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
+            cargo = form.cleaned_data['cargo']
+
+            Can102Experiencia.objects.create(
+                estado_id_001=Cat001Estado.objects.get(id=1),  # Cambia esto según tu lógica
+                entidad=entidad,
+                sector=sector,
+                fecha_inicial=fecha_inicial,
+                fecha_final=fecha_final,
+                activo=activo,
+                logro=logro,
+                candidato_id_101=candidato_id_101,
+                cargo=cargo
+            )
+            
+            messages.success(request, 'Información laboral actualizada exitosamente.')
+            return redirect('candidatos:candidato_info_laboral')
+        else:
+            form_errors = True
+            messages.error(request, 'Error al crear la información laboral.')
+    else:
+        form = candidateJobForm()
 
     context = {
         'jobs': jobs,
         'form': form,
+        'form_errors': form_errors,
     }
     return render(request, 'admin/candidate/candidate_user/info_job.html', context)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def candidate_info_job_edit(request, pk):
+    # Obtener el ID del candidato desde la sesión
+    candidato_id = request.session.get('candidato_id')
+
+    # Obtener la experiencia laboral del candidato (ajusta según tu modelo)
+    job = Can102Experiencia.objects.get(id=pk)
+
+
+    # Inicializar el formulario con los datos de la experiencia laboral
+    initial={
+        'entidad': job.entidad,
+        'sector': job.sector,
+        'fecha_inicial': job.fecha_inicial.strftime('%Y-%m-%d') if job.fecha_inicial else '',
+        'fecha_final': job.fecha_final.strftime('%Y-%m-%d') if job.fecha_final else '',
+        'activo': job.activo,
+        'logro': job.logro,
+        'cargo': job.cargo,
+    }
+
+    form = candidateJobForm(initial=initial)
+
+    if request.method == 'POST':
+        form = candidateJobForm(request.POST)
+        if form.is_valid():
+            # Actualizar la experiencia laboral con los datos del formulario
+            job.entidad = form.cleaned_data['entidad']
+            job.sector = form.cleaned_data['sector']
+            job.fecha_inicial = form.cleaned_data['fecha_inicial']
+            job.fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
+            job.activo = form.cleaned_data['activo']
+            job.logro = form.cleaned_data['logro']
+            job.cargo = form.cleaned_data['cargo']
+            job.save()
+
+            messages.success(request, 'Información laboral actualizada exitosamente.')
+            return redirect('candidatos:candidato_info_laboral')
+        else:
+            messages.error(request, 'Error al actualizar la información laboral.')
+    else:
+        form = candidateJobForm(initial=initial)
+    # Renderizar la plantilla con la información de la experiencia laboral
+    context = {
+        'form': form,
+    }
+    return render(request, 'admin/candidate/candidate_user/info_job_edit.html', context)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def candidate_info_skills(request):
+
+    # Obtener el ID del candidato desde la sesión
+    candidato_id = request.session.get('candidato_id')
+
+    form = 12
+    context = {
+        'form': form,
+    }
+    return render(request, 'admin/candidate/candidate_user/info_skills.html', context)
