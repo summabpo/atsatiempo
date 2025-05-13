@@ -5,6 +5,7 @@ from django.contrib import messages
 
 from applications.candidato.forms.EstudioForms import EstudioCandidatoForm, candidateStudyForm
 from applications.candidato.forms.ExperienciaForms import candidateJobForm
+from applications.candidato.forms.HabilidadForms import CandidateHabilityForm
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.decorators  import validar_permisos
 
@@ -278,8 +279,58 @@ def candidate_info_skills(request):
     # Obtener el ID del candidato desde la sesión
     candidato_id = request.session.get('candidato_id')
 
-    form = 12
+    form = CandidateHabilityForm()
+
+    # Obtener las habilidades del candidato (ajusta según tu modelo)
+    skills = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato_id).order_by('-id')
+
+    if request.method == 'POST':
+        form = CandidateHabilityForm(request.POST)
+        if form.is_valid():
+            habilidad = form.cleaned_data['skill_id_104'].upper()
+            nivel = form.cleaned_data['nivel']
+
+            # Guardar la habilidad en la base de datos
+            skill, created = Can104Skill.objects.get_or_create(
+                nombre=habilidad,
+                estado_id_004=Cat001Estado.objects.get(id=1)
+                )  # Cambia esto según tu lógica
+            
+            candidato = Can101Candidato.objects.get(id=candidato_id)
+
+            # Verificar si la habilidad ya existe para el candidato
+            if not Can101CandidatoSkill.objects.filter(candidato_id_101=candidato, skill_id_104=skill).exists():
+                Can101CandidatoSkill.objects.create(
+                    candidato_id_101=candidato,
+                    skill_id_104=skill,
+                    nivel=nivel
+                )
+                messages.success(request, 'Habilidad agregada exitosamente.')
+            else:
+                messages.error(request, 'La habilidad ya está registrada.')
+
+            return redirect('candidatos:candidato_info_habilidades')
+        else:
+            messages.error(request, 'Error al agregar la habilidad.')
+    else:
+        form = CandidateHabilityForm()   
     context = {
         'form': form,
+        'skills': skills,
     }
+    
     return render(request, 'admin/candidate/candidate_user/info_skills.html', context)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def candidate_info_skills_delete(request, pk):
+    # Obtener el ID del candidato desde la sesión
+    candidato_id = request.session.get('candidato_id')
+    # Obtener la habilidad del candidato (ajusta según tu modelo)
+    skill = Can101CandidatoSkill.objects.get(id=pk)
+    # Eliminar la habilidad del candidato
+    skill.delete()
+    # Mostrar un mensaje de éxito
+    messages.success(request, 'Habilidad eliminada exitosamente.')
+
+    return redirect('candidatos:candidato_info_habilidades')

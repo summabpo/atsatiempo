@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import views, CandidatoView , LaboralView, EstudioView, HabilidadView, candidate_views
+from .views import api_views
 
 
 url_principal = 'candidato/'
@@ -11,11 +12,14 @@ urlpatterns = [
     path( url_principal+'informacion/academica', candidate_views.candidate_info_academy, name='candidato_info_academica'),
     path( url_principal+'informacion/laboral', candidate_views.candidate_info_job, name='candidato_info_laboral'),
     path( url_principal+'informacion/habilidades', candidate_views.candidate_info_skills, name='candidato_info_habilidades'),
+    path( url_principal+'informacion/skills/borrar/<int:pk>', candidate_views.candidate_info_skills_delete, name='candidato_info_habilidades_borrar'),
 
     path( url_principal+'informacion/academica/editar/<int:pk>', candidate_views.candidate_info_academy_edit, name='candidato_info_academica_editar'),
     path( url_principal+'informacion/laboral/editar/<int:pk>', candidate_views.candidate_info_job_edit, name='candidato_info_laboral_editar'),
     # path( url_principal+'informacion/skills', candidate_views.candidate_info_job, name='candidato_info_skills'),
-    
+
+    #apis
+    path( url_principal+'informacion/skills/api/', api_views.api_suggestions_skills, name='api_sugerencias_habilidades'),
 
     # path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),
     # # path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),

@@ -67,14 +67,12 @@ class HabilidadCandidatoForm(forms.Form):
 
         return cleaned_data
 
-class habilidadForm(forms.Form):
-    skill_id_104 = forms.ModelChoiceField(
-        queryset=Can104Skill.objects.all(),
+class CandidateHabilityForm(forms.Form):
+    skill_id_104 = forms.CharField(
         label='Habilidad',
-        widget=forms.Select(attrs={
-            'class': 'form-select form-select-solid',
-            'data-control': 'select2',
-            'data-placeholder': 'Seleccione una habilidad',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-solid',
+            'placeholder': 'Escriba una habilidad',
         })
     )
     nivel = forms.ChoiceField(
@@ -86,4 +84,35 @@ class habilidadForm(forms.Form):
             
         })
     )
+
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance', None)
+        super().__init__(*args, **kwargs)
+        
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_skill'
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Habilidades</h4>"),
+                    Div('skill_id_104', css_class='col-6'),
+                    Div('nivel', css_class='col-6'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),  
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        skill_id_104 = cleaned_data.get('skill_id_104')
+        nivel = cleaned_data.get('nivel')
+
+        if not skill_id_104:
+            self.add_error('skill_id_104', "Este campo es obligatorio.")
+        if not nivel:
+            self.add_error('nivel', "Este campo es obligatorio.")
+
+        return cleaned_data
 

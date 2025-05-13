@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from applications.candidato.models import Can101Candidato, Can102Experiencia, Can103Educacion
+from applications.candidato.models import Can101Candidato, Can102Experiencia, Can103Educacion, Can104Skill
 
 # def api_candidate_info(request):
 #     if request.method != 'POST':
@@ -31,3 +31,12 @@ from applications.candidato.models import Can101Candidato, Can102Experiencia, Ca
 #         })
 #     except Can101Candidato.DoesNotExist:
 #         return JsonResponse({'error': 'Candidato no encontrado'}, status=404)
+
+def api_suggestions_skills(request):
+    if 'term' in request.GET:
+        query = request.GET['term']
+        habilidades = Can104Skill.objects.filter(
+            nombre__icontains=query
+        ).values_list('nombre', flat=True)[:10]  # Limita los resultados
+        return JsonResponse({'suggestions': list(habilidades)})
+    return JsonResponse({'suggestions': []})

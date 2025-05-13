@@ -4,8 +4,6 @@ from applications.services.choices import GENERO_CHOICES_STATIC, NIVEL_ESTUDIO_C
 # Create your models here.
 class Can101Candidato(models.Model):
 
-    
-
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
     email = models.EmailField(unique=True)
     primer_nombre = models.CharField(max_length=50, verbose_name="Primer Nombre", blank=True, null=False)

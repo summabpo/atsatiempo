@@ -1,0 +1,44 @@
+{% load static %}
+<div class="alert alert-success" role="alert">
+    Grupo ID: {{ request.session.grupo_id }}
+</div>
+<div class="main-content-container overflow-hidden">
+    <div class="row justify-content-center">
+        <div class="col-lg-4">
+            <div class="card bg-white border-0 rounded-3 mb-4 position-relative">
+                <div class="card-body p-4">
+                    <h3 class="mb-0">Congratulations, <span class="text-primary">Olivia!</span></h3>
+                    <p>Best agent of the month</p>
+                    <h3 class="mb-0 fs-20 text-primary">1.5k+</h3>
+                    <p>Ticket Solved</p>
+                    <a href="#" class="btn btn-primary fw-medium">View Profile</a>
+                </div>
+                <img src="{% static 'admin/images/congratulations.gif' %}" class="congratulations wh-150 position-absolute" alt="congratulations">
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-12">
+            <div class="card border-0 rounded-3 bg-white mb-4">
+                <div class="custom-padding-30 position-relative">
+                    <div class="d-flex align-items-center mb-4 pb-2">
+                        <div class="flex-shrink-0">
+                            <div class="text-center rounded-2 bg-primary-div-50" style="width: 44px; height: 44px; line-height: 44px;">
+                                <img src="{% static 'admin/images/icon-employees.svg' %}" alt="icon-employees">
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <span class="d-block mb-1">New Employees</span>
+                            <h3 class="fw-medium fs-20 mb-0">8,24</h3>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <a href="#" class="btn btn-primary fw-medium">View Profile</a>
+                    </div>
+
+                    <div id="new_employees" class="chart-position top-50 translate-middle-y me-1 mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
