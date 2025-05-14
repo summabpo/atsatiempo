@@ -65,7 +65,7 @@ This files table contents are outlined below>>>>>
   --bs-light-rgb: 213, 217, 226;
   --bs-dark-rgb: 0, 0, 0;
   --bs-primary-div-rgb: 255, 31, 28;
-  --bs-primary-div-50-rgb: 145, 53, 232;
+  --bs-primary-div-50-rgb: 69, 0, 13;
   --bs-primary-50-rgb: 73, 54, 245;
   --bs-danger-50-rgb: 238, 62, 8;
   --bs-success-50-rgb: 30, 131, 8;
@@ -787,7 +787,7 @@ progress {
   --bs-light-rgb: 213, 217, 226;
   --bs-dark-rgb: 0, 0, 0;
   --bs-primary-div-rgb: 255, 31, 28;
-  --bs-primary-div-50-rgb: 145, 53, 232;
+  --bs-primary-div-50-rgb: 69, 0, 13;
   --bs-primary-50-rgb: 73, 54, 245;
   --bs-danger-50-rgb: 238, 62, 8;
   --bs-success-50-rgb: 30, 131, 8;
@@ -4231,7 +4231,7 @@ textarea.form-control-lg {
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: #9135E8;
   --bs-btn-hover-border-color: #9135E8;
-  --bs-btn-focus-shadow-rgb: 145, 53, 232;
+  --bs-btn-focus-shadow-rgb: 69, 0, 13;
   --bs-btn-active-color: #fff;
   --bs-btn-active-bg: #9135E8;
   --bs-btn-active-border-color: #9135E8;
@@ -8244,7 +8244,7 @@ textarea.form-control-lg {
 
 .text-bg-primary-div-50 {
   color: #fff !important;
-  background-color: RGBA(var(--bs-primary-div-50-rgb), var(--bs-bg-opacity, 1)) !important;
+  background-color: RGBA(var(--bs-primary-div-50-rgb), var(--bs-bg-opacity, 0)) !important;
 }
 
 .text-bg-primary-50 {
