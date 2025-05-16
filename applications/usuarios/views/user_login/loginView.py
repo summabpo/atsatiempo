@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
 from django.contrib import messages # type: ignore
 from django.http import HttpResponse # type: ignore
+from applications.services.service_candidate import personal_information_calculation
+from applications.services.service_vacanty import query_vacanty_all, query_vacanty_with_skills_and_details
 from applications.usuarios.models import UsuarioBase, TokenAutorizacion, Grupo, Permiso
 from applications.usuarios.forms.CorreoForm import CorreoForm
 from applications.cliente.models import Cli051Cliente
@@ -278,6 +280,22 @@ def dashboard_begin(request):
     #ats portal interno
     if session_variables['grupo_id'] == 1:
         print('Sesion Admin')
+        # data = None
+        # vacantes_disponibles = None
+        
+
+    #candidato información panel
+    if session_variables['grupo_id'] == 2:
+        
+        candidato_id = request.session.get('candidato_id')
+        data = personal_information_calculation(candidato_id)
+        vacantes_disponibles = query_vacanty_with_skills_and_details().filter(estado_id_001=1)
+        print(vacantes_disponibles)
+        # entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
+        # asignacion_vacante = consulta_asignacion_vacante_candidato(candidato_id)
+    else:
+        entrevistas_pendiente_candidato = None
+        asignacion_vacante = None
         
     #cliente informacion panel
     if session_variables['grupo_id'] == 3:
@@ -287,20 +305,12 @@ def dashboard_begin(request):
     else:
         vacantes_pendiente_cliente = None  
 
-    #candidato información panel
-    if session_variables['grupo_id'] == 2:
-        
-        candidato_id = request.session.get('candidato_id')
-        # entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
-        # asignacion_vacante = consulta_asignacion_vacante_candidato(candidato_id)
-    else:
-        entrevistas_pendiente_candidato = None
-        asignacion_vacante = None
-
     # Si quieres pasar las variables de sesión al template
     context = {
         'session_variables': session_variables,
         'permisos' : permisos_usuario,
+        'data_candidate': data,
+        'vacantes_disponibles': vacantes_disponibles,
         # 'vacantes_pendiente_cliente': vacantes_pendiente_cliente,
         # 'entrevistas_pendiente_candidato': entrevistas_pendiente_candidato,
         # 'asignacion_vacante': asignacion_vacante,

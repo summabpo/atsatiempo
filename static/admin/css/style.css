@@ -20849,6 +20849,52 @@ Swiper Slider Style
   box-shadow: 0 0 5px rgba(var(--bs-primary-rgb), 0.2) !important;
 }
 
+.service-card {
+	border: 1px solid #dee2e6;
+	border-left: 2px solid #B10022; /* Margen roja y fina */
+	border-radius: 0.5rem;
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+	text-align: center;
+	
+}
+
+.service-icon {
+	font-size: 2rem;
+	margin-bottom: 0.75rem;
+}
+
+.job-card {
+	border: 1px solid #dee2e6;
+	border-left: 2px solid #B10022; /* Margen roja y fina */
+	border-radius: 0.5rem;
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+	background-color: #f8f9f9;
+}
+
+.job-title {
+	font-weight: bold;
+	margin-bottom: 0.25rem;
+	color: #B10022;
+}
+
+.job-meta {
+	color: #6c757d;
+	font-size: 0.875rem;
+	margin-bottom: 0.5rem;
+}
+
+.job-description {
+	color: #343a40;
+	font-size: 0.9rem;
+	margin-bottom: 1rem;
+}
+
+.job-tags .badge {
+	margin-right: 0.25rem;
+}
+
 /* Estilo general de la tarjeta */
 /* .card {
     border-radius: 12px;

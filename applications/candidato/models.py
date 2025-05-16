@@ -30,6 +30,8 @@ class Can101Candidato(models.Model):
         verbose_name = 'CANDIDATO'
         verbose_name_plural = 'CANDIDATOS'
     
+    
+
     def calcular_porcentaje(self):
         # Porcentajes individuales
         porcentaje_academico = 35
@@ -50,7 +52,6 @@ class Can101Candidato(models.Model):
         if tiene_habilidades:
             porcentaje += porcentaje_habilidades
 
-        
         return porcentaje
     
     def puede_aplicar(self):

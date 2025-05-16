@@ -58,3 +58,87 @@ def buscar_candidato(candidato_id):
             } for s in habilidades
         ]
     }
+
+def personal_information_calculation(candidato_id):
+    #información personal data    
+    candidato_obj = get_object_or_404(Can101Candidato, pk=candidato_id)
+    campos_a_verificar = [
+        'primer_nombre',
+        'primer_apellido',
+        'numero_documento',
+        'email',
+        'telefono',
+        'fecha_nacimiento',
+        'ciudad_id_004',
+        'sexo',
+        'imagen_perfil',
+        'hoja_de_vida',
+        'direccion',
+    ]
+    total_campos = len(campos_a_verificar)
+    llenos = 0
+
+    for campo in campos_a_verificar:
+        if getattr(candidato_obj, campo):
+            llenos += 1
+    
+    porcentaje_info_personal = int((llenos / total_campos) * 100) if total_campos > 0 else 0
+
+    #educacion data
+    educacion_obj = Can103Educacion.objects.filter(candidato_id_101=candidato_obj)
+    if educacion_obj.exists():
+        total_campos_educacion = len(educacion_obj)
+        porcentaje_info_educacion = 100
+    else:
+        total_campos_educacion = 0
+        porcentaje_info_educacion = 0
+
+    #experiencia data
+    experiencia_obj = Can102Experiencia.objects.filter(candidato_id_101=candidato_obj)
+    if experiencia_obj.exists():
+        total_campos_experiencia = len(experiencia_obj)
+        porcentaje_info_experiencia = 100
+    else:
+        total_campos_experiencia = 0
+        porcentaje_info_experiencia = 0
+
+    #skills data
+    skills_obj = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato_obj)    
+    if skills_obj.exists():
+        total_campos_skills = len(skills_obj)
+        porcentaje_info_skills = 100
+    else:
+        total_campos_skills = 0
+        porcentaje_info_skills = 0
+    data = {
+        'info_personal': {
+            'porcentaje': porcentaje_info_personal,
+            'campos': {
+                'total': total_campos,
+                'llenos': llenos,
+            }
+        },
+        'educacion': {
+            'porcentaje': porcentaje_info_educacion,
+            'campos': {
+                'total': total_campos_educacion,
+                'llenos': total_campos_educacion,
+            }
+        },
+        'experiencia': {
+            'porcentaje': porcentaje_info_experiencia,
+            'campos': {
+                'total': total_campos_experiencia,
+                'llenos': total_campos_experiencia,
+            }
+        },
+        'skills': {
+            'porcentaje': porcentaje_info_skills,
+            'campos': {
+                'total': total_campos_skills,
+                'llenos': total_campos_skills,
+            }
+        },
+        'porcentaje_total': int((porcentaje_info_personal + porcentaje_info_educacion + porcentaje_info_experiencia + porcentaje_info_skills) / 4)
+    }
+    return data
