@@ -19,6 +19,11 @@ urlpatterns = [
     path('inicio/', loginView.dashboard_begin, name='inicio'),
     path('logout_view/', loginView.logout_view, name='logout'),
 
+    #candidate
+    path('inicio/candidato', loginView.dashboard_candidato, name='inicio_candidato'),
+
+
+
 
     #client
     path('cliente/grupo_trabajo_interno', client_views.create_internal_client, name='users_client'),

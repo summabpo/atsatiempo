@@ -280,19 +280,12 @@ def dashboard_begin(request):
     #ats portal interno
     if session_variables['grupo_id'] == 1:
         print('Sesion Admin')
-        # data = None
-        # vacantes_disponibles = None
         
-
     #candidato información panel
     if session_variables['grupo_id'] == 2:
         
-        candidato_id = request.session.get('candidato_id')
-        data = personal_information_calculation(candidato_id)
-        vacantes_disponibles = query_vacanty_with_skills_and_details().filter(estado_id_001=1)
-        print(vacantes_disponibles)
-        # entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
-        # asignacion_vacante = consulta_asignacion_vacante_candidato(candidato_id)
+        return redirect('accesses:inicio_candidato')
+        
     else:
         entrevistas_pendiente_candidato = None
         asignacion_vacante = None
@@ -309,14 +302,33 @@ def dashboard_begin(request):
     context = {
         'session_variables': session_variables,
         'permisos' : permisos_usuario,
-        'data_candidate': data,
-        'vacantes_disponibles': vacantes_disponibles,
-        # 'vacantes_pendiente_cliente': vacantes_pendiente_cliente,
-        # 'entrevistas_pendiente_candidato': entrevistas_pendiente_candidato,
-        # 'asignacion_vacante': asignacion_vacante,
+        
     }
     
     return render(request, 'admin/dashboard.html', context)
+
+#pantalla inicio
+@login_required
+@validar_permisos('acceso_candidato')
+def dashboard_candidato(request):
+    """ Vista que carga la página de inicio y muestra variables de sesión """
+    
+    # Obtener todas las variables de sesión
+    session_variables = dict(request.session)
+    candidato_id = request.session.get('candidato_id')
+    data = personal_information_calculation(candidato_id)
+    vacantes_disponibles = query_vacanty_with_skills_and_details().filter(estado_id_001=1)
+    
+
+    context = {
+        'session_variables': session_variables,
+        'data_candidate': data,
+        'vacantes_disponibles': vacantes_disponibles,
+        
+    }
+    return render(request, 'admin/dashboard/dashboard_candidate.html', context)
+
+
 
 # Salida de sesión.
 def logout_view(request):

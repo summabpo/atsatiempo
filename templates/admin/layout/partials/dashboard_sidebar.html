@@ -16,7 +16,10 @@
         <li class="menu-title small text-uppercase">
             <span class="menu-title-text">PRINCIPAL</span>
         </li>
-        <li class="menu-item {% if request.path == '/inicio/' or request.path == '/dashboard/' %}open{% endif %}">
+        <li class="menu-item 
+            {% if request.resolver_match.url_name == 'inicio'  %}open{% endif %}
+            {% if request.resolver_match.url_name == 'inicio_candidato'  %}open{% endif %}
+            ">
             <a href="javascript:void(0);" class="menu-link menu-toggle active">
                 <span class="material-symbols-outlined menu-icon">Dashboard</span>
                 <span class="title">Dashboard</span>
@@ -24,7 +27,11 @@
             </a>
             <ul class="menu-sub">
                 <li class="menu-item">
-                    <a href="{% url 'accesses:inicio' %}" class="menu-link {% if request.path == '/inicio/' %}active{% endif %}">
+                    <a href="{% url 'accesses:inicio' %}" class="menu-link 
+                    {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}
+                    {% if request.resolver_match.url_name == 'inicio_candidato' %}active{% endif %}
+
+                    ">
                         Inicio
                     </a>
                 </li>

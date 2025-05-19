@@ -1,0 +1,170 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Confirmación Aplicación Vacante | Dashboard
+{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="main-content-container overflow-hidden">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <h3 class="mb-0">
+            <span class="text-primary">Confirmar Aplicación Vacante: {{vacante.titulo|upper}}</span>
+        </h3>
+        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+            <ol class="breadcrumb align-items-center mb-0 lh-1">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+                        <i class="ri-home-4-line fs-18 text-primary me-1"></i>
+                        <span class="text-secondary fw-medium hover" >Inicio</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span class="fw-medium">Confirmación de la vacante</span>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Start Your Code -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card border-0 rounded-2 p-4 bg-white mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="flex-shrink-0 position-relative">
+                            <img src="{{vacante.asignacion_cliente_id_064.id_cliente_asignado.logo.url}}" class="rounded-circle" style="width: 65px; height: 65px;" alt="nft">
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h4 class="fs-24 fw-semibold mb-1">{{vacante.titulo|upper}}</h4>
+                            <span class="fs-12">Empresa: <b>{{vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social}}</b></span> - 
+                            <span class="fs-12">Código: <b>{{vacante.id}}</b></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0 position-relative">
+                                <img src="{% static 'admin/images/schedule2.png' %}" style="width: 30px; height: 30px;" alt="schedule2">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <span class="fs-12">Creada en</span>
+                                <h4 class="fs-14 fw-semibold mb-0">{{ vacante.fecha_creacion|date:"F d, Y" }}</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="mb-3">Características de la Vacante</h3>
+                    <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
+                        {% if vacante.perfil_vacante %}
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">calendar_month</span>
+                        <span>Edad entre <b>{{ vacante.perfil_vacante.edad_inicial }} y {{ vacante.perfil_vacante.edad_final }} años</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">wc</span>
+                        <span>Género requerido: <b>{{ vacante.perfil_vacante.get_genero_display }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">work_history</span>
+                        <span>Experiencia mínima: <b>{{ vacante.perfil_vacante.get_tiempo_experiencia_display }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">desktop_windows</span>
+                        <span>Modalidad: <b>{{ vacante.perfil_vacante.get_modalidad_display }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">schedule</span>
+                        <span>Jornada: <b>{{ vacante.perfil_vacante.get_jornada_display }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">translate</span>
+                        <span>Idioma requerido: <b>{{ vacante.perfil_vacante.get_idioma_display }} (Nivel: {{ vacante.perfil_vacante.get_nivel_idioma_display }})</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
+                        <span>Profesión o estudio: <b>{{ vacante.perfil_vacante.profesion_estudio.nombre }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
+                        <span>Nivel de estudio: <b>{{ vacante.perfil_vacante.get_nivel_estudio_display }}</b></span>
+                        </li>
+                        {% else %}
+                        <li>No se ha definido un perfil de vacante para esta vacante.</li>
+                        {% endif %}
+                    </ul>
+                    
+                    <h3 class="mb-3">Ubicación y Contrato</h3>
+                    <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
+                        {% if vacante.perfil_vacante %}
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">location_on</span>
+                        <span>Ciudad: <b>{{ vacante.perfil_vacante.lugar_trabajo }}</b></span>
+                        </li>
+                        {% if vacante.perfil_vacante.barrio %}
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">map</span>
+                        <span>Barrio: <b>{{ vacante.perfil_vacante.barrio }}</b></span>
+                        </li>
+                        {% endif %}
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">home_pin</span>
+                        <span>Dirección: <b>{{ vacante.perfil_vacante.direccion }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">description</span>
+                        <span>Tipo de contrato: <b>{{ vacante.perfil_vacante.get_termino_contrato_display }}</b></span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <h3 class="mb-3">Descripción</h3>
+                    <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">info</span>
+                        <span> {{ vacante.descripcion_vacante }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 rounded-2 p-4 bg-white mb-4">
+                <div class="card-body p-4">
+                    <h3 class="mb-3">Ubicación</h3>
+                    <iframe src="{{vacante.perfil_vacante.url_mapa}}" class="d-block w-100 rounded-3 " style="height: 250px;"></iframe>
+                </div>
+            </div>
+
+            <div class="card border-0 rounded-2 p-4 bg-white mb-4">
+                <div class="card-body p-4">
+                    {% if not centinel_vacante %}
+                        <h3 class="mb-3">Confirmación de Aplicación</h3>
+                        <p class="ps-0 mb-md-5 mb-4 list-unstyled">Por favor, confirme su interés en aplicar a la vacante seleccionada. Si está de acuerdo, haga clic en el botón "Confirmar Aplicación".</p>
+                        <div class="d-flex justify-content-end">
+                            <a href="{% url 'reclutados:reclutados_aplicar_candidato' vacante.id %}" class="btn btn-primary">Confirmar Aplicación</a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success d-flex align-items-center" role="alert">
+                            <span class="material-symbols-outlined me-2">check_circle</span>
+                            Ya has aplicado a esta vacante.
+                        </div>
+                    {% endif %}
+                        
+                    
+                </div>
+            </div>
+        </div>
+</div>
+
+        
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}
