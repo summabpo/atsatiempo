@@ -48,6 +48,7 @@ def candidate_info(request):
             candidato.save()
 
             messages.success(request, 'Información básica actualizada exitosamente.')
+
             return redirect('candidatos:candidato_info_personal')
         else:
             messages.error(request, 'Error al actualizar la información básica.')
@@ -87,7 +88,7 @@ def candidate_info_academy(request):
     form = candidateStudyForm()
 
     if request.method == 'POST':
-        form = candidateStudyForm(request.POST)
+        form = candidateStudyForm(request.POST, request.FILES)
         if form.is_valid():
             institucion = form.cleaned_data['institucion']
             grado_en = form.cleaned_data['grado_en']
@@ -99,7 +100,9 @@ def candidate_info_academy(request):
             candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
             ciudad_obj_004 = form.cleaned_data['ciudad_id_004']
             tipo_estudio = form.cleaned_data['tipo_estudio']
-
+            if form.cleaned_data['certificacion']:
+                certificacion = form.cleaned_data['certificacion']
+            
             Can103Educacion.objects.create(
                 estado_id_001=Cat001Estado.objects.get(id=1),  # Cambia esto según tu lógica
                 institucion=institucion,
@@ -111,7 +114,8 @@ def candidate_info_academy(request):
                 fortaleza_adquiridas=fortaleza_adquiridas,
                 candidato_id_101=candidato_id_101,
                 ciudad_id_004=ciudad_obj_004,
-                tipo_estudio=tipo_estudio
+                tipo_estudio=tipo_estudio,
+                certificacion=certificacion if form.cleaned_data['certificacion'] else None
             )
             
             messages.success(request, 'Información académica actualizada exitosamente.')
@@ -145,10 +149,11 @@ def candidate_info_academy_edit(request, pk):
         'fortaleza_adquiridas': study.fortaleza_adquiridas,
         'ciudad_id_004': study.ciudad_id_004.id if study.ciudad_id_004 else None,
         'tipo_estudio': study.tipo_estudio,
+        'certificacion': study.certificacion,
     }
 
     if request.method == 'POST':
-        form = candidateStudyForm(request.POST)
+        form = candidateStudyForm(request.POST, request.FILES, initial=initial)
         if form.is_valid():
 
             study.institucion = form.cleaned_data['institucion']
@@ -161,6 +166,8 @@ def candidate_info_academy_edit(request, pk):
             study.candidato_id_101 = Can101Candidato.objects.get(id=request.session.get('candidato_id'))
             study.ciudad_id_004 = form.cleaned_data['ciudad_id_004']
             study.tipo_estudio = form.cleaned_data['tipo_estudio']
+            if form.cleaned_data['certificacion']:
+                study.certificacion = form.cleaned_data['certificacion']
             study.save()
 
             messages.success(request, 'Información académica actualizada exitosamente.')
@@ -196,6 +203,10 @@ def candidate_info_job(request):
             logro = form.cleaned_data['logro']
             candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
             cargo = form.cleaned_data['cargo']
+            motivo_salida = form.cleaned_data['motivo_salida']
+            salario = form.cleaned_data['salario'] if form.cleaned_data['salario'] else None
+            modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
+            nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
 
             Can102Experiencia.objects.create(
                 estado_id_001=Cat001Estado.objects.get(id=1),  # Cambia esto según tu lógica
@@ -206,7 +217,11 @@ def candidate_info_job(request):
                 activo=activo,
                 logro=logro,
                 candidato_id_101=candidato_id_101,
-                cargo=cargo
+                cargo=cargo,
+                motivo_salida=motivo_salida,
+                salario=salario,
+                modalidad_trabajo=modalidad_trabajo,
+                nombre_jefe=nombre_jefe
             )
             
             messages.success(request, 'Información laboral actualizada exitosamente.')
@@ -243,12 +258,16 @@ def candidate_info_job_edit(request, pk):
         'activo': job.activo,
         'logro': job.logro,
         'cargo': job.cargo,
+        'motivo_salida': job.motivo_salida,
+        'salario': job.salario,
+        'modalidad_trabajo': job.modalidad_trabajo,
+        'nombre_jefe': job.nombre_jefe,
     }
 
-    form = candidateJobForm(initial=initial)
+    
 
     if request.method == 'POST':
-        form = candidateJobForm(request.POST)
+        form = candidateJobForm(request.POST, initial=initial, instance=True)
         if form.is_valid():
             # Actualizar la experiencia laboral con los datos del formulario
             job.entidad = form.cleaned_data['entidad']
@@ -258,6 +277,10 @@ def candidate_info_job_edit(request, pk):
             job.activo = form.cleaned_data['activo']
             job.logro = form.cleaned_data['logro']
             job.cargo = form.cleaned_data['cargo']
+            job.motivo_salida = form.cleaned_data['motivo_salida']
+            job.salario = form.cleaned_data['salario'] if form.cleaned_data['salario'] else None
+            job.modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
+            job.nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
             job.save()
 
             messages.success(request, 'Información laboral actualizada exitosamente.')
@@ -265,7 +288,7 @@ def candidate_info_job_edit(request, pk):
         else:
             messages.error(request, 'Error al actualizar la información laboral.')
     else:
-        form = candidateJobForm(initial=initial)
+        form = candidateJobForm(initial=initial, instance=True)
     # Renderizar la plantilla con la información de la experiencia laboral
     context = {
         'form': form,

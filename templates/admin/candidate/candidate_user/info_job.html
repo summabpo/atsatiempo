@@ -31,7 +31,7 @@ Información Básica | Talent Tray
 
 	<!-- Start Your Code -->
     <div class="row">
-		<div class="col-12">
+		<div class="col-8">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
                     
@@ -107,6 +107,46 @@ Información Básica | Talent Tray
                 </div>
             </div>
         </div>
+
+        <div class="col-4">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+                    <div>
+                        <h4 class="mb-4">Línea del Tiempo de Experiencia Laboral</h4>
+                        <div class="timeline">
+                            {% for exp in jobs %}
+                                <div class="position-relative timeline-item dot-3 mb-4">
+                                    <span class="time-line-date">{{ exp.fecha_inicial|date:"Y M" }}</span>
+                                    <div class="border-style-for-timeline dot-3">
+                                        <h4 class="fs-14 fw-medium mb-2 text-primary">{{ exp.entidad }}</h4>
+                                        <p class="fs-13 mb-1">
+                                            Cargo: <b>{{ exp.cargo }}</b>
+                                        </p>
+                                        <p class="fs-13 mb-1">
+                                            Sector: <b>{{ exp.sector }}</b>
+                                        </p>
+                                        <p class="fs-13 mb-1">
+                                            Modalidad: <b>{{ exp.get_modalidad_trabajo_display }}</b>
+                                        </p>
+                                        <p class="fs-13 mb-1">
+                                            {% if exp.activo %}
+                                                <span class="badge bg-success">Actualmente</span>
+                                            {% else %}
+                                                Fecha Final: <b>{{ exp.fecha_final|date:"Y M" }}</b>
+                                                <br>
+                                                Motivo de Salida: <b>{{ exp.get_motivo_salida_display }}</b>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted">No hay experiencias laborales registradas.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -135,7 +175,7 @@ Información Básica | Talent Tray
         $('#id_activo').change(toggleGraduationFields);
     });
 
-    initializeSelect2('#id_tipo_estudio');
-    initializeSelect2('#id_ciudad_id_004');
+    initializeSelect2('#id_motivo_salida');
+    initializeSelect2('#id_modalidad_trabajo');
 </script>
 {% endblock js %}

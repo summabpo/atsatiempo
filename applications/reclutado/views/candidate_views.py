@@ -26,7 +26,7 @@ def confirm_apply_vacancy_recruited(request, pk):
         # Si ya ha aplicado, redirigir a la página de detalle de la vacante
         centinel_vacante = True
         # return redirect('reclutados_detalle_cliente', pk=pk)
-    
+
     context = {
         'vacante': vacante,
         'candidato': candidato,
@@ -67,6 +67,8 @@ def apply_vacancy_recruited_candidate(request, pk):
 
     # Envio de correo
     # enviar_correo('asignacion_entrevista_entrevista', contexto_email_1, f'Asginación de Entrevista ID: {asignacion_entrevista.id}', lista_correos, correo_remitente=None)
+
+    
 
     messages.success(request, 'Aplicación a la vacante realizada con éxito.')
     

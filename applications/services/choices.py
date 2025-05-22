@@ -93,6 +93,9 @@ NIVEL_ESTUDIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     ('5', 'Tecnólogo'),
     ('6', 'Universitario'),
     ('7', 'Postgrado'),
+    ('8', 'Diplomado'),
+    ('9', 'Curso'),
+    
 ]
 
 HORARIO_CHOICES_STATIC =  [('', 'Seleccione una opción...')] + [
@@ -143,4 +146,11 @@ NIVEL_HABILIDAD_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     (1, 'Básico'),
     (2, 'Intermedio'),
     (3, 'Superior'),
+]
+
+
+MOTIVO_SALIDA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    (1, 'Renuncia'),
+    (2, 'Justa Causa'),
+    (3, 'Terminación de Contrato')
 ]

@@ -41,7 +41,7 @@ Información Básica | Talent Tray
 		<div class="col-8">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
-                    <form method="post" id="form_estudio">
+                    <form method="post" id="form_estudio" enctype="multipart/form-data">
                         <div class="modal-body">
                             {% csrf_token %}
                             {% crispy form %}

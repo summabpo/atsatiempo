@@ -6,6 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden, Div, Submit, HTML
 from applications.common.models import Cat001Estado
 from applications.candidato.models import Can101Candidato, Can102Experiencia
+from applications.services.choices import MODALIDAD_CHOICES_STATIC, MOTIVO_SALIDA_CHOICES_STATIC
 
 class ExperienciaCandidatoForm(forms.Form):
     estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=False)
@@ -184,6 +185,42 @@ class candidateJobForm(forms.Form):
         widget=forms.TextInput(attrs={'placeholder': 'Cargo Desempeñado'})
     )
 
+    motivo_salida = forms.ChoiceField(
+        label='Motivo de Salida',
+        choices=MOTIVO_SALIDA_CHOICES_STATIC,
+        required=False,
+        # Define los atributos comunes aquí.
+        widget=forms.Select(attrs={
+            'class': 'form-select',
+            'data-control': 'select2',
+        })
+    )
+
+    salario = forms.DecimalField(
+        label='Salario',
+        max_digits=10,
+        decimal_places=2,
+        required=False,
+        widget=forms.NumberInput(attrs={'placeholder': 'Salario'})
+    )
+
+    modalidad_trabajo = forms.ChoiceField(
+        label='Modalidad de Trabajo',
+        choices=MODALIDAD_CHOICES_STATIC,
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'form-select',
+            'data-control': 'select2',
+        })
+    )
+
+    nombre_jefe = forms.CharField(
+        label='Nombre del Jefe',
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Nombre del jefe directo'})
+    )
+
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
         super().__init__(*args, **kwargs)
@@ -191,6 +228,11 @@ class candidateJobForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_id = 'form_trabajo'
+
+        if not self.instance:
+            self.fields['motivo_salida'].widget.attrs['data-dropdown-parent'] = '#trabajos_candidato'
+            self.fields['modalidad_trabajo'].widget.attrs['data-dropdown-parent'] = '#trabajos_candidato'
+            
 
         self.helper.layout = Layout(
             Div(
@@ -202,8 +244,11 @@ class candidateJobForm(forms.Form):
                 Div('activo', css_class='col-12'),
                 Div('fecha_inicial', css_class='col-6'),
                 Div('fecha_final', css_class='col-6 campo-activo'),
+                Div('motivo_salida', css_class='col-12 campo-activo'),
+                Div('salario', css_class='col-6 campo-activo'),
+                Div('modalidad_trabajo', css_class='col-6 campo-activo'),
+                Div('nombre_jefe', css_class='col-12 campo-activo'),
                 Div('logro', css_class='col-12'),
-                
                 css_class='row'
             ),
             css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -220,6 +265,10 @@ class candidateJobForm(forms.Form):
         activo = cleaned_data.get('activo')
         logro = cleaned_data.get('logro')
         cargo = cleaned_data.get('cargo')
+        motivo_salida = cleaned_data.get('motivo_salida')
+        
+        if motivo_salida == '':
+            cleaned_data['motivo_salida'] = None
 
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', entidad):
@@ -248,9 +297,9 @@ class candidateJobForm(forms.Form):
         elif fecha_inicial and fecha_inicial > fecha_actual:
             self.add_error('fecha_inicial', "La fecha inicial no puede ser mayor que la fecha actual.")
 
-        
-        if len(logro.split()) < 5:
-            self.add_error('logro','La descripción debe contener al menos 10 palabras')
+        if logro:
+            if len(logro.split()) > 500:
+                self.add_error('logro','La descripción debe contener máximo 500 palabras')
 
         return cleaned_data
         

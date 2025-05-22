@@ -248,6 +248,11 @@ class candidateStudyForm(forms.Form):
             }
         )
     )
+    certificacion = forms.FileField(
+        label='CERTIFICACIÓN',
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
@@ -268,6 +273,7 @@ class candidateStudyForm(forms.Form):
                     Div('fecha_final', css_class='col-6 campo-graduado'),
                     Div('ciudad_id_004', css_class='col-12'),
                     Div('carrera', css_class='col-12'),
+                    Div('certificacion', css_class='col-12'),
                     Div('fortaleza_adquiridas', css_class='col-12'),
                     css_class='row'
                 ),
@@ -289,6 +295,7 @@ class candidateStudyForm(forms.Form):
         fortaleza_adquiridas = cleaned_data.get('fortaleza_adquiridas')
         tipo_estudio = cleaned_data.get('tipo_estudio')
         ciudad_id_004 = cleaned_data.get('ciudad_id_004')
+        certificacion = cleaned_data.get('certificacion')
         
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', institucion):
             self.add_error('institucion', "La Instirución solo puede contener letras.")
@@ -319,7 +326,17 @@ class candidateStudyForm(forms.Form):
         elif carrera:
             self.cleaned_data['carrera'] = carrera.upper()
         
-        if fortaleza_adquiridas and len(fortaleza_adquiridas.split()) < 5:
-            self.add_error('fortaleza_adquiridas', 'La descripción debe contener al menos 5 palabras')
+        if fortaleza_adquiridas:
+            if len(fortaleza_adquiridas.split()) < 5:
+                self.add_error('fortaleza_adquiridas', 'La descripción debe contener al menos 5 palabras')
+
+        # Validar archivo de certificación (opcional)
+        if certificacion:
+            if hasattr(certificacion, 'content_type'):
+                if certificacion.content_type != 'application/pdf':
+                    self.add_error('certificacion', 'El archivo debe ser un PDF.')
+            if hasattr(certificacion, 'size'):
+                if certificacion.size > 5 * 1024 * 1024:
+                    self.add_error('certificacion', 'El archivo no debe pesar más de 5 MB.')
 
         return cleaned_data
