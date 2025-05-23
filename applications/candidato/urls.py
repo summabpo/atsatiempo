@@ -7,6 +7,9 @@ url_principal = 'candidato/'
 
 urlpatterns = [
 
+    #all_users
+    path( url_principal+'perfil/<int:pk>', candidate_views.candidate_info_perfil, name='candidato_perfil'),
+
     #candidate_user
     path( url_principal+'informacion/basica', candidate_views.candidate_info, name='candidato_info_personal'),
     path( url_principal+'informacion/academica', candidate_views.candidate_info_academy, name='candidato_info_academica'),

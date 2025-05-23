@@ -20,7 +20,6 @@ class Can101Candidato(models.Model):
     numero_documento = models.CharField(max_length=20, blank=True, null=True)
     direccion = models.CharField(max_length=255, blank=True, null=True, verbose_name="Dirección")
 
-
     def __str__(self):
         return self.email
     class Meta:

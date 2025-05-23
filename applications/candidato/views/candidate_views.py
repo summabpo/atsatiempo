@@ -357,3 +357,24 @@ def candidate_info_skills_delete(request, pk):
     messages.success(request, 'Habilidad eliminada exitosamente.')
 
     return redirect('candidatos:candidato_info_habilidades')
+
+@login_required
+def candidate_info_perfil(request, pk):
+    candidato_id = request.session.get(pk)
+    # Obtener el candidato (ajusta según tu modelo)
+    candidato = Can101Candidato.objects.get(id=pk)
+    # Obtener la experiencia laboral del candidato (ajusta según tu modelo)
+    jobs = Can102Experiencia.objects.filter(candidato_id_101=candidato.id).order_by('-fecha_inicial')
+    # Obtener la educación del candidato (ajusta según tu modelo)
+    studies = Can103Educacion.objects.filter(candidato_id_101=candidato.id).order_by('-fecha_inicial')
+    # Obtener las habilidades del candidato (ajusta según tu modelo)
+    skills = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato.id).order_by('-id')
+    
+    context = {
+        'candidato': candidato,
+        'jobs': jobs,
+        'studies': studies,
+        'skills': skills,
+    }
+
+    return render(request, 'admin/candidate/candidate_user/info_perfil.html', context)
