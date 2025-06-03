@@ -10,6 +10,7 @@
     {% if request.resolver_match.url_name == 'candidato_info_laboral' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_laboral_editar' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_habilidades' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_redes' %}open{% endif %}
     ">
     <a href="javascript:void(0);" class="menu-link menu-toggle active">
         <span class="material-symbols-outlined menu-icon red">description</span>
@@ -38,6 +39,11 @@
             {% if request.resolver_match.url_name == 'candidato_info_habilidades' %}active{% endif %} 
             ">
                 Habilidades
+            </a>
+            <a href="{% url 'candidatos:candidato_info_redes' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'candidato_info_redes' %}active{% endif %} 
+            ">
+                Redes Sociales
             </a>
         </li>
     </ul>

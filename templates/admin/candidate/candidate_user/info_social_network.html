@@ -1,0 +1,95 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Información Básica | Talent Tray
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0">Inicio</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Información Laboral</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<!-- Start Your Code -->
+    <div class="row">
+		<div class="col-4">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+                    <form method="post" id="form_trabajo">
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            {% crispy form %}
+                        </div>
+                        <div class="modal-footer">
+                            <button id="form_trabajo" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_trabajo">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-8">
+            <div class="row justify-content">
+                
+                {% for red in redes %}
+                    <div class="col-xxl-4 col-lg-4 col-sm-4">
+                        <div class="card bg-white border-0 rounded-3 mb-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-body pe-3 pb-3 bg-for-dark-mode">
+                                        <img src="{{red.red_social_id_105.logo.url}}" class="wh-100 rounded-3" alt="client">
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 p-20 pb-0">
+                                    <h4 class="mb-1 fs-16 fw-semibold">{{red.red_social_id_105.nombre}}</h4>
+                                    <a href="{{ red.url }}" class="text-danger fw-bold" target="_blank">Ver Perfil</a>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                
+                                <div class="d-flex align-items-center w-100">
+                                    <a href="{{ red.url }}" target="_blank" class="btn btn-success text-white py-2 fw-medium me-2 flex-fill">Ver</a>
+                                    <a href="#" class="btn btn-primary py-2 fw-medium me-2 flex-fill">Editar</a>
+                                    <a href="#" class="btn btn-danger text-white py-2 fw-medium flex-fill">Borrar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    // Check if there are form errors and show the modal if true
+    {% if form.errors %}
+        var myModal = new bootstrap.Modal(document.getElementById('redes_candidato'));
+        myModal.show();
+    {% endif %}
+
+    initializeSelect2('#id_red_social_id_105');
+</script>
+{% endblock js %}

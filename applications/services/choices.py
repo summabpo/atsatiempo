@@ -149,8 +149,13 @@ NIVEL_HABILIDAD_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
 ]
 
 
-MOTIVO_SALIDA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+MOTIVO_SALIDA_CHOICES_STATIC =  [
     (1, 'Renuncia'),
     (2, 'Justa Causa'),
     (3, 'Terminación de Contrato')
 ]
+
+TIPO_HABILIDAD_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+        ('S', 'Suave'),
+        ('D', 'Dura (Técnica)'),
+    ]

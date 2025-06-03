@@ -3,18 +3,20 @@ from django.shortcuts import render, redirect, get_object_or_404 # type: ignore
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from applications.candidato.forms.EstudioForms import EstudioCandidatoForm, candidateStudyForm
-from applications.candidato.forms.ExperienciaForms import candidateJobForm
-from applications.candidato.forms.HabilidadForms import CandidateHabilityForm
+
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.usuarios.decorators  import validar_permisos
 
 #models
-from applications.candidato.models import Can101Candidato, Can102Experiencia, Can103Educacion, Can104Skill, Can101CandidatoSkill
+from applications.candidato.models import Can101Candidato, Can102Experiencia, Can103Educacion, Can104Skill, Can101CandidatoSkill, Can105RedSocial, Can106CandidatoRed
 
 
 #forms
 from applications.candidato.forms.CandidatoForms import CandidateForm
+from applications.candidato.forms.EstudioForms import EstudioCandidatoForm, candidateStudyForm
+from applications.candidato.forms.ExperienciaForms import candidateJobForm
+from applications.candidato.forms.HabilidadForms import CandidateHabilityForm
+from applications.candidato.forms.SocialForms import SocialNetworkForm
 
 #views
 @login_required
@@ -23,7 +25,6 @@ def candidate_info(request):
 
     candidato_id = request.session.get('candidato_id')
     
-
     candidato = get_object_or_404(Can101Candidato, pk=candidato_id)
 
     if request.method == 'POST':
@@ -45,6 +46,7 @@ def candidate_info(request):
             if form.cleaned_data['hoja_de_vida']:
                 candidato.hoja_de_vida = form.cleaned_data['hoja_de_vida']
             candidato.email = form.cleaned_data['email']
+            candidato.perfil = form.cleaned_data['perfil']
             candidato.save()
 
             messages.success(request, 'Información básica actualizada exitosamente.')
@@ -68,8 +70,9 @@ def candidate_info(request):
             'hoja_de_vida': candidato.hoja_de_vida,
             'numero_documento': candidato.numero_documento,
             'direccion': candidato.direccion,
+            'perfil': candidato.perfil,
         }
-        print(f"Initial data para fecha_nacimiento: {initial_data.get('fecha_nacimiento')}")
+        
         form = CandidateForm(initial=initial_data, instance=candidato)
 
     context = {
@@ -359,10 +362,11 @@ def candidate_info_skills_delete(request, pk):
     return redirect('candidatos:candidato_info_habilidades')
 
 @login_required
-def candidate_info_perfil(request, pk):
-    candidato_id = request.session.get(pk)
+@validar_permisos('acceso_candidato')
+def candidate_info_perfil(request):
+    candidato_id = request.session.get('candidato_id')
     # Obtener el candidato (ajusta según tu modelo)
-    candidato = Can101Candidato.objects.get(id=pk)
+    candidato = Can101Candidato.objects.get(id=candidato_id)
     # Obtener la experiencia laboral del candidato (ajusta según tu modelo)
     jobs = Can102Experiencia.objects.filter(candidato_id_101=candidato.id).order_by('-fecha_inicial')
     # Obtener la educación del candidato (ajusta según tu modelo)
@@ -378,3 +382,48 @@ def candidate_info_perfil(request, pk):
     }
 
     return render(request, 'admin/candidate/candidate_user/info_perfil.html', context)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def candidate_info_social_network(request):
+    candidato_id = request.session.get('candidato_id')
+    
+    # Obtener el candidato (ajusta según tu modelo)
+    candidato = Can101Candidato.objects.get(id=candidato_id)
+
+    redes = Can106CandidatoRed.objects.filter(estado_id_001=1, candidato_id_101=candidato_id).order_by('-id')
+    print(redes)
+    if request.method == 'POST':
+        form = SocialNetworkForm(request.POST)
+        if form.is_valid():
+            red_social_id_105 = form.cleaned_data['red_social_id_105']
+            url = form.cleaned_data['url']
+
+            # Verificar si la red social ya está registrada para el candidato
+            if not Can106CandidatoRed.objects.filter(candidato_id_101=candidato, red_social_id_105=red_social_id_105).exists():
+                Can106CandidatoRed.objects.create(
+                    candidato_id_101=candidato,
+                    red_social_id_105=red_social_id_105,
+                    url=url,
+                    estado_id_001=Cat001Estado.objects.get(id=1)  # Cambia esto según tu lógica
+                )
+                messages.success(request, 'Red social agregada exitosamente.')
+                return redirect('candidatos:candidato_info_redes')
+            else:
+                messages.error(request, 'La red social ya está registrada.')
+
+            
+        else:
+            messages.error(request, 'Error al agregar la red social.')
+        
+    else:
+        form = SocialNetworkForm()
+        
+
+    context = {
+        'candidato': candidato,
+        'form': form,
+        'redes': redes,
+    }
+
+    return render(request, 'admin/candidate/candidate_user/info_social_network.html', context)

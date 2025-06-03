@@ -8,13 +8,14 @@ url_principal = 'candidato/'
 urlpatterns = [
 
     #all_users
-    path( url_principal+'perfil/<int:pk>', candidate_views.candidate_info_perfil, name='candidato_perfil'),
+    path( url_principal+'perfil/', candidate_views.candidate_info_perfil, name='candidato_perfil'),
 
     #candidate_user
     path( url_principal+'informacion/basica', candidate_views.candidate_info, name='candidato_info_personal'),
     path( url_principal+'informacion/academica', candidate_views.candidate_info_academy, name='candidato_info_academica'),
     path( url_principal+'informacion/laboral', candidate_views.candidate_info_job, name='candidato_info_laboral'),
     path( url_principal+'informacion/habilidades', candidate_views.candidate_info_skills, name='candidato_info_habilidades'),
+    path( url_principal+'informacion/redes', candidate_views.candidate_info_social_network, name='candidato_info_redes'),
     path( url_principal+'informacion/skills/borrar/<int:pk>', candidate_views.candidate_info_skills_delete, name='candidato_info_habilidades_borrar'),
 
     path( url_principal+'informacion/academica/editar/<int:pk>', candidate_views.candidate_info_academy_edit, name='candidato_info_academica_editar'),

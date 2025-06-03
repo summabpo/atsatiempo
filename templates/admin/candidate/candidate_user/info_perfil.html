@@ -83,7 +83,6 @@ Perfil Candidato | Talent Tray
 	<!-- Start Your Code -->
     <div class="row">
         <div class="col-md-12">
-            
 			<div class="row">
 				<div class="col-md-3">
 					<div class="card bg-white border-0 rounded-3 mb-4">
@@ -100,7 +99,7 @@ Perfil Candidato | Talent Tray
 								</div>
 							</div>
 
-							<h4 class="fw-semibold fs-14 mb-2">Acerca de</h4>
+							<h4 class="fw-semibold fs-14 mb-2">Acerca de mí</h4>
 							<p>Molestie tincidunt ut consequat a urna tortor. Vitae velit ac nisl velit mauris placerat nisi placerat. Pellentesque viverra lorem malesuada nunc tristique sapien. Imperdiet sit hendrerit tincidunt bibendum donec adipiscing.</p>
 							<h4 class="fw-semibold fs-14 mb-2 pb-1">Redes Sociales</h4>
 							<ul class="ps-0 mb-0 list-unstyled d-flex flex-wrap gap-2">
@@ -190,7 +189,30 @@ Perfil Candidato | Talent Tray
 									<span>Hoja de Vida:</span>
 									<span class="text-secondary fw-medium ms-1">
 										{% if candidato.hoja_de_vida %}
+											
 											<a href="{{ candidato.hoja_de_vida.url }}" target="_blank" class="text-primary text-decoration-underline">Ver archivo</a>
+											
+											<!--
+											<p>
+												<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" data-bs-toggle="modal" data-bs-target="#certModal{{ educacion.id }}">
+													Ver Certificación
+												</button>
+											</p>
+											
+											<div class="modal fade" id="certModal{{ educacion.id }}" tabindex="-1" aria-labelledby="certModalLabel{{ educacion.id }}" aria-hidden="true">
+												<div class="modal-dialog modal-dialog-centered modal-xl">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title" id="certModalLabel{{ educacion.id }}">Certificación</h5>
+															<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+														</div>
+														<div class="modal-body" style="height:80vh;">
+															<iframe src="{{ candidato.hoja_de_vida.url }}" width="100%" height="100%" style="border:none;"></iframe>
+														</div>
+													</div>
+												</div>
+											</div>
+											-->
 										{% else %}
 											-
 										{% endif %}
@@ -203,72 +225,26 @@ Perfil Candidato | Talent Tray
 					<div class="card bg-white border-0 rounded-3 mb-4">
 						<div class="card-body p-4">
 							<h3 class="mb-3 mb-lg-4 text-primary">Habilidades</h3>
-							<ul class="ps-0 mb-0 list-unstyled">
-								<li class="d-flex align-items-center mb-2 pb-1">
-									<span class="material-symbols-outlined text-primary me-2">person</span>
-									<span>Nombre Completo:</span>
-									<span class="text-secondary fw-medium ms-1">
-										{{ candidato.primer_nombre }}{% if candidato.segundo_nombre %} {{ candidato.segundo_nombre }}{% endif %} {{ candidato.primer_apellido }}{% if candidato.segundo_apellido %} {{ candidato.segundo_apellido }}{% endif %}
-									</span>
-								</li>
-								<li class="d-flex align-items-center mb-2 pb-1">
-									<span class="material-symbols-outlined text-primary me-2">mail</span>
-									<span>Email:</span>
-									<span class="text-secondary fw-medium ms-1">{{ candidato.email }}</span>
-								</li>
-								<li class="d-flex align-items-center mb-2 pb-1">
-									<span class="material-symbols-outlined text-primary me-2">phone</span>
-									<span>Teléfono:</span>
-									<span class="text-secondary fw-medium ms-1">{{ candidato.telefono|default:"-" }}</span>
-								</li>
-								<li class="d-flex align-items-center mb-2 pb-1">
-									<span class="material-symbols-outlined text-primary me-2">badge</span>
-									<span>Número de Documento:</span>
-									<span class="text-secondary fw-medium ms-1">{{ candidato.numero_documento|default:"-" }}</span>
-								</li>
-								<li class="d-flex align-items-center mb-2 pb-1">
-									<span class="material-symbols-outlined text-primary me-2">location_on</span>
-									<span>Ubicación:</span>
-									<span class="text-secondary fw-medium ms-1">
-										{% if candidato.ciudad_id_004 %}{{ candidato.ciudad_id_004.nombre }}{% else %}-{% endif %}
-									</span>
-								</li>
-								<li class="d-flex align-items-center mb-2 pb-1">
-									<span class="material-symbols-outlined text-primary me-2">home</span>
-									<span>Dirección:</span>
-									<span class="text-secondary fw-medium ms-1">{{ candidato.direccion|default:"-" }}</span>
-								</li>
-								<li class="d-flex align-items-center mb-2 pb-1">
-									<span class="material-symbols-outlined text-primary me-2">event</span>
-									<span>Fecha de Nacimiento:</span>
-									<span class="text-secondary fw-medium ms-1">
-										{% if candidato.fecha_nacimiento %}{{ candidato.fecha_nacimiento|date:"d M Y" }}{% else %}-{% endif %}
-									</span>
-								</li>
-								<li class="d-flex align-items-center mb-2 pb-1">
-									<span class="material-symbols-outlined text-primary me-2">wc</span>
-									<span>Sexo:</span>
-									<span class="text-secondary fw-medium ms-1">
-										{% if candidato.sexo == "M" %}Masculino{% elif candidato.sexo == "F" %}Femenino{% else %}-{% endif %}
-									</span>
-								</li>
-								{% comment %} <li class="d-flex align-items-center mb-2 pb-1">
-									<span class="material-symbols-outlined text-primary me-2">calendar_today</span>
-									<span>Fecha de Registro:</span>
-									<span class="text-secondary fw-medium ms-1">{{ candidato.user.date_joined|date:"d M Y" }}</span>
-								</li> {% endcomment %}
-								<li class="d-flex align-items-center mb-2 pb-1">
-									<span class="material-symbols-outlined text-primary me-2">description</span>
-									<span>Hoja de Vida:</span>
-									<span class="text-secondary fw-medium ms-1">
-										{% if candidato.hoja_de_vida %}
-											<a href="{{ candidato.hoja_de_vida.url }}" target="_blank" class="text-primary text-decoration-underline">Ver archivo</a>
-										{% else %}
-											-
-										{% endif %}
-									</span>
-								</li>
-							</ul>
+							{% for skill in skills %}
+								<h6>{{ skill.skill_id_104.nombre }}</h6>
+								{% if skill.get_nivel_display == 'Básico' %}
+									<div class="progress mb-3" style="height: 25px;">
+										<div class="progress-bar bg-danger" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="25">Básico</div>
+									</div>
+								{% elif skill.get_nivel_display == 'Intermedio' %}
+									<div class="progress mb-3" style="height: 25px;">
+										<div class="progress-bar bg-info" role="progressbar" style="width: 50%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="50">Intermedio</div>
+									</div>
+								{% elif skill.get_nivel_display == 'Superior' %}
+									<div class="progress mb-3" style="height: 25px;">
+										<div class="progress-bar bg-success" role="progressbar" style="width: 100%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">Superior</div>
+									</div>
+								{% endif %}
+								<hr>
+							{% empty %}
+								<p class="text-muted">No hay habilidades registradas.</p>
+							{% endfor %}
+						
 						</div>
 					</div>
 				</div>

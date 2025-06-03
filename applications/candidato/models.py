@@ -1,6 +1,6 @@
 from django.db import models
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.services.choices import GENERO_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, MOTIVO_SALIDA_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, NIVEL_HABILIDAD_CHOICES_STATIC
+from applications.services.choices import GENERO_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, MOTIVO_SALIDA_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, NIVEL_HABILIDAD_CHOICES_STATIC, TIPO_HABILIDAD_CHOICES_STATIC
 # Create your models here.
 class Can101Candidato(models.Model):
 
@@ -15,10 +15,11 @@ class Can101Candidato(models.Model):
     fecha_nacimiento = models.DateField(null=True, blank=True) 
     telefono = models.CharField(max_length=10, blank=True, null=True)
     skills = models.ManyToManyField('Can104Skill', through='Can101CandidatoSkill', related_name='candidatos_skill')
-    imagen_perfil = models.ImageField(upload_to='media_uploads/candidato/', blank=True, null=True, verbose_name="Imagen de Perfil")
-    hoja_de_vida = models.FileField(upload_to='media_uploads/hoja_de_vida/', blank=True, null=True, verbose_name="Hoja de Vida")
+    imagen_perfil = models.ImageField(upload_to='media_uploads/media_uploads/candidato/', blank=True, null=True, verbose_name="Imagen de Perfil")
+    hoja_de_vida = models.FileField(upload_to='media_uploads/media_uploads/hoja_de_vida/', blank=True, null=True, verbose_name="Hoja de Vida")
     numero_documento = models.CharField(max_length=20, blank=True, null=True)
     direccion = models.CharField(max_length=255, blank=True, null=True, verbose_name="Dirección")
+    perfil = models.TextField(blank=True, null=True, verbose_name="Perfil del Candidato")
 
     def __str__(self):
         return self.email
@@ -72,7 +73,7 @@ class Can102Experiencia(models.Model):
     logro = models.TextField(blank=True, null=True)
     candidato_id_101 = models.ForeignKey(Can101Candidato, models.DO_NOTHING, db_column='candidato_id_101', blank=True, null=True)
     cargo = models.CharField(max_length=100)
-    motivo_salida = models.IntegerField(choices=MOTIVO_SALIDA_CHOICES_STATIC, max_length=2, blank=True, null=True)
+    motivo_salida = models.IntegerField(choices=MOTIVO_SALIDA_CHOICES_STATIC, blank=True, null=True)
     salario = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     modalidad_trabajo = models.CharField(max_length=1, blank=True, null=True, choices=MODALIDAD_CHOICES_STATIC)
     nombre_jefe = models.CharField(max_length=100, blank=True, null=True)
@@ -127,7 +128,39 @@ class Can101CandidatoSkill(models.Model):
     candidato_id_101 = models.ForeignKey(Can101Candidato, on_delete=models.CASCADE, db_column='candidato_id_101')
     skill_id_104 = models.ForeignKey(Can104Skill, on_delete=models.CASCADE, db_column='skill_id_104')
     nivel= models.IntegerField(choices=NIVEL_HABILIDAD_CHOICES_STATIC)
+    tipo_habilidad = models.CharField(max_length=1, choices=TIPO_HABILIDAD_CHOICES_STATIC, verbose_name="Tipo de Habilidad", blank=True, null=True)
+    certificado_habilidad = models.FileField(upload_to='media_uploads/media_uploads/certificados_habilidad/', blank=True, null=True, verbose_name="Certificado de Habilidad")
 
     class Meta:
         # managed = False 
-        db_table = 'can_101_candidato_skills'
+        db_table = 'can_101_candidato_skills'       
+
+class Can105RedSocial(models.Model):
+    nombre = models.CharField(max_length=100, verbose_name="Nombre", blank=True, null=True)
+    logo = models.ImageField(upload_to='media_uploads/media_uploads/logos_redes/', blank=True, null=True, verbose_name="Logo de la Red Social")
+    url_principal = models.URLField(max_length=200, verbose_name="URL Principal de la Red Social", blank=True, null=True)
+    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
+    
+
+    def __str__(self):
+        return f"{self.nombre}"
+
+    class Meta:
+        #managed = False
+        db_table = 'can_105_red_social'
+        verbose_name = 'RED SOCIAL'
+        verbose_name_plural = 'REDES SOCIALES'
+
+class Can106CandidatoRed(models.Model):
+    candidato_id_101 = models.ForeignKey(Can101Candidato, on_delete=models.CASCADE, db_column='candidato_id_101')
+    red_social_id_105 = models.ForeignKey(Can105RedSocial, on_delete=models.CASCADE, db_column='red_social_id_105')
+    url = models.URLField(max_length=255, verbose_name="URL del Perfil", blank=True, null=True)
+    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
+
+    def __str__(self):
+        return f"{self.candidato_id_101} - {self.red_social_id_105}"
+
+    class Meta:
+        db_table = 'can_106_candidato_red'
+        verbose_name = 'CANDIDATO RED'
+        verbose_name_plural = 'CANDIDATOS REDES'
