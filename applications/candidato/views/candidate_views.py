@@ -311,10 +311,12 @@ def candidate_info_skills(request):
     skills = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato_id).order_by('-id')
 
     if request.method == 'POST':
-        form = CandidateHabilityForm(request.POST)
+        form = CandidateHabilityForm(request.POST, request.FILES)
         if form.is_valid():
             habilidad = form.cleaned_data['skill_id_104'].upper()
             nivel = form.cleaned_data['nivel']
+            tipo_habilidad = form.cleaned_data['tipo_habilidad']
+            certificado_habilidad = form.cleaned_data['certificado_habilidad'] if form.cleaned_data['certificado_habilidad'] else None
 
             # Guardar la habilidad en la base de datos
             skill, created = Can104Skill.objects.get_or_create(
@@ -329,7 +331,9 @@ def candidate_info_skills(request):
                 Can101CandidatoSkill.objects.create(
                     candidato_id_101=candidato,
                     skill_id_104=skill,
-                    nivel=nivel
+                    nivel=nivel,
+                    tipo_habilidad=tipo_habilidad,
+                    certificado_habilidad=certificado_habilidad,
                 )
                 messages.success(request, 'Habilidad agregada exitosamente.')
             else:
@@ -373,12 +377,15 @@ def candidate_info_perfil(request):
     studies = Can103Educacion.objects.filter(candidato_id_101=candidato.id).order_by('-fecha_inicial')
     # Obtener las habilidades del candidato (ajusta según tu modelo)
     skills = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato.id).order_by('-id')
+
+    socialNetwork = Can106CandidatoRed.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')
     
     context = {
         'candidato': candidato,
         'jobs': jobs,
         'studies': studies,
         'skills': skills,
+        'socialNetwork': socialNetwork,
     }
 
     return render(request, 'admin/candidate/candidate_user/info_perfil.html', context)
@@ -400,7 +407,7 @@ def candidate_info_social_network(request):
             url = form.cleaned_data['url']
 
             # Verificar si la red social ya está registrada para el candidato
-            if not Can106CandidatoRed.objects.filter(candidato_id_101=candidato, red_social_id_105=red_social_id_105).exists():
+            if not Can106CandidatoRed.objects.filter(candidato_id_101=candidato, red_social_id_105=red_social_id_105, estado_id_001=1).exists():
                 Can106CandidatoRed.objects.create(
                     candidato_id_101=candidato,
                     red_social_id_105=red_social_id_105,
@@ -427,3 +434,66 @@ def candidate_info_social_network(request):
     }
 
     return render(request, 'admin/candidate/candidate_user/info_social_network.html', context)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def candidate_info_social_network_edit(request, pk):
+    candidato_id = request.session.get('candidato_id')
+
+    # Obtener el candidato (ajusta según tu modelo)
+    candidato = Can101Candidato.objects.get(id=candidato_id)
+
+    red = get_object_or_404(Can106CandidatoRed, pk=pk, candidato_id_101=candidato)
+
+    # Inicializar el formulario con los datos de la red social
+    initial = {
+        'red_social_id_105': red.red_social_id_105,
+        'url': red.url,
+    }
+
+    if request.method == 'POST':
+        form = SocialNetworkForm(request.POST, initial=initial)
+        if form.is_valid():
+            red_social_id_105 = form.cleaned_data['red_social_id_105']
+            url = form.cleaned_data['url']
+
+            # Actualizar la red social
+            red.red_social_id_105 = red_social_id_105
+            red.url = url
+            red.save()
+
+            messages.success(request, 'Red social actualizada exitosamente.')
+            return redirect('candidatos:candidato_info_redes')
+        else:
+            messages.error(request, 'Error al actualizar la red social.')
+    else:
+        form = SocialNetworkForm(initial=initial)
+
+
+
+    context = {
+        'candidato': candidato,
+        'form': form,
+        'red': red,
+    }
+
+    return render(request, 'admin/candidate/candidate_user/info_social_network_edit.html', context)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def canidate_info_social_network_delete(request, pk):
+    candidato_id = request.session.get('candidato_id')
+
+    # Obtener el candidato (ajusta según tu modelo)
+    candidato = Can101Candidato.objects.get(id=candidato_id)
+
+    # Obtener la red social del candidato
+    red_social = get_object_or_404(Can106CandidatoRed, pk=pk, candidato_id_101=candidato)
+
+    # Eliminar la red social
+    red_social.estado_id_001 = Cat001Estado.objects.get(id=3)
+    red_social.save()
+
+    messages.success(request, 'Red social eliminada exitosamente.')
+    
+    return redirect('candidatos:candidato_info_redes')

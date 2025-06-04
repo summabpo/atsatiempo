@@ -16,11 +16,13 @@ urlpatterns = [
     path( url_principal+'informacion/laboral', candidate_views.candidate_info_job, name='candidato_info_laboral'),
     path( url_principal+'informacion/habilidades', candidate_views.candidate_info_skills, name='candidato_info_habilidades'),
     path( url_principal+'informacion/redes', candidate_views.candidate_info_social_network, name='candidato_info_redes'),
-    path( url_principal+'informacion/skills/borrar/<int:pk>', candidate_views.candidate_info_skills_delete, name='candidato_info_habilidades_borrar'),
-
+    
     path( url_principal+'informacion/academica/editar/<int:pk>', candidate_views.candidate_info_academy_edit, name='candidato_info_academica_editar'),
     path( url_principal+'informacion/laboral/editar/<int:pk>', candidate_views.candidate_info_job_edit, name='candidato_info_laboral_editar'),
-    # path( url_principal+'informacion/skills', candidate_views.candidate_info_job, name='candidato_info_skills'),
+    path( url_principal+'informacion/redes/editar/<int:pk>', candidate_views.candidate_info_social_network_edit, name='candidato_info_redes_editar'),
+    
+    path( url_principal+'informacion/skills/borrar/<int:pk>', candidate_views.candidate_info_skills_delete, name='candidato_info_habilidades_borrar'),
+    path( url_principal+'informacion/redes/borrar/<int:pk>', candidate_views.canidate_info_social_network_delete, name='candidato_info_redes_borrar'),
 
     #apis
     path( url_principal+'informacion/skills/api/', api_views.api_suggestions_skills, name='api_sugerencias_habilidades'),

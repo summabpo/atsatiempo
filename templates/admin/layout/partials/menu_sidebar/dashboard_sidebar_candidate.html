@@ -11,6 +11,8 @@
     {% if request.resolver_match.url_name == 'candidato_info_laboral_editar' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_habilidades' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_redes' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_redes_editar' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_perfil' %}open{% endif %}
     ">
     <a href="javascript:void(0);" class="menu-link menu-toggle active">
         <span class="material-symbols-outlined menu-icon red">description</span>
@@ -42,8 +44,15 @@
             </a>
             <a href="{% url 'candidatos:candidato_info_redes' %}"  class="menu-link  
             {% if request.resolver_match.url_name == 'candidato_info_redes' %}active{% endif %} 
+            {% if request.resolver_match.url_name == 'candidato_info_redes_editar' %}active{% endif %} 
             ">
                 Redes Sociales
+            </a>
+
+            <a href="{% url 'candidatos:candidato_perfil' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'candidato_perfil' %}active{% endif %} 
+            ">
+                Resumen Perfil
             </a>
         </li>
     </ul>

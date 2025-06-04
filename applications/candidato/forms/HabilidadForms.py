@@ -7,6 +7,7 @@ from crispy_forms.layout import Layout, Submit, Row, Column, Field, Hidden, Div,
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato, Can104Skill, Can101CandidatoSkill
 from applications.services.choices import NIVEL_HABILIDAD_CHOICES_STATIC
+from applications.services.choices import TIPO_HABILIDAD_CHOICES_STATIC
 
 
 level_Choices = [
@@ -85,6 +86,25 @@ class CandidateHabilityForm(forms.Form):
         })
     )
 
+    tipo_habilidad = forms.ChoiceField(
+        choices=TIPO_HABILIDAD_CHOICES_STATIC,
+        label='Tipo de Habilidad',
+        required=True,
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+            'data-placeholder': 'Seleccione tipo de habilidad',
+        })
+    )
+
+    certificado_habilidad = forms.FileField(
+        label='Certificado de Habilidad',
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control form-control-solid',
+        })
+    )
+
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
         super().__init__(*args, **kwargs)
@@ -96,8 +116,10 @@ class CandidateHabilityForm(forms.Form):
             Div(
                 Div(
                     HTML("<h4 class='mb-3 text-primary'>Habilidades</h4>"),
-                    Div('skill_id_104', css_class='col-6'),
-                    Div('nivel', css_class='col-6'),
+                    Div('skill_id_104', css_class='col-3'),
+                    Div('nivel', css_class='col-3'),
+                    Div('tipo_habilidad', css_class='col-3'),
+                    Div('certificado_habilidad', css_class='col-3'),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -108,11 +130,30 @@ class CandidateHabilityForm(forms.Form):
         cleaned_data = super().clean()
         skill_id_104 = cleaned_data.get('skill_id_104')
         nivel = cleaned_data.get('nivel')
+        tipo_habilidad = cleaned_data.get('tipo_habilidad')
+        certificado_habilidad = cleaned_data.get('certificado_habilidad')
+
 
         if not skill_id_104:
             self.add_error('skill_id_104', "Este campo es obligatorio.")
         if not nivel:
             self.add_error('nivel', "Este campo es obligatorio.")
+
+        if not tipo_habilidad:
+            self.add_error('tipo_habilidad', "Este campo es obligatorio.")
+        elif tipo_habilidad == 'D':
+            # Validar que el archivo certificado_habilidad sea cargado y cumpla requisitos
+            if not certificado_habilidad:
+                self.add_error('certificado_habilidad', "Debe cargar un archivo para este tipo de habilidad.")
+            else:
+                max_size_mb = 5  # Tamaño máximo permitido en MB
+                allowed_types = ['application/pdf', 'image/jpeg', 'image/png']
+
+                if certificado_habilidad.size > max_size_mb * 1024 * 1024:
+                    self.add_error('certificado_habilidad', f"El archivo no debe superar los {max_size_mb} MB.")
+
+                if certificado_habilidad.content_type not in allowed_types:
+                    self.add_error('certificado_habilidad', "Tipo de archivo no permitido. Solo PDF, JPG o PNG.")
 
         return cleaned_data
 

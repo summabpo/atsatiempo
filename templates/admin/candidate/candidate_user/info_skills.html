@@ -31,13 +31,10 @@ Información Básica | Talent Tray
 
 	<!-- Start Your Code -->
     <div class="row">
-        <div class="col-3">
-        </div>
-    
-		<div class="col-6">
+        <div class="col-12">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
-                    <form method="post" id="form_skill">
+                    <form method="post" id="form_skill" enctype="multipart/form-data">
                         <div class="modal-body">
                             {% csrf_token %}
                             {% crispy form %}
@@ -48,8 +45,6 @@ Información Básica | Talent Tray
                     </form>
                 </div>
             </div>
-        </div>
-        <div class="col-3">
         </div>
     </div>
     <div class="row">
@@ -63,6 +58,8 @@ Información Básica | Talent Tray
                                     <tr>
                                         <th scope="col" class="text-center">HABILIDADES</th>
                                         <th scope="col" class="text-center">NIVEL</th>
+                                        <th scope="col" class="text-center">TIPO HABILIDAD</th>
+                                        <th scope="col" class="text-center">CERTIFICADO</th>
                                         <th scope="col" class="text-center">ACCIONES</th>
                                     </tr>
                                 </thead>
@@ -71,10 +68,20 @@ Información Básica | Talent Tray
                                     <tr>
                                         <td class="text-body text-center">{{e.skill_id_104.nombre}}</td>
                                         <td class="text-body text-center">{{ e.get_nivel_display }}</td>
+                                        <td class="text-body text-center">{{ e.get_tipo_habilidad_display }}</td>
+                                        <td class="text-body text-center">
+                                            {% if e.certificado_habilidad %}
+                                            <a href="{{ e.certificado_habilidad.url }}" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                <i class="material-symbols-outlined fs-16 text-primary">Download</i>
+                                            </a>
+                                            {% else %}
+                                            <span class="text-secondary">No disponible</span>
+                                            {% endif %}
+                                        </td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center align-items-center gap-1">
                                                 <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Borrar habilidad">
-                                                    <a href="{% url 'candidatos:candidato_info_habilidades_borrar' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                    <a href="#" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4 btn-delete-skill" data-url="{% url 'candidatos:candidato_info_habilidades_borrar' e.id %}">
                                                         <i class="material-symbols-outlined fs-16 text-danger">delete_outline</i>
                                                     </a>
                                                 </div>
@@ -96,7 +103,52 @@ Información Básica | Talent Tray
 {% block js %}
 <script>
 
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.btn-delete-skill').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = btn.getAttribute('data-url');
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "Esta acción no se puede deshacer.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#B10022',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Sí, borrar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    });
+
+    $(document).ready(function() {
+        var $tipoHabilidad = $('#id_tipo_habilidad');
+        var $certificadoField = $('#id_certificado_habilidad');
+
+        function toggleCertificado() {
+            if ($tipoHabilidad.length && $certificadoField.length) {
+                // Ajusta el valor según el texto de la opción para "Dura Técnica"
+                if ($tipoHabilidad.val() === 'D') {
+                    $certificadoField.prop('disabled', false);
+                    $certificadoField.parent().removeClass('d-none');
+                } else {
+                    $certificadoField.prop('disabled', true);
+                    $certificadoField.parent().addClass('d-none');
+                }
+            }
+        }
+
+        toggleCertificado();
+        $tipoHabilidad.on('change', toggleCertificado);
+    });
+
     initializeSelect2('#id_nivel');
+    initializeSelect2('#id_tipo_habilidad');
 
 </script>
 {% endblock js %}
