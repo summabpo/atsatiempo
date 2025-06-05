@@ -142,10 +142,7 @@ class CandidateHabilityForm(forms.Form):
         if not tipo_habilidad:
             self.add_error('tipo_habilidad', "Este campo es obligatorio.")
         elif tipo_habilidad == 'D':
-            # Validar que el archivo certificado_habilidad sea cargado y cumpla requisitos
-            if not certificado_habilidad:
-                self.add_error('certificado_habilidad', "Debe cargar un archivo para este tipo de habilidad.")
-            else:
+            if certificado_habilidad:
                 max_size_mb = 5  # Tamaño máximo permitido en MB
                 allowed_types = ['application/pdf', 'image/jpeg', 'image/png']
 

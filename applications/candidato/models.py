@@ -131,6 +131,14 @@ class Can101CandidatoSkill(models.Model):
     tipo_habilidad = models.CharField(max_length=1, choices=TIPO_HABILIDAD_CHOICES_STATIC, verbose_name="Tipo de Habilidad", blank=True, null=True)
     certificado_habilidad = models.FileField(upload_to='media_uploads/media_uploads/certificados_habilidad/', blank=True, null=True, verbose_name="Certificado de Habilidad")
 
+    def color_nivel(self):
+        colores = {
+            1: 'info',      # Básico
+            2: 'warning',   # Intermedio
+            3: 'success',   # Superior
+        }
+        return colores.get(self.nivel, 'secondary')
+
     class Meta:
         # managed = False 
         db_table = 'can_101_candidato_skills'       
