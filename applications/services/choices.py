@@ -159,3 +159,34 @@ TIPO_HABILIDAD_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
         ('S', 'Suave'),
         ('D', 'Dura (Técnica)'),
     ]
+
+
+ESTADO_APLICACION_CHOICES_STATIC = [
+    (1, 'Aplicado'),
+    (2, 'Entrevista Programada'),
+    (3, 'Entrevista Aprobada'),
+    (4, 'Entrevista No Aprobada'),
+    (5, 'Prueba Programada'),
+    (6, 'Prueba Superada'),
+    (7, 'Prueba No Superada'),
+    (8, 'Seleccionado'),
+    (9, 'Finalizada'),
+    (10, 'Cancelada'),
+    (11, 'Desiste'),
+    (12, 'No Apto'),
+]
+
+ESTADO_APLICACION_COLOR_STATIC = {
+    1: ('Aplicado', 'warning'),
+    2: ('Entrevista Programada', 'info'),
+    3: ('Entrevista Aprobada', 'success'),
+    4: ('Entrevista No Aprobada', 'danger'),
+    5: ('Prueba Programada', 'info'),
+    6: ('Prueba Superada', 'success'),
+    7: ('Prueba No Superada', 'danger'),
+    8: ('Seleccionado', 'success'),
+    9: ('Finalizada', 'primary'),
+    10: ('Cancelada', 'secondary'),
+    11: ('Desiste', 'secondary'),
+    12: ('No Apto', 'danger'),
+}

@@ -3,31 +3,19 @@ from django.db.models import Count
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.cliente.models import Cli051Cliente
 from applications.candidato.models import Can101Candidato
+from applications.services.choices import ESTADO_APLICACION_CHOICES_STATIC, ESTADO_APLICACION_COLOR_STATIC
 from applications.usuarios.models import UsuarioBase
 from applications.vacante.models import Cli052Vacante
 
 # Create your models here.
 class Cli056AplicacionVacante(models.Model):
-    ESTADO_APLICACION = [
-        (1, 'Aplicado'),
-        (2, 'Entrevista Programada'),
-        (3, 'Entrevista Aprobada'),
-        (4, 'Entrevista No Aprobada'),
-        (5, 'Prueba Programada'),
-        (6, 'Prueba Superada'),
-        (7, 'Prueba No Superada'),
-        (8, 'Seleccionado'),
-        (9, 'Finalizada'),
-        (10, 'Cancelada'),
-        (11, 'Desiste'),
-        (12, 'No Apto'),
-    ]
+    
 
     candidato_101 = models.ForeignKey(Can101Candidato, on_delete=models.CASCADE, related_name='aplicaciones')
     vacante_id_052 = models.ForeignKey(Cli052Vacante, on_delete=models.CASCADE, related_name='aplicaciones')
     fecha_aplicacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
-    estado_aplicacion = models.IntegerField(choices=ESTADO_APLICACION, default=1)
+    estado_aplicacion = models.IntegerField(choices=ESTADO_APLICACION_CHOICES_STATIC, default=1)
     estado = models.ForeignKey(Cat001Estado, on_delete=models.SET_NULL, null=True, blank=True, related_name='aplicaciones_vacante')
 
     def __str__(self):
@@ -77,21 +65,7 @@ class Cli056AplicacionVacante(models.Model):
         }
     
     def obtener_estado_con_color(self):
-        colores_estado = {
-            1: ('Aplicado', 'warning'),
-            2: ('Entrevista Programada', 'info'),
-            3: ('Entrevista Aprobada', 'success'),
-            4: ('Entrevista No Aprobada', 'danger'),
-            5: ('Prueba Programada', 'info'),
-            6: ('Prueba Superada', 'success'),
-            7: ('Prueba No Superada', 'danger'),
-            8: ('Seleccionado', 'success'),
-            9: ('Finalizada', 'primary'),
-            10: ('Cancelada', 'secondary'),
-            11: ('Desiste', 'secondary'),
-            12: ('No Apto', 'danger'),
-        }
-        estado_nombre, color = colores_estado.get(self.estado_aplicacion, ('Desconocido', 'gris'))
+        estado_nombre, color = ESTADO_APLICACION_COLOR_STATIC.get(self.estado_aplicacion, ('Desconocido', 'gris'))
         return {'estado': estado_nombre, 'color': color}
     class Meta:
         db_table = 'cli_056_aplicacion_vacante'
@@ -112,7 +86,7 @@ class Cli063AplicacionVacanteHistorial(models.Model):
         null=True, 
         blank=True
     )
-    estado = models.IntegerField(choices=Cli056AplicacionVacante.ESTADO_APLICACION)
+    estado = models.IntegerField(choices=ESTADO_APLICACION_CHOICES_STATIC)
     descripcion = models.TextField(null=True, blank=True)
 
     def __str__(self):
