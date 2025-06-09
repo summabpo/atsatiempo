@@ -32,7 +32,7 @@ urlpatterns = [
     path( url_principal+'gestion/analista/<int:pk>/', client_analyst_internal_views.detail_vacancy, name='vacantes_gestion_analista_interno'),
 
     #client_candidate_user
-    path( url_principal+'aplicadas/candidato/', candidate_views.apply_vacancy, name='vacante_candidato_aplicar'),
+    path( url_principal+'aplicadas/candidato/', candidate_views.apply_vacancy, name='vacante_candidato_aplicadas'),
 
 
 

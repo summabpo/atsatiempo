@@ -63,7 +63,7 @@
     <span class="menu-title-text">VACANTES </span>
 </li>
 <li class="menu-item 
-    {% if request.resolver_match.url_name == 'vacantes_asignadas_analista_interno' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacante_candidato_aplicadas' %}open{% endif %}
     ">
     <a href="javascript:void(0);" class="menu-link menu-toggle active">
         <span class="material-symbols-outlined menu-icon red">work</span>
@@ -71,8 +71,8 @@
     </a>
     <ul class="menu-sub">
         <li class="menu-item">
-            <a href="#"  class="menu-link  
-            {% if request.resolver_match.url_name == 'vacantes_asignadas_analista_interno' %}active{% endif %} 
+            <a href="{% url 'vacantes:vacante_candidato_aplicadas' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'vacante_candidato_aplicadas' %}active{% endif %} 
             ">
                 Vacantes Aplicadas
             </a>

@@ -1,0 +1,368 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Mis Vacantes aplicadas
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <h3 class="mb-0" style="color: #B10022;">LISTADO DE VACANTES</h3>
+        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+            <ol class="breadcrumb align-items-center mb-0 lh-1">
+                <li class="breadcrumb-item">
+                    <a href="#" class="d-flex align-items-center text-decoration-none">
+                        <i class="ri-home-4-line fs-18 text-primary me-1"></i>
+                        <span class="text-secondary fw-medium hover" >Inicio</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span class="fw-medium">Listado de Vacantes</span>
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <div class="card bg-white border-0 rounded-3 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <h3 class="mb-0">Vacantes</h3>
+                <button class="btn btn-outline-primary py-1 px-2 px-sm-4 fs-14 fw-medium rounded-3 hover-bg" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    <span class="py-sm-1 d-block">
+                        <i class="ri-add-line d-none d-sm-inline-block"></i>
+                        <span>Add New Ticket</span>
+                    </span>
+                </button>
+            </div>
+
+            <div class="default-table-area all-projects">
+                <div class="table-responsive">
+                    <table class="table align-middle" id="myTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Cliente</th>
+                                <th scope="col">Requester</th>
+                                <th scope="col">Assigned To</th>
+                                <th scope="col">Created Date</th>
+                                <th scope="col">Due Date</th>
+                                <th scope="col">Priority</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for e in vacantes %}
+                            <tr>
+                                <td class="text-body">{{e.id}}</td>
+                                <td>
+                                    <a href="ticket-details.html" class="fw-medium">Network Infrastructure</a>
+                                </td>
+                                <td class="text-secondary">Walter Frazier</td>
+                                <td class="text-secondary">Oliver Clark</td>
+                                <td class="text-secondary">20 Apr 2024</td>
+                                <td class="text-secondary">30 Apr 2024</td>
+                                <td class="text-secondary">High</td>
+                                <td>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary p-2 fs-12 fw-normal">Finished</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                        </button>
+                                    </div>
+                                </td> 
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td class="text-body">#854</td>
+                                <td>
+                                    <a href="ticket-details.html" class="fw-medium">Network Infrastructure</a>
+                                </td>
+                                <td class="text-secondary">Walter Frazier</td>
+                                <td class="text-secondary">Oliver Clark</td>
+                                <td class="text-secondary">20 Apr 2024</td>
+                                <td class="text-secondary">30 Apr 2024</td>
+                                <td class="text-secondary">High</td>
+                                <td>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary p-2 fs-12 fw-normal">Finished</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                        </button>
+                                    </div>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td class="text-body">#853</td>
+                                <td>
+                                    <a href="ticket-details.html" class="fw-medium">Cloud Migration</a>
+                                </td>
+                                <td class="text-secondary">Kimberly Anderson</td>
+                                <td class="text-secondary">Ethan Baker</td>
+                                <td class="text-secondary">21 Apr 2024</td>
+                                <td class="text-secondary">25 Apr 2024</td>
+                                <td class="text-secondary">Low</td>
+                                <td>
+                                    <span class="badge bg-warning bg-opacity-10 text-warning p-2 fs-12 fw-normal">Pending</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                        </button>
+                                    </div>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td class="text-body">#852</td>
+                                <td>
+                                    <a href="ticket-details.html" class="fw-medium">Website Revamp</a>
+                                </td>
+                                <td class="text-secondary">Roscoe Guerrero</td>
+                                <td class="text-secondary">Sophia Carter</td>
+                                <td class="text-secondary">17 Apr 2024</td>
+                                <td class="text-secondary">20 Apr 2024</td>
+                                <td class="text-secondary">Medium</td>
+                                <td>
+                                    <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">In Progress</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                        </button>
+                                    </div>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td class="text-body">#851</td>
+                                <td>
+                                    <a href="ticket-details.html" class="fw-medium">System Deployment</a>
+                                </td>
+                                <td class="text-secondary">Robert Stewart</td>
+                                <td class="text-secondary">Ava Cooper</td>
+                                <td class="text-secondary">10 Apr 2024</td>
+                                <td class="text-secondary">15 Apr 2024</td>
+                                <td class="text-secondary">High</td>
+                                <td>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary p-2 fs-12 fw-normal">Finished</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                        </button>
+                                    </div>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td class="text-body">#850</td>
+                                <td>
+                                    <a href="ticket-details.html" class="fw-medium">System Deployment</a>
+                                </td>
+                                <td class="text-secondary">Dustin Fritch</td>
+                                <td class="text-secondary">Isabella Evans</td>
+                                <td class="text-secondary">05 Apr 2024</td>
+                                <td class="text-secondary">10 Apr 2024</td>
+                                <td class="text-secondary">Low</td>
+                                <td>
+                                    <span class="badge bg-danger bg-opacity-10 text-danger p-2 fs-12 fw-normal">Cancelled</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                        </button>
+                                    </div>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td class="text-body">#849</td>
+                                <td>
+                                    <a href="ticket-details.html" class="fw-medium">Login Issues</a>
+                                </td>
+                                <td class="text-secondary">Walter Frazier</td>
+                                <td class="text-secondary">Oliver Clark</td>
+                                <td class="text-secondary">20 Apr 2024</td>
+                                <td class="text-secondary">30 Apr 2024</td>
+                                <td class="text-secondary">High</td>
+                                <td>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary p-2 fs-12 fw-normal">Finished</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                        </button>
+                                    </div>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td class="text-body">#848</td>
+                                <td>
+                                    <a href="ticket-details.html" class="fw-medium">Email Configuration</a>
+                                </td>
+                                <td class="text-secondary">Kimberly Anderson</td>
+                                <td class="text-secondary">Ethan Baker</td>
+                                <td class="text-secondary">17 Apr 2024</td>
+                                <td class="text-secondary">25 Apr 2024</td>
+                                <td class="text-secondary">Low</td>
+                                <td>
+                                    <span class="badge bg-warning bg-opacity-10 text-warning p-2 fs-12 fw-normal">Pending</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                        </button>
+                                    </div>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td class="text-body">#847</td>
+                                <td>
+                                    <a href="ticket-details.html" class="fw-medium">Application Error</a>
+                                </td>
+                                <td class="text-secondary">Roscoe Guerrero</td>
+                                <td class="text-secondary">Sophia Carter</td>
+                                <td class="text-secondary">17 Apr 2024</td>
+                                <td class="text-secondary">20 Apr 2024</td>
+                                <td class="text-secondary">Medium</td>
+                                <td>
+                                    <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">In Progress</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                        </button>
+                                    </div>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td class="text-body">#846</td>
+                                <td>
+                                    <a href="ticket-details.html" class="fw-medium">Software Installation</a>
+                                </td>
+                                <td class="text-secondary">Robert Stewart</td>
+                                <td class="text-secondary">Ava Cooper</td>
+                                <td class="text-secondary">10 Apr 2024</td>
+                                <td class="text-secondary">15 Apr 2024</td>
+                                <td class="text-secondary">High</td>
+                                <td>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary p-2 fs-12 fw-normal">Finished</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                        </button>
+                                    </div>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td class="text-body">#855</td>
+                                <td>
+                                    <a href="ticket-details.html" class="fw-medium">System Upgrade</a>
+                                </td>
+                                <td class="text-secondary">Dustin Fritch</td>
+                                <td class="text-secondary">Isabella Evans</td>
+                                <td class="text-secondary">05 Apr 2024</td>
+                                <td class="text-secondary">10 Apr 2024</td>
+                                <td class="text-secondary">Low</td>
+                                <td>
+                                    <span class="badge bg-danger bg-opacity-10 text-danger p-2 fs-12 fw-normal">Cancelled</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
+                                        </button>
+                                        <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                        </button>
+                                    </div>
+                                </td> 
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    
+</script>  
+{% endblock js %}
