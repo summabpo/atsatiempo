@@ -43,7 +43,6 @@ def detail_vacancy_recruited(request, pk):
     reclutados = query_recruited_vacancy_id(vacante.id)
 
     # formulario para asignar candidato a la vacante
-
     form = ReclutadoCrearForm()
     if request.method == 'POST':
         form = ReclutadoCrearForm(request.POST)
@@ -94,6 +93,9 @@ def detail_vacancy_recruited(request, pk):
                 candidato_101=candidato,
                 estado=Cat001Estado.objects.get(id=1),  # Asumiendo que 1 es el estado por defecto
             )
+
+            crear_historial_aplicacion(aplicacion_vacante, 1, request.session.get('_auth_user_id'), 'Aplicación a Vacante por el cliente')
+
             messages.success(request, 'Candidato asignado en la vacante exitosamente.')
             return redirect('reclutados:vacantes_reclutados_cliente', pk=pk)    
         else:

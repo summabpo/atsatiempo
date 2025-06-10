@@ -6,10 +6,12 @@ from django.utils.timezone import now
 #modelos
 from applications.reclutado.models import Cli063AplicacionVacanteHistorial
 from applications.reclutado.models import Cli056AplicacionVacante
+from applications.services.choices import ESTADO_APLICACION_CHOICES_STATIC
 from applications.usuarios.models import UsuarioBase
 
 # components
 from components.RegistrarGestionVacante import validar_vacante_cierre
+
 
 def crear_historial_aplicacion(aplicacion_vacante, estado, usuario=None, descripcion=None):
     
@@ -49,7 +51,7 @@ def crear_historial_aplicacion(aplicacion_vacante, estado, usuario=None, descrip
 
 def obtener_nombre_estado_aplicacion(estado):
     # Trae el nombre del estado.
-    diccionario_estados = dict(Cli056AplicacionVacante.ESTADO_APLICACION)
+    diccionario_estados = dict(ESTADO_APLICACION_CHOICES_STATIC)
     nombre_estadp = diccionario_estados.get(estado, "Estado no válido")
 
     return nombre_estadp

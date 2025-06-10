@@ -47,17 +47,9 @@ Mis Vacantes aplicadas
                     <div class="timeline-wrap">
                         {% for h in historial %}
                             <div class="timeline-item-2 mb-5">
-                                <div class="text p-4 rounded-3 shadow-sm border-start border-4 
-                                    {% if h.estado == 'Entrevista Aprobada' %}border-success bg-white
-                                    {% elif h.estado == 'Entrevista Programada' %}border-warning bg-white
-                                    {% else %}border-secondary bg-white
-                                    {% endif %}">
+                                <div class="text p-4 rounded-3 shadow-sm border-start border-4  border-{{ h.color }} bg-white">
                                     <h5 class="fw-bold mb-2 text-dark">
-                                        <span class="material-symbols-outlined me-1 
-                                            {% if h.estado == 'Entrevista Aprobada' %}text-success
-                                            {% elif h.estado == 'Entrevista Programada' %}text-warning
-                                            {% else %}text-muted
-                                            {% endif %}">event</span>
+                                        <span class="material-symbols-outlined me-1 text-{{ h.color }}">event</span>
                                         Estado: {{ h.estado }}
                                     </h5>
                                     <p class="mb-2 text-secondary">{{ h.descripcion }}</p>
