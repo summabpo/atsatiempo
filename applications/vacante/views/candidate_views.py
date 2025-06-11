@@ -54,3 +54,25 @@ def apply_vacancy_detail(request, pk):
     }
 
     return render(request, 'admin/vacancy/candidate_user/apply_vacancy_detail.html', context)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def vacancy_available(request):
+    # Obtener el ID del candidato desde la sesión
+    candidato_id = request.session.get('candidato_id')
+    
+    # Filtrar las vacantes disponibles para el candidato
+    vacancies = Cli052Vacante.objects.filter(
+        estado_id_001=1,
+        perfil_vacante__estado_id_001=1,
+        perfil_vacante__lugar_trabajo__estado_id_001=1,
+        asignacion_cliente_id_064__id_cliente_asignado__estado_id_001=1
+    ).exclude(
+        aplicaciones__candidato_101=candidato_id
+    ).order_by('-fecha_creacion')
+
+    context = {
+        'vacantes_disponibles': vacancies,
+    }
+
+    return render(request, 'admin/vacancy/candidate_user/vacancy_available.html', context)

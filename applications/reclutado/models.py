@@ -9,7 +9,6 @@ from applications.vacante.models import Cli052Vacante
 
 # Create your models here.
 class Cli056AplicacionVacante(models.Model):
-    
 
     candidato_101 = models.ForeignKey(Can101Candidato, on_delete=models.CASCADE, related_name='aplicaciones')
     vacante_id_052 = models.ForeignKey(Cli052Vacante, on_delete=models.CASCADE, related_name='aplicaciones')

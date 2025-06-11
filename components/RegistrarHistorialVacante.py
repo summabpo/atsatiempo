@@ -52,6 +52,6 @@ def crear_historial_aplicacion(aplicacion_vacante, estado, usuario=None, descrip
 def obtener_nombre_estado_aplicacion(estado):
     # Trae el nombre del estado.
     diccionario_estados = dict(ESTADO_APLICACION_CHOICES_STATIC)
-    nombre_estadp = diccionario_estados.get(estado, "Estado no válido")
+    nombre_estado = diccionario_estados.get(estado, "Estado no válido")
 
-    return nombre_estadp
+    return nombre_estado

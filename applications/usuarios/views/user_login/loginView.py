@@ -319,6 +319,9 @@ def dashboard_candidato(request):
     data = personal_information_calculation(candidato_id)
     vacantes_disponibles = query_vacanty_with_skills_and_details().filter(estado_id_001=1)
     
+    vacantes_disponibles = vacantes_disponibles.exclude(
+        aplicaciones__candidato_101_id=candidato_id
+    )
 
     context = {
         'session_variables': session_variables,
@@ -326,9 +329,8 @@ def dashboard_candidato(request):
         'vacantes_disponibles': vacantes_disponibles,
         
     }
+    
     return render(request, 'admin/dashboard/dashboard_candidate.html', context)
-
-
 
 # Salida de sesión.
 def logout_view(request):
