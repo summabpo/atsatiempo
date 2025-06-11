@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q, Value, Case, When, CharField
+from applications.common.models import Cat001Estado
 from applications.common.views.EnvioCorreo import enviar_correo
 from applications.reclutado.models import Cli056AplicacionVacante, Cli063AplicacionVacanteHistorial
 from applications.candidato.models import Can101Candidato
@@ -43,7 +44,8 @@ def apply_vacancy_recruited_candidate(request, pk):
     asignacion_vacante = Cli056AplicacionVacante.objects.create(
         candidato_101_id=candidate_id,
         vacante_id_052_id=pk,
-        estado_aplicacion=1
+        estado_aplicacion=1,
+        estado= get_object_or_404(Cat001Estado, pk=1)  # Estado activo por defecto
     )
 
     #funcion para crear registro en el historial y actualizar estado de la aplicacion de la vcatente
