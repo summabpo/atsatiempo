@@ -34,6 +34,8 @@ urlpatterns = [
     #client_candidate_user
     path( url_principal+'aplicadas/candidato/', candidate_views.apply_vacancy, name='vacante_candidato_aplicadas'),
     path( url_principal+'aplicadas/detalle/<int:pk>', candidate_views.apply_vacancy_detail, name='vacante_candidato_aplicadas_detalle'),
+    path( url_principal+'disponibles/', candidate_views.vacancy_available, name='vacante_candidato_disponibles'),
+
 
 
 
