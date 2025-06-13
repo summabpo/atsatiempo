@@ -45,18 +45,16 @@ Inicio | Dashboard
                                     </div>
                                     <div class="col-md-12">
                                             {% crispy form %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <div style="text-align: center;">
-                                <div class="row">
-                                    <div class="col-9">
-                                        <button type="submit" id="form_filtros" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">Filtrar</button>
-                                    </div>
-                                    <div class="col-3">
-                                        <a href="{% url 'vacantes:vacante_candidato_disponibles' %}" class="btn bg-secondary bg-opacity-10 fw-medium text-secondary py-2 px-4 w-100">Limpiar</a>
+                                            <div style="text-align: center;">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <button type="submit" id="form_filtros" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">Filtrar</button>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <a href="{% url 'vacantes:vacante_candidato_disponibles' %}" class="btn bg-secondary bg-opacity-10 fw-medium text-secondary py-2 px-4 w-100">Limpiar</a>
+                                                    </div>
+                                                </div>
+                                            </div>
                                     </div>
                                 </div>
                             </div>
@@ -90,8 +88,11 @@ Inicio | Dashboard
                                                 </div>
                                                 <div class="col-md-10">
                                                     <h5 class="job-title">{{ vacante.titulo|upper }}</h5>
-                                                    <p class="job-meta"><b>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}</b> - Hace 3 horas</p>
+                                                    <p class="job-meta"><b>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}</b>. - Hace {{ vacante.fecha_creacion|timesince }}</p>
+                                                    <p class="job-meta">{{vacante.perfil_vacante.lugar_trabajo.nombre}}</p>
                                                     <p class="job-description">{{ vacante.descripcion_vacante }}</p>
+                                                    <p class="job-description"></p>
+
                                                     <div class="job-tags">
                                                         {% if vacante.soft_skills_id_053.all %}
                                                             {% for skill in vacante.soft_skills_id_053.all %}

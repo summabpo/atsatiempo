@@ -64,16 +64,34 @@ def vacancy_available(request):
 
     data = personal_information_calculation(candidato_id)
 
-    form = VacanteFiltro()
-    
     # Filtrar las vacantes disponibles para el candidato
-    vacantes_disponibles = Cli052Vacante.objects.filter(
+    vacantes_disponibles = Cli052Vacante.objects.select_related(
+        'perfil_vacante', 
+        'perfil_vacante__lugar_trabajo'
+    ).filter(
         estado_id_001=1,
     ).exclude(
         aplicaciones__candidato_101=candidato_id
     ).order_by('-fecha_creacion')
 
-    print(vacantes_disponibles)
+    #
+    form = VacanteFiltro(request.GET or None)
+
+    if form.is_valid():
+        ciudad = form.cleaned_data.get('ciudad')
+        experiencia_requerida = form.cleaned_data.get('experiencia_requerida')
+        profesion_estudio = form.cleaned_data.get('profesion_estudio')
+
+        if ciudad:
+            vacantes_disponibles = vacantes_disponibles.filter(perfil_vacante__lugar_trabajo=ciudad)
+
+        if experiencia_requerida:
+            vacantes_disponibles = vacantes_disponibles.filter(perfil_vacante__tiempo_experiencia=experiencia_requerida)
+
+        if profesion_estudio:
+            vacantes_disponibles = vacantes_disponibles.filter(perfil_vacante__profesion_estudio=profesion_estudio)
+
+        
 
     context = {
         'vacantes_disponibles': vacantes_disponibles,
