@@ -137,9 +137,10 @@ def detail_recruited(request, pk):
     # Obtener los reclutados asociados a la vacante
     reclutados = query_recruited_vacancy_id(vacante.id)
 
-    form = EntrevistaCrearForm(request.POST, grupo_id=4, cliente_id=cliente_id)
+    
     
     if request.method == 'POST':
+        form = EntrevistaCrearForm(request.POST, grupo_id=4, cliente_id=cliente_id)
         if form.is_valid():
             fecha_entrevista = form.cleaned_data['fecha_entrevista']
             hora_entrevista = form.cleaned_data['hora_entrevista']

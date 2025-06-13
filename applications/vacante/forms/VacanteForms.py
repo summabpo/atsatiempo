@@ -2170,7 +2170,7 @@ class VacancyAssingForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_id = 'form_vacante_asignar'
 
-        analistas = UsuarioBase.objects.filter(group__id=6, cliente_id_051=cliente_id).order_by('primer_apellido')
+        analistas = UsuarioBase.objects.filter(group__id=6).order_by('primer_apellido')
         analista_choices = [('', '----------')] + [(analista.id, f"{analista.primer_nombre} {analista.segundo_nombre} {analista.primer_apellido} {analista.segundo_apellido}") for analista in analistas]
 
 
