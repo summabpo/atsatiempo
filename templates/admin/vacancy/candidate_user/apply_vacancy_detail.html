@@ -1,0 +1,96 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Mis Vacantes aplicadas
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <h3 class="mb-0" style="color: #B10022;">DETALLE VACANTE APLICADO</h3>
+        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+            <ol class="breadcrumb align-items-center mb-0 lh-1">
+                <li class="breadcrumb-item">
+                    <a href="#" class="d-flex align-items-center text-decoration-none">
+                        <i class="ri-home-4-line fs-18 text-primary me-1"></i>
+                        <span class="text-secondary fw-medium hover" >Inicio</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacante_candidato_aplicadas' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Listado de Vacantes Aplicadas</span>
+					</a>
+				</li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span class="fw-medium">Detalle Vacante</span>
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <div class="card bg-white border-0 rounded-3 mb-4">
+        <div class="card-body p-4">
+            
+        </div>
+    </div>
+    <div class="row">
+		<div class="col-md-6">
+            {% include "admin/vacancy/common_template/info_vacancy.html" %}
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <h3 class="mb-0 text-primary">Historial de Aplicación</h3>
+                    </div>
+                    <div class="timeline-wrap">
+                        {% for h in historial %}
+                            <div class="timeline-item-2 mb-5">
+                                <div class="text p-4 rounded-3 shadow-sm border-start border-4  border-{{ h.color }} bg-white">
+                                    <h5 class="fw-bold mb-2 text-dark">
+                                        <span class="material-symbols-outlined me-1 text-{{ h.color }}">event</span>
+                                        Estado: {{ h.estado }}
+                                    </h5>
+                                    <p class="mb-2 text-secondary">{{ h.descripcion }}</p>
+
+                                    <ul class="ps-0 mb-3 list-unstyled d-flex align-items-center flex-wrap small">
+                                        <li class="d-flex align-items-center me-4">
+                                            <span class="material-symbols-outlined me-2 text-primary">person</span>
+                                            <strong>Usuario:</strong> {{ h.usuario }}
+                                        </li>
+                                        <li class="d-flex align-items-center me-4">
+                                            <span class="material-symbols-outlined me-2 text-primary">work</span>
+                                            <strong>Vacante:</strong> {{ h.vacante }}
+                                        </li>
+                                    </ul>
+
+                                    <span class="d-block text-muted">
+                                        <span class="fw-semibold">ID Aplicación:</span> {{ h.aplicacion_id }}
+                                    </span>
+                                </div>
+
+                                <div class="icon {{ forloop.counter|add:"1" }}">
+                                    <div></div>
+                                </div>
+
+                                <div class="time">
+                                    <span class="badge bg-primary text-white fs-6">
+                                        {{ h.fecha|date:"H:i A, d M Y" }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    
+</script>  
+{% endblock js %}

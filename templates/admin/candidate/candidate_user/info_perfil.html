@@ -1,0 +1,402 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Perfil Candidato | Talent Tray
+{% endblock %}
+
+{% block styles %}
+{# Aquí puedes añadir estilos CSS personalizados si los necesitas #}
+<style>
+    .profile-card {
+        box-shadow: 0 4px 8px rgba(0,0,0,.05);
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    .profile-header {
+        background-color: #007bff; /* Color de tu tema primario */
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+    .profile-header h2 {
+        margin-bottom: 0.5rem;
+    }
+    .profile-section {
+        padding: 1.5rem;
+        border-bottom: 1px solid #eee;
+    }
+    .profile-section:last-child {
+        border-bottom: none;
+    }
+    .profile-section h4 {
+        color: #007bff; /* Color de tu tema primario */
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 0.5rem;
+        display: inline-block;
+    }
+    .list-group-item {
+        border: none;
+        padding-left: 0;
+    }
+    .job-item, .study-item {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px dashed #eee;
+    }
+    .job-item:last-child, .study-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    .skill-badge {
+        font-size: 0.9em;
+        padding: 0.5em 0.8em;
+        margin-right: 0.5em;
+        margin-bottom: 0.5em;
+    }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0">Inicio</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+                <li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Hoja de Vida</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<!-- Start Your Code -->
+    <div class="row">
+        <div class="col-md-12">
+			<div class="row">
+				<div class="col-md-3">
+					<div class="card bg-white border-0 rounded-3 mb-4">
+						<div class="card-body p-4">
+							<h3 class="mb-3 mb-lg-4 text-primary">Información Básica</h3>
+
+							<div class="d-flex align-items-center mb-4">
+								<div class="flex-shrink-0">
+									<img src="{{candidato.imagen_perfil.url}}" class="rounded-circle border border-2" style="width: 120px; height: 120px; object-fit: cover;" alt="user">
+								</div>
+								<div class="flex-grow-1 ms-3">
+									<h4 class="fs-17 mb-1 fw-semibold">{{candidato.primer_nombre}} {{candidato.segundo_nombre}}</h4>
+									<span class="fs-14">{{candidato.primer_apellido}} {{candidato.segundo_apellido}}</span>
+								</div>
+							</div>
+
+							<h4 class="fw-semibold fs-14 mb-2">Acerca de mí</h4>
+							<p>{{candidato.perfil}}</p>
+							<h4 class="fw-semibold fs-14 mb-2 pb-1">Redes Sociales</h4>
+							<ul class="d-flex flex-wrap gap-2 list-unstyled">
+								{% for network in socialNetwork %}
+									<li>
+										{# The anchor tag for the image, with dynamic URL, and the image itself #}
+										<a href="{{ network.url }}"
+										target="_blank"
+										class="text-decoration-none wh-30 d-inline-block lh-30 text-center rounded-circle overflow-hidden transition-y" {# Added overflow-hidden to ensure image stays within rounded circle #}
+										style="background-color: {{ network.background_color | default:'transparent' }};"> {# Dynamic background color, with a fallback to transparent #}
+											{# Image tag instead of icon tag #}
+											<img src="{{ network.red_social_id_105.logo.url }}" {# Assuming network.image_url holds the path to the logo image #}
+												alt="{{ network.red_social_id_105.name }} logo" {# Alt text for accessibility #}
+												class="img-fluid rounded-circle" {# img-fluid for responsiveness, rounded-circle for shape #}
+												style="width: 100%; height: 100%; object-fit: cover;"> {# Ensure image covers the area, adjust as needed #}
+										</a>
+									</li>
+								{% empty %}
+									<li class="text-muted small">No hay redes sociales configuradas.</li>
+								{% endfor %}
+							</ul>
+						</div>
+					</div>
+
+					<div class="card bg-white border-0 rounded-3 mb-4">
+						<div class="card-body p-4">
+							<h3 class="mb-3 mb-lg-4 text-primary">Información Adicional</h3>
+							<ul class="ps-0 mb-0 list-unstyled">
+								<li class="d-flex align-items-center mb-2 pb-1">
+									<span class="material-symbols-outlined text-primary me-2">person</span>
+									<span>Nombre Completo:</span>
+									<span class="text-secondary fw-medium ms-1">
+										{{ candidato.primer_nombre }}{% if candidato.segundo_nombre %} {{ candidato.segundo_nombre }}{% endif %} {{ candidato.primer_apellido }}{% if candidato.segundo_apellido %} {{ candidato.segundo_apellido }}{% endif %}
+									</span>
+								</li>
+								<li class="d-flex align-items-center mb-2 pb-1">
+									<span class="material-symbols-outlined text-primary me-2">mail</span>
+									<span>Email:</span>
+									<span class="text-secondary fw-medium ms-1">{{ candidato.email }}</span>
+								</li>
+								<li class="d-flex align-items-center mb-2 pb-1">
+									<span class="material-symbols-outlined text-primary me-2">phone</span>
+									<span>Teléfono:</span>
+									<span class="text-secondary fw-medium ms-1">{{ candidato.telefono|default:"-" }}</span>
+								</li>
+								<li class="d-flex align-items-center mb-2 pb-1">
+									<span class="material-symbols-outlined text-primary me-2">badge</span>
+									<span>Número de Documento:</span>
+									<span class="text-secondary fw-medium ms-1">{{ candidato.numero_documento|default:"-" }}</span>
+								</li>
+								<li class="d-flex align-items-center mb-2 pb-1">
+									<span class="material-symbols-outlined text-primary me-2">location_on</span>
+									<span>Ubicación:</span>
+									<span class="text-secondary fw-medium ms-1">
+										{% if candidato.ciudad_id_004 %}{{ candidato.ciudad_id_004.nombre }}{% else %}-{% endif %}
+									</span>
+								</li>
+								<li class="d-flex align-items-center mb-2 pb-1">
+									<span class="material-symbols-outlined text-primary me-2">home</span>
+									<span>Dirección:</span>
+									<span class="text-secondary fw-medium ms-1">{{ candidato.direccion|default:"-" }}</span>
+								</li>
+								<li class="d-flex align-items-center mb-2 pb-1">
+									<span class="material-symbols-outlined text-primary me-2">event</span>
+									<span>Fecha de Nacimiento:</span>
+									<span class="text-secondary fw-medium ms-1">
+										{% if candidato.fecha_nacimiento %}{{ candidato.fecha_nacimiento|date:"d M Y" }}{% else %}-{% endif %}
+									</span>
+								</li>
+								<li class="d-flex align-items-center mb-2 pb-1">
+									<span class="material-symbols-outlined text-primary me-2">wc</span>
+									<span>Sexo:</span>
+									<span class="text-secondary fw-medium ms-1">
+										{% if candidato.sexo == "M" %}Masculino{% elif candidato.sexo == "F" %}Femenino{% else %}-{% endif %}
+									</span>
+								</li>
+								{% comment %} <li class="d-flex align-items-center mb-2 pb-1">
+									<span class="material-symbols-outlined text-primary me-2">calendar_today</span>
+									<span>Fecha de Registro:</span>
+									<span class="text-secondary fw-medium ms-1">{{ candidato.user.date_joined|date:"d M Y" }}</span>
+								</li> {% endcomment %}
+								<li class="d-flex align-items-center mb-2 pb-1">
+									<span class="material-symbols-outlined text-primary me-2">description</span>
+									<span>Hoja de Vida:</span>
+									<span class="text-secondary fw-medium ms-1">
+										{% if candidato.hoja_de_vida %}
+											
+											<a href="{{ candidato.hoja_de_vida.url }}" target="_blank" class="text-primary text-decoration-underline">Ver archivo</a>
+											
+											<!--
+											<p>
+												<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" data-bs-toggle="modal" data-bs-target="#certModal{{ educacion.id }}">
+													Ver Certificación
+												</button>
+											</p>
+											
+											<div class="modal fade" id="certModal{{ educacion.id }}" tabindex="-1" aria-labelledby="certModalLabel{{ educacion.id }}" aria-hidden="true">
+												<div class="modal-dialog modal-dialog-centered modal-xl">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title" id="certModalLabel{{ educacion.id }}">Certificación</h5>
+															<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+														</div>
+														<div class="modal-body" style="height:80vh;">
+															<iframe src="{{ candidato.hoja_de_vida.url }}" width="100%" height="100%" style="border:none;"></iframe>
+														</div>
+													</div>
+												</div>
+											</div>
+											-->
+										{% else %}
+											-
+										{% endif %}
+									</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="card bg-white border-0 rounded-3 mb-4">
+						<div class="card-body p-4">
+							<h3 class="mb-3 mb-lg-4 text-primary">Habilidades Duras</h3>
+							<div class="card mb-4">
+								<div class="card-body">
+									<ul class="list-group list-group-flush">
+										{% for skill in skills %}
+											{% if skill.tipo_habilidad == 'D' %}
+												<li class="list-group-item py-3">
+													<div class="d-flex flex-column"> {# Main flex container for skill details #}
+														<div class="d-flex justify-content-between align-items-baseline mb-1">
+															<h6 class="fw-bold mb-0 me-3">{{ skill.skill_id_104.nombre }}</h6>
+															<span class="badge bg-opacity-10 bg-{{skill.color_nivel}} py-1 px-2 text-{{skill.color_nivel}} rounded-1 fw-medium fs-12">{{ skill.get_nivel_display }}</span>
+														</div>
+														{% if skill.certificado_habilidad %}
+															<div class="d-flex justify-content-end mt-2"> {# Container for the certificate button #}
+																<a href="{{ skill.certificado_habilidad.url }}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" target="_blank">
+																	<i class="bi bi-file-earmark-text"></i> Certificado
+																</a>
+															</div>
+														{% endif %}
+													</div>
+												</li>
+											{% endif %}
+										{% empty %}
+											<li class="list-group-item">
+												<p class="text-muted mb-0">No hay habilidades registradas.</p>
+											</li>
+										{% endfor %}
+									</ul>
+								</div>
+							</div>
+						</div>
+
+						<div class="card-body p-4">
+							<h3 class="mb-3 mb-lg-4 text-primary">Habilidades Blandas</h3>
+							<div class="card mb-4">
+								<div class="card-body">
+									<ul class="list-group list-group-flush">
+										{% for skill in skills %}
+											{% if skill.tipo_habilidad == 'S' %}
+												<li class="list-group-item py-3">
+													<div class="d-flex flex-column"> {# Main flex container for skill details #}
+														<div class="d-flex justify-content-between align-items-baseline mb-1">
+															<h6 class="fw-bold mb-0 me-3">{{ skill.skill_id_104.nombre }}</h6>
+															<span class="badge bg-opacity-10 bg-{{skill.color_nivel}} py-1 px-2 text-{{skill.color_nivel}} rounded-1 fw-medium fs-12">{{ skill.get_nivel_display }}</span>
+														</div>
+														{% if skill.certificado_habilidad %}
+															<div class="d-flex justify-content-end mt-2"> {# Container for the certificate button #}
+																<a href="{{ skill.certificado_habilidad.url }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+																	<i class="bi bi-file-earmark-text"></i> Certificado
+																</a>
+															</div>
+														{% endif %}
+													</div>
+												</li>
+											{% endif %}
+										{% empty %}
+											<li class="list-group-item">
+												<p class="text-muted mb-0">No hay habilidades registradas.</p>
+											</li>
+										{% endfor %}
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-md-9">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="card bg-white border-0 rounded-3 mb-4">
+								<div class="card-body p-4">
+									<h3 class="mb-3 mb-lg-4 text-primary">Experiencia Laboral</h3>
+									<div class="timeline">
+										{% for exp in jobs %}
+											<div class="position-relative timeline-item dot-3 mb-4">
+												<span class="time-line-date">{{ exp.fecha_inicial|date:"Y M" }}</span>
+												<div class="border-style-for-timeline dot-3">
+													<h4 class="fs-14 fw-medium mb-2 text-primary">{{ exp.entidad }}</h4>
+													<p class="fs-13 mb-1">
+														Cargo: <b>{{ exp.cargo }}</b>
+													</p>
+													<p class="fs-13 mb-1">
+														Sector: <b>{{ exp.sector }}</b>
+													</p>
+													<p class="fs-13 mb-1">
+														Modalidad: <b>{{ exp.get_modalidad_trabajo_display }}</b>
+													</p>
+													<p class="fs-13 mb-1">
+														{% if exp.activo %}
+															<span class="badge bg-success">Actualmente</span>
+														{% else %}
+															Fecha Final: <b>{{ exp.fecha_final|date:"Y M" }}</b>
+															<br>
+															Motivo de Salida: <b>{{ exp.get_motivo_salida_display }}</b>
+														{% endif %}
+													</p>
+												</div>
+											</div>
+										{% empty %}
+											<p class="text-muted">No hay experiencias laborales registradas.</p>
+										{% endfor %}
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="card bg-white border-0 rounded-3 mb-4">
+								<div class="card-body p-4">
+									<h3 class="mb-3 mb-lg-4 text-primary">Formación</h3>
+									<div class="timeline">
+										{% for educacion in studies %}
+											<div class="position-relative timeline-item dot-3">
+												<span class="time-line-date">{{ educacion.fecha_inicial|date:"Y M" }}</span> {# Formatea la fecha inicial #}
+												<div class="border-style-for-timeline dot-3">
+													<h4 class="fs-14 fw-medium mb-2 text-primary">{{ educacion.institucion }}</h4> {# Nombre de la institución #}
+													<p class="fs-13">
+														{% if educacion.grado_en %}
+															Grado en: <b>{{ educacion.titulo }} - {{ educacion.carrera }}</b>
+														{% else %}
+															Carrera: <b>{{ educacion.carrera }}</b>
+														{% endif %}
+													</p>
+													<p>
+														Fecha Final: {% if educacion.fecha_final %}
+															<b>{{ educacion.fecha_final|date:"Y M" }}</b>
+														{% else %}
+															<b>Actualmente</b>
+														{% endif %}
+													</p>
+													<p>
+														Tipo de Estudio: <b>{{ educacion.get_tipo_estudio_display }}</b> {# Muestra el nombre legible del tipo de estudio #}
+													</p>
+													<p>
+														Ciudad: <b>{{ educacion.ciudad_id_004.nombre }}</b> {# Asumiendo que Cat004Ciudad tiene un campo 'nombre' #}
+													</p>
+													{% if educacion.certificacion %}
+														<p>
+															<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" data-bs-toggle="modal" data-bs-target="#certModal{{ educacion.id }}">
+																Ver Certificación
+															</button>
+														</p>
+														<!-- Modal para mostrar PDF -->
+														<div class="modal fade" id="certModal{{ educacion.id }}" tabindex="-1" aria-labelledby="certModalLabel{{ educacion.id }}" aria-hidden="true">
+															<div class="modal-dialog modal-dialog-centered modal-xl">
+																<div class="modal-content">
+																	<div class="modal-header">
+																		<h5 class="modal-title" id="certModalLabel{{ educacion.id }}">Certificación</h5>
+																		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+																	</div>
+																	<div class="modal-body" style="height:80vh;">
+																		<iframe src="{{ educacion.certificacion.url }}" width="100%" height="100%" style="border:none;"></iframe>
+																	</div>
+																</div>
+															</div>
+														</div>
+													{% endif %}
+												</div>
+											</div>
+										{% endfor %}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div
+				</div>
+				
+			</div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+
+</script>
+{% endblock js %}

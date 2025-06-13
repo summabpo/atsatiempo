@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from applications.reclutado.models import Cli056AplicacionVacante, Cli063AplicacionVacanteHistorial
+from applications.services.choices import ESTADO_APLICACION_COLOR_STATIC
 from applications.usuarios.decorators  import validar_permisos
 from django.db.models import F, Q, Case, When, Value, CharField
 from django.db.models.functions import Concat
@@ -103,3 +104,29 @@ def consultar_historial_aplicacion_vacante(aplicacion_vacante_id):
         }
         for h in historial_aplicaciones
     ]
+
+def consultar_historial_aplicacion_vacante_candidate(aplicacion_vacante_id):
+    # Luego de obtener el candidato y demás datos...
+    historial_aplicaciones = (
+        Cli063AplicacionVacanteHistorial.objects
+        .filter(aplicacion_vacante_056__id=aplicacion_vacante_id)
+        .select_related('aplicacion_vacante_056', 'usuario_id_genero')
+        .order_by('-fecha')
+    )
+
+    historial_datos = []
+    for h in historial_aplicaciones:
+
+        estado_info = ESTADO_APLICACION_COLOR_STATIC.get(h.estado, {'estado': 'Desconocido', 'color': 'gris'})
+
+        historial_datos.append({
+            'estado': estado_info[0],
+            'color': estado_info[1],
+            'descripcion': h.descripcion if h.descripcion else 'Sin descripción disponible.',
+            'usuario': f'{h.usuario_id_genero.primer_nombre} {h.usuario_id_genero.primer_apellido}' if h.usuario_id_genero else 'Sistema',
+            'vacante': h.aplicacion_vacante_056.vacante_id_052.titulo,  # Ajusta el campo si es necesario
+            'aplicacion_id': h.aplicacion_vacante_056.id,
+            'fecha': h.fecha
+        })
+
+    return historial_datos

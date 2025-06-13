@@ -44,3 +44,24 @@ def query_vacanty_detail():
         'asignacion_cliente_id_064__id_cliente_asignado',
         'usuario_asignado'
     )
+
+def query_vacanty_with_skills_and_details():
+    return Cli052Vacante.objects.select_related(
+        'perfil_vacante',
+        'perfil_vacante__profesion_estudio',
+        'perfil_vacante__lugar_trabajo',
+        'perfil_vacante__estado',
+        'cargo',
+        'asignacion_cliente_id_064',
+        'asignacion_cliente_id_064__id_cliente_asignado',
+        'usuario_asignado',
+        'estado_id_001'
+    ).prefetch_related(
+        'soft_skills_id_053',
+        'hard_skills_id_054',
+        'perfil_vacante__profesion_estudio',
+        'perfil_vacante__lugar_trabajo',
+        'perfil_vacante__estado',
+        'perfil_vacante',
+        'cli074asignacionfunciones_set__funcion_responsabilidad'
+    )

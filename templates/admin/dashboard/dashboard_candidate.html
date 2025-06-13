@@ -1,0 +1,599 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Inicio | Dashboard
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0">
+			Bienvenido(a), <span class="text-primary">{{ request.session.user_login.primer_nombre }}</span>
+			</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+				
+			</ol>
+		</nav>
+	</div>
+
+	<!-- Start Your Code -->
+	<div class="main-content-container overflow-hidden">
+
+		{% if data_candidate.porcentaje_total <= 90 %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="alert alert-warning" role="alert">
+					<h4 class="alert-heading">Por favor completa el registro de tu hoja de vida!</h4>
+					<p>Es fundamental que completes todos los datos de tu perfil personal, académico, laboral y de habilidades. De esta manera, podremos mostrarte y recomendarte oportunidades laborales que realmente se ajusten a tus intereses, experiencia y aspiraciones profesionales, facilitando así tu búsqueda de empleo y aumentando tus posibilidades de éxito en el mercado laboral.</p>
+					<hr>
+					<p class="mb-0">
+						Para actualizar tu información haz clic aquí:
+						<a href="{% url 'candidatos:candidato_info_personal' %}" class="btn btn-warning text-white btn-sm ms-2">Información Personal Básica</a>
+					</p>
+				</div>
+			</div>
+		</div>
+		{% elif data_candidate.porcentaje_total <= 30 %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="alert alert-danger" role="alert">
+					<h4 class="alert-heading">Por favor completa el registro de tu hoja de vida!</h4>
+					<p>Es fundamental que completes todos los datos de tu perfil personal, académico, laboral y de habilidades. De esta manera, podremos mostrarte y recomendarte oportunidades laborales que realmente se ajusten a tus intereses, experiencia y aspiraciones profesionales, facilitando así tu búsqueda de empleo y aumentando tus posibilidades de éxito en el mercado laboral.</p>
+					<hr>
+					<p class="mb-0">
+						Para actualizar tu información haz clic aquí:
+						<a href="{% url 'candidatos:candidato_info_personal' %}" class="btn btn-danger btn-sm ms-2">Información Personal Básica</a>
+					</p>
+				</div>
+			</div>
+		</div>
+		<hr class="my-4">
+		{% endif %}
+		
+
+		<div class="row">
+			<div class="col-md-3">
+				<div class="card bg-white border-0 rounded-3 mb-4">
+					<div class="card-body p-4">
+						<h3 class="mb-0">Perfil al :</h3>
+						<div id="chart1"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="card bg-white border-0 rounded-3 mb-4">
+							<div class="card-body p-4">
+								<div class="d-flex justify-content-center">
+									<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Personal</h4>
+								</div>
+								<div class="d-flex align-items-center justify-content-between">
+									<div class="flex-shrink-0">
+										<div class="d-flex">
+											<i class="material-symbols-outlined fs-40 text-danger">person</i>
+										</div>
+									</div>
+									<div class="flex-grow-1 ms-3">
+										<div class="d-flex align-items-center justify-content-end">
+											<div class="progress-responsive" style="width: 100%;">
+												<div class="progress rounded-pill" style="height: 20px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="{{ dashboard }}" aria-valuemin="0" aria-valuemax="100">
+													<div class="progress-bar rounded-pill" style="width: {{ data_candidate.info_personal.porcentaje }}%; height: 20px; background-color: #FE7A36;"></div>
+												</div>
+											</div>
+											<span class="count text-body ms-3 fs-12"> {{ data_candidate.info_personal.porcentaje }}%</span>
+										</div>
+									</div>
+									<div class="ms-3">
+										<a href="{% url 'candidatos:candidato_info_personal' %}" class="btn btn-danger text-white btn-sm mt-2">Actualizar</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="card bg-white border-0 rounded-3 mb-4">
+							<div class="card-body p-4">
+								<div class="d-flex justify-content-center">
+									<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Académica</h4>
+								</div>
+								<div class="d-flex align-items-center justify-content-between">
+									<div class="flex-shrink-0">
+										<div class="d-flex">
+											<i class="material-symbols-outlined fs-40 text-info">school</i>
+										</div>
+									</div>
+									<div class="flex-grow-1 ms-3">
+										<div class="d-flex align-items-center justify-content-end">
+											<div class="progress-responsive" style="width: 100%">
+												<div class="progress rounded-pill" style="height: 20px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+													<div class="progress-bar rounded-pill" style="width: {{ data_candidate.educacion.porcentaje }}%; height: 20px; background-color: #2DB6F5;"></div>
+												</div>
+											</div>
+											<span class="count text-body ms-3 fs-12">{{ data_candidate.educacion.porcentaje }}%</span>
+										</div>
+									</div>
+									<div class="ms-3">
+										<a href="{% url 'candidatos:candidato_info_academica' %}" class="btn btn-info text-white btn-sm mt-2">Actualizar</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-md-6">
+						<div class="card bg-white border-0 rounded-3 mb-4">
+							<div class="card-body p-4">
+								<div class="d-flex justify-content-center">
+									<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Laboral</h4>
+								</div>
+								<div class="d-flex align-items-center justify-content-between">
+									<div class="flex-shrink-0">
+										<div class="d-flex">
+											<i class="material-symbols-outlined fs-40 text-warning">work</i>
+										</div>
+									</div>
+									<div class="flex-grow-1 ms-3">
+										<div class="d-flex align-items-center justify-content-end">
+											<div class="progress-responsive" style="width: 100%;">
+												<div class="progress rounded-pill" style="height: 20px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+													<div class="progress-bar rounded-pill" style="width: {{data_candidate.experiencia.porcentaje}}%; height: 20px; background-color: #FFBC2B;"></div>
+												</div>
+											</div>
+											<span class="count text-body ms-3 fs-12">{{data_candidate.experiencia.porcentaje}}%</span>
+										</div>
+									</div>
+									<div class="ms-3">
+										<a href="{% url 'candidatos:candidato_info_laboral' %}" class="btn btn-warning text-white btn-sm mt-2">Actualizar</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="card bg-white border-0 rounded-3 mb-4">
+							<div class="card-body p-4">
+								<div class="d-flex justify-content-center">
+									<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Habilidades</h4>
+								</div>
+								<div class="d-flex align-items-center justify-content-between">
+									<div class="flex-shrink-0">
+										<div class="d-flex">
+											<i class="material-symbols-outlined fs-40 text-success">psychology</i>
+										</div>
+									</div>
+									<div class="flex-grow-1 ms-3">
+										<div class="d-flex align-items-center justify-content-end">
+											<div class="progress-responsive" style="width: 100%;">
+												<div class="progress rounded-pill" style="height: 20px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+													<div class="progress-bar rounded-pill" style="width: {{data_candidate.skills.porcentaje}}%; height: 20px; background-color: #37D80A;"></div>
+												</div>
+											</div>
+											<span class="count text-body ms-3 fs-12">{{data_candidate.skills.porcentaje}}%</span>
+										</div>
+									</div>
+									<div class="ms-3">
+										<a href="{% url 'candidatos:candidato_info_habilidades' %}" class="btn btn-success text-white btn-sm mt-2">Actualizar</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<hr class="my-4">
+
+		<!-- Vacantes -->
+		{% if data_candidate.porcentaje_total > 90 %}
+		<div class="row">
+			<div class="col-md-8">
+				<div class="card bg-white border-0 rounded-3 mb-4">
+					<div class="card-body p-4">
+						<div class="container">
+							<div class="row mb-4">
+								<div class="col">
+									<h4 style="color: #B10022">VACANTES ABIERTAS</h4>
+								</div>
+							</div>
+
+							<div class="row row-cols-1 g-4">
+								{% if vacantes_disponibles %}
+								
+
+								{% for vacante in vacantes_disponibles %}
+								<div class="col">
+									<div class="job-card d-flex align-items-center">
+										<div class="row w-100">
+											<div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
+												{% if vacante.asignacion_cliente_id_064.id_cliente_asignado.logo %}
+													<img src="{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.logo.url }}" alt="Logo Cliente" class="img-fluid rounded-circle mb-4" style="width: 80px; height: 80px; object-fit: cover;">
+												{% else %}
+													<img src="{% static 'admin/images/blank.png' %}" alt="Logo por defecto" class="img-fluid rounded-circle mb-2" style="width: 60px; height: 60px; object-fit: cover;">
+												{% endif %}
+												<a href="{% url 'reclutados:reclutados_confirmar_aplicar_candidato' vacante.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">DETALLES</a>
+											</div>
+											<div class="col-md-10">
+												<h5 class="job-title">{{ vacante.titulo|upper }}</h5>
+												<p class="job-meta"><b>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}</b> - Hace 3 horas</p>
+												<p class="job-description">{{ vacante.descripcion_vacante }}</p>
+												<div class="job-tags">
+													{% if vacante.soft_skills_id_053.all %}
+														{% for skill in vacante.soft_skills_id_053.all %}
+															<span class="badge bg-opacity-10 bg-primary py-1 px-2 text-primary rounded-1 fw-medium fs-12">{{skill.nombre}}</span>
+														{% endfor %}
+													{% endif %}
+
+													{% if vacante.hard_skills_id_054.all %}
+														{% for skill in vacante.hard_skills_id_054.all %}
+															<span class="badge bg-opacity-10 bg-primary py-1 px-2 text-primary rounded-1 fw-medium fs-12">{{skill.nombre}}</span>
+														{% endfor %}
+													{% endif %}
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+
+
+								{% else %}
+									<p>No hay vacantes disponibles.</p>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+			<div class="col-md-4">
+				<div class="card bg-white border-0 rounded-3 mb-4">
+					<div class="card-header bg-transparent border-0">
+						<h5 class="mb-0 fw-bold">Vacantes recomendadas</h5>
+					</div>
+					<div class="card-body p-4">
+						
+					</div>
+				</div>	
+			</div>
+		{% endif %}
+		<hr class="my-4">
+
+
+
+		{% comment %} <div class="row">
+			<div class="col-md-3">
+				<div class="card bg-white border-0 rounded-3 mb-4">
+					<div class="card-body p-4">
+						<div class="d-flex align-items-center justify-content-between">
+							<div class="flex-shrink-0">
+								<div class="d-flex">
+									<i class="material-symbols-outlined fs-40 text-danger">person</i>
+									<div class="ms-3">
+										<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Personal</h4>
+										<a href="#" class="btn btn-danger text-white btn-sm mt-2">Actualizar</a>
+									</div>
+								</div>
+							</div>
+							<div class="flex-grow-1 ms-3">
+								<div class="d-flex align-items-center justify-content-end">
+									<div class="progress-responsive" style="width: 100%;">
+										<div class="progress rounded-pill" style="height: 8px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+											<div class="progress-bar rounded-pill" style="width: 90%; height: 8px; background-color: #FE7A36;"></div>
+										</div>
+									</div>
+									<span class="count text-body ms-3 fs-12">90%</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-3">
+				<div class="card bg-white border-0 rounded-3 mb-4">
+					<div class="card-body p-4">
+						<div class="d-flex align-items-center justify-content-between">
+							<div class="flex-shrink-0">
+								<div class="d-flex">
+									<i class="material-symbols-outlined fs-40 text-info">school</i>
+									<div class="ms-3">
+										<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Académica</h4>
+										<a href="#" class="btn btn-info text-white btn-sm mt-2">Actualizar</a>
+									</div>
+								</div>
+							</div>
+							<div class="flex-grow-1 ms-3">
+								<div class="d-flex align-items-center justify-content-end">
+									<div class="progress-responsive" style="width: 100%">
+										<div class="progress rounded-pill" style="height: 8px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+											<div class="progress-bar rounded-pill" style="width: 90%; height: 8px; background-color: #2DB6F5;"></div>
+										</div>
+									</div>
+									<span class="count text-body ms-3 fs-12">90%</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-md-3">
+				<div class="card bg-white border-0 rounded-3 mb-4">
+					<div class="card-body p-4">
+						<div class="d-flex align-items-center justify-content-between">
+							<div class="flex-shrink-0">
+								<div class="d-flex">
+									<i class="material-symbols-outlined fs-40 text-warning">work</i>
+									<div class="ms-3">
+										<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Laboral</h4>
+										<a href="#" class="btn btn-warning text-white btn-sm mt-2">Actualizar</a>
+									</div>
+								</div>
+							</div>
+							<div class="flex-grow-1 ms-3">
+								<div class="d-flex align-items-center justify-content-end">
+									<div class="progress-responsive" style="width: 100%;">
+										<div class="progress rounded-pill" style="height: 8px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+											<div class="progress-bar rounded-pill" style="width: 90%; height: 8px; background-color: #FFBC2B;"></div>
+										</div>
+									</div>
+									<span class="count text-body ms-3 fs-12">90%</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-3">
+				<div class="card bg-white border-0 rounded-3 mb-4">
+					<div class="card-body p-4">
+						<div class="d-flex align-items-center justify-content-between">
+							<div class="flex-shrink-0">
+								<div class="d-flex">
+									<i class="material-symbols-outlined fs-40 text-success">psychology</i>
+									<div class="ms-3">
+										<h4 class="mb-0 fs-14 fw-semibold lh-1">Habilidades</h4>
+										<a href="#" class="btn btn-success text-white btn-sm mt-2">Actualizar</a>
+									</div>
+								</div>
+							</div>
+							<div class="flex-grow-1 ms-3">
+								<div class="d-flex align-items-center justify-content-end">
+									<div class="progress-responsive" style="width: 100%;">
+										<div class="progress rounded-pill" style="height: 8px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+											<div class="progress-bar rounded-pill" style="width: 90%; height: 8px; background-color: #37D80A;"></div>
+										</div>
+									</div>
+									<span class="count text-body ms-3 fs-12">90%</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div> {% endcomment %}
+
+		{% comment %} <hr class="my-4">
+
+		<div class="row">
+			<div class="col-md-4">
+				<div class="card bg-white border-0 rounded-3 mb-4">
+					<div class="card-body p-4">
+						<div class="mb-3 mb-lg-30">
+							<h3 class="mb-0">Información de mi perfil</h3>
+						</div>
+						<ul class="ps-0 mb-0 list-unstyled">
+							<li class="mb-3 pb-3 border-bottom">
+								<div class="d-flex align-items-center justify-content-between">
+									<div class="flex-shrink-0">
+										<div class="d-flex">
+											<i class="material-symbols-outlined fs-40 text-danger">person</i>
+											<div class="ms-3">
+												<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Personal</h4>
+												<a href="#" class="btn btn-danger text-white btn-sm mt-2">Actualizar</a>
+											</div>
+										</div>
+									</div>
+									<div class="flex-grow-1 ms-3">
+										<div class="d-flex align-items-center justify-content-end">
+											<div class="progress-responsive" style="width: 120px;">
+												<div class="progress rounded-pill" style="height: 8px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+													<div class="progress-bar rounded-pill" style="width: 90%; height: 8px; background-color: #FE7A36;"></div>
+												</div>
+											</div>
+											<span class="count text-body ms-3 fs-12">90%</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							<li class="mb-3 pb-3 border-bottom">
+								<div class="d-flex align-items-center justify-content-between">
+									<div class="flex-shrink-0">
+										<div class="d-flex">
+											<i class="material-symbols-outlined fs-40 text-info">school</i>
+											<div class="ms-3">
+												<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Académica</h4>
+												<a href="#" class="btn btn-info text-white btn-sm mt-2">Actualizar</a>
+											</div>
+										</div>
+									</div>
+									<div class="flex-grow-1 ms-3">
+										<div class="d-flex align-items-center justify-content-end">
+											<div class="progress-responsive" style="width: 120px;">
+												<div class="progress rounded-pill" style="height: 8px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+													<div class="progress-bar rounded-pill" style="width: 90%; height: 8px; background-color: #2DB6F5;"></div>
+												</div>
+											</div>
+											<span class="count text-body ms-3 fs-12">90%</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							<li class="mb-3 pb-3 border-bottom">
+								<div class="d-flex align-items-center justify-content-between">
+									<div class="flex-shrink-0">
+										<div class="d-flex">
+											<i class="material-symbols-outlined fs-40 text-warning">work</i>
+											<div class="ms-3">
+												<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Laboral</h4>
+												<a href="#" class="btn btn-warning btn-sm mt-2">Actualizar</a>
+											</div>
+										</div>
+									</div>
+									<div class="flex-grow-1 ms-3">
+										<div class="d-flex align-items-center justify-content-end">
+											<div class="progress-responsive" style="width: 120px;">
+												<div class="progress rounded-pill" style="height: 8px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+													<div class="progress-bar rounded-pill" style="width: 90%; height: 8px; background-color: #FFBC2B;"></div>
+												</div>
+											</div>
+											<span class="count text-body ms-3 fs-12">90%</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							<li class="mb-3 pb-3 border-bottom">
+								<div class="d-flex align-items-center justify-content-between">
+									<div class="flex-shrink-0">
+										<div class="d-flex">
+											<i class="material-symbols-outlined fs-40 text-success">psychology</i>
+											<div class="ms-3">
+												<h4 class="mb-0 fs-14 fw-semibold lh-1">Habilidades</h4>
+												<a href="#" class="btn btn-success btn-sm mt-2">Actualizar</a>
+											</div>
+										</div>
+									</div>
+									<div class="flex-grow-1 ms-3">
+										<div class="d-flex align-items-center justify-content-end">
+											<div class="progress-responsive" style="width: 120px;">
+												<div class="progress rounded-pill" style="height: 8px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+													<div class="progress-bar rounded-pill" style="width: 90%; height: 8px; background-color: #37D80A;"></div>
+												</div>
+											</div>
+											<span class="count text-body ms-3 fs-12">90%</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div class="card bg-white border-0 rounded-3 mb-4 position-relative">
+					<div class="card-body p-4">
+						<h3 class="mb-0">
+						Congratulations, <span class="text-primary">Olivia!</span>
+						</h3>
+					<p>Best agent of the month</p>
+					<h3 class="mb-0 fs-20 text-primary">1.5k+</h3>
+					<p>Ticket Solved</p>
+					<a href="#" class="btn btn-primary fw-medium">View Profile</a>
+					</div>
+					<img src="{% static 'admin/images/congratulations.gif' %}" class="congratulations wh-150 position-absolute" alt="congratulations"/>
+				</div>
+			</div>
+		</div> {% endcomment %}
+	</div>
+
+	
+	
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+		porcent = {{ data_candidate.porcentaje_total }};
+		var color;
+		if (porcent == 100) {
+			color = "#37D80A";
+		} else if (porcent >= 90) {
+			color = "#37D80A";
+		} else if (porcent >= 70) {
+			color = "#FFBC2B";
+		} else if (porcent >= 50) {
+			color = "#FE7A36";
+		} else if (porcent >= 40 ) {
+			color = "#FE7A36";
+		} else {
+			color = "#FF0000";
+		}
+		var options = {
+		series: [porcent],
+		chart: {
+			type: 'radialBar',
+			offsetY: -20,
+			sparkline: {
+			enabled: true
+			}
+		},
+		plotOptions: {
+			radialBar: {
+			startAngle: -90,
+			endAngle: 90,
+			track: {
+				background: "#e7e7e7",
+				strokeWidth: '90%',
+				margin: 5,
+				dropShadow: {
+				enabled: true,
+				top: 2,
+				left: 0,
+				color: '#444',
+				opacity: 1,
+				blur: 2
+				}
+			},
+			dataLabels: {
+				name: {
+				show: false
+				},
+				value: {
+				offsetY: -2,
+				fontSize: '22px'
+				}
+			}
+			}
+		},
+		grid: {
+			padding: {
+			top: -10
+			}
+		},
+		fill: {
+			type: 'gradient', // Corregido: el tipo debe ser 'gradient', no 'red'
+			gradient: {
+			shade: 'light',
+			shadeIntensity: 0.4,
+			inverseColors: false,
+			opacityFrom: 1,
+			opacityTo: 1,
+			stops: [0, 50, 53, 91]
+			},
+		},
+		colors: [color],  // ← Línea roja
+		labels: ['Average Results'],
+		};
+
+		var chart1 = new ApexCharts(document.querySelector("#chart1"), options);
+		chart1.render();
+	</script>
+{% endblock %}

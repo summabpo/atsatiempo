@@ -1,0 +1,138 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Inicio | Dashboard
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0">
+			Bienvenido(a), <span class="text-primary">{{ request.session.user_login.primer_nombre }}</span>
+        </h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+				
+			</ol>
+		</nav>
+	</div>
+
+	<!-- Start Your Code -->
+	<div class="main-content-container overflow-hidden">
+
+		{% if data_candidate.porcentaje_total > 90 %}
+		<div class="row">
+            <div class="col-md-4">
+				<div class="card bg-white border-0 rounded-3 mb-4">
+                    <form method="get">
+                        <div class="card-body p-4">
+                            <div class="container">
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <h4 style="color: #B10022">VACANTES ABIERTAS</h4>
+                                    </div>
+                                    <div class="col-md-12">
+                                            {% crispy form %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div style="text-align: center;">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <button type="submit" id="form_filtros" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">Filtrar</button>
+                                    </div>
+                                    <div class="col-3">
+                                        <a href="{% url 'vacantes:vacante_candidato_disponibles' %}" class="btn bg-secondary bg-opacity-10 fw-medium text-secondary py-2 px-4 w-100">Limpiar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+				</div>	
+			</div>
+			<div class="col-md-8">
+				<div class="card bg-white border-0 rounded-3 mb-4">
+					<div class="card-body p-4">
+						<div class="container">
+							<div class="row mb-4">
+								<div class="col-md-12">
+									<h4 style="color: #B10022">Vacantes Disponibles en:</h4>
+								</div>
+							</div>
+
+							<div class="row row-cols-1 g-4">
+								{% if vacantes_disponibles %}								
+                                    {% for vacante in vacantes_disponibles %}
+                                    <div class="col">
+                                        <div class="job-card d-flex align-items-center">
+                                            <div class="row w-100">
+                                                <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
+                                                    {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.logo %}
+                                                        <img src="{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.logo.url }}" alt="Logo Cliente" class="img-fluid rounded-circle mb-4" style="width: 80px; height: 80px; object-fit: cover;">
+                                                    {% else %}
+                                                        <img src="{% static 'admin/images/blank.png' %}" alt="Logo por defecto" class="img-fluid rounded-circle mb-2" style="width: 60px; height: 60px; object-fit: cover;">
+                                                    {% endif %}
+                                                    <a href="{% url 'reclutados:reclutados_confirmar_aplicar_candidato' vacante.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">DETALLES</a>
+                                                </div>
+                                                <div class="col-md-10">
+                                                    <h5 class="job-title">{{ vacante.titulo|upper }}</h5>
+                                                    <p class="job-meta"><b>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}</b> - Hace 3 horas</p>
+                                                    <p class="job-description">{{ vacante.descripcion_vacante }}</p>
+                                                    <div class="job-tags">
+                                                        {% if vacante.soft_skills_id_053.all %}
+                                                            {% for skill in vacante.soft_skills_id_053.all %}
+                                                                <span class="badge bg-opacity-10 bg-primary py-1 px-2 text-primary rounded-1 fw-medium fs-12">{{skill.nombre}}</span>
+                                                            {% endfor %}
+                                                        {% endif %}
+
+                                                        {% if vacante.hard_skills_id_054.all %}
+                                                            {% for skill in vacante.hard_skills_id_054.all %}
+                                                                <span class="badge bg-opacity-10 bg-primary py-1 px-2 text-primary rounded-1 fw-medium fs-12">{{skill.nombre}}</span>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+
+								{% else %}
+									<p>No hay vacantes disponibles.</p>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+		{% endif %}
+		<hr class="my-4">
+	</div>
+
+	
+	
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    initializeSelect2('#id_ciudad');
+    initializeSelect2('#id_profesion_estudio');
+    initializeSelect2('#id_experiencia_requerida');
+</script>
+
+{% endblock %}

@@ -86,13 +86,16 @@ FRECUENCIA_PAGO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
 ]
 
 NIVEL_ESTUDIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
-    (1, 'Sin estudios'),
-    (2, 'Primaria'),
-    (3, 'Secundaria/Bachillerato'),
-    (4, 'Técnico'),
-    (5, 'Tecnólogo'),
-    (6, 'Universitario'),
-    (7, 'Postgrado'),
+    ('1', 'Sin estudios'),
+    ('2', 'Primaria'),
+    ('3', 'Secundaria/Bachillerato'),
+    ('4', 'Técnico'),
+    ('5', 'Tecnólogo'),
+    ('6', 'Universitario'),
+    ('7', 'Postgrado'),
+    ('8', 'Diplomado'),
+    ('9', 'Curso'),
+    
 ]
 
 HORARIO_CHOICES_STATIC =  [('', 'Seleccione una opción...')] + [
@@ -138,3 +141,52 @@ IDIOMA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
 EDAD_SELECT_CHOICES_STATIC = [('', 'Seleccione una opción... ')] + [
     (str(age), f'{age} años') for age in range(18, 51)
 ]
+
+NIVEL_HABILIDAD_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    (1, 'Básico'),
+    (2, 'Intermedio'),
+    (3, 'Superior'),
+]
+
+
+MOTIVO_SALIDA_CHOICES_STATIC =  [
+    (1, 'Renuncia'),
+    (2, 'Justa Causa'),
+    (3, 'Terminación de Contrato')
+]
+
+TIPO_HABILIDAD_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+        ('S', 'Suave'),
+        ('D', 'Dura (Técnica)'),
+    ]
+
+
+ESTADO_APLICACION_CHOICES_STATIC = [
+    (1, 'Aplicado'),
+    (2, 'Entrevista Programada'),
+    (3, 'Entrevista Aprobada'),
+    (4, 'Entrevista No Aprobada'),
+    (5, 'Prueba Programada'),
+    (6, 'Prueba Superada'),
+    (7, 'Prueba No Superada'),
+    (8, 'Seleccionado'),
+    (9, 'Finalizada'),
+    (10, 'Cancelada'),
+    (11, 'Desiste'),
+    (12, 'No Apto'),
+]
+
+ESTADO_APLICACION_COLOR_STATIC = {
+    1: ('Aplicado', 'warning'),
+    2: ('Entrevista Programada', 'info'),
+    3: ('Entrevista Aprobada', 'success'),
+    4: ('Entrevista No Aprobada', 'danger'),
+    5: ('Prueba Programada', 'info'),
+    6: ('Prueba Superada', 'success'),
+    7: ('Prueba No Superada', 'danger'),
+    8: ('Seleccionado', 'success'),
+    9: ('Finalizada', 'primary'),
+    10: ('Cancelada', 'secondary'),
+    11: ('Desiste', 'secondary'),
+    12: ('No Apto', 'danger'),
+}

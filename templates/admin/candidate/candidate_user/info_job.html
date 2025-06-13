@@ -17,7 +17,7 @@ Información Básica | Talent Tray
 		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
 			<ol class="breadcrumb align-items-center mb-0 lh-1">
 				<li class="breadcrumb-item">
-					<a href="#" class="d-flex align-items-center text-decoration-none">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
 						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
 						<span class="text-secondary fw-medium hover" >Inicio</span>
 					</a>
@@ -30,6 +30,152 @@ Información Básica | Talent Tray
 	</div>
 
 	<!-- Start Your Code -->
+    <div class="row">
+		<div class="col-8">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+                    
+                    <!-- Button trigger modal -->
+                    <div class="d-flex justify-content-center w-100">
+                        <button type="button" class="btn btn-primary py-2 px-4 text-white fw-semibold" data-bs-toggle="modal" data-bs-target="#trabajos_candidato">
+                            Crear Experiencia Laboral
+                        </button>
+                    </div>
 
+                    <!-- Modal -->
+                    <div class="modal fade" id="trabajos_candidato" tabindex="-1" aria-labelledby="trabajos_candidato" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Crear Experiencia Laboral</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <form method="post" id="form_trabajo">
+                                    <div class="modal-body">
+                                        {% csrf_token %}
+                                        {% crispy form %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="form_trabajo" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_trabajo">Guardar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="default-table-area all-projects">
+                        <div class="table-responsive">
+                            <table class="table align-middle text-center" id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">ENTIDAD</th>
+                                        <th scope="col" class="text-center">SECTOR</th>
+                                        <th scope="col" class="text-center">CARGO</th>
+                                        <th scope="col" class="text-center">ACTIVO</th>
+                                        <th scope="col" class="text-center">FECHA INICIAL</th>
+                                        <th scope="col" class="text-center">FECHA FINAL</th>
+                                        <th scope="col" class="text-center">ACCIONES</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for e in jobs %}
+                                    <tr>
+                                        <td class="text-body text-center">{{ e.entidad }}</td>
+                                        <td class="text-body text-center">{{ e.sector }}</td>
+                                        <td class="text-body text-center">{{ e.cargo }}</td>
+                                        <td class="text-body text-center">{% if e.activo %} Si {% else %} No {% endif %}</td>
+                                        <td class="text-body text-center">{{ e.fecha_inicial|date:"Y-m-d" }}</td>
+                                        <td class="text-body text-center">{% if e.fecha_final %}{{ e.fecha_final|date:"Y-m-d" }}{% else %}{% endif %}</td>
+                                        
+                                        
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center align-items-center gap-1">
+                                                <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                    <a href="{% url 'candidatos:candidato_info_laboral_editar' e.id %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                        <i class="material-symbols-outlined fs-16 text-danger">edit</i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+                    <div>
+                        <h4 class="mb-4">Línea del Tiempo de Experiencia Laboral</h4>
+                        <div class="timeline">
+                            {% for exp in jobs %}
+                                <div class="position-relative timeline-item dot-3 mb-4">
+                                    <span class="time-line-date">{{ exp.fecha_inicial|date:"Y M" }}</span>
+                                    <div class="border-style-for-timeline dot-3">
+                                        <h4 class="fs-14 fw-medium mb-2 text-primary">{{ exp.entidad }}</h4>
+                                        <p class="fs-13 mb-1">
+                                            Cargo: <b>{{ exp.cargo }}</b>
+                                        </p>
+                                        <p class="fs-13 mb-1">
+                                            Sector: <b>{{ exp.sector }}</b>
+                                        </p>
+                                        <p class="fs-13 mb-1">
+                                            Modalidad: <b>{{ exp.get_modalidad_trabajo_display }}</b>
+                                        </p>
+                                        <p class="fs-13 mb-1">
+                                            {% if exp.activo %}
+                                                <span class="badge bg-success">Actualmente</span>
+                                            {% else %}
+                                                Fecha Final: <b>{{ exp.fecha_final|date:"Y M" }}</b>
+                                                <br>
+                                                Motivo de Salida: <b>{{ exp.get_motivo_salida_display }}</b>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted">No hay experiencias laborales registradas.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
+
+{% block js %} 
+<script>
+    // Check if there are form errors and show the modal if true
+    {% if form.errors %}
+        var myModal = new bootstrap.Modal(document.getElementById('trabajos_candidato'));
+        myModal.show();
+    {% endif %}
+
+    $(document).ready(function () {
+        function toggleGraduationFields() {
+            if ($('#id_activo').is(':checked')) {
+                $('.campo-activo').hide();
+            } else {
+                $('.campo-activo').show();
+            }
+        }
+
+        // Ejecutar al cargar
+        toggleGraduationFields();
+
+        // Ejecutar al cambiar el checkbox
+        $('#id_activo').change(toggleGraduationFields);
+    });
+
+    initializeSelect2('#id_motivo_salida');
+    initializeSelect2('#id_modalidad_trabajo');
+</script>
+{% endblock js %}

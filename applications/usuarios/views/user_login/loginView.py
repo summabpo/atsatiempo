@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
 from django.contrib import messages # type: ignore
 from django.http import HttpResponse # type: ignore
+from applications.services.service_candidate import personal_information_calculation
+from applications.services.service_vacanty import query_vacanty_all, query_vacanty_with_skills_and_details
 from applications.usuarios.models import UsuarioBase, TokenAutorizacion, Grupo, Permiso
 from applications.usuarios.forms.CorreoForm import CorreoForm
 from applications.cliente.models import Cli051Cliente
@@ -279,6 +281,15 @@ def dashboard_begin(request):
     if session_variables['grupo_id'] == 1:
         print('Sesion Admin')
         
+    #candidato información panel
+    if session_variables['grupo_id'] == 2:
+        
+        return redirect('accesses:inicio_candidato')
+        
+    else:
+        entrevistas_pendiente_candidato = None
+        asignacion_vacante = None
+        
     #cliente informacion panel
     if session_variables['grupo_id'] == 3:
         print('Sesion Cliente')
@@ -287,26 +298,39 @@ def dashboard_begin(request):
     else:
         vacantes_pendiente_cliente = None  
 
-    #candidato información panel
-    if session_variables['grupo_id'] == 2:
-        
-        candidato_id = request.session.get('candidato_id')
-        # entrevistas_pendiente_candidato = info_entrevistas_candidato(candidato_id)
-        # asignacion_vacante = consulta_asignacion_vacante_candidato(candidato_id)
-    else:
-        entrevistas_pendiente_candidato = None
-        asignacion_vacante = None
-
     # Si quieres pasar las variables de sesión al template
     context = {
         'session_variables': session_variables,
         'permisos' : permisos_usuario,
-        # 'vacantes_pendiente_cliente': vacantes_pendiente_cliente,
-        # 'entrevistas_pendiente_candidato': entrevistas_pendiente_candidato,
-        # 'asignacion_vacante': asignacion_vacante,
+        
     }
     
     return render(request, 'admin/dashboard.html', context)
+
+#pantalla inicio
+@login_required
+@validar_permisos('acceso_candidato')
+def dashboard_candidato(request):
+    """ Vista que carga la página de inicio y muestra variables de sesión """
+    
+    # Obtener todas las variables de sesión
+    session_variables = dict(request.session)
+    candidato_id = request.session.get('candidato_id')
+    data = personal_information_calculation(candidato_id)
+    vacantes_disponibles = query_vacanty_with_skills_and_details().filter(estado_id_001=1)
+    
+    vacantes_disponibles = vacantes_disponibles.exclude(
+        aplicaciones__candidato_101_id=candidato_id
+    )
+
+    context = {
+        'session_variables': session_variables,
+        'data_candidate': data,
+        'vacantes_disponibles': vacantes_disponibles,
+        
+    }
+    
+    return render(request, 'admin/dashboard/dashboard_candidate.html', context)
 
 # Salida de sesión.
 def logout_view(request):

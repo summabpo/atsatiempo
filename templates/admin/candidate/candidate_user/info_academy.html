@@ -17,7 +17,7 @@ Información Básica | Talent Tray
 		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
 			<ol class="breadcrumb align-items-center mb-0 lh-1">
 				<li class="breadcrumb-item">
-					<a href="#" class="d-flex align-items-center text-decoration-none">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
 						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
 						<span class="text-secondary fw-medium hover" >Inicio</span>
 					</a>
@@ -31,10 +31,12 @@ Información Básica | Talent Tray
 
 	<!-- Start Your Code -->
     <div class="row">
-		<div class="col-12">
+		<div class="col-8">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
-                    
+                    <div class="mb-4">
+                        <h3 class="mb-0">Listado Estudios</h3>
+                    </div>
                     <!-- Button trigger modal -->
                     <div class="d-flex justify-content-center w-100">
                         <button type="button" class="btn btn-primary py-2 px-4 text-white fw-semibold" data-bs-toggle="modal" data-bs-target="#estudios_candidato">
@@ -51,13 +53,13 @@ Información Básica | Talent Tray
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
 
-                                <form method="post" id="form_crear_reclutado">
+                                <form method="post" id="form_estudio" enctype="multipart/form-data">
                                     <div class="modal-body">
                                         {% csrf_token %}
                                         {% crispy form %}
                                     </div>
                                     <div class="modal-footer">
-                                        <button id="form_crear_reclutado" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_crear_reclutado">Guardar</button>
+                                        <button id="form_estudio" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_estudio">Guardar</button>
                                     </div>
                                 </form>
                             </div>
@@ -69,38 +71,30 @@ Información Básica | Talent Tray
                             <table class="table align-middle text-center" id="myTable">
                                 <thead>
                                     <tr>
-                                        <th scope="col" class="text-center">ID</th>
                                         <th scope="col" class="text-center">INSTITUCIÓN</th>
                                         <th scope="col" class="text-center">FECHA INICIAL</th>
                                         <th scope="col" class="text-center">FECHA FINAL</th>
                                         <th scope="col" class="text-center">GRADO OBTENIDO</th>
                                         <th scope="col" class="text-center">TÍTULO</th>
-                                        <th scope="col" class="text-center">CARRERA</th>
-                                        <th scope="col" class="text-center">FORTALEZAS ADQUIRIDAS</th>
                                         <th scope="col" class="text-center">CIUDAD</th>
                                         <th scope="col" class="text-center">TIPO DE ESTUDIO</th>
-                                        <th scope="col" class="text-center">TÍTULO</th>
                                         <th scope="col" class="text-center">ACCIONES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for e in studies %}
                                     <tr>
-                                        <td class="text-body text-center">{{e.id}}</td>
                                         <td class="text-body text-center">{{e.institucion}}</td>
-                                        <td class="text-body text-center">{{e.fecha_inicial}}</td>
-                                        <td class="text-body text-center">{{ e.fecha_final }}</td>
+                                        <td class="text-body text-center">{{ e.fecha_inicial|date:"Y-m-d" }}</td>
+                                        <td class="text-body text-center">{% if e.fecha_final %}{{ e.fecha_final|date:"Y-m-d" }}{% else %}--{% endif %}</td>
                                         <td class="text-body text-center">{{ e.grado_en|yesno:"Sí,No" }}</td>
-                                        <td class="text-body text-center">{{ e.carrera }}</td>
-                                        <td class="text-body text-center">{{ e.fortaleza_adquiridas }}</td>
+                                        <td class="text-body text-center">{% if e.titulo %}{{ e.titulo }}{% else %}--{% endif %}</td>
                                         <td class="text-body text-center">{{ e.ciudad_id_004 }}</td>
-                                        <td class="text-body text-center">{{ e.tipo_estudio }}</td>
-                                        <td class="text-body text-center">{{ e.titulo }}</td>
-
+                                        <td class="text-body text-center">{{ e.mostrar_tipo_estudio }}</td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center align-items-center gap-1">
                                                 <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
-                                                    <a href="{% url 'vacantes:vacantes_gestion_analista_interno' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                    <a href="{% url 'candidatos:candidato_info_academica_editar' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
                                                         <i class="material-symbols-outlined fs-16 text-danger">edit</i>
                                                     </a>
                                                 </div>
@@ -111,6 +105,8 @@ Información Básica | Talent Tray
                                                 </div> {% endcomment %}
                                             </div>
                                         </td> 
+
+                                        
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -120,13 +116,111 @@ Información Básica | Talent Tray
                 </div>
             </div>
         </div>
+        <div class="col-4">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+                    <div class="mb-4">
+                        <h3 class="mb-0">Resumen</h3>
+                    </div>
+                    {% for educacion in studies %}
+                        <div class="position-relative timeline-item dot-3">
+                            <span class="time-line-date">{{ educacion.fecha_inicial|date:"Y M" }}</span> {# Formatea la fecha inicial #}
+                            <div class="border-style-for-timeline dot-3">
+                                <h4 class="fs-14 fw-medium mb-2 text-primary">{{ educacion.institucion }}</h4> {# Nombre de la institución #}
+                                <p class="fs-13">
+                                    {% if educacion.grado_en %}
+                                        Grado en: <b>{{ educacion.titulo }} - {{ educacion.carrera }}</b>
+                                    {% else %}
+                                        Carrera: <b>{{ educacion.carrera }}</b>
+                                    {% endif %}
+                                </p>
+                                <p>
+                                    Fecha Final: {% if educacion.fecha_final %}
+                                        <b>{{ educacion.fecha_final|date:"Y M" }}</b>
+                                    {% else %}
+                                        <b>Actualmente</b>
+                                    {% endif %}
+                                </p>
+                                <p>
+                                    Tipo de Estudio: <b>{{ educacion.get_tipo_estudio_display }}</b> {# Muestra el nombre legible del tipo de estudio #}
+                                </p>
+                                <p>
+                                    Ciudad: <b>{{ educacion.ciudad_id_004.nombre }}</b> {# Asumiendo que Cat004Ciudad tiene un campo 'nombre' #}
+                                </p>
+                                {% if educacion.certificacion %}
+                                    <p>
+                                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" data-bs-toggle="modal" data-bs-target="#certModal{{ educacion.id }}">
+                                            Ver Certificación
+                                        </button>
+                                    </p>
+                                    <!-- Modal para mostrar PDF -->
+                                    <div class="modal fade" id="certModal{{ educacion.id }}" tabindex="-1" aria-labelledby="certModalLabel{{ educacion.id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-xl">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="certModalLabel{{ educacion.id }}">Certificación</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body" style="height:80vh;">
+                                                    <iframe src="{{ educacion.certificacion.url }}" width="100%" height="100%" style="border:none;"></iframe>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% comment %} <div class="position-relative timeline-item">
+                        <span class="time-line-date">Just now</span>
+                        <div class="border-style-for-timeline">
+                            <h4 class="fs-14 fw-medium mb-2">Weekly Stand-Up Meetings:</h4>
+                            <p class="fs-13 mb-4">We continued our weekly stand-up meetings where team members provided updates on their current tasks, discussed any roadblocks, and coordinated efforts for the week ahead.</p>
+                            <p>By: <span class="text-primary">Olivia Rodriguez</span></p>
+                        </div>
+                    </div>
+                    <div class="position-relative timeline-item">
+                        <span class="time-line-date">1 day ago</span>
+                        
+                        <div class="border-style-for-timeline dot-2">
+                            <h4 class="fs-14 fw-medium mb-2">Project Kickoff Session:</h4>
+                            <p class="fs-13">The session included introductions, a review of project goals and objectives, and initial planning discussions.</p>
+                            <p>By: <span class="text-primary">Isabella Cooper</span></p>
+                        </div>
+                    </div>
+                    <div class="position-relative timeline-item">
+                        <span class="time-line-date">2 days ago</span>
+                        
+                        <div class="border-style-for-timeline dot-3">
+                            <h4 class="fs-14 fw-medium mb-2">Team Building Workshop:</h4>
+                            <p class="fs-13 mb-4">Last Friday, we conducted a team building workshop focused on improving communication and collaboration among team members. Activities included team challenges, icebreakers, and open discussions.</p>
+                            <p>By: <span class="text-primary">Lucas Morgan</span></p>
+                        </div>
+                    </div>
+                    <div class="position-relative timeline-item">
+                        <span class="time-line-date">3 days ago</span>
+                        
+                        <div class="border-style-for-timeline dot-4 pb-0">
+                            <h4 class="fs-14 fw-medium mb-2">Lunch and Learn Session:</h4>
+                            <p class="fs-13">We organized a lunch and learn session on March 15th where a guest speaker from the industry discussed emerging trends in our field. It was an insightful session that sparked valuable discussions among team members.</p>
+                            <p>By: <span class="text-primary">Ethan Parker</span></p>
+                        </div>
+                    </div> {% endcomment %}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block js %} 
 <script>
-    
+    // Check if there are form errors and show the modal if true
+    {% if form.errors %}
+        var myModal = new bootstrap.Modal(document.getElementById('estudios_candidato'));
+        myModal.show();
+    {% endif %}
+
     $(document).ready(function () {
         function toggleGraduationFields() {
             if ($('#id_grado_en').is(':checked')) {

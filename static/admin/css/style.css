@@ -65,7 +65,7 @@ This files table contents are outlined below>>>>>
   --bs-light-rgb: 213, 217, 226;
   --bs-dark-rgb: 0, 0, 0;
   --bs-primary-div-rgb: 255, 31, 28;
-  --bs-primary-div-50-rgb: 145, 53, 232;
+  --bs-primary-div-50-rgb: 69, 0, 13;
   --bs-primary-50-rgb: 73, 54, 245;
   --bs-danger-50-rgb: 238, 62, 8;
   --bs-success-50-rgb: 30, 131, 8;
@@ -787,7 +787,7 @@ progress {
   --bs-light-rgb: 213, 217, 226;
   --bs-dark-rgb: 0, 0, 0;
   --bs-primary-div-rgb: 255, 31, 28;
-  --bs-primary-div-50-rgb: 145, 53, 232;
+  --bs-primary-div-50-rgb: 69, 0, 13;
   --bs-primary-50-rgb: 73, 54, 245;
   --bs-danger-50-rgb: 238, 62, 8;
   --bs-success-50-rgb: 30, 131, 8;
@@ -4231,7 +4231,7 @@ textarea.form-control-lg {
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: #9135E8;
   --bs-btn-hover-border-color: #9135E8;
-  --bs-btn-focus-shadow-rgb: 145, 53, 232;
+  --bs-btn-focus-shadow-rgb: 69, 0, 13;
   --bs-btn-active-color: #fff;
   --bs-btn-active-bg: #9135E8;
   --bs-btn-active-border-color: #9135E8;
@@ -8244,7 +8244,7 @@ textarea.form-control-lg {
 
 .text-bg-primary-div-50 {
   color: #fff !important;
-  background-color: RGBA(var(--bs-primary-div-50-rgb), var(--bs-bg-opacity, 1)) !important;
+  background-color: RGBA(var(--bs-primary-div-50-rgb), var(--bs-bg-opacity, 0)) !important;
 }
 
 .text-bg-primary-50 {
@@ -20849,38 +20849,84 @@ Swiper Slider Style
   box-shadow: 0 0 5px rgba(var(--bs-primary-rgb), 0.2) !important;
 }
 
+.service-card {
+	border: 1px solid #dee2e6;
+	border-left: 2px solid #B10022; /* Margen roja y fina */
+	border-radius: 0.5rem;
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+	text-align: center;
+	
+}
+
+.service-icon {
+	font-size: 2rem;
+	margin-bottom: 0.75rem;
+}
+
+.job-card {
+	border: 1px solid #dee2e6;
+	border-left: 2px solid #B10022; /* Margen roja y fina */
+	border-radius: 0.5rem;
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+	background-color: #f8f9f9;
+}
+
+.job-title {
+	font-weight: bold;
+	margin-bottom: 0.25rem;
+	color: #B10022;
+}
+
+.job-meta {
+	color: #6c757d;
+	font-size: 0.875rem;
+	margin-bottom: 0.5rem;
+}
+
+.job-description {
+	color: #343a40;
+	font-size: 0.9rem;
+	margin-bottom: 1rem;
+}
+
+.job-tags .badge {
+	margin-right: 0.25rem;
+}
+
 /* Estilo general de la tarjeta */
-.card {
+/* .card {
     border-radius: 12px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease-in-out;
-}
+} */
 
 /* .card:hover {
   transform: scale(1.0009);
 } */
 
 /* Estilo de la cabecera */
-.card-header {
+/* .card-header {
     background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-50) 100%);
     color: white;
     padding: 1rem 1.5rem;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
-}
+} */
 
-.card-title {
+/* .card-title {
     font-size: 1rem;
     font-weight: 400;
-}
+} */
 
 /* Estilo del cuerpo */
-.card-body {
+/* .card-body {
     background-color: var(--bs-light-bg-subtle);
     padding: 1.5rem;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
-}
+} */
 
 /* Agregar un borde lateral sutil para resaltar */
 /* .card::before {

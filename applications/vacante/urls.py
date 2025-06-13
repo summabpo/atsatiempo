@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import VacanteViews, EntrevistaView, admin_views, client_views, client_analyst_views, client_analyst_internal_views
+from .views import VacanteViews, EntrevistaView, admin_views, client_views, client_analyst_views, client_analyst_internal_views, candidate_views
 from applications.vacante.views.usuario_candidato import VacanteCandidatoView
 from applications.vacante.views.usuario_cliente import VacanteClienteView
 
@@ -30,6 +30,12 @@ urlpatterns = [
     #client_analyst_internal_user
     path( url_principal+'asignadas/analista', client_analyst_internal_views.list_assigned_vacancies, name='vacantes_asignadas_analista_interno'),
     path( url_principal+'gestion/analista/<int:pk>/', client_analyst_internal_views.detail_vacancy, name='vacantes_gestion_analista_interno'),
+
+    #client_candidate_user
+    path( url_principal+'aplicadas/candidato/', candidate_views.apply_vacancy, name='vacante_candidato_aplicadas'),
+    path( url_principal+'aplicadas/detalle/<int:pk>', candidate_views.apply_vacancy_detail, name='vacante_candidato_aplicadas_detalle'),
+    path( url_principal+'disponibles/', candidate_views.vacancy_available, name='vacante_candidato_disponibles'),
+
 
 
 

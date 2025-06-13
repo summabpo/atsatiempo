@@ -6,7 +6,13 @@
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'candidato_info_personal' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_academica' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_academica_editar' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_laboral' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_laboral_editar' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_habilidades' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_redes' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_redes_editar' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_perfil' %}open{% endif %}
     ">
     <a href="javascript:void(0);" class="menu-link menu-toggle active">
         <span class="material-symbols-outlined menu-icon red">description</span>
@@ -21,13 +27,32 @@
             </a>
             <a href="{% url 'candidatos:candidato_info_academica' %}"  class="menu-link  
             {% if request.resolver_match.url_name == 'candidato_info_academica' %}active{% endif %} 
+            {% if request.resolver_match.url_name == 'candidato_info_academica_editar' %}active{% endif %} 
             ">
                 Información Académica
             </a>
             <a href="{% url 'candidatos:candidato_info_laboral' %}"  class="menu-link  
             {% if request.resolver_match.url_name == 'candidato_info_laboral' %}active{% endif %} 
+            {% if request.resolver_match.url_name == 'candidato_info_laboral_editar' %}active{% endif %} 
             ">
                 Experiencia Laboral
+            </a>
+            <a href="{% url 'candidatos:candidato_info_habilidades' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'candidato_info_habilidades' %}active{% endif %} 
+            ">
+                Habilidades
+            </a>
+            <a href="{% url 'candidatos:candidato_info_redes' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'candidato_info_redes' %}active{% endif %} 
+            {% if request.resolver_match.url_name == 'candidato_info_redes_editar' %}active{% endif %} 
+            ">
+                Redes Sociales
+            </a>
+
+            <a href="{% url 'candidatos:candidato_perfil' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'candidato_perfil' %}active{% endif %} 
+            ">
+                Resumen Perfil
             </a>
         </li>
     </ul>
@@ -38,7 +63,8 @@
     <span class="menu-title-text">VACANTES </span>
 </li>
 <li class="menu-item 
-    {% if request.resolver_match.url_name == 'vacantes_asignadas_analista_interno' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacante_candidato_aplicadas' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacante_candidato_disponibles' %}open{% endif %}
     ">
     <a href="javascript:void(0);" class="menu-link menu-toggle active">
         <span class="material-symbols-outlined menu-icon red">work</span>
@@ -46,15 +72,15 @@
     </a>
     <ul class="menu-sub">
         <li class="menu-item">
-            <a href="#"  class="menu-link  
-            {% if request.resolver_match.url_name == 'vacantes_asignadas_analista_interno' %}active{% endif %} 
+            <a href="{% url 'vacantes:vacante_candidato_aplicadas' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'vacante_candidato_aplicadas' %}active{% endif %} 
             ">
                 Vacantes Aplicadas
             </a>
         </li>
         <li class="menu-item">
-            <a href="#"  class="menu-link  
-            {% if request.resolver_match.url_name == 'vacantes_asignadas_analista_interno' %}active{% endif %} 
+            <a href="{% url 'vacantes:vacante_candidato_disponibles' %}"  class="menu-link  
+            {% if request.resolver_match.url_name == 'vacante_candidato_disponibles' %}active{% endif %} 
             ">
                 Vacantes
             </a>

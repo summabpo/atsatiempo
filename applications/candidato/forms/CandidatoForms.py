@@ -459,6 +459,17 @@ class CandidateForm(forms.Form):
         })
     )
 
+    perfil = forms.CharField(
+        label='Mi perfil',
+        required=False,
+        widget=forms.Textarea(attrs={
+            'placeholder': 'Por favor escriba su perfil del candidato aquí.',
+            'class': 'form-control form-control-solid',
+            'rows': 4
+        })
+    )
+
+
     def __init__(self, *args, instance=None, **kwargs):
         super().__init__(*args, **kwargs)
         
@@ -470,13 +481,13 @@ class CandidateForm(forms.Form):
             Div(
                 Div(
                     HTML("<h4 class='mb-3 text-primary'>Datos Personales</h4>"),
-                    Div('primer_nombre', css_class='col-3'),
-                    Div('segundo_nombre', css_class='col-3'),
-                    Div('primer_apellido', css_class='col-3'),
-                    Div('segundo_apellido', css_class='col-3'),
-                    Div('numero_documento', css_class='col-4'),
-                    Div('fecha_nacimiento', css_class='col-4'),
-                    Div('sexo', css_class='col-4'),
+                    Div('primer_nombre', css_class='col-md-3'),
+                    Div('segundo_nombre', css_class='col-md-3'),
+                    Div('primer_apellido', css_class='col-md-3'),
+                    Div('segundo_apellido', css_class='col-md-3'),
+                    Div('numero_documento', css_class='col-md-4'),
+                    Div('fecha_nacimiento', css_class='col-md-4'),
+                    Div('sexo', css_class='col-md-4'),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -484,10 +495,18 @@ class CandidateForm(forms.Form):
             Div(
                 Div(
                     HTML("<h4 class='mb-3 text-primary'>Contacto</h4>"),
-                    Div('email', css_class='col-6'),
-                    Div('telefono', css_class='col-6'),
-                    Div('ciudad_id_004', css_class='col-6'),
-                    Div('direccion', css_class='col-6'),
+                    Div('email', css_class='col-md-6'),
+                    Div('telefono', css_class='col-md-6'),
+                    Div('ciudad_id_004', css_class='col-md-6'),
+                    Div('direccion', css_class='col-md-6'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Perfil</h4>"),
+                    Div('perfil', css_class='col-md-12'),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -496,8 +515,8 @@ class CandidateForm(forms.Form):
                 Div(
                     HTML("<h4 class='mb-3 text-primary'>Documentos</h4>"),
                     
-                    Div('imagen_perfil', css_class='col-6'),
-                    Div('hoja_de_vida', css_class='col-6'),
+                    Div('imagen_perfil', css_class='col-md-6'),
+                    Div('hoja_de_vida', css_class='col-md-6'),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -520,6 +539,13 @@ class CandidateForm(forms.Form):
         direccion = cleaned_data.get('direccion')
         imagen_perfil = cleaned_data.get('imagen_perfil')
         hoja_de_vida = cleaned_data.get('hoja_de_vida')
+        perfil = cleaned_data.get('perfil')
+
+        # Validación de Perfil del Candidato
+        if perfil:
+            palabras = perfil.strip().split()
+            if len(palabras) < 10:
+                self.add_error('perfil', 'El perfil del candidato debe contener al menos 10 palabras.')
 
         # Validación de Número de Documento
         if numero_documento:
