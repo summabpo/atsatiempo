@@ -5,6 +5,7 @@
 	id="navbar"
 >
 	<div class="container">
+		<a class="navbar-brand" href="/">
 			<img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="logo" width="150px" />
 		</a>
 		<button
@@ -24,44 +25,33 @@
 				<li class="nav-item">
 					<a
 						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4 {% if request.path == '/' %}active{% endif %}"
-						href="/"
+						href="/#home"
 						>Inicio</a
 					>
 				</li>
 				<li class="nav-item">
 					<a
-						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4 {% if request.path == '/features/' %}active{% endif %}"
-						href="#"
-						>Caracteristicas</a
-					>
-				</li>
-				<li class="nav-item">
-					<a
-						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4 {% if request.path == '/our-team/' %}active{% endif %}"
-						href="#"
-						>Nuestro Equipo</a
-					>
-				</li>
-				<li class="nav-item">
-					<a
-						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4 {% if request.path == '/faqs/' %}active{% endif %}"
-						href="#"
-						>FAQ’s</a
-					>
-				</li>
-				<li class="nav-item">
-					<a
-						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4 {% if request.path == '/contact/' %}active{% endif %}"
-						href="#"
-						>Contacto</a
-					>
+						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4"
+						href="/#our"
+					>Nosotros</a>
 				</li>
 				<li class="nav-item">
 					<a
 						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4"
-						href="{% url 'accesses:inicio' %}"
-						>Admin</a
-					>
+						href="/#services"
+					>Servicios</a>
+				</li>
+				<li class="nav-item">
+					<a
+						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4"
+						href="/#register"
+					>Registro</a>
+				</li>
+				<li class="nav-item">
+					<a
+						class="nav-link fs-16 fw-medium text-body hover px-0 px-md-2 mx-1 mx-xl-0 px-xl-4"
+						href="/#testimonials"
+					>Testimonios</a>
 				</li>
 			</ul>
 			

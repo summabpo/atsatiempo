@@ -1,46 +1,70 @@
-{% extends 'admin/layout/auth_base.html' %} 
+{% extends 'admin/layout/front_base.html' %} 
+{% load static %}
 {% block title %} Talent Tray | Registro{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="container">
-    <div class="main-content d-flex flex-column p-0">
-        <div class="row justify-content-center mb-4">
-            <div class="col-lg-6 text-center">
-                <img src="/static/admin/images/landing/logo-talent-tray.png" class="img-fluid mb-3" alt="Logo">
-            </div>
+<div class="tailor-area position-relative z-1 pt-150" id="register">
+    <div class="container">
+        <div class="banner-content text-center">
+            <!-- El texto principal se elimina de aquí para ponerlo sobre la imagen -->
+            <h1>
+                ¿ Registrate en 
+                <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="Talent Tray Logo" style="max-width:180px; margin-bottom: 18px;">
+                ?
+            </h1>
         </div>
         <div class="row">
             <div class="col-lg-6 mx-auto text-center">
-                <div class="card bg-white border-0 rounded-3 mb-4">
-                    <div class="card-body p-4">
-                        <h3 class="card-title">Registrar Empresa</h3>
-                        <img src="/static/admin/images/event-7.jpg" class="img-fluid mb-3" alt="Registrar Empresa">
-                        <p class="card-text">Registra tu empresa para acceder a los mejores talentos disponibles.</p>
-                        <a href="{% url 'accesses:company_registration' %}" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">Registrar Empresa</a>
+                <a href="{% url 'accesses:company_registration' %}" class="position-relative mb-4 registro-card-hover d-block" style="text-decoration: none;">
+                    <img src="{% static 'admin/images/landing/banner_ia_8.png' %}" class="img-fluid rounded-3 w-100" alt="Registrar Empresa" style="object-fit:cover;">
+                    <div style="
+                        position: absolute;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        padding: 24px 16px 16px 16px;
+                        background: linear-gradient(0deg, rgba(177,0,34,0.65) 70%, rgba(0,0,0,0.0) 100%);
+                        color: #fff;
+                        border-radius: 0 0 18px 18px;
+                        width: 100%;
+                    ">
+                        <h3 class="card-title mb-2" style="color:#fff;">Registrar Empresa</h3>
+                        <p class="card-text mb-0" style="color:#fff;">Registra tu empresa para acceder a los mejores talentos disponibles.</p>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-6 mx-auto text-center">
-                <div class="card bg-white border-0 rounded-3 mb-4">
-                    <div class="card-body p-4">
-                        <h3 class="card-title">Registrar Candidato</h3>
-                        <img src="/static/admin/images/event-9.jpg" class="img-fluid mb-3" alt="Registrar Candidato">
-                        <p class="card-text">Registra tu perfil para ser considerado en las mejores oportunidades laborales.</p>
-                        <a href="{% url 'accesses:candidate_registration' %}" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">Registrar Candidato</a>
+                <a href="{% url 'accesses:candidate_registration' %}" class="position-relative mb-4 registro-card-hover d-block" style="text-decoration: none;">
+                    <img src="{% static 'admin/images/landing/banner_ia_7.jpg' %}" class="img-fluid rounded-3 w-100" alt="Registrar Candidato" style="object-fit:cover;">
+                    <div style="
+                        position: absolute;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        padding: 24px 16px 16px 16px;
+                        background: linear-gradient(0deg, rgba(177,0,34,0.65) 70%, rgba(0,0,0,0.0) 100%);
+                        color: #fff;
+                        border-radius: 0 0 18px 18px;
+                        width: 100%;
+                    ">
+                        <h3 class="card-title mb-2" style="color:#fff;">Registrar Candidato</h3>
+                        <p class="card-text mb-0" style="color:#fff;">Registra tu perfil para ser considerado en las mejores oportunidades laborales.</p>
                     </div>
-                </div>
+                </a>
             </div>
+            <style>
+                .registro-card-hover {
+                    transition: box-shadow 0.25s cubic-bezier(.4,0,.2,1);
+                }
+                .registro-card-hover:hover {
+                    box-shadow: 0 12px 32px 0 rgba(177,0,34,0.25), 0 2px 8px rgba(0,0,0,0.08);
+                    z-index: 2;
+                }
+            </style>
         </div>
-        <div class="row mt-4">
-            <div class="col-lg-6 mx-auto text-center">
-                <a href="/login" class="fs-16 fw-medium text-decoration-none me-3">Iniciar Sesión</a>
-                <a href="/" class="fs-16 fw-medium text-decoration-none">Inicio</a>
-            </div>
-        </div>
-        <footer class="mt-auto text-center py-3">
-            <p>&copy; 2025 Talent Tray. Todos los derechos reservados.</p>
-        </footer>
     </div>
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-1" alt="shape">
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-2" alt="shape">
 </div>
 {% endblock %}
 

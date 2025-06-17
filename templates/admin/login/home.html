@@ -2,50 +2,355 @@
 {% load static %}
 {% block title %} Talent Tray | Bievenidos{% endblock %} 
 {% block content %} 
-<div class="unlock-area ptb-150 position-relative z-1" id="admin">
-    <div class="container">
-        <div class="border-bottom pb-150">
-            <div class="row">
-                <div class="col-lg-6 mx-auto text-center">
-                    <div class="card bg-white border-0 rounded-3 mb-4">
-                        <div class="card-body p-4">
-                            <h3 class="card-title">Registrar Empresa</h3>
-                            <img src="{% static 'admin/images/event-7.jpg' %}" class="img-fluid mb-3" alt="Registrar Empresa">
-                            <p class="card-text">Registra tu empresa para acceder a los mejores talentos disponibles.</p>
-                            <a href="{% url 'accesses:company_registration' %}" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">Registrar Empresa</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mx-auto text-center">
-                    <div class="card bg-white border-0 rounded-3 mb-4">
-                        <div class="card-body p-4">
-                            <h3 class="card-title">Registrar Candidato</h3>
-                            <img src="{% static 'admin/images/event-9.jpg' %}" class="img-fluid mb-3" alt="Registrar Candidato">
-                            <p class="card-text">Registra tu perfil para ser considerado en las mejores oportunidades laborales.</p>
-                            <a href="{% url 'accesses:candidate_registration' %}" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">Registrar Candidato</a>
-                        </div>
-                    </div>
-                </div>
+
+<!-- Start Banner Area -->
+<div class="banner-area bg-img" id="home" style="margin-bottom: 0; padding-bottom: 0;">
+    <div class="container position-relative z-1">
+        <div class="banner-content text-center">
+            <!-- El texto principal se elimina de aquí para ponerlo sobre la imagen -->
+            <h1>
+                Bienvenido a
+                <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="Talent Tray Logo" style="max-width:180px; margin-bottom: 18px;">
+            </h1>
+        </div>
+        <div class="banner-img-wrap text-center position-relative" style="display: inline-block;">
+            <img src="{% static 'admin/images/landing/banner_ia_6.jpg' %}" alt="banner-img" style="box-shadow: 0 8px 32px rgba(177,0,34,0.18); border-radius: 18px; width:100%; height:auto;">
+            <div style="
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                padding: 32px 24px 24px 24px;
+                background: linear-gradient(0deg, rgba(177,0,34,0.65) 70%, rgba(0,0,0,0.0) 100%);
+                color: #fff;
+                border-radius: 0 0 18px 18px;
+                width: 100%;
+            ">
+                <h1 class="fs-60 mb-3 pb-md-3" style="font-size:2.5rem; font-weight:700; color:#fff; text-shadow: 0 2px 8px rgba(0,0,0,0.25);">ATS que conecta Talento con propósito.</h1>
+                <p class="fs-18 m-auto mb-3 pb-md-3 mw-740" style="font-size:1.1rem;">
+                    <b>Bienvenido al Futuro de la Selección</b> Una plataforma ágil, humana y poderosa donde El talento es el protagonista.
+                </p>
+                <a href="#" class="btn btn-primary py-2 px-4 fs-16 fw-medium rounded-3 mt-2">
+                    <i class="ri-user-line fs-18"></i>
+                    <span class="ms-1">Comienza es gratis!</span>
+                </a>
             </div>
         </div>
-    </div>
-    <div class="container">
-        <div class="border-bottom pb-150">
-            <div class="row">
-                <div class="unlock-content">
-                    <h2>
-                        Encuentra al mejor talento en cualquier lugar, en cualquier momento con <span style="color: #B10022;">TALENT TRAY</span>
-                    </h2>
-                    <p>
-                        Nuestra plataforma avanzada convierte perfiles complejos en decisiones de contratación efectivas, brindándote la información que necesitas para elegir a los candidatos ideales con confianza.
-                    </p>
-                    <a href="{% url 'accesses:login' %}" class="btn btn-primary-div py-2 px-4 fs-16 fw-medium rounded-3 text-white">
-                        <i class="ri-user-line fs-18"></i>
-                        <span class="ms-1" >Empieza ahora — Es gratis</span>
-                    </a>
-                </div>
-            </div>
-        </div>
+
+        <img src="{% static 'admin/images/landing/shape-3.png' %}" class="shape shape-7" alt="shape">
+        <img src="{% static 'admin/images/landing/shape-4.png' %}" class="shape shape-8" alt="shape">
+        <img src="{% static 'admin/images/landing/shape-5.png' %}" class="shape shape-9" alt="shape">
+        <img src="{% static 'admin/images/landing/shape-6.png' %}" class="shape shape-10" alt="shape">
     </div>
 </div>
+<!-- End Banner Area -->
+
+<div class="tailor-area position-relative z-1 pt-150" id="our">
+    <div class="container">
+        <div class="banner-content text-center">
+            <!-- El texto principal se elimina de aquí para ponerlo sobre la imagen -->
+            <h1>
+                ¿ Por qué elegir
+                <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="Talent Tray Logo" style="max-width:180px; margin-bottom: 18px;">
+                ?
+            </h1>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="tailor-img">
+                    <img src="{% static 'admin/images/landing/banner_ia_9.jpg' %}" alt="tailor">
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="tailor-content">
+                    <h2>Somos un ats que nace para revolucionar la manera en que las empresas encuentran, eligen y conectan con el talento ideal.</h2>
+                    <ul class="ps-0 mb-0 list-unstyled">
+                        <li>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="material-symbols-outlined fs-20 text-primary">done_outline</i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h3>Tu Talento, En Foco</h3>
+                                    <p>Te ayudamos a visualizar y entender el potencial de cada candidato de forma clara y concisa, permitiéndote tomar decisiones de contratación más inteligentes y rápidas.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="material-symbols-outlined fs-20 text-primary">done_outline</i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h3>Descubre tu Próximo Rol</h3>
+                                    <p>Para los candidatos, nuestra plataforma te guía hacia las oportunidades que mejor se alinean con tus habilidades y aspiraciones, asegurando que encuentres la empresa donde realmente encajas.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="material-symbols-outlined fs-20 text-primary">done_outline</i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h3>Encuentra tu Equipo Ideal</h3>
+                                    <p>Las empresas descubren candidatos que no solo tienen las competencias necesarias, sino que también complementan la dinámica de su equipo y contribuyen al éxito a largo plazo.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="material-symbols-outlined fs-20 text-primary">done_outline</i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h3>Simplicidad en la Búsqueda</h3>
+                                    <p>Olvídate de los procesos complicados. Nuestro ATS simplifica la búsqueda y selección, haciendo que encontrar el talento o la empresa ideal sea un camino directo y gratificante para todos.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="material-symbols-outlined fs-20 text-primary">done_outline</i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h3>Rápido, intuitivo y sin fricciones.</h3>
+                                    <p>Nuestro ATS hace que encontrar al candidato ideal o el empleo soñado sea rápido, intuitivo y sin fricciones. Simplificamos el proceso para que la conexión perfecta suceda de forma natural y eficiente.</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-1" alt="shape">
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-2" alt="shape">
+</div>
+
+<div class="tailor-area position-relative z-1 pt-150" id="services">
+    <div class="container">
+        <div class="banner-content text-center">
+            <!-- El texto principal se elimina de aquí para ponerlo sobre la imagen -->
+            <h1>
+                Servicios que ofrece
+                <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="Talent Tray Logo" style="max-width:180px; margin-bottom: 18px;">
+            </h1>
+        </div>
+        <div class="row align-items-center">
+            <div class="container my-5">
+                <div class="row justify-content-center g-4">
+                    <div class="col-6 col-md-4 col-lg-2 d-flex">
+                        <div class="card h-100 text-center border-0 shadow servicio-card flex-fill w-100" style="box-shadow: 0 8px 32px rgba(177,0,34,0.18), 0 1.5px 6px rgba(0,0,0,0.08);">
+                            <div class="card-body">
+                                <span class="material-symbols-outlined mb-2" style="font-size:5rem; color:#B10022;">publish</span>
+                                <h5 class="card-title">Publicación Automática</h5>
+                                <p class="card-text">Publica automáticamente en portales de empleo y redes sociales.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2 d-flex">
+                        <div class="card h-100 text-center border-0 shadow servicio-card flex-fill w-100" style="box-shadow: 0 8px 32px rgba(177,0,34,0.18), 0 1.5px 6px rgba(0,0,0,0.08);">
+                            <div class="card-body">
+                                <span class="material-symbols-outlined mb-2" style="font-size:5rem; color:#B10022;">filter_alt</span>
+                                <h5 class="card-title">Filtros Inteligentes</h5>
+                                <p class="card-text">Filtra candidatos automáticamente por competencias y cultura.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2 d-flex">
+                        <div class="card h-100 text-center border-0 shadow servicio-card flex-fill w-100" style="box-shadow: 0 8px 32px rgba(177,0,34,0.18), 0 1.5px 6px rgba(0,0,0,0.08);">
+                            <div class="card-body">
+                                <span class="material-symbols-outlined mb-2" style="font-size:5rem; color:#B10022;">videocam</span>
+                                <h5 class="card-title">Videoentrevistas Asincrónicas</h5>
+                                <p class="card-text">Realiza entrevistas en video en el momento que mejor se adapte.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2 d-flex">
+                        <div class="card h-100 text-center border-0 shadow servicio-card flex-fill w-100" style="box-shadow: 0 8px 32px rgba(177,0,34,0.18), 0 1.5px 6px rgba(0,0,0,0.08);">
+                            <div class="card-body">
+                                <span class="material-symbols-outlined mb-2" style="font-size:5rem; color:#B10022;">psychology</span>
+                                <h5 class="card-title">Evaluaciones Psicotécnicas</h5>
+                                <p class="card-text">Accede a evaluaciones personalizadas para un perfil completo.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2 d-flex">
+                        <div class="card h-100 text-center border-0 shadow servicio-card flex-fill w-100" style="box-shadow: 0 8px 32px rgba(177,0,34,0.18), 0 1.5px 6px rgba(0,0,0,0.08);">
+                            <div class="card-body">
+                                <span class="material-symbols-outlined mb-2" style="font-size:5rem; color:#B10022;">how_to_reg</span>
+                                <h5 class="card-title">Onboarding Digital</h5>
+                                <p class="card-text">Simplifica y agiliza la bienvenida de nuevos talentos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    .servicio-card {
+                        min-width: 0;
+                    }
+                    @media (min-width: 992px) {
+                        .row.g-4 > [class*='col-lg-2'] {
+                            flex: 1 0 0%;
+                            max-width: 20%;
+                        }
+                    }
+                </style>
+            </div>
+        </div>
+    </div>
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-1" alt="shape">
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-2" alt="shape">
+</div>
+
+<div class="tailor-area position-relative z-1 pt-150" id="register">
+    <div class="container">
+        <div class="banner-content text-center">
+            <!-- El texto principal se elimina de aquí para ponerlo sobre la imagen -->
+            <h1>
+                ¿ Registrate en 
+                <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="Talent Tray Logo" style="max-width:180px; margin-bottom: 18px;">
+                ?
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mx-auto text-center">
+                <a href="{% url 'accesses:company_registration' %}" class="position-relative mb-4 registro-card-hover d-block" style="text-decoration: none;">
+                    <img src="{% static 'admin/images/landing/banner_ia_8.png' %}" class="img-fluid rounded-3 w-100" alt="Registrar Empresa" style="object-fit:cover;">
+                    <div style="
+                        position: absolute;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        padding: 24px 16px 16px 16px;
+                        background: linear-gradient(0deg, rgba(177,0,34,0.65) 70%, rgba(0,0,0,0.0) 100%);
+                        color: #fff;
+                        border-radius: 0 0 18px 18px;
+                        width: 100%;
+                    ">
+                        <h3 class="card-title mb-2" style="color:#fff;">Registrar Empresa</h3>
+                        <p class="card-text mb-0" style="color:#fff;">Registra tu empresa para acceder a los mejores talentos disponibles.</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-6 mx-auto text-center">
+                <a href="{% url 'accesses:candidate_registration' %}" class="position-relative mb-4 registro-card-hover d-block" style="text-decoration: none;">
+                    <img src="{% static 'admin/images/landing/banner_ia_7.jpg' %}" class="img-fluid rounded-3 w-100" alt="Registrar Candidato" style="object-fit:cover;">
+                    <div style="
+                        position: absolute;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        padding: 24px 16px 16px 16px;
+                        background: linear-gradient(0deg, rgba(177,0,34,0.65) 70%, rgba(0,0,0,0.0) 100%);
+                        color: #fff;
+                        border-radius: 0 0 18px 18px;
+                        width: 100%;
+                    ">
+                        <h3 class="card-title mb-2" style="color:#fff;">Registrar Candidato</h3>
+                        <p class="card-text mb-0" style="color:#fff;">Registra tu perfil para ser considerado en las mejores oportunidades laborales.</p>
+                    </div>
+                </a>
+            </div>
+            <style>
+                .registro-card-hover {
+                    transition: box-shadow 0.25s cubic-bezier(.4,0,.2,1);
+                }
+                .registro-card-hover:hover {
+                    box-shadow: 0 12px 32px 0 rgba(177,0,34,0.25), 0 2px 8px rgba(0,0,0,0.08);
+                    z-index: 2;
+                }
+            </style>
+        </div>
+    </div>
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-1" alt="shape">
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-2" alt="shape">
+</div>
+
+<div class="our-team-area pt-150 position-relative z-1" id="testimonials">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 mb-lg-5">
+            <div class="section-title ms-0 text-start mw-630 mb-0">
+                <span class="top-title">
+                    <span>Testimonios</span>
+                </span>
+                <h2>Lo que dicen quienes ya usan:</h2>
+                <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="Talent Tray Logo" style="max-width:180px; margin-bottom: 18px;">
+            </div>
+
+            <div class="team-controller d-flex gap-3">
+                <div class="controller-icon prev">
+                    <i class="ri-arrow-left-line"></i>
+                </div>
+                <div class="controller-icon next">
+                    <i class="ri-arrow-right-line"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="swiper team-slide">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="our-team-single-item">
+                        <div class="team-img">
+                            <img src="{% static 'admin/images/landing/team-1.jpg' %}" alt="team">
+                        </div>
+                        <div class="team-content d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>No es solo una herramienta. Es un cambio de paradigma.”</h5>
+                                <span>Carlos M. – CEO BPO Colombia</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="our-team-single-item">
+                        <div class="team-img">
+                            <img src="{% static 'admin/images/landing/team-2.jpg' %}" alt="team">
+                        </div>
+                        <div class="team-content d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>Contratamos 3 veces más rápido y con perfiles realmente alineados a nuestra cultura.”</h5>
+                                <span>Laura G. – Directora de Talento Humano</span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="our-team-single-item">
+                        <div class="team-img">
+                            <img src="{% static 'admin/images/landing/team-3.jpg' %}" alt="team">
+                        </div>
+                        <div class="team-content d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>No es solo una herramienta. Es un cambio de paradigma.”</h5>
+                                <span>Carlos M. – CEO BPO Colombia</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="our-team-single-item">
+                        <div class="team-img">
+                            <img src="{% static 'admin/images/landing/team-1.jpg' %}" alt="team">
+                        </div>
+                        <div class="team-content d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>No es solo una herramienta. Es un cambio de paradigma.”</h5>
+                                <span>Carlos M. – CEO BPO Colombia</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <img src="{% static 'admin/images/landing/shape-1.png' %}" class="shape shape-3" alt="shape">
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-4" alt="shape">
+</div>
+
 {% endblock %}
