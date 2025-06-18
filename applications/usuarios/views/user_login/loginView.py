@@ -334,7 +334,10 @@ def dashboard_candidato(request):
 
 # Salida de sesión.
 def logout_view(request):
+    print(request.GET)
+    print('---------------------')
     logout(request)
+    print(request.GET)
     return redirect('accesses:login')    # Redirigir a la página de inicio de sesión después de cerrar sesión
 
 # Acceso a sistema
