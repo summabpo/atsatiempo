@@ -18,7 +18,10 @@ urlpatterns = [
     path('registro/candidato', loginView.candidate_registration, name='candidate_registration'),
     path('inicio/', loginView.dashboard_begin, name='inicio'),
     path('logout_view/', loginView.logout_view, name='logout'),
-
+    path('validar_token/<str:token>', loginView.validar_token, name='validar_token'),
+    path('enviar_token/', loginView.enviar_token, name='enviar_token'),
+    path('acceso_denegado/', loginView.acceso_denegado, name='acceso_denegado'),
+    
     #candidate
     path('inicio/candidato', loginView.dashboard_candidato, name='inicio_candidato'),
 
@@ -29,15 +32,17 @@ urlpatterns = [
     path('cliente/grupo_trabajo_interno', client_views.create_internal_client, name='users_client'),
     path('cliente/colaborador/<int:pk>', client_views.detail_internal_client, name='users_client_detail'),
 
+    
+
     # Seguridad
     # path('inicio', login.inicio_app, name='inicio'),
     # path('login', login.login_view, name='login'),
     # path('logout_view/', login.logout_view, name='logout'),
     # path('registro_empresa/', login.signup_view, name='signup'),
     # path('registro_candidato/', login.signup_candidato, name='signup_candidato'),
-    path('validar_token/<str:token>', login.validar_token, name='validar_token'),
-    path('enviar_token/', login.enviar_token, name='enviar_token'),
-    path('acceso_denegado/', login.acceso_denegado, name='acceso_denegado'),
+    #path('validar_token/<str:token>', login.validar_token, name='validar_token'),
+    # path('enviar_token/', login.enviar_token, name='enviar_token'),
+    
 
     # Usuarios Cliente
 

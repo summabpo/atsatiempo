@@ -1,0 +1,59 @@
+{% extends 'admin/layout/front_base.html' %} 
+{% load static %}
+{% block title %} Talent Tray | Registro{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="tailor-area position-relative z-1 pt-150" id="register">
+    <div class="container">
+        <div class="banner-content text-center">
+            <!-- El texto principal se elimina de aquí para ponerlo sobre la imagen -->
+            <h1>
+                Validación con 
+                <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="Talent Tray Logo" style="max-width:180px; margin-bottom: 18px;">
+            </h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="bg-body rounded shadow-sm p-4 p-md-5 mx-auto" style="max-width: 500px;">
+                    <div class="text-center mb-4">
+                        <h1 class="text-gray-900 mb-3">¿Solicitar nueva validación de su cuenta?</h1>
+                        <div class="text-gray-500 fw-semibold fs-5">Ingrese su correo electrónico para solicitar de nuevo validación.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {% crispy form %}
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{% url 'accesses:login' %}" class="link-primary fs-6 fw-bold">Iniciar Sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-1" alt="shape">
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-2" alt="shape">
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    {% if messages %}
+        {% for message in messages %}
+            Swal.fire({
+                text: "{{ message }}",
+                icon: "{{message.tags}}",
+                showConfirmButton: true,
+                confirmButtonText: "Ok",
+                customClass: {
+                    confirmButton: "btn btn-primary"
+                },
+                willOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+        {% endfor %}
+    {% endif %}
+</script>  
+{% endblock js %} 

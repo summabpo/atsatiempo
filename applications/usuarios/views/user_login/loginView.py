@@ -434,3 +434,99 @@ def login_view(request):
     return render(request, 'admin/login/login.html',{
         'form':form,
         })
+
+# valdidar token.
+def validar_token(request, token):
+    
+
+    print(token)
+    context = {
+        'is_valid': False,
+        'message': ''
+    }
+    
+
+    # Buscar el token en la base de datos
+    
+    try:
+        # Buscar el token en la base de datos
+        token_obj = TokenAutorizacion.objects.get(token=token)
+        
+        # Validar si el token ha vencido
+        if token_obj.fecha_expiracion < timezone.now():
+            context['message'] = 'Link vencido'
+            
+            token_obj.fecha_validacion = timezone.now()
+            token_obj.save()  # No olvides guardar el objeto actualizado
+
+        else:
+            # Si el token es válido
+            usuario = get_object_or_404(UsuarioBase, id=token_obj.user.id)
+
+            #Actualizar el estado de verificación
+            usuario.is_verificado = True
+            usuario.save()
+
+            # Actualizar la fecha de validación del token
+            token_obj.fecha_validacion = timezone.now()
+            token_obj.save()  # No olvides guardar el objeto actualizado
+
+            context['is_valid'] = True
+            context['message'] = 'Correo validado correctamente'
+
+    except TokenAutorizacion.DoesNotExist:
+        context['message'] = 'Token no válido'
+
+    return render(request, 'admin/login/authentication.html', context)
+
+#validar correo para enviar correo
+def enviar_token(request):
+    url_actual = f"{request.scheme}://{request.get_host()}"
+    if request.method == 'POST':
+        form = CorreoForm(request.POST)
+
+        if form.is_valid():
+            email = form.cleaned_data['email']
+
+            if UsuarioBase.objects.filter(username=email).exists():
+                usuario_email = UsuarioBase.objects.get(username=email)
+                
+                token_generado = generate_token(50);
+                TokenAutorizacion.objects.create(
+                    user_id=usuario_email.id,
+                    token=token_generado,  # Una función que genere un token único
+                    fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
+                )
+
+                #Envio del correo electronico de confirmación del usuario y contraseña
+                contexto = {
+                    'name': usuario_email.primer_nombre.capitalize(),
+                    'last_name': usuario_email.primer_apellido.capitalize(),
+                    'user': usuario_email.username,
+                    'email': email,
+                    'token': token_generado,
+                    'url' : url_actual
+                }
+                # Envia el metodo
+                enviar_correo('token', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
+                
+                # login(request, user)
+                frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
+                messages.success(request, frase_aleatoria)
+                return redirect('accesses:login')
+                
+            else:
+                messages.error(request, 'El correo ingresado no se encuentra registrado')
+                return redirect('accesses:enviar_token')  
+        else:
+            messages.error(request, '¡Oops! Hubo un error al procesar el correo.')
+            return redirect('accesses:enviar_token') 
+    else:
+        form = CorreoForm()
+
+    return render(request, 'admin/login/authentication_again.html', {'form': form, })
+
+#vista para mostrar pantalla de acceso deneado cuando el decorador no tenga el listado de permisos cargados
+def acceso_denegado(request):
+    url_actual = f"{request.scheme}://{request.get_host()}"
+    return render(request, 'admin/login/access_denied.html')

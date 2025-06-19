@@ -1,0 +1,46 @@
+{% load static %}
+<!-- base.html -->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>
+			Acceso Denegado | Talent Tray
+		</title>
+		{% include 'admin/layout/partials/asset_files.html' %}
+	</head>
+	<body
+		data-bs-spy="scroll"
+		data-bs-target="#navbar-example2"
+		data-bs-root-margin="0px 0px -40%"
+		data-bs-smooth-scroll="true"
+		class="scrollspy-example"
+		tabindex="0"
+	>
+        {% include 'admin/layout/partials/preloader.html' %}
+		
+		<!-- Default content can go here -->
+
+        <!-- Start Main Content Area -->
+        <div class="container-fluid">
+            <div class="main-content d-flex flex-column p-0">
+                <div class="m-auto text-center">
+                    <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="Talent Tray Logo" style="max-width:180px; margin-bottom: 18px;">
+                    <img src="{% static 'admin/images/error.png' %}" class="mw-430 mb-4 w-100" alt="error">
+                    <h3 class="fs-24 mb-3">Acceso Denegado.</h3>
+                    <p class="mb-4">No tienes permiso para acceder a este modulo.</p>
+                    <a href="{% url 'accesses:inicio' %}" class="btn btn-primary py-2 px-4 fs-16 fw-medium">
+                        <span class="d-inline-block py-1">Regresar al Inicio</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-1" alt="shape">
+        <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-2" alt="shape">
+		
+        {% include 'admin/layout/partials/js_files.html' %}
+	</body>
+</html>
+
+
+
+

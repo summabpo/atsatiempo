@@ -1,0 +1,61 @@
+{% extends 'admin/layout/front_base.html' %} 
+{% load static %}
+{% block title %} Talent Tray | Registro{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="tailor-area position-relative z-1 pt-150" id="register">
+    <div class="container">
+        <div class="banner-content text-center">
+            <!-- El texto principal se elimina de aquí para ponerlo sobre la imagen -->
+                <h1>
+                    Validación con 
+                    <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="Talent Tray Logo" style="max-width:180px; margin-bottom: 18px;">
+                </h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body text-center">
+                        {% if is_valid %}
+                            <h3 style="color: green;">{{ message }}</h3>
+                            <div class="text-center mb-10">
+                                <a href="{% url 'accesses:login' %}" class="btn btn-lg btn-primary fw-bold">Ingresar</a>
+                            </div>
+                        {% else %}
+                            <h3 style="color: red;">{{ message }}</h3>
+                            <div class="fs-5">
+                                <span class="fw-semibold text-gray-700">¿No ha recibido el correo de confirmación?</span>
+                                <a href="{% url 'accesses:enviar_token' %}" class="link-primary fw-bold">Solicitar Acceso</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-1" alt="shape">
+    <img src="{% static 'admin/images/landing/shape-2.png' %}" class="shape shape-2" alt="shape">
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+    {% if messages %}
+        {% for message in messages %}
+            Swal.fire({
+                text: "{{ message }}",
+                icon: "{{message.tags}}",
+                showConfirmButton: true,
+                confirmButtonText: "Ok",
+                customClass: {
+                    confirmButton: "btn btn-primary"
+                },
+                willOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+        {% endfor %}
+    {% endif %}
+</script>  
+{% endblock js %} 
