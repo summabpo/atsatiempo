@@ -203,12 +203,12 @@ LOGGING = {
     },
     'loggers': {
         'django.db.backends': {
-            'handlers': ['console'],
+            # 'handlers': ['console'],
             'level': 'DEBUG',  # Log de consultas SQL
             'propagate': False,
         },
         'django.core.mail': {
-            'handlers': ['console'],
+            # 'handlers': ['console'],
             'level': 'DEBUG',  # Log de envíos de correo
             'propagate': False,
         },
