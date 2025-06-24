@@ -208,13 +208,13 @@ class candidateStudyForm(forms.Form):
         })
     )
     titulo = forms.CharField(
-        label='TÍTULO',
+        label='TÍTULO (Se refiere a la denominación oficial o el grado académico que se obtiene al completar exitosamente un programa de estudios y cumplir con todos los requisitos de graduación.)',
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'Título', 'class': 'form-control'})
     )
     carrera = forms.CharField(
-        label='CARRERA',
+        label='CARRERA (Se refiere al programa de estudios general o el campo disciplinar que se cursa en una institución educativa.)',
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'Carrera', 'class': 'form-control'})
@@ -250,7 +250,7 @@ class candidateStudyForm(forms.Form):
     )
     certificacion = forms.FileField(
         label='CERTIFICACIÓN',
-        required=False,
+        required=True,
         widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
     )
 
@@ -338,5 +338,7 @@ class candidateStudyForm(forms.Form):
             if hasattr(certificacion, 'size'):
                 if certificacion.size > 5 * 1024 * 1024:
                     self.add_error('certificacion', 'El archivo no debe pesar más de 5 MB.')
+        else:
+            self.add_error('certificacion', 'El archivo de certificación es obligatorio.')
 
         return cleaned_data

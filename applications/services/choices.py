@@ -157,7 +157,7 @@ MOTIVO_SALIDA_CHOICES_STATIC =  [
 
 TIPO_HABILIDAD_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
         ('S', 'Suave'),
-        ('D', 'Dura (Técnica)'),
+        ('D', 'Técnica'),
     ]
 
 

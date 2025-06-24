@@ -453,7 +453,7 @@ class CandidateForm(forms.Form):
     )
     hoja_de_vida = forms.FileField(
         label='HOJA DE VIDA',
-        required=False,
+        required=True,
         widget=forms.ClearableFileInput(attrs={
             'class': 'form-control form-control-solid'
         })
@@ -647,6 +647,8 @@ class CandidateForm(forms.Form):
 
             if Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exists():
                 self.add_error('hoja_de_vida', 'Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
+        else:
+            self.add_error('hoja_de_vida', 'La hoja de vida es un campo obligatorio.')
         
         return cleaned_data
 
