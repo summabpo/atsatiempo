@@ -12,10 +12,10 @@ urlpatterns = [
     #new
     path('test_template', PruebasView.test_template, name='test'),
     path('', loginView.principal, name='home'),
-    path('login', loginView.login_view, name='login'),
-    path('registro', loginView.registration, name='registration'),
+    path('login/', loginView.login_view, name='login'),
+    path('registro/', loginView.registration, name='registration'),
     path('registro/empresa', loginView.company_registration, name='company_registration'),
-    path('registro/candidato', loginView.candidate_registration, name='candidate_registration'),
+    path('registro/candidato/', loginView.candidate_registration, name='candidate_registration'),
     path('inicio/', loginView.dashboard_begin, name='inicio'),
     path('logout_view/', loginView.logout_view, name='logout'),
     path('validar_token/<str:token>', loginView.validar_token, name='validar_token'),
@@ -29,7 +29,7 @@ urlpatterns = [
 
 
     #client
-    path('cliente/grupo_trabajo_interno', client_views.create_internal_client, name='users_client'),
+    path('cliente/grupo_trabajo_interno/', client_views.create_internal_client, name='users_client'),
     path('cliente/colaborador/<int:pk>', client_views.detail_internal_client, name='users_client_detail'),
 
     
