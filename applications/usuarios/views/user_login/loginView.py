@@ -260,7 +260,7 @@ def candidate_registration(request):
     return render(request, 'admin/login/candidate_registration.html', {'form': form, 'login_f':login_f,} )
 
 #pantalla inicio
-@login_required
+# @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def dashboard_begin(request):
     """ Vista que carga la página de inicio y muestra variables de sesión """
@@ -270,12 +270,7 @@ def dashboard_begin(request):
 
     # Accedemos a los permisos guardados en el request
     permisos_usuario = getattr(request, 'permisos_usuario', [])
-
-    print(permisos_usuario)
     
-    # Puedes imprimir las variables de sesión para debug
-    print("Variables de sesión:", session_variables)
-
     # valida 
     #ats portal interno
     if session_variables['grupo_id'] == 1:
@@ -308,7 +303,7 @@ def dashboard_begin(request):
     return render(request, 'admin/dashboard.html', context)
 
 #pantalla inicio
-@login_required
+# @login_required
 @validar_permisos('acceso_candidato')
 def dashboard_candidato(request):
     """ Vista que carga la página de inicio y muestra variables de sesión """
@@ -334,18 +329,16 @@ def dashboard_candidato(request):
 
 # Salida de sesión.
 def logout_view(request):
-    print(request.GET)
+    print("Variables de sesión (antes de logout):", request.session.items())
     print('---------------------')
     logout(request)
-    print(request.GET)
+    print("Variables de sesión (despues de logout):", request.session.items())
     return redirect('accesses:login')    # Redirigir a la página de inicio de sesión después de cerrar sesión
 
 # Acceso a sistema
 def login_view(request):
     if request.user.is_authenticated:
-        # print('No esta autenticado')
-        # messages.error(request, "Debes iniciar sesión para acceder a esta página.")
-        # return redirect('accesses:login')
+        messages.info(request, "Ya has iniciado sesión.")
         return redirect('accesses:inicio')
     else:
         if request.method == 'POST':
@@ -359,6 +352,8 @@ def login_view(request):
                     
                     if usuario.is_verificado == True:
                         login(request, user)
+
+                        # Cargar variables de sesión aquí
                         request.session['primer_nombre'] = f'{usuario.primer_nombre} {usuario.primer_apellido}'
                         request.session['email'] = usuario.username
                         request.session['user_login'] = {
@@ -428,6 +423,9 @@ def login_view(request):
                     frase_aleatoria = random.choice(frases_falla_login)
                     messages.error(request, frase_aleatoria)
                     return redirect('accesses:login')
+                
+            else:
+                messages.error(request, "Por favor, complete todos los campos del formulario.")
         else:
             form = LoginForm()
 
@@ -437,9 +435,7 @@ def login_view(request):
 
 # valdidar token.
 def validar_token(request, token):
-    
 
-    print(token)
     context = {
         'is_valid': False,
         'message': ''
