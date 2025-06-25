@@ -38,6 +38,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://virtualempleo.com',
     'https://www.virtualempleo.com',
     'http://localhost:86',
+    'https://talenttray.com',
+    'https://www.talenttray.com'
 ]
 
 
