@@ -32,16 +32,9 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://127.0.0.1:8086',
-    'http://127.0.0.1:8000',
-    'http://localhost:8086',
-    'https://virtualempleo.com',
-    'https://www.virtualempleo.com',
-    'http://localhost:86',
     'https://talenttray.com',
     'https://www.talenttray.com'
 ]
-
 
 # Configuración de S3
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')

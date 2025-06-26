@@ -1,15 +1,17 @@
 import os
 from dotenv import load_dotenv
-# from django.urls import reverse_lazy
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Cargar las variables de entorno desde el archivo .env
-#load_dotenv(dotenv_path=os.path.join(os.path.dirname(BASE_DIR), '.env'))
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(BASE_DIR), '.env'),
+            override=True
+            )
 
-load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))
+#load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))
 
 #SETTINGS_ENV = 'base'
 
@@ -22,6 +24,9 @@ BASE_APPS = [
     # Django REST Framework
     #  'rest_framework',
     'django.contrib.admin',
+    
+    'applications.usuarios',
+    
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -37,7 +42,6 @@ LOCAL_APPS = [
     'applications.cliente',
     'applications.common',
     'applications.pruebas_psi',
-    'applications.usuarios',
     'applications.vacante',
 
     #'candidate',
