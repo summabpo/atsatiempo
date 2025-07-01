@@ -1,72 +1,94 @@
-{% extends 'admin/layout/auth_base.html' %} 
 {% load static %}
-{% block title %} Talent Tray | Registro Empresa{% endblock %}
 {% load crispy_forms_tags %}
-{% block content %}
-<!-- Start Main Content Area -->
-<div class="container">
-	<div class="main-content d-flex flex-column p-0">
-		<div class="m-auto m-1230">
-			<div class="row align-items-center">
-				<div class="col-lg-6 d-none d-lg-block">
-                    <img src="{% static 'admin/images/login.jpg' %}" class="rounded-3" alt="login" />
-				</div>
-				<div class="col-lg-6">
-					<div class="mw-480 ms-lg-auto">
-						<div class="d-inline-block mb-4">
-                            <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" class="rounded-3 for-light-logo" alt="login" width="300" />
-                            <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" class="rounded-3 for-dark-logo" alt="login" width="300" />
-						</div>
-						<p class="fw-medium fs-16 mb-4">
-							Por favor registra tus datos para acceder a la plataforma.
-						</p>
-						<div class="row justify-content-center">
-							
-						</div>
-                        {% csrf_token %}
-                        {% crispy form %}
-                        <div class="form-group">
-                            <p>
-                                Si ya tiene una cuenta, por favor inicie sesión.
-                                <a href="{% url 'accesses:login' %}" class="fw-medium text-primary text-decoration-none">Ingresar</a>
-                            </p>
+
+<!-- base.html -->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>
+			Talent Tray | Registro Empresa
+		</title>
+		<!-- Favicon -->
+		<link rel="icon" type="image/png" href="{% static 'admin/images/favicon.png' %}" />
+		<link rel="stylesheet" href="{% static 'admin/css/style.css' %}" />
+        
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
+        <!-- Select2 -->
+        <link href="{% static 'admin/css/select2.min.css' %}" rel="stylesheet"  />
+        <link href="{% static 'admin/css/select2-bootstrap-5-theme.min.css' %}" rel="stylesheet" />
+        
+	</head>
+	<body
+		data-bs-spy="scroll"
+		data-bs-target="#navbar-example2"
+		data-bs-root-margin="0px 0px -40%"
+		data-bs-smooth-scroll="true"
+		class="scrollspy-example"
+		tabindex="0"
+	>
+        <div class="container">
+            <div class="main-content d-flex flex-column p-0">
+                <div class="m-auto m-1230">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 d-none d-lg-block">
+                            <img src="{% static 'admin/images/login.jpg' %}" class="rounded-3" alt="login" />
                         </div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-<!-- End Main Content Area -->
-{% endblock %}
+                        <div class="col-lg-6">
+                            <div class="mw-480 ms-lg-auto">
+                                <div class="d-inline-block mb-4">
+                                    <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" class="rounded-3 for-light-logo" alt="login" width="300" />
+                                    <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" class="rounded-3 for-dark-logo" alt="login" width="300" />
+                                </div>
+                                <p class="fw-medium fs-16 mb-4">
+                                    Por favor registra tus datos para acceder a la plataforma.
+                                </p>
+                                <div class="row justify-content-center">
+                                    
+                                </div>
+                                {% csrf_token %}
+                                {% crispy form %}
+                                <div class="form-group">
+                                    <p>
+                                        Si ya tiene una cuenta, por favor inicie sesión.
+                                        <a href="{% url 'accesses:login' %}" class="fw-medium text-primary text-decoration-none">Ingresar</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+		<script src="{% static 'admin/js/bootstrap.bundle.min.js' %}"></script>
+		<!-- jQuery (requerido por Select2) -->
+		<script src="{% static 'admin/js/jquery-3.6.0.min.js' %}"></script>
+		<script src="{% static 'admin/js/select2.js' %}"></script>
+        <script src="{% static 'admin/js/custom/select2.js' %}"></script>
 
-{% block js %} 
-<script>
+		<script>
+            initializeSelect2('#id_city');
 
-    $(document).ready(function() {
-        $('.select2').select2({
-            theme: 'bootstrap-5',  // Si usas Bootstrap 5, puedes cambiar a "bootstrap-5"
-        });
-    });
+            {% if messages %}
+				{% for message in messages %}
+					Swal.fire({
+						text: "{{ message }}",
+						icon: "{{message.tags}}",
+						showConfirmButton: true,
+						confirmButtonText: "Ok",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						},
+						willOpen: (toast) => {
+							toast.addEventListener('mouseenter', Swal.stopTimer);
+							toast.addEventListener('mouseleave', Swal.resumeTimer);
+						}
+					});
+				{% endfor %}
+			{% endif %}
 
-    {% if messages %}
-        {% for message in messages %}
-            Swal.fire({
-                text: "{{ message }}",
-                icon: "{{message.tags}}",
-                showConfirmButton: true,
-                confirmButtonText: "Ok",
-                customClass: {
-                    confirmButton: "btn btn-primary"
-                },
-                willOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer);
-                    toast.addEventListener('mouseleave', Swal.resumeTimer);
-                }
-            });
-        {% endfor %}
-    {% endif %}
-
-    initializeSelect2('#id_city');
-</script>  
-{% endblock js %} 
+            
+		</script>
+	</body>
+</html>
