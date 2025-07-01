@@ -31,42 +31,15 @@ from applications.common.views.PanelView import info_vacantes_pendientes, info_e
 
 #dictado de frases aleatorias
 frases_falla_login = [
-    "¡Parece que el nombre de usuario o la contraseña están jugando a las escondidas! Revisa y vuelve a intentarlo.",
-    "¡Oh no! El nombre de usuario o la contraseña decidieron tomar un día libre. ¡Verifica los datos y vuelve a intentarlo!",
-    "¡Ups! El nombre de usuario o la contraseña están en modo de vacaciones. Asegúrate de ingresar la información correcta.",
-    "¡Ay caramba! El nombre de usuario o la contraseña se escaparon. Revisa tus datos e intenta de nuevo.",
-    "¡Vaya, vaya! El nombre de usuario o la contraseña están en huelga. Verifica tus credenciales y vuelve a intentarlo.",
-    "¡Oh no! Parece que el nombre de usuario o la contraseña están de parranda. Asegúrate de que todo esté en orden y prueba de nuevo.",
-    "¡Menuda sorpresa! El nombre de usuario o la contraseña decidieron hacer una siesta. Verifica la información e inténtalo otra vez.",
-    "¡Atención! El nombre de usuario o la contraseña están haciendo travesuras. Asegúrate de que sean correctos y vuelve a intentarlo.",
-    "¡Ups! Parece que el nombre de usuario o la contraseña se perdieron. Verifica los datos e intenta nuevamente.",
-    "¡Oh! El nombre de usuario o la contraseña están de fiesta. Revisa tus credenciales y prueba de nuevo."
+    "🔐 Credenciales inválidas. Por favor, intente nuevamente."
 ]
 
 frases_inicio_sesion = [
-    "¿Ya tienes una cuenta? ¡Perfecto! Entonces, deja de perder el tiempo y entra para empezar la diversión.",
-    "¿Ya eres parte de la familia? ¡Genial! Solo falta iniciar sesión y empezar la acción.",
-    "¡Ya tienes cuenta, aventurero! ¿Qué esperas? Inicia sesión y lánzate a la aventura.",
-    "¿Cuentas con una cuenta? ¡Eso está bien! Solo falta hacer login y empezar a explorar.",
-    "¿Ya eres usuario? ¡Perfecto! Solo inicia sesión y comienza a disfrutar.",
-    "¡Ya tienes cuenta! Entonces, no pierdas más tiempo aquí. Inicia sesión y lánzate al meollo del asunto.",
-    "¿Ya registraste tu cuenta? ¡Inicia sesión ya y empieza a disfrutar del contenido!",
-    "¿Ya tienes acceso? ¡Genial! Solo falta iniciar sesión y comenzar la fiesta.",
-    "¡Eres un usuario experimentado! Entonces, ¿por qué estás aquí? Inicia sesión y vamos a lo importante.",
-    "¿Ya tienes una cuenta? ¡Entonces inicia sesión y deja de perder el tiempo aquí!"
+    "🌟 Esta cuenta ya está registrada. ¿Necesita recuperar su acceso?"
 ]
 
 frases_error_contrasena = [
-    "¡Oops! Las contraseñas están jugando al escondite. Asegúrate de que coincidan y prueba de nuevo.",
-    "¡Vaya! Parece que las contraseñas están en una pelea. Revisa que ambas sean iguales y vuelve a intentarlo.",
-    "¡Oh no! Las contraseñas no se están poniendo de acuerdo. Verifica que coincidan y prueba otra vez.",
-    "¡Menuda confusión! Las contraseñas no están sincronizadas. Asegúrate de que sean idénticas y vuelve a intentarlo.",
-    "¡Ay caramba! Las contraseñas están haciendo travesuras. Asegúrate de que sean las mismas y prueba de nuevo.",
-    "¡Oops! Las contraseñas están en desacuerdo. Revisa que sean iguales y vuelve a intentarlo.",
-    "¡Oh! Las contraseñas están haciendo su propia fiesta. Asegúrate de que coincidan y vuelve a intentarlo.",
-    "¡Ups! Las contraseñas no están en sintonía. Verifica que sean iguales y vuelve a intentarlo.",
-    "¡Vaya! Las contraseñas parecen tener opiniones diferentes. Asegúrate de que sean iguales y vuelve a intentarlo.",
-    "¡Oh no! Las contraseñas están en una pelea de egos. Asegúrate de que sean idénticas y vuelve a intentarlo."
+    "🔍 Revise su contraseña: los caracteres deben ser idénticos en ambos campos."
 ]
 
 
@@ -260,7 +233,7 @@ def candidate_registration(request):
     return render(request, 'admin/login/candidate_registration.html', {'form': form, 'login_f':login_f,} )
 
 #pantalla inicio
-@login_required
+# @login_required
 @validar_permisos(*Permiso.obtener_nombres())
 def dashboard_begin(request):
     """ Vista que carga la página de inicio y muestra variables de sesión """
@@ -270,12 +243,7 @@ def dashboard_begin(request):
 
     # Accedemos a los permisos guardados en el request
     permisos_usuario = getattr(request, 'permisos_usuario', [])
-
-    print(permisos_usuario)
     
-    # Puedes imprimir las variables de sesión para debug
-    print("Variables de sesión:", session_variables)
-
     # valida 
     #ats portal interno
     if session_variables['grupo_id'] == 1:
@@ -308,7 +276,7 @@ def dashboard_begin(request):
     return render(request, 'admin/dashboard.html', context)
 
 #pantalla inicio
-@login_required
+# @login_required
 @validar_permisos('acceso_candidato')
 def dashboard_candidato(request):
     """ Vista que carga la página de inicio y muestra variables de sesión """
@@ -334,18 +302,16 @@ def dashboard_candidato(request):
 
 # Salida de sesión.
 def logout_view(request):
-    print(request.GET)
+    print("Variables de sesión (antes de logout):", request.session.items())
     print('---------------------')
     logout(request)
-    print(request.GET)
+    print("Variables de sesión (despues de logout):", request.session.items())
     return redirect('accesses:login')    # Redirigir a la página de inicio de sesión después de cerrar sesión
 
 # Acceso a sistema
 def login_view(request):
     if request.user.is_authenticated:
-        # print('No esta autenticado')
-        # messages.error(request, "Debes iniciar sesión para acceder a esta página.")
-        # return redirect('accesses:login')
+        messages.info(request, "Ya has iniciado sesión.")
         return redirect('accesses:inicio')
     else:
         if request.method == 'POST':
@@ -359,6 +325,8 @@ def login_view(request):
                     
                     if usuario.is_verificado == True:
                         login(request, user)
+
+                        # Cargar variables de sesión aquí
                         request.session['primer_nombre'] = f'{usuario.primer_nombre} {usuario.primer_apellido}'
                         request.session['email'] = usuario.username
                         request.session['user_login'] = {
@@ -428,6 +396,9 @@ def login_view(request):
                     frase_aleatoria = random.choice(frases_falla_login)
                     messages.error(request, frase_aleatoria)
                     return redirect('accesses:login')
+                
+            else:
+                messages.error(request, "Por favor, complete todos los campos del formulario.")
         else:
             form = LoginForm()
 
@@ -437,9 +408,7 @@ def login_view(request):
 
 # valdidar token.
 def validar_token(request, token):
-    
 
-    print(token)
     context = {
         'is_valid': False,
         'message': ''
