@@ -101,6 +101,7 @@ class Can103Educacion(models.Model):
     ciudad_id_004 = models.ForeignKey(Cat004Ciudad, models.DO_NOTHING, db_column='ciudad_id_004', blank=True, null=True)
     tipo_estudio = models.CharField(max_length=2, choices=NIVEL_ESTUDIO_CHOICES_STATIC, blank=True, null=True)
     certificacion = models.FileField(upload_to='media_uploads/media_uploads/certificaciones/', blank=True, null=True, verbose_name="Certificación")
+    profesion_estudio = models.ForeignKey('vacante.Cli055ProfesionEstudio', on_delete=models.CASCADE, db_column='profesion_estudio_id_055', blank=True, null=True, verbose_name="Profesión/Estudio")
 
     def mostrar_tipo_estudio(self):
         return dict(NIVEL_ESTUDIO_CHOICES_STATIC).get(self.tipo_estudio, "No especificado")

@@ -35,12 +35,25 @@ class Cli054HardSkill(models.Model):
 
         verbose_name = 'HARD_SKILL'
 
+class Cli075GrupoProfesion(models.Model):
+    nombre = models.CharField(max_length=100, verbose_name="Nombre", blank=False, null=False)
+    estado = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        db_table = 'cli_075_grupo_profesion'
+        verbose_name = 'GRUPO PROFESIÓN'
+        verbose_name_plural = 'GRUPOS PROFESIÓN'
+
 class Cli055ProfesionEstudio(models.Model):
     nombre = models.CharField(max_length=200)
     estado_id_001 = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
+    grupo = models.ForeignKey(Cli075GrupoProfesion, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
-        return str(self.id)
+        return self.nombre
     class Meta:
         #managed = False
         db_table = 'cli_055_profesion_estudio'
