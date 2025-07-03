@@ -106,6 +106,8 @@ def candidate_info_academy(request):
             if form.cleaned_data['certificacion']:
                 certificacion = form.cleaned_data['certificacion']
             
+            profesion_estudio = form.cleaned_data['profesion_estudio'] if form.cleaned_data['profesion_estudio'] else None
+            
             Can103Educacion.objects.create(
                 estado_id_001=Cat001Estado.objects.get(id=1),  # Cambia esto según tu lógica
                 institucion=institucion,
@@ -118,7 +120,8 @@ def candidate_info_academy(request):
                 candidato_id_101=candidato_id_101,
                 ciudad_id_004=ciudad_obj_004,
                 tipo_estudio=tipo_estudio,
-                certificacion=certificacion if form.cleaned_data['certificacion'] else None
+                certificacion=certificacion if form.cleaned_data['certificacion'] else None,
+                profesion_estudio= profesion_estudio if profesion_estudio else None
             )
             
             messages.success(request, 'Información académica actualizada exitosamente.')
@@ -153,6 +156,7 @@ def candidate_info_academy_edit(request, pk):
         'ciudad_id_004': study.ciudad_id_004.id if study.ciudad_id_004 else None,
         'tipo_estudio': study.tipo_estudio,
         'certificacion': study.certificacion,
+        'profesion_estudio': study.profesion_estudio.id if study.profesion_estudio else None,
     }
 
     if request.method == 'POST':
@@ -171,6 +175,7 @@ def candidate_info_academy_edit(request, pk):
             study.tipo_estudio = form.cleaned_data['tipo_estudio']
             if form.cleaned_data['certificacion']:
                 study.certificacion = form.cleaned_data['certificacion']
+            study.profesion_estudio = form.cleaned_data['profesion_estudio'] if form.cleaned_data['profesion_estudio'] else None
             study.save()
 
             messages.success(request, 'Información académica actualizada exitosamente.')

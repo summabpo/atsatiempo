@@ -11,6 +11,7 @@ from applications.candidato.models import Can101Candidato, Can103Educacion
 from crispy_forms.layout import Layout, Layout, Div, Submit, HTML, Row, Column, Fieldset
 
 from applications.services.choices import NIVEL_ESTUDIO_CHOICES_STATIC
+from applications.vacante.models import Cli055ProfesionEstudio
 
 class EstudioCandidatoForm(forms.Form):
     
@@ -254,6 +255,21 @@ class candidateStudyForm(forms.Form):
         widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
     )
 
+    profesion_estudio = forms.ModelChoiceField(
+        label='PROFESIÓN/ESTUDIO',
+        queryset=Cli055ProfesionEstudio.objects.all(),
+        required=False,
+        widget=forms.Select(
+            attrs={
+                'class': 'form-select',
+                'data-control': 'select2',
+                'data-dropdown-parent': '#estudios_candidato',
+            }
+        )
+    )
+
+    
+
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
         super().__init__(*args, **kwargs)
@@ -267,6 +283,7 @@ class candidateStudyForm(forms.Form):
                     HTML("<h4 class='mb-3 text-primary'>Información Académica</h4>"),
                     Div('institucion', css_class='col-12'),
                     Div('tipo_estudio', css_class='col-12'),
+                    Div('profesion_estudio', css_class='col-12'),
                     Div('grado_en', css_class='col-12'),
                     Div('titulo', css_class='col-12 campo-graduado'),
                     Div('fecha_inicial', css_class='col-6'),
@@ -296,7 +313,8 @@ class candidateStudyForm(forms.Form):
         tipo_estudio = cleaned_data.get('tipo_estudio')
         ciudad_id_004 = cleaned_data.get('ciudad_id_004')
         certificacion = cleaned_data.get('certificacion')
-        
+        profesion_estudio = cleaned_data.get('profesion_estudio')
+
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', institucion):
             self.add_error('institucion', "La Instirución solo puede contener letras.")
         else:
@@ -340,5 +358,8 @@ class candidateStudyForm(forms.Form):
                     self.add_error('certificacion', 'El archivo no debe pesar más de 5 MB.')
         else:
             self.add_error('certificacion', 'El archivo de certificación es obligatorio.')
+
+        if not profesion_estudio:
+            self.add_error('profesion_estudio', 'Debe seleccionar una profesión o estudio.')
 
         return cleaned_data
