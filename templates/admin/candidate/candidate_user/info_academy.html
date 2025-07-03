@@ -78,6 +78,7 @@ Información Básica | Talent Tray
                                         <th scope="col" class="text-center">TÍTULO</th>
                                         <th scope="col" class="text-center">CIUDAD</th>
                                         <th scope="col" class="text-center">TIPO DE ESTUDIO</th>
+                                        <th scope="col" class="text-center">PROFESIÓN O ESTUDIO</th>
                                         <th scope="col" class="text-center">ACCIONES</th>
                                     </tr>
                                 </thead>
@@ -91,6 +92,7 @@ Información Básica | Talent Tray
                                         <td class="text-body text-center">{% if e.titulo %}{{ e.titulo }}{% else %}--{% endif %}</td>
                                         <td class="text-body text-center">{{ e.ciudad_id_004 }}</td>
                                         <td class="text-body text-center">{{ e.mostrar_tipo_estudio }}</td>
+                                        <td class="text-body text-center">{{ e.profesion_estudio.nombre }}</td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center align-items-center gap-1">
                                                 <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
@@ -239,5 +241,6 @@ Información Básica | Talent Tray
 
     initializeSelect2('#id_tipo_estudio');
     initializeSelect2('#id_ciudad_id_004');
+    initializeSelect2('#id_profesion_estudio');
 </script>
 {% endblock js %}
