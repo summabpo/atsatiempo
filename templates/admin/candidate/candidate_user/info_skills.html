@@ -57,7 +57,7 @@ Información Básica | Talent Tray
                                 <thead>
                                     <tr>
                                         <th scope="col" class="text-center">HABILIDADES</th>
-                                        <th scope="col" class="text-center">NIVEL</th>
+                                        <th scope="col" class="text-center">GRUPO HABILIDAD</th>
                                         <th scope="col" class="text-center">TIPO HABILIDAD</th>
                                         <th scope="col" class="text-center">CERTIFICADO</th>
                                         <th scope="col" class="text-center">ACCIONES</th>
@@ -67,7 +67,7 @@ Información Básica | Talent Tray
                                     {% for e in skills %}
                                     <tr>
                                         <td class="text-body text-center">{{e.skill_id_104.nombre}}</td>
-                                        <td class="text-body text-center">{{ e.get_nivel_display }}</td>
+                                        <td class="text-body text-center">{{ e.skill_id_104.grupo.nombre }}</td>
                                         <td class="text-body text-center">{{ e.get_tipo_habilidad_display }}</td>
                                         <td class="text-body text-center">
                                             {% if e.certificado_habilidad %}
