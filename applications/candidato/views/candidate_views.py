@@ -15,8 +15,10 @@ from applications.candidato.models import Can101Candidato, Can102Experiencia, Ca
 from applications.candidato.forms.CandidatoForms import CandidateForm
 from applications.candidato.forms.EstudioForms import EstudioCandidatoForm, candidateStudyForm
 from applications.candidato.forms.ExperienciaForms import candidateJobForm
-from applications.candidato.forms.HabilidadForms import CandidateHabilityForm
+from applications.candidato.forms.HabilidadForms import CandidateHabilityForm, CandidateHabilityFormList
 from applications.candidato.forms.SocialForms import SocialNetworkForm
+
+from collections import Counter
 
 #views
 @login_required
@@ -310,45 +312,91 @@ def candidate_info_skills(request):
     # Obtener el ID del candidato desde la sesión
     candidato_id = request.session.get('candidato_id')
 
+    # Formulario por habilidad
     form = CandidateHabilityForm()
 
     # Obtener las habilidades del candidato (ajusta según tu modelo)
     skills = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato_id).order_by('-id')
 
+    # Prepare the initial data dictionary for the form
+    initial_data = {
+        'skill_relacionales': [],
+        'skill_personales': [],
+        'skill_cognitivas': [],
+        'skill_digitales': [],
+        'skill_liderazgo': [],
+    }
+
+    for cs in skills:
+        # Check the group of the skill and add its ID to the correct list
+        if cs.skill_id_104.grupo.id == 1:
+            initial_data['skill_relacionales'].append(cs.skill_id_104.id)
+        elif cs.skill_id_104.grupo.id == 2:
+            initial_data['skill_personales'].append(cs.skill_id_104.id)
+        elif cs.skill_id_104.grupo.id == 3:
+            initial_data['skill_cognitivas'].append(cs.skill_id_104.id)
+        elif cs.skill_id_104.grupo.id == 4:
+            initial_data['skill_digitales'].append(cs.skill_id_104.id)
+        elif cs.skill_id_104.grupo.id == 5:
+            initial_data['skill_liderazgo'].append(cs.skill_id_104.id)
+    
     if request.method == 'POST':
-        form = CandidateHabilityForm(request.POST, request.FILES)
+        form = CandidateHabilityFormList(request.POST, request.FILES)    
         if form.is_valid():
-            habilidad = form.cleaned_data['skill_id_104'].upper()
-            nivel = form.cleaned_data['nivel']
-            tipo_habilidad = form.cleaned_data['tipo_habilidad']
-            certificado_habilidad = form.cleaned_data['certificado_habilidad'] if form.cleaned_data['certificado_habilidad'] else None
 
-            # Guardar la habilidad en la base de datos
-            skill, created = Can104Skill.objects.get_or_create(
-                nombre=habilidad,
-                estado_id_004=Cat001Estado.objects.get(id=1)
-                )  # Cambia esto según tu lógica
+            #list_complete_Skills
+            skill_all = []
+            # Obtener los IDs de las habilidades relacionales
+            ids_skill_relacionales = [skill.id for skill in form.cleaned_data['skill_relacionales']]
+            skill_all.extend(ids_skill_relacionales)
+
+            # Obtener los IDs de las habilidades personales
+            ids_skill_personales = [skill.id for skill in form.cleaned_data['skill_personales']]
+            skill_all.extend(ids_skill_personales)
+
+            # Obtener los IDs de las habilidades cognitivas
+            ids_skill_cognitivas = [skill.id for skill in form.cleaned_data['skill_cognitivas']]
+            skill_all.extend(ids_skill_cognitivas)
+
+            # Obtener los IDs de las habilidades digitales
+            ids_skill_digitales = [skill.id for skill in form.cleaned_data['skill_digitales']]
+            skill_all.extend(ids_skill_digitales)
+
+            # Obtener los IDs de las habilidades de liderazgo
+            ids_skill_liderazgo = [skill.id for skill in form.cleaned_data['skill_liderazgo']]
+            skill_all.extend(ids_skill_liderazgo)
             
-            candidato = Can101Candidato.objects.get(id=candidato_id)
+            for skill_id in skill_all:
+                skill = Can104Skill.objects.get(id=skill_id)
 
-            # Verificar si la habilidad ya existe para el candidato
-            if not Can101CandidatoSkill.objects.filter(candidato_id_101=candidato, skill_id_104=skill).exists():
-                Can101CandidatoSkill.objects.create(
-                    candidato_id_101=candidato,
-                    skill_id_104=skill,
-                    nivel=nivel,
-                    tipo_habilidad=tipo_habilidad,
-                    certificado_habilidad=certificado_habilidad,
-                )
-                messages.success(request, 'Habilidad agregada exitosamente.')
-            else:
-                messages.error(request, 'La habilidad ya está registrada.')
+                #Verificar si la habilidad ya existe para el candidato
+                candidato = Can101Candidato.objects.get(id=candidato_id)
+                # Eliminar habilidades que ya no están seleccionadas
+                habilidades_actuales = set(Can101CandidatoSkill.objects.filter(candidato_id_101=candidato).values_list('skill_id_104', flat=True))
+                habilidades_nuevas = set(skill_all)
+                habilidades_a_eliminar = habilidades_actuales - habilidades_nuevas
+                Can101CandidatoSkill.objects.filter(candidato_id_101=candidato, skill_id_104__in=habilidades_a_eliminar).delete()
+
+                # Agregar nuevas habilidades si no existen
+                if not Can101CandidatoSkill.objects.filter(candidato_id_101=candidato, skill_id_104=skill).exists():
+                    Can101CandidatoSkill.objects.create(
+                        candidato_id_101=candidato,
+                        skill_id_104=skill,
+                        nivel=1,  # Puedes ajustar el nivel según tu lógica o formulario
+                        tipo_habilidad='S',  # Ajusta según tu lógica o formulario
+                        certificado_habilidad=None  # Ajusta según tu lógica o formulario
+                    )
+
+                messages.success(request, 'Habilidades agregadas exitosamente.')
 
             return redirect('candidatos:candidato_info_habilidades')
         else:
             messages.error(request, 'Error al agregar la habilidad.')
     else:
-        form = CandidateHabilityForm()   
+        print("No es un POST")
+        form = CandidateHabilityFormList(initial=initial_data)
+
+    
     context = {
         'form': form,
         'skills': skills,

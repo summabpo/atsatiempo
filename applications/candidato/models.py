@@ -114,9 +114,22 @@ class Can103Educacion(models.Model):
 
         verbose_name = 'EDUCACION'
 
+class Can107GrupoSkill(models.Model):
+    nombre = models.CharField(max_length=100, verbose_name="Nombre del Grupo de Skill")
+    estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        db_table = 'can_107_grupo_skill'
+        verbose_name = 'GRUPO SKILL'
+        verbose_name_plural = 'GRUPOS SKILL'
+
 class Can104Skill(models.Model):
     estado_id_004 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_004')
     nombre = models.CharField(max_length=50)
+    grupo = models.ForeignKey(Can107GrupoSkill, on_delete=models.CASCADE, db_column='grupo_id_107', blank=True, null=True, verbose_name="Grupo de Skill")
 
     def __str__(self):
         return self.nombre
