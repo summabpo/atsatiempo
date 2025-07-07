@@ -154,3 +154,102 @@ class CandidateHabilityForm(forms.Form):
 
         return cleaned_data
 
+class CandidateHabilityFormList(forms.Form):
+    
+    skill_relacionales = forms.ModelMultipleChoiceField(
+        queryset=Can104Skill.objects.filter(estado_id_004=1, grupo=1).order_by('id'),
+        label='Relacionales',
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+        }),
+        required=False # Si quieres que la selección sea opcional
+    )
+    
+    skill_personales = forms.ModelMultipleChoiceField(
+        queryset=Can104Skill.objects.filter(estado_id_004=1, grupo=2).order_by('id'),
+        label='Personales',
+        to_field_name='id',
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+        }),
+        required=False # Si quieres que la selección sea opcional
+    )
+
+    skill_cognitivas = forms.ModelMultipleChoiceField(
+        queryset=Can104Skill.objects.filter(estado_id_004=1, grupo=3).order_by('id'),
+        label='Cognitivas',
+        to_field_name='id',
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+        }),
+        required=False # Si quieres que la selección sea opcional
+    )
+    
+    skill_digitales = forms.ModelMultipleChoiceField(
+        queryset=Can104Skill.objects.filter(estado_id_004=1, grupo=4).order_by('id'),
+        label='Liderazgo / Dirección',
+        to_field_name='id',
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+        }),
+        required=False # Si quieres que la selección sea opcional
+    )
+
+    skill_liderazgo = forms.ModelMultipleChoiceField(
+        queryset=Can104Skill.objects.filter(estado_id_004=1, grupo=5).order_by('id'),
+        label='Digitales / Ágiles',
+        to_field_name='id',
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+        }),
+        required=False # Si quieres que la selección sea opcional
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance', None)
+        super().__init__(*args, **kwargs)
+        
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_skill'
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Relacionales</h4>"),
+                    Div('skill_relacionales', css_class='col-md-2'),
+                    Div('skill_personales', css_class='col-md-2'),
+                    Div('skill_cognitivas', css_class='col-md-3'),
+                    Div('skill_liderazgo', css_class='col-md-3'),
+                    Div('skill_digitales', css_class='col-md-2'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),  
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        skill_relacionales = cleaned_data.get('skill_relacionales')
+        skill_personales = cleaned_data.get('skill_personales')
+        skill_cognitivas = cleaned_data.get('skill_cognitivas')
+        skill_digitales = cleaned_data.get('skill_digitales')
+        skill_liderazgo = cleaned_data.get('skill_liderazgo')
+
+        if not skill_relacionales and not skill_personales and not skill_cognitivas and not skill_digitales and not skill_liderazgo:
+            raise forms.ValidationError("Debe seleccionar al menos una habilidad.")
+
+        # Validar que en cada grupo no haya más de dos seleccionados
+        max_selected = 2
+        if skill_relacionales and len(skill_relacionales) > max_selected:
+            self.add_error('skill_relacionales', f"No puede seleccionar más de {max_selected} habilidades en este grupo.")
+        if skill_personales and len(skill_personales) > max_selected:
+            self.add_error('skill_personales', f"No puede seleccionar más de {max_selected} habilidades en este grupo.")
+        if skill_cognitivas and len(skill_cognitivas) > max_selected:
+            self.add_error('skill_cognitivas', f"No puede seleccionar más de {max_selected} habilidades en este grupo.")
+        if skill_digitales and len(skill_digitales) > max_selected:
+            self.add_error('skill_digitales', f"No puede seleccionar más de {max_selected} habilidades en este grupo.")
+        if skill_liderazgo and len(skill_liderazgo) > max_selected:
+            self.add_error('skill_liderazgo', f"No puede seleccionar más de {max_selected} habilidades en este grupo.")
+
+        return cleaned_data
