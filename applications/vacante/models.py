@@ -132,6 +132,7 @@ class Cli052Vacante(models.Model):
     cargo = models.ForeignKey(Cli068Cargo, on_delete=models.CASCADE, null=True, blank=True)
     perfil_vacante = models.ForeignKey(Cli073PerfilVacante, on_delete=models.CASCADE, null=True, blank=True)
     descripcion_vacante = models.TextField(null=True, blank=True)
+    
 
     def __str__(self):
         return self.titulo
