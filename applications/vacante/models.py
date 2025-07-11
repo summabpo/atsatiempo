@@ -86,10 +86,10 @@ class Cli073PerfilVacante(models.Model):
     tipo_salario = models.CharField(max_length=1, choices=TIPO_SALARIO_CHOICES_STATIC)
     frecuencia_pago = models.CharField(max_length=1, choices=FRECUENCIA_PAGO_CHOICES_STATIC)
     salario_adicional = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
-    idioma = models.CharField(max_length=100, choices=IDIOMA_CHOICES_STATIC)
+    idioma = models.CharField(max_length=100, choices=IDIOMA_CHOICES_STATIC, blank=True, null=True)
     nivel_idioma = models.CharField(max_length=2, choices=NIVEL_IDIOMA_CHOICES_STATIC, blank=True, null=True)
-    profesion_estudio = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE)
-    nivel_estudio = models.CharField(max_length=1, choices=NIVEL_ESTUDIO_CHOICES_STATIC)
+    profesion_estudio = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE, blank=True, null=True)
+    nivel_estudio = models.CharField(max_length=1, choices=NIVEL_ESTUDIO_CHOICES_STATIC, blank=True, null=True)
     estado_estudio = models.BooleanField(default=False, blank=True, null=True)
     lugar_trabajo = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
     barrio  = models.CharField(max_length=100, blank=True, null=True)
@@ -102,6 +102,8 @@ class Cli073PerfilVacante(models.Model):
     horario_final = models.CharField(max_length=1, choices=HORARIO_CHOICES_STATIC, blank=True, null=True)
     hora_inicio = models.TimeField(blank=True, null=True)
     hora_final = models.TimeField(blank=True, null=True)
+    #tiempo_experiencia_en = models.CharField(max_length=255, blank=True, null=True, help_text="Descripción breve o frase del perfil")
+    #idioma = models.JSONField(blank=True, null=True)
 
     def __str__(self):
         return f"Perfil Vacante {self.id} - {self.profesion_estudio}"
