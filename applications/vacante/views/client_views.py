@@ -224,6 +224,24 @@ def create_vacanty_v2(request):
     cliente_id = request.session.get('cliente_id')
     
     form = VacancyFormAllV2(cliente_id=cliente_id)
+
+    if request.method == 'POST':
+        form = VacancyFormAllV2(request.POST, cliente_id=cliente_id)
+
+        if form.is_valid():
+            #datos principales
+            cargo = form.cleaned_data['cargo']
+            termino_contrato = form.cleaned_data['termino_contrato']
+            modalidad = form.cleaned_data['modalidad']
+            cantidad_presentar = form.cleaned_data['cantidad_presentar']
+            numero_posiciones = form.cleaned_data['numero_posiciones']
+            fecha_presentacion = form.cleaned_data['fecha_presentacion']
+
+            print(f'Cargo: {cargo}')                          #perfil de la vacante
+            
+    else:
+        form = VacancyFormAllV2(cliente_id=cliente_id)
+
     context = {
         'form': form,
     }
