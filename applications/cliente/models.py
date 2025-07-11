@@ -264,3 +264,40 @@ class Cli071AsignacionPrueba(models.Model):
 
     def __str__(self):
         return f"{self.cliente_prueba} - {self.fecha_asignacion}"
+    
+class Cli076GrupoFitCultural(models.Model):
+    nombre = models.CharField(max_length=100, verbose_name="Nombre del Grupo de Fit Cultural")
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, db_column='estado_id_001')
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        db_table = 'cli_076_grupo_fit_cultural'
+        verbose_name = 'GRUPO FIT CULTURAL'
+        verbose_name_plural = 'GRUPOS FIT CULTURAL'
+
+class Cli077FitCultural(models.Model):
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, db_column='estado_id_004')
+    nombre = models.CharField(max_length=50)
+    grupo = models.ForeignKey(Cli076GrupoFitCultural, on_delete=models.CASCADE, db_column='grupo_id_076', blank=True, null=True, verbose_name="Grupo de Fit Cultural")
+
+    def __str__(self):
+        return self.nombre
+    
+    class Meta:
+        db_table = 'cli_077_fit_cultural'
+        verbose_name = 'FIT CULTURAL'
+        verbose_name_plural = 'FITS CULTURALES'
+
+class Cli078MotivadoresCandidato(models.Model):
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, db_column='estado_id_004')
+    nombre = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.nombre
+    
+    class Meta:
+        db_table = 'cli_078_motivadores_candidato'
+        verbose_name = 'MOTIVADOR CANDIDATO'
+        verbose_name_plural = 'MOTIVADORES CANDIDATO'

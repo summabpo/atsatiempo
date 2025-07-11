@@ -320,19 +320,43 @@ Crear Vacante
                         </div>
 
                         <div class="tab-pane fade" id="pane-data4" role="tabpanel" aria-labelledby="tab-data4" tabindex="0">
-                            <h4 class="fs-18 fw-semibold">Competencias Clave (Soft Skills)</h4>
-                            <p class="text-gray-light mb-4">Selecciona hasta 5 habilidades clave para el éxito de este rol</p>
+                            <h4 class="fs-18 fw-semibold">Fit cultural y de entorno</h4>
+                            <p class="text-gray-light mb-4">Evalua el tipo de cultura donde debe encajar el talento. Elije 1, el que más predómine.</p>
+                            <div class="row mb-4 p-3 border rounded bg-primary bg-opacity-10">
+                                <div class="d-flex align-items-center my-4">
+                                    <h6 class="mb-0 pe-3 text-primary fw-bold">Fit cultural</h6>
+                                    <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form.grupo_fit_1|as_crispy_field }}
+                                </div> 
+                                <div class="col-md-4">
+                                    {{ form.grupo_fit_2|as_crispy_field }}
+                                </div> 
+                                <div class="col-md-4">
+                                    {{ form.grupo_fit_3|as_crispy_field }}
+                                </div> 
+                                <div class="col-md-4">
+                                    {{ form.grupo_fit_4|as_crispy_field }}
+                                </div> 
+                                <div class="col-md-4">
+                                    {{ form.grupo_fit_5|as_crispy_field }}
+                                </div> 
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pane-data5" role="tabpanel" aria-labelledby="tab-data5" tabindex="0">
+                            <h4 class="fs-18 fw-semibold">Motivadores candidato ideal</h4>
+                            <p class="text-gray-light mb-4">¿Qué tipo de motivación?</p>
                             <div class="row mb-4 p-3 border rounded bg-primary bg-opacity-10">
                                 <div class="d-flex align-items-center my-4">
                                     <h6 class="mb-0 pe-3 text-primary fw-bold">Habilidades Blandas</h6>
                                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
                                 </div>
+                                <div class="col-md-12">
+                                    {{ form.grupo_fit_5|as_crispy_field }}
+                                </div> 
                             </div>
-                        </div>
-
-                        <div class="tab-pane fade" id="pane-data5" role="tabpanel" aria-labelledby="tab-data5" tabindex="0">
-                            <h4>Motivadores</h4>
-                            <!-- Contenido aquí -->
                         </div>
 
                         <div class="tab-pane fade" id="pane-data6" role="tabpanel" aria-labelledby="teb-data6" tabindex="0">
@@ -606,6 +630,7 @@ Crear Vacante
     initializeSelect2('#id_profesion_estudio');
     initializeSelect2('#id_frecuencia_pago');
     initializeSelect2('#id_nivel_idioma');
+    initializeSelect2('#id_motivo_vacante');
     
     initializeSelect2('#id_estudios_complementarios_certificado_1');
     initializeSelect2('#id_estudios_complementarios_certificado_2');

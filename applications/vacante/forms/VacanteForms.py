@@ -1,14 +1,17 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset, Div, HTML, Field
+from crispy_forms.bootstrap import PrependedText
+from decimal import Decimal
+
+#models
 from applications.candidato.models import Can104Skill
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio
 from applications.common.models import Cat004Ciudad
-from applications.cliente.models import Cli051Cliente, Cli068Cargo
+from applications.cliente.models import Cli051Cliente, Cli068Cargo, Cli076GrupoFitCultural, Cli077FitCultural, Cli078MotivadoresCandidato
 from applications.usuarios.models import UsuarioBase
 from applications.vacante.models import Cli052Vacante
-from crispy_forms.bootstrap import PrependedText
-from decimal import Decimal
+
 
 #choices
 from applications.services.choices import EDAD_SELECT_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_CHOICHES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIPO_CLIENTE_STATIC, EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC, HORARIO_CHOICES_STATIC, MOTIVO_VACANTE_CHOICES_STATIC
@@ -2478,6 +2481,56 @@ class VacancyFormAllV2(forms.Form):
             }),
             required=False # Si quieres que la selección sea opcional
         )
+    
+    grupo_fit_1 = forms.ModelMultipleChoiceField(
+            queryset=Cli077FitCultural.objects.filter(estado=1, grupo=1).order_by('id'),
+            label='Estilo trabajo predominante en el área:',
+            to_field_name='id',
+            widget=forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            }),
+            required=False # Si quieres que la selección sea opcional
+        )
+    
+    grupo_fit_2 = forms.ModelMultipleChoiceField(
+            queryset=Cli077FitCultural.objects.filter(estado=1, grupo=2).order_by('id'),
+            label='Tipo de liderazgo presente:',
+            to_field_name='id',
+            widget=forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            }),
+            required=False # Si quieres que la selección sea opcional
+        )
+    
+    grupo_fit_3 = forms.ModelMultipleChoiceField(
+            queryset=Cli077FitCultural.objects.filter(estado=1, grupo=3).order_by('id'),
+            label='Comunicación organizacional:',
+            to_field_name='id',
+            widget=forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            }),
+            required=False # Si quieres que la selección sea opcional
+        )
+
+    grupo_fit_4 = forms.ModelMultipleChoiceField(
+            queryset=Cli077FitCultural.objects.filter(estado=1, grupo=4).order_by('id'),
+            label='Ritmo de trabajo:',
+            to_field_name='id',
+            widget=forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            }),
+            required=False # Si quieres que la selección sea opcional
+        )
+    
+    grupo_fit_5 = forms.ModelMultipleChoiceField(
+            queryset=Cli077FitCultural.objects.filter(estado=1, grupo=5).order_by('id'),
+            label='Estilo toma de decisiones:',
+            to_field_name='id',
+            widget=forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            }),
+            required=False # Si quieres que la selección sea opcional
+        )
 
 
     
@@ -2658,6 +2711,8 @@ class VacancyFormAllV2(forms.Form):
                 }),
                 required=False
             )
+
+        
 
         self.helper.layout = Layout(
             # 1  DATOS GENERALES
