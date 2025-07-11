@@ -34,6 +34,12 @@ GENERO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     ('M', 'Masculino'),
     ('F', 'Femenino'),
 ]
+MOTIVO_VACANTE_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('PN', 'Posición nueva'),
+    ('RE', 'Reemplazo'),
+    ('LM', 'Licencia de maternidad'),
+    ('OT', 'Otro'),
+]
 
 MODALIDAD_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     ('R', 'Remoto'),

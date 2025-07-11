@@ -18,7 +18,7 @@ from applications.usuarios.decorators  import validar_permisos
 from django.db.models.functions import Concat
 
 #forms
-from applications.vacante.forms.VacanteForms import VacancyAssingForm, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll
+from applications.vacante.forms.VacanteForms import VacancyAssingForm, VacancyFormAllV2, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll
 
 #views
 from applications.services.service_vacanty import query_vacanty_all, query_vacanty_detail
@@ -216,6 +216,19 @@ def create_vacanty(request):
     }
 
     return render(request, 'admin/vacancy/client_user/vacancy_create.html', context)
+
+@login_required
+@validar_permisos('acceso_cliente')
+def create_vacanty_v2(request):
+    # Verificar si el cliente_id está en la sesión
+    cliente_id = request.session.get('cliente_id')
+    
+    form = VacancyFormAllV2(cliente_id=cliente_id)
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'admin/vacancy/client_user/vacancy_create_v2.html', context)
 
 #listar todas las vacantes del cliente
 @login_required
