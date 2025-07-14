@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Count
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli068Cargo
+from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli068Cargo, Cli077FitCultural, Cli078MotivadoresCandidato
 from applications.candidato.models import Can101Candidato
 from applications.usuarios.models import UsuarioBase
 
@@ -102,8 +102,12 @@ class Cli073PerfilVacante(models.Model):
     horario_final = models.CharField(max_length=1, choices=HORARIO_CHOICES_STATIC, blank=True, null=True)
     hora_inicio = models.TimeField(blank=True, null=True)
     hora_final = models.TimeField(blank=True, null=True)
-    #tiempo_experiencia_en = models.CharField(max_length=255, blank=True, null=True, help_text="Descripción breve o frase del perfil")
-    #idioma = models.JSONField(blank=True, null=True)
+    motivo_vacante = models.JSONField(blank=True, null=True, help_text="Motivo de la vacante en formato JSON")
+    horario = models.JSONField(blank=True, null=True, help_text="Horario de trabajo en formato JSON")
+
+    experiencia_laboral = models.JSONField(blank=True, null=True, help_text="Experiencia laboral en formato JSON")
+    idiomas = models.JSONField(blank=True, null=True, help_text="Idiomas en formato JSON")
+    estudio_complementario = models.JSONField(blank=True, null=True, help_text="Estudios complementarios en formato JSON")
 
     def __str__(self):
         return f"Perfil Vacante {self.id} - {self.profesion_estudio}"
@@ -120,6 +124,9 @@ class Cli052Vacante(models.Model):
     cantidad_presentar = models.IntegerField(blank=True, null=True)
     soft_skills_id_053 = models.ManyToManyField(Cli053SoftSkill)
     hard_skills_id_054 = models.ManyToManyField(Cli054HardSkill)
+    fit_cultural = models.ManyToManyField(Cli077FitCultural)
+    motivadores = models.ForeignKey(Cli078MotivadoresCandidato, on_delete=models.CASCADE, blank=True, null=True)
+    otro_motivador = models.CharField(max_length=100, blank=True, null=True)
     estudios_complementarios = models.CharField(max_length=100, blank=True, null=True)
     estudios_complementarios_certificado = models.BooleanField(default=False, blank=True, null=True)
     estado_vacante = models.IntegerField(choices=ESTADO_VACANTE_CHOICHES_STATIC, default=1)
@@ -132,6 +139,7 @@ class Cli052Vacante(models.Model):
     cargo = models.ForeignKey(Cli068Cargo, on_delete=models.CASCADE, null=True, blank=True)
     perfil_vacante = models.ForeignKey(Cli073PerfilVacante, on_delete=models.CASCADE, null=True, blank=True)
     descripcion_vacante = models.TextField(null=True, blank=True)
+    comentarios = models.TextField(null=True, blank=True)
     
 
     def __str__(self):

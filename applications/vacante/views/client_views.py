@@ -233,11 +233,95 @@ def create_vacanty_v2(request):
             cargo = form.cleaned_data['cargo']
             termino_contrato = form.cleaned_data['termino_contrato']
             modalidad = form.cleaned_data['modalidad']
-            cantidad_presentar = form.cleaned_data['cantidad_presentar']
             numero_posiciones = form.cleaned_data['numero_posiciones']
+            cantidad_presentar = form.cleaned_data['cantidad_presentar']
             fecha_presentacion = form.cleaned_data['fecha_presentacion']
+            lugar_trabajo = form.cleaned_data['lugar_trabajo']
+            barrio = form.cleaned_data['barrio']
+            direccion = form.cleaned_data['direccion']
+            salario = form.cleaned_data['salario']
+            tipo_salario = form.cleaned_data['tipo_salario']
+            frecuencia_pago = form.cleaned_data['frecuencia_pago']
+            salario_adicional = form.cleaned_data['salario_adicional']
+            edad_inicial = form.cleaned_data['edad_inicial']
+            edad_final = form.cleaned_data['edad_final']   
+            genero = form.cleaned_data['genero']
+            motivo_vacante = form.cleaned_data['motivo_vacante']
+            otro_motivo = form.cleaned_data['otro_motivo']
 
-            print(f'Cargo: {cargo}')                          #perfil de la vacante
+            # horario_inicio_1 = form.cleaned_data['horario_inicio_1']
+            # horario_final_1 = form.cleaned_data['horario_final_1']
+            # hora_inicio_1 = form.cleaned_data['hora_inicio_1']
+            # hora_final_1 = form.cleaned_data['hora_final_1']
+
+            # horario_inicio_2 = form.cleaned_data['horario_inicio_2']
+            # horario_final_2 = form.cleaned_data['horario_final_2']
+            # hora_inicio_2 = form.cleaned_data['hora_inicio_2']
+            # hora_final_2 = form.cleaned_data['hora_final_2']
+
+            # horario_inicio_3 = form.cleaned_data['horario_inicio_3']
+            # horario_final_3 = form.cleaned_data['horario_final_3']
+            # hora_inicio_3 = form.cleaned_data['hora_inicio_3']
+            # hora_final_3 = form.cleaned_data['hora_final_3']
+
+            horarios = []
+            for i in range(1, 4):
+                horario_inicio = form.cleaned_data.get(f'horario_inicio_{i}')
+                horario_final = form.cleaned_data.get(f'horario_final_{i}')
+                hora_inicio = form.cleaned_data.get(f'hora_inicio_{i}')
+                hora_final = form.cleaned_data.get(f'hora_final_{i}')
+                if all([horario_inicio, horario_final, hora_inicio, hora_final]):
+                    horarios.append({
+                        "horario_inicio": horario_inicio,
+                        "horario_final": horario_final,
+                        "hora_inicio": str(hora_inicio),
+                        "hora_final": str(hora_final),
+                    })
+            json_horarios = json.dumps(horarios, ensure_ascii=False)
+            
+            funcion_responsabilidad = []
+            for i in range(1,4):
+                funciones_responsabilidades = form.cleaned_data.get(f'funciones_responsabilidades_{i}')
+                if funciones_responsabilidades:
+                    funcion_responsabilidad.append({
+                        "funcion_responsabilidad": funciones_responsabilidades,
+                    })
+            json_funciones = json.dumps(funcion_responsabilidad, ensure_ascii=False)
+            
+            
+
+
+            
+            
+            # #creacion perfil de la vacante
+            # perfil_vacante, perfil_vacante_nuevo = Cli073PerfilVacante.objects.get_or_create(
+            #     edad_inicial = edad_inicial,
+            #     edad_final = edad_final,
+            #     termino_contrato=termino_contrato,
+            #     modalidad=modalidad,
+            #     estado=Cat001Estado.objects.get(id=1),
+            #     horario_inicio=form.cleaned_data['horario_inicio'],
+            #     horario_final=form.cleaned_data['horario_final'],
+            #     hora_inicio=form.cleaned_data['hora_inicio'],
+            #     hora_final=form.cleaned_data['hora_final'],
+            #     barrio=form.cleaned_data['barrio'],
+            #     direccion=form.cleaned_data['direccion'],
+            #     url_mapa=form.cleaned_data['url_mapa'],
+            #     edad_inicial=form.cleaned_data['edad_inicial'],
+            #     edad_final=form.cleaned_data['edad_final'],
+            #     genero=form.cleaned_data['genero'],
+            #     tiempo_experiencia=form.cleaned_data['tiempo_experiencia'],
+            #     lugar_trabajo=Cat004Ciudad.objects.get(id=form.cleaned_data['lugar_trabajo']),
+            #     salario=form.cleaned_data['salario'],
+            #     tipo_salario=form.cleaned_data['tipo_salario'],
+            #     frecuencia_pago=form.cleaned_data['frecuencia_pago'],
+            #     salario_adicional=form.cleaned_data['salario_adicional'],
+            #     idioma=form.cleaned_data['idioma'],
+            #     nivel_idioma=form.cleaned_data['nivel_idioma'],
+            #     profesion_estudio=Cli055ProfesionEstudio.objects.get(id=form.cleaned_data['profesion_estudio']),
+            #     nivel_estudio=form.cleaned_data['nivel_estudio'],
+            #     estado_estudio=False,  # Assuming default value
+            # )
             
     else:
         form = VacancyFormAllV2(cliente_id=cliente_id)
