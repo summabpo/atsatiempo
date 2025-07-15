@@ -239,7 +239,7 @@ def create_vacanty_v2(request):
             lugar_trabajo = form.cleaned_data['lugar_trabajo']
             barrio = form.cleaned_data['barrio']
             direccion = form.cleaned_data['direccion']
-            salario = form.cleaned_data['salario']
+            salario = form.cleaned_data['salario'].replace('.', '')
             tipo_salario = form.cleaned_data['tipo_salario']
             frecuencia_pago = form.cleaned_data['frecuencia_pago']
             salario_adicional = form.cleaned_data['salario_adicional']
@@ -287,41 +287,116 @@ def create_vacanty_v2(request):
                         "funcion_responsabilidad": funciones_responsabilidades,
                     })
             json_funciones = json.dumps(funcion_responsabilidad, ensure_ascii=False)
+
+            # requisitos tecnicos
+            experiencia = []
+            for i in range(1,4):
+                tiempo_experiencia = form.cleaned_data.get(f'tiempo_experiencia_{i}')
+                experiencia_especifica_en = form.cleaned_data.get(f'experiencia_especifica_en_{i}')
+                if all([tiempo_experiencia, experiencia_especifica_en]):
+                    experiencia.append({
+                        "tiempo_experiencia" : tiempo_experiencia,
+                        "experiencia_especifica_en" : experiencia_especifica_en,
+                    })
+            json_experiencia = json.dumps(experiencia, ensure_ascii=False)
+
+            idiomas = []
+            for i in range(1,4):
+                idioma = form.cleaned_data.get(f'idioma_{i}')
+                nivel_idioma = form.cleaned_data.get(f'nivel_idioma_{i}')
+                if all([idioma, nivel_idioma]):
+                    idiomas.append({
+                        "idioma" : idioma,
+                        "nivel_idioma" : nivel_idioma,
+                    })
+            json_idiomas = json.dumps(idiomas, ensure_ascii=False)
+
+            profesion_estudio = form.cleaned_data['profesion_estudio']
+            nivel_estudio = form.cleaned_data['nivel_estudio']
+
+            estudios_complentarios_all = []
+            for i in range(1,4):
+                estudios_complementarios = form.cleaned_data.get(f'estudios_complementarios_{i}')
+                estudios_complementarios_certificado = form.cleaned_data.get(f'estudios_complementarios_certificado_{i}')
+
+                if all([estudios_complementarios, estudios_complementarios_certificado]):
+                    estudios_complentarios_all.append({
+                        "estudio" : estudios_complementarios,
+                        "certificado_estudios_complementarios" : estudios_complementarios_certificado,
+                    })
+            json_estudios_complementarios = json.dumps(estudios_complentarios_all, ensure_ascii=False)
+
+            # Competencias
+            relacionales = form.cleaned_data.get('skill_relacionales', [])
+            personales = form.cleaned_data.get('skill_personales', [])
+            cognitivas = form.cleaned_data.get('skill_cognitivas', [])
+            digitales = form.cleaned_data.get('skill_digitales', [])
+            liderazgo = form.cleaned_data.get('skill_liderazgo', [])
             
+            all_selected_skills = (
+                list(relacionales) +
+                list(personales) +
+                list(cognitivas) +
+                list(digitales) +
+                list(liderazgo)
+            )
+
+            
+            #fitcultural 
+            grupo_fit_1 = form.cleaned_data.get('grupo_fit_1', [])
+            grupo_fit_2 = form.cleaned_data.get('grupo_fit_2', [])
+            grupo_fit_3 = form.cleaned_data.get('grupo_fit_3', [])
+            grupo_fit_4 = form.cleaned_data.get('grupo_fit_4', [])
+            grupo_fit_5 = form.cleaned_data.get('grupo_fit_5', [])
+
+            all_grupo_fit = (
+                list(grupo_fit_1) +
+                list(grupo_fit_2) +
+                list(grupo_fit_3) +
+                list(grupo_fit_4) +
+                list(grupo_fit_5) 
+            )
+
+            #motivadores
+            motivadores_candidato = form.cleaned_data.get('motivadores_candidato')
+            otro_motivador = form.cleaned_data.get('otro_motivador')
+
+            #Comentarios 
+            comentarios= form.cleaned_data.get('comentarios')
+            descripcion_vacante = form.cleaned_data.get('descripcion_vacante')
+
             
 
+            
 
-            
-            
-            # #creacion perfil de la vacante
-            # perfil_vacante, perfil_vacante_nuevo = Cli073PerfilVacante.objects.get_or_create(
-            #     edad_inicial = edad_inicial,
-            #     edad_final = edad_final,
-            #     termino_contrato=termino_contrato,
-            #     modalidad=modalidad,
-            #     estado=Cat001Estado.objects.get(id=1),
-            #     horario_inicio=form.cleaned_data['horario_inicio'],
-            #     horario_final=form.cleaned_data['horario_final'],
-            #     hora_inicio=form.cleaned_data['hora_inicio'],
-            #     hora_final=form.cleaned_data['hora_final'],
-            #     barrio=form.cleaned_data['barrio'],
-            #     direccion=form.cleaned_data['direccion'],
-            #     url_mapa=form.cleaned_data['url_mapa'],
-            #     edad_inicial=form.cleaned_data['edad_inicial'],
-            #     edad_final=form.cleaned_data['edad_final'],
-            #     genero=form.cleaned_data['genero'],
-            #     tiempo_experiencia=form.cleaned_data['tiempo_experiencia'],
-            #     lugar_trabajo=Cat004Ciudad.objects.get(id=form.cleaned_data['lugar_trabajo']),
-            #     salario=form.cleaned_data['salario'],
-            #     tipo_salario=form.cleaned_data['tipo_salario'],
-            #     frecuencia_pago=form.cleaned_data['frecuencia_pago'],
-            #     salario_adicional=form.cleaned_data['salario_adicional'],
-            #     idioma=form.cleaned_data['idioma'],
-            #     nivel_idioma=form.cleaned_data['nivel_idioma'],
-            #     profesion_estudio=Cli055ProfesionEstudio.objects.get(id=form.cleaned_data['profesion_estudio']),
-            #     nivel_estudio=form.cleaned_data['nivel_estudio'],
-            #     estado_estudio=False,  # Assuming default value
-            # )
+            #creacion perfil de la vacante
+            perfil_vacante = Cli073PerfilVacante.objects.create(
+                edad_inicial= edad_inicial,
+                edad_final= edad_final,
+                genero= genero,
+                tiempo_experiencia= None,
+                salario= salario,
+                tipo_salario= tipo_salario,
+                frecuencia_pago=frecuencia_pago,
+                salario_adicional= salario_adicional,
+                idioma= None,
+                nivel_idioma=None,
+                profesion_estudio= None, # ForeignKey a Cli055ProfesionEstudio
+                nivel_estudio= None,
+                estado_estudio= None,
+                barrio= barrio,
+                direccion= direccion,
+                url_mapa= None,
+                horario_inicio= None,
+                horario_final= None,
+                hora_inicio= None,
+                hora_final= None,
+                motivo_vacante= motivo_vacante,
+                horario= json_horarios,
+                experiencia_laboral= json_experiencia,
+                idiomas=json_idiomas,
+                estudio_complementario= json_estudios_complementarios,
+            )
             
     else:
         form = VacancyFormAllV2(cliente_id=cliente_id)
