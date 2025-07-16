@@ -108,6 +108,7 @@ class Cli073PerfilVacante(models.Model):
     experiencia_laboral = models.JSONField(blank=True, null=True, help_text="Experiencia laboral en formato JSON")
     idiomas = models.JSONField(blank=True, null=True, help_text="Idiomas en formato JSON")
     estudio_complementario = models.JSONField(blank=True, null=True, help_text="Estudios complementarios en formato JSON")
+    funciones_responsabilidades = models.JSONField(blank=True, null=True, help_text="Funciones en formato JSON")
 
     def __str__(self):
         return f"Perfil Vacante {self.id} - {self.profesion_estudio}"

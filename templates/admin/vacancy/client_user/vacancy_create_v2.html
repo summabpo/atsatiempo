@@ -273,11 +273,14 @@ Crear Vacante
                                         <h6 class="mb-0 pe-3 text-primary fw-bold">Estudios o profesión</h6>
                                         <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         {{ form.profesion_estudio|as_crispy_field }}
                                     </div> 
-                                    <div class="col-md-8">
+                                    <div class="col-md-4">
                                         {{ form.nivel_estudio|as_crispy_field }}
+                                    </div> 
+                                    <div class="col-md-2">
+                                        {{ form.estado_estudio|as_crispy_field }}
                                     </div> 
                                     <div class="d-flex align-items-center my-4">
                                         <h6 class="mb-0 pe-3 text-primary fw-bold">Estudios complementarios</h6>
@@ -477,27 +480,19 @@ Crear Vacante
 {% block js %} 
 <script>
     $(document).ready(function() {
-        $('#clientes_listado_politicas').DataTable({
-            "language": {
-                "lengthMenu": "Mostrar _MENU_ registros por página",
-                "zeroRecords": "No se encontraron registros",
-                "info": "Mostrando página _PAGE_ de _PAGES_",
-                "infoEmpty": "No hay registros disponibles",
-                "infoFiltered": "(filtrado de _MAX_ registros totales)",
-                "search": "Buscar:",
-                "paginate": {
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                }
-            },
-            "columnDefs": [
-                {
-                    "targets": -1,
-                    "orderable": false,
-                    "searchable": false
-                }
-            ]
-        });
+        function toggleOtroMotivo() {
+            const valorMotivo = $('#id_motivo_vacante').val();
+
+            if (valorMotivo === '' || valorMotivo === 'OT') {
+                $('#id_otro_motivo').show();
+            } else {
+                $('#id_otro_motivo').hide();
+                $('#id_otro_motivo').val('');
+            }
+        }
+
+        $('#id_motivo_vacante').on('change', toggleOtroMotivo);
+        toggleOtroMotivo();  // Ejecutar al cargar la página
     });
 
     // Initialize select2 for specific fields
