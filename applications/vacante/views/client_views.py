@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import F, Count, Q, Value, Case, When, CharField
-from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
+from django.db.models import F, Count, Q, Value, Case, When, CharField 
+from django.db import transaction, IntegrityError
+from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli078MotivadoresCandidato
 
 from applications.services.service_interview import query_interview_all
 from applications.services.service_recruited import query_recruited_vacancy_id
@@ -222,6 +223,8 @@ def create_vacanty(request):
 def create_vacanty_v2(request):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
+
+    asignacion_cliente = Cli064AsignacionCliente.objects.get(id_cliente_asignado=cliente_id)
     
     form = VacancyFormAllV2(cliente_id=cliente_id)
 
@@ -231,6 +234,7 @@ def create_vacanty_v2(request):
         if form.is_valid():
             #datos principales
             cargo = form.cleaned_data['cargo']
+            cargo_obj= Cli068Cargo.objects.get(id=cargo)
             termino_contrato = form.cleaned_data['termino_contrato']
             modalidad = form.cleaned_data['modalidad']
             numero_posiciones = form.cleaned_data['numero_posiciones']
@@ -248,21 +252,12 @@ def create_vacanty_v2(request):
             genero = form.cleaned_data['genero']
             motivo_vacante = form.cleaned_data['motivo_vacante']
             otro_motivo = form.cleaned_data['otro_motivo']
-
-            # horario_inicio_1 = form.cleaned_data['horario_inicio_1']
-            # horario_final_1 = form.cleaned_data['horario_final_1']
-            # hora_inicio_1 = form.cleaned_data['hora_inicio_1']
-            # hora_final_1 = form.cleaned_data['hora_final_1']
-
-            # horario_inicio_2 = form.cleaned_data['horario_inicio_2']
-            # horario_final_2 = form.cleaned_data['horario_final_2']
-            # hora_inicio_2 = form.cleaned_data['hora_inicio_2']
-            # hora_final_2 = form.cleaned_data['hora_final_2']
-
-            # horario_inicio_3 = form.cleaned_data['horario_inicio_3']
-            # horario_final_3 = form.cleaned_data['horario_final_3']
-            # hora_inicio_3 = form.cleaned_data['hora_inicio_3']
-            # hora_final_3 = form.cleaned_data['hora_final_3']
+            
+            json_motivo =  []
+            json_motivo.append({
+                "motivo_vacante":motivo_vacante,
+                "otro_motivo":otro_motivo
+            })
 
             horarios = []
             for i in range(1, 4):
@@ -313,6 +308,7 @@ def create_vacanty_v2(request):
 
             profesion_estudio = form.cleaned_data['profesion_estudio']
             nivel_estudio = form.cleaned_data['nivel_estudio']
+            estado_estudio = form.cleaned_data['estado_estudio']
 
             estudios_complentarios_all = []
             for i in range(1,4):
@@ -365,38 +361,77 @@ def create_vacanty_v2(request):
             comentarios= form.cleaned_data.get('comentarios')
             descripcion_vacante = form.cleaned_data.get('descripcion_vacante')
 
-            
-
-            
-
             #creacion perfil de la vacante
             perfil_vacante = Cli073PerfilVacante.objects.create(
                 edad_inicial= edad_inicial,
                 edad_final= edad_final,
                 genero= genero,
-                tiempo_experiencia= None,
-                salario= salario,
+                tiempo_experiencia= 6,
+                modalidad=modalidad,
+                salario=salario,
                 tipo_salario= tipo_salario,
                 frecuencia_pago=frecuencia_pago,
                 salario_adicional= salario_adicional,
                 idioma= None,
                 nivel_idioma=None,
-                profesion_estudio= None, # ForeignKey a Cli055ProfesionEstudio
-                nivel_estudio= None,
-                estado_estudio= None,
+                profesion_estudio= Cli055ProfesionEstudio.objects.get(id=profesion_estudio), # ForeignKey a Cli055ProfesionEstudio
+                nivel_estudio= nivel_estudio,
+                estado_estudio= estado_estudio,
+                lugar_trabajo = Cat004Ciudad.objects.get(id=lugar_trabajo),
                 barrio= barrio,
                 direccion= direccion,
                 url_mapa= None,
+                termino_contrato=termino_contrato,
                 horario_inicio= None,
                 horario_final= None,
                 hora_inicio= None,
                 hora_final= None,
-                motivo_vacante= motivo_vacante,
+                motivo_vacante= json_motivo,
                 horario= json_horarios,
                 experiencia_laboral= json_experiencia,
                 idiomas=json_idiomas,
                 estudio_complementario= json_estudios_complementarios,
+                funciones_responsabilidades=json_funciones
             )
+
+            vacante = Cli052Vacante.objects.create(
+                cargo = cargo_obj,
+                numero_posiciones = numero_posiciones,
+                cantidad_presentar=cantidad_presentar,
+                titulo = f'Vacante para el cargo:{cargo_obj.nombre_cargo}',
+                motivadores = Cli078MotivadoresCandidato.objects.get(id=motivadores_candidato),
+                otro_motivador = otro_motivador,
+                fecha_presentacion = fecha_presentacion,
+                asignacion_cliente_id_064 = asignacion_cliente,
+                perfil_vacante = perfil_vacante,
+                descripcion_vacante = descripcion_vacante, 
+                comentarios = comentarios
+            )
+
+            # 1. Elimina las relaciones existentes para esta vacante.
+            # Esto es crucial para manejar actualizaciones y evitar errores por la restricción 'unique_together'.
+            Cli052VacanteSoftSkillsId053.objects.filter(cli052vacante=vacante).delete()
+
+            # 2. Prepara una lista de los nuevos objetos a crear.
+            # Usar 'cli053softskill_id' es más eficiente porque evita consultar cada objeto SoftSkill.
+            objetos_a_crear = [
+                Cli052VacanteSoftSkillsId053(
+                    cli052vacante=vacante,
+                    cli053softskill_id=skill_obj.id 
+                )
+                for skill_obj in all_selected_skills 
+            ]
+
+            # 3. Inserta todos los nuevos registros en una sola consulta (si la lista no está vacía).
+            if objetos_a_crear:
+                Cli052VacanteSoftSkillsId053.objects.bulk_create(objetos_a_crear)
+            
+            vacante.fit_cultural.set(all_grupo_fit)
+            
+            messages.success(request, 'Vacante creada correctamente')
+            return redirect('vacantes:vacantes_listado_cliente')
+        else:
+            messages.error(request, 'Por favor revise el formulario, errores encontrados.')
             
     else:
         form = VacancyFormAllV2(cliente_id=cliente_id)

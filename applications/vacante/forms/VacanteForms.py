@@ -2698,6 +2698,19 @@ class VacancyFormAllV2(forms.Form):
             }
             ), required=False)
         
+        self.fields['estado_estudio'] = forms.ChoiceField(
+            label='¿GRADUADO?',
+            choices=[(True, 'Sí'), (False, 'No')],
+            widget=forms.Select(
+            attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+            'data-placeholder': 'Seleccione una opción',
+            }
+            ),
+            required=False
+        )
+        
         for i in range(1, 4): # Bucle para crear 3 registros
             # Nombres de campo para esta iteración
             estudio_field = f'estudios_complementarios_{i}'
@@ -2764,201 +2777,201 @@ class VacancyFormAllV2(forms.Form):
             required=False
         )
 
-    # def clean(self):
-    #     cleaned_data = super().clean()
+    def clean(self):
+        cleaned_data = super().clean()
         
-    #     #form data 1
-    #     cargo = cleaned_data.get('cargo')
-    #     if not cargo:
-    #         self.add_error('cargo', 'El campo Cargo es obligatorio.')
-    #     termino_contrato    = cleaned_data.get('termino_contrato')
-    #     if not termino_contrato:
-    #         self.add_error('termino_contrato', 'El campo Tipo de Contrato es obligatorio.')
+        #form data 1
+        cargo = cleaned_data.get('cargo')
+        if not cargo:
+            self.add_error('cargo', 'El campo Cargo es obligatorio.')
+        termino_contrato    = cleaned_data.get('termino_contrato')
+        if not termino_contrato:
+            self.add_error('termino_contrato', 'El campo Tipo de Contrato es obligatorio.')
 
-    #     modalidad = cleaned_data.get('modalidad')
-    #     if not modalidad:
-    #         self.add_error('modalidad', 'El campo Modalidad es obligatorio.')
+        modalidad = cleaned_data.get('modalidad')
+        if not modalidad:
+            self.add_error('modalidad', 'El campo Modalidad es obligatorio.')
 
-    #     cantidad_presentar = cleaned_data.get('cantidad_presentar')
-    #     if not cantidad_presentar:
-    #         self.add_error('cantidad_presentar', 'El campo Número de candidatos a presentar es obligatorio.')
+        cantidad_presentar = cleaned_data.get('cantidad_presentar')
+        if not cantidad_presentar:
+            self.add_error('cantidad_presentar', 'El campo Número de candidatos a presentar es obligatorio.')
 
-    #     numero_posiciones = cleaned_data.get('numero_posiciones')
-    #     if not numero_posiciones:
-    #         self.add_error('numero_posiciones', 'El campo Número Vacantes es obligatorio.') 
+        numero_posiciones = cleaned_data.get('numero_posiciones')
+        if not numero_posiciones:
+            self.add_error('numero_posiciones', 'El campo Número Vacantes es obligatorio.') 
 
-    #     fecha_presentacion = cleaned_data.get('fecha_presentacion')
-    #     if not fecha_presentacion:
-    #         self.add_error('fecha_presentacion', 'El campo Fecha de presentación es obligatorio.')   
-    #     lugar_trabajo = cleaned_data.get('lugar_trabajo')
-    #     if not lugar_trabajo:
-    #         self.add_error('lugar_trabajo', 'El campo Ciudad es obligatorio.')
-    #     barrio = cleaned_data.get('barrio')
-    #     if not barrio:
-    #         self.add_error('barrio', 'El campo Barrio es obligatorio.')
-    #     direccion = cleaned_data.get('direccion')
-    #     if not direccion:
-    #         self.add_error('direccion', 'El campo Dirección es obligatorio.')
-    #     salario = cleaned_data.get('salario')
-    #     if not salario:
-    #         self.add_error('salario', 'El campo Salario es obligatorio.')
-    #     tipo_salario = cleaned_data.get('tipo_salario')
-    #     if not tipo_salario:
-    #         self.add_error('tipo_salario', 'El campo Tipo de salario es obligatorio.')
-    #     frecuencia_pago = cleaned_data.get('frecuencia_pago')
-    #     if not frecuencia_pago:
-    #         self.add_error('frecuencia_pago', 'El campo Frecuencia de pago es obligatorio.')
-    #     salario_adicional = cleaned_data.get('salario_adicional')
-    #     if salario_adicional is not None and salario_adicional < 0:
-    #         self.add_error('salario_adicional', 'El campo Salario adicional no puede ser negativo.')
-    #     edad_inicial = cleaned_data.get('edad_inicial')
-    #     if not edad_inicial:
-    #         self.add_error('edad_inicial', 'El campo Edad mínima es obligatorio.')
-    #     edad_final = cleaned_data.get('edad_final')
-    #     if not edad_final:
-    #         self.add_error('edad_final', 'El campo Edad máxima es obligatorio.')
-    #     if edad_inicial and edad_final and int(edad_inicial) > int(edad_final):
-    #         self.add_error('edad_final', 'La edad final debe ser mayor o igual a la edad inicial.')
-    #     genero = cleaned_data.get('genero')
-    #     if not genero:  
-    #         self.add_error('genero', 'El campo Género es obligatorio.')
-    #     motivo_vacante = cleaned_data.get('motivo_vacante')
-    #     if not motivo_vacante:
-    #         self.add_error('motivo_vacante', 'El campo Motivo de la vacante es obligatorio.')
-    #     if motivo_vacante == 'Otro':
-    #         otro_motivo = cleaned_data.get('otro_motivo')
-    #         if not otro_motivo:
-    #             self.add_error('otro_motivo', 'El campo Otro motivo es obligatorio cuando se selecciona "Otro".')
+        fecha_presentacion = cleaned_data.get('fecha_presentacion')
+        if not fecha_presentacion:
+            self.add_error('fecha_presentacion', 'El campo Fecha de presentación es obligatorio.')   
+        lugar_trabajo = cleaned_data.get('lugar_trabajo')
+        if not lugar_trabajo:
+            self.add_error('lugar_trabajo', 'El campo Ciudad es obligatorio.')
+        barrio = cleaned_data.get('barrio')
+        if not barrio:
+            self.add_error('barrio', 'El campo Barrio es obligatorio.')
+        direccion = cleaned_data.get('direccion')
+        if not direccion:
+            self.add_error('direccion', 'El campo Dirección es obligatorio.')
+        salario = cleaned_data.get('salario')
+        if not salario:
+            self.add_error('salario', 'El campo Salario es obligatorio.')
+        tipo_salario = cleaned_data.get('tipo_salario')
+        if not tipo_salario:
+            self.add_error('tipo_salario', 'El campo Tipo de salario es obligatorio.')
+        frecuencia_pago = cleaned_data.get('frecuencia_pago')
+        if not frecuencia_pago:
+            self.add_error('frecuencia_pago', 'El campo Frecuencia de pago es obligatorio.')
+        salario_adicional = cleaned_data.get('salario_adicional')
+        if salario_adicional is not None and salario_adicional < 0:
+            self.add_error('salario_adicional', 'El campo Salario adicional no puede ser negativo.')
+        edad_inicial = cleaned_data.get('edad_inicial')
+        if not edad_inicial:
+            self.add_error('edad_inicial', 'El campo Edad mínima es obligatorio.')
+        edad_final = cleaned_data.get('edad_final')
+        if not edad_final:
+            self.add_error('edad_final', 'El campo Edad máxima es obligatorio.')
+        if edad_inicial and edad_final and int(edad_inicial) > int(edad_final):
+            self.add_error('edad_final', 'La edad final debe ser mayor o igual a la edad inicial.')
+        genero = cleaned_data.get('genero')
+        if not genero:  
+            self.add_error('genero', 'El campo Género es obligatorio.')
+        motivo_vacante = cleaned_data.get('motivo_vacante')
+        if not motivo_vacante:
+            self.add_error('motivo_vacante', 'El campo Motivo de la vacante es obligatorio.')
+        if motivo_vacante == 'Otro':
+            otro_motivo = cleaned_data.get('otro_motivo')
+            if not otro_motivo:
+                self.add_error('otro_motivo', 'El campo Otro motivo es obligatorio cuando se selecciona "Otro".')
         
-    #     for i in range(1, 4):
-    #         dia_inicio = cleaned_data.get(f'horario_inicio_{i}')
-    #         dia_final = cleaned_data.get(f'horario_final_{i}')
-    #         hora_inicio = cleaned_data.get(f'hora_inicio_{i}')
-    #         hora_final = cleaned_data.get(f'hora_final_{i}')
+        for i in range(1, 4):
+            dia_inicio = cleaned_data.get(f'horario_inicio_{i}')
+            dia_final = cleaned_data.get(f'horario_final_{i}')
+            hora_inicio = cleaned_data.get(f'hora_inicio_{i}')
+            hora_final = cleaned_data.get(f'hora_final_{i}')
 
-    #         algun_dato = any([dia_inicio, dia_final, hora_inicio, hora_final])
-    #         todos_diligenciados = all([dia_inicio, dia_final, hora_inicio, hora_final])
+            algun_dato = any([dia_inicio, dia_final, hora_inicio, hora_final])
+            todos_diligenciados = all([dia_inicio, dia_final, hora_inicio, hora_final])
 
-    #         if algun_dato and not todos_diligenciados:
-    #             # Si se llenó alguno, pero no todos, marcar los que falten
-    #             if not dia_inicio:
-    #                 self.add_error(f'horario_inicio_{i}', f'Debe completar este campo en el bloque de horario {i}')
-    #             if not dia_final:
-    #                 self.add_error(f'horario_final_{i}', f'Debe completar este campo en el bloque de horario {i}')
-    #             if not hora_inicio:
-    #                 self.add_error(f'hora_inicio_{i}', f'Debe completar este campo en el bloque de horario {i}')
-    #             if not hora_final:
-    #                 self.add_error(f'hora_final_{i}', f'Debe completar este campo en el bloque de horario {i}')
+            if algun_dato and not todos_diligenciados:
+                # Si se llenó alguno, pero no todos, marcar los que falten
+                if not dia_inicio:
+                    self.add_error(f'horario_inicio_{i}', f'Debe completar este campo en el bloque de horario {i}')
+                if not dia_final:
+                    self.add_error(f'horario_final_{i}', f'Debe completar este campo en el bloque de horario {i}')
+                if not hora_inicio:
+                    self.add_error(f'hora_inicio_{i}', f'Debe completar este campo en el bloque de horario {i}')
+                if not hora_final:
+                    self.add_error(f'hora_final_{i}', f'Debe completar este campo en el bloque de horario {i}')
             
-    #         elif todos_diligenciados:
-    #             # Si todos están diligenciados, validar que la hora final sea mayor
-    #             if dia_inicio == dia_final and hora_inicio >= hora_final:
-    #                 self.add_error(f'hora_final_{i}', f'La hora final debe ser mayor que la inicial en el bloque {i}')
+            elif todos_diligenciados:
+                # Si todos están diligenciados, validar que la hora final sea mayor
+                if dia_inicio == dia_final and hora_inicio >= hora_final:
+                    self.add_error(f'hora_final_{i}', f'La hora final debe ser mayor que la inicial en el bloque {i}')
         
-    #     funciones_responsabilidades_1 = cleaned_data.get('funciones_responsabilidades_1')
-    #     if not funciones_responsabilidades_1:
-    #         self.add_error('funciones_responsabilidades_1', 'El campo Función y responsabilidad 1 es obligatorio.')
+        funciones_responsabilidades_1 = cleaned_data.get('funciones_responsabilidades_1')
+        if not funciones_responsabilidades_1:
+            self.add_error('funciones_responsabilidades_1', 'El campo Función y responsabilidad 1 es obligatorio.')
         
-    #     #data 2
-    #     for i in range(1, 4):
-    #         tiempo_experiencia = cleaned_data.get(f'tiempo_experiencia_{i}')
-    #         experiencia_especifica = cleaned_data.get(f'experiencia_especifica_en_{i}')
+        #data 2
+        for i in range(1, 4):
+            tiempo_experiencia = cleaned_data.get(f'tiempo_experiencia_{i}')
+            experiencia_especifica = cleaned_data.get(f'experiencia_especifica_en_{i}')
 
-    #         if i == 1:
-    #             # Primer bloque: ambos campos son obligatorios
-    #             if not tiempo_experiencia:
-    #                 self.add_error(f'tiempo_experiencia_{i}', 'Este campo es obligatorio.')
-    #             if not experiencia_especifica:
-    #                 self.add_error(f'experiencia_especifica_en_{i}', 'Este campo es obligatorio.')
-    #         else:
-    #             # Bloques 2 y 3: validación cruzada solo si uno está lleno
-    #             if tiempo_experiencia and not experiencia_especifica:
-    #                 self.add_error(f'experiencia_especifica_en_{i}', f'Debe ingresar la experiencia específica para el tiempo #{i}.')
-    #             elif experiencia_especifica and not tiempo_experiencia:
-    #                 self.add_error(f'tiempo_experiencia_{i}', f'Debe ingresar el tiempo de experiencia para el área #{i}.')
+            if i == 1:
+                # Primer bloque: ambos campos son obligatorios
+                if not tiempo_experiencia:
+                    self.add_error(f'tiempo_experiencia_{i}', 'Este campo es obligatorio.')
+                if not experiencia_especifica:
+                    self.add_error(f'experiencia_especifica_en_{i}', 'Este campo es obligatorio.')
+            else:
+                # Bloques 2 y 3: validación cruzada solo si uno está lleno
+                if tiempo_experiencia and not experiencia_especifica:
+                    self.add_error(f'experiencia_especifica_en_{i}', f'Debe ingresar la experiencia específica para el tiempo #{i}.')
+                elif experiencia_especifica and not tiempo_experiencia:
+                    self.add_error(f'tiempo_experiencia_{i}', f'Debe ingresar el tiempo de experiencia para el área #{i}.')
 
-    #     for i in range(1, 3):  # Para 2 idiomas
-    #         idioma = cleaned_data.get(f'idioma_{i}')
-    #         nivel_idioma = cleaned_data.get(f'nivel_idioma_{i}')
+        for i in range(1, 3):  # Para 2 idiomas
+            idioma = cleaned_data.get(f'idioma_{i}')
+            nivel_idioma = cleaned_data.get(f'nivel_idioma_{i}')
 
-    #         if i == 1:
-    #             # Primer idioma: ambos campos son obligatorios
-    #             if not idioma:
-    #                 self.add_error(f'idioma_{i}', 'El campo Idioma 1 es obligatorio.')
-    #             if not nivel_idioma:
-    #                 self.add_error(f'nivel_idioma_{i}', 'El campo Nivel 1 es obligatorio.')
-    #         else:
-    #             # Idiomas adicionales: validación cruzada solo si uno está lleno
-    #             if idioma and not nivel_idioma:
-    #                 self.add_error(f'nivel_idioma_{i}', f'Debe seleccionar el nivel para el idioma #{i}.')
-    #             elif nivel_idioma and not idioma:
-    #                 self.add_error(f'idioma_{i}', f'Debe seleccionar el idioma #{i}.')
+            if i == 1:
+                # Primer idioma: ambos campos son obligatorios
+                if not idioma:
+                    self.add_error(f'idioma_{i}', 'El campo Idioma 1 es obligatorio.')
+                if not nivel_idioma:
+                    self.add_error(f'nivel_idioma_{i}', 'El campo Nivel 1 es obligatorio.')
+            else:
+                # Idiomas adicionales: validación cruzada solo si uno está lleno
+                if idioma and not nivel_idioma:
+                    self.add_error(f'nivel_idioma_{i}', f'Debe seleccionar el nivel para el idioma #{i}.')
+                elif nivel_idioma and not idioma:
+                    self.add_error(f'idioma_{i}', f'Debe seleccionar el idioma #{i}.')
         
-    #     profesion_estudio = cleaned_data.get('profesion_estudio')
-    #     if not profesion_estudio:
-    #         self.add_error('profesion_estudio', 'El campo Estudio o Profesión es obligatorio.') 
+        profesion_estudio = cleaned_data.get('profesion_estudio')
+        if not profesion_estudio:
+            self.add_error('profesion_estudio', 'El campo Estudio o Profesión es obligatorio.') 
         
-    #     nivel_estudio = cleaned_data.get('nivel_estudio')
-    #     if not nivel_estudio:
-    #         self.add_error('nivel_estudio', 'El campo NIVEL DE ESTUDIO es obligatorio.')
+        nivel_estudio = cleaned_data.get('nivel_estudio')
+        if not nivel_estudio:
+            self.add_error('nivel_estudio', 'El campo NIVEL DE ESTUDIO es obligatorio.')
         
-    #     for i in range(1, 4):
-    #         estudio_complementario = cleaned_data.get(f'estudios_complementarios_{i}')
-    #         certificado = cleaned_data.get(f'estudios_complementarios_certificado_{i}')
+        for i in range(1, 4):
+            estudio_complementario = cleaned_data.get(f'estudios_complementarios_{i}')
+            certificado = cleaned_data.get(f'estudios_complementarios_certificado_{i}')
 
-    #         if estudio_complementario and not certificado:
-    #             self.add_error(f'estudios_complementarios_certificado_{i}', f'El campo Certificado es obligatorio si se ingresa un estudio complementario en el campo {i}.')
-    #         elif not estudio_complementario and certificado:
-    #             self.add_error(f'estudios_complementarios_{i}', f'El campo Estudio Complementario {i} es obligatorio si se selecciona un certificado.')
+            if estudio_complementario and not certificado:
+                self.add_error(f'estudios_complementarios_certificado_{i}', f'El campo Certificado es obligatorio si se ingresa un estudio complementario en el campo {i}.')
+            elif not estudio_complementario and certificado:
+                self.add_error(f'estudios_complementarios_{i}', f'El campo Estudio Complementario {i} es obligatorio si se selecciona un certificado.')
 
-    #     total_skills = 0
-    #     grupos = [
-    #         'skill_relacionales',
-    #         'skill_personales',
-    #         'skill_cognitivas',
-    #         'skill_digitales',
-    #         'skill_liderazgo'
-    #     ]
+        total_skills = 0
+        grupos = [
+            'skill_relacionales',
+            'skill_personales',
+            'skill_cognitivas',
+            'skill_digitales',
+            'skill_liderazgo'
+        ]
 
-    #     for grupo in grupos:
-    #         skills = cleaned_data.get(grupo)
-    #         if skills:
-    #             total_skills += len(skills)
+        for grupo in grupos:
+            skills = cleaned_data.get(grupo)
+            if skills:
+                total_skills += len(skills)
 
-    #     if total_skills < 1:
-    #         raise forms.ValidationError("Debe seleccionar al menos una habilidad.")
-    #     if total_skills > 5:
-    #         raise forms.ValidationError("Solo puede seleccionar un máximo de 5 habilidades en total.")
+        if total_skills < 1:
+            raise forms.ValidationError("Debe seleccionar al menos una habilidad.")
+        if total_skills > 5:
+            raise forms.ValidationError("Solo puede seleccionar un máximo de 5 habilidades en total.")
         
-    #     seleccionados = []
+        seleccionados = []
 
-    #     for i in range(1, 6):
-    #         valor = cleaned_data.get(f'grupo_fit_{i}')
-    #         if valor:
-    #             seleccionados.append(f'grupo_fit_{i}')
+        for i in range(1, 6):
+            valor = cleaned_data.get(f'grupo_fit_{i}')
+            if valor:
+                seleccionados.append(f'grupo_fit_{i}')
 
-    #     if len(seleccionados) == 0:
-    #         for i in range(1, 6):
-    #             self.add_error(f'grupo_fit_{i}', 'Debe seleccionar al menos un Grupo Fit.')
-    #     elif len(seleccionados) > 1:
-    #         for campo in seleccionados:
-    #             self.add_error(campo, 'Solo puede seleccionar un único Grupo Fit.')
+        if len(seleccionados) == 0:
+            for i in range(1, 6):
+                self.add_error(f'grupo_fit_{i}', 'Debe seleccionar al menos un Grupo Fit.')
+        elif len(seleccionados) > 1:
+            for campo in seleccionados:
+                self.add_error(campo, 'Solo puede seleccionar un único Grupo Fit.')
 
-    #     motivadores_candidato = cleaned_data.get('motivadores_candidato')
-    #     if not motivadores_candidato:
-    #         self.add_error('motivadores_candidato', 'El campo Motivadores del candidato es obligatorio.')
-    #     descripcion_vacante = cleaned_data.get('descripcion_vacante')
-    #     if not descripcion_vacante:
-    #         self.add_error('descripcion_vacante', 'El campo Descripción vacante es obligatorio.')
+        motivadores_candidato = cleaned_data.get('motivadores_candidato')
+        if not motivadores_candidato:
+            self.add_error('motivadores_candidato', 'El campo Motivadores del candidato es obligatorio.')
+        descripcion_vacante = cleaned_data.get('descripcion_vacante')
+        if not descripcion_vacante:
+            self.add_error('descripcion_vacante', 'El campo Descripción vacante es obligatorio.')
         
-    #     comentarios = cleaned_data.get('comentarios')
-    #     if not comentarios:
-    #         self.add_error('comentarios', 'El campo Comentarios finales es obligatorio.')
-    #         if len(comentarios) > 500:
-    #             self.add_error('comentarios', 'El campo Comentarios finales no puede exceder los 500 caracteres.')
+        comentarios = cleaned_data.get('comentarios')
+        if not comentarios:
+            self.add_error('comentarios', 'El campo Comentarios finales es obligatorio.')
+            if len(comentarios) > 50050:
+                self.add_error('comentarios', 'El campo Comentarios finales no puede exceder los 500 caracteres.')
         
-    #     descripcion_vacante = cleaned_data.get('descripcion_vacante')   
-    #     if len(descripcion_vacante) > 500:
-    #         self.add_error('descripcion_vacante', 'El campo Descripción vacante no puede exceder los 500 caracteres.')
+        descripcion_vacante = cleaned_data.get('descripcion_vacante')   
+        if len(descripcion_vacante) > 500:
+            self.add_error('descripcion_vacante', 'El campo Descripción vacante no puede exceder los 500 caracteres.')
         
-    #     return cleaned_data
+        return cleaned_data
