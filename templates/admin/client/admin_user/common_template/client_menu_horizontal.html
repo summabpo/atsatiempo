@@ -1,0 +1,65 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'clientes:cliente_detalle' data.cliente.id %}">
+            {% if data.cliente.logo %}
+                <img src="{{ data.cliente.logo }}" class="rounded-circle border border-2" style="width: 60px; height: 60px;" alt="cliente_default" />
+            {% else %}
+                <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2" style="width: 60px; height: 60px;" alt="cliente_default" />
+            {% endif %}
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'cliente_detalle' %}active{% endif %}" aria-current="page" href="{% url 'clientes:cliente_detalle' data.cliente.id %}">Resumen</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="
+                        nav-link 
+                        {% if request.resolver_match.url_name == 'cliente_info' %}active{% endif %} 
+                        {% if request.resolver_match.url_name == 'cliente_politicas' %}active{% endif %}
+                        {% if request.resolver_match.url_name == 'cliente_pruebas' %}active{% endif %} 
+                        {% if request.resolver_match.url_name == 'cliente_requisitos'  %}active{% endif %}
+                    
+                        dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Información Cliente
+                    </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'cliente_info' %}active{% endif %}" href="{% url 'clientes:cliente_info' data.cliente.id %}">Información principal</a></li>
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'cliente_politicas' %}active{% endif %}" href="{% url 'clientes:cliente_politicas' data.cliente.id %}">Politicas internas</a></li>
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'cliente_pruebas' %}active{% endif %}" href="{% url 'clientes:cliente_pruebas' data.cliente.id %}">Pruebas</a></li>
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'cliente_requisitos'  %}active{% endif %}" href="{% url 'clientes:cliente_requisitos' data.cliente.id %}">Requisitos</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Configuraciones</a></li>
+                </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'cliente_cargos'  %}active{% endif %}" href="{% url 'clientes:cliente_cargos' data.cliente.id %}">Cargos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Grupo de trabajo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Clientes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'vacantes_propias'  %}active{% endif %}" href="{% url 'vacantes:vacantes_propias' data.cliente.id %}">Vacantes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Entrevistas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                </li>
+            </ul>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>

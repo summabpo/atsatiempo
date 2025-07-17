@@ -25,7 +25,7 @@ class RdataTB {
         this.DataTable = [];
         this.DataSorted = [];
         this.DataToRender = [];
-        this.PageSize = 5;
+        this.PageSize = 10;
         this.Assc = false;
         this.DataSearch = [];
         this.i = 0;
