@@ -16,7 +16,7 @@ from applications.usuarios.decorators  import validar_permisos
 from django.db.models.functions import Concat
 
 #forms
-from applications.vacante.forms.VacanteForms import VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll
+from applications.vacante.forms.VacanteForms import VacancyFormAllV2, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll
 
 #views
 from applications.services.service_vacanty import query_vacanty_all
@@ -68,10 +68,10 @@ def create_vacanty_from_client(request, pk):
         asignacion_cliente_id_064__tipo_asignacion='1'  # Aquí va el campo correcto
     )
 
-    form = VacancyFormAll(cliente_id=pk)
+    form = VacancyFormAllV2(cliente_id=pk)
 
     if request.method == 'POST':
-        form = VacancyFormAll(request.POST, cliente_id=pk)
+        form = VacancyFormAllV2(request.POST, cliente_id=pk)
 
         if form.is_valid():
 
@@ -231,7 +231,7 @@ def create_vacanty_from_client(request, pk):
         else:
             print(form.errors)
     else:
-        form = VacancyFormAll(cliente_id=pk)
+        form = VacancyFormAllV2(cliente_id=pk)
 
     context = {
         'data': data,
@@ -397,8 +397,6 @@ def list_vacanty_from_client(request, pk):
         asignacion_cliente_id_064__id_cliente_asignado=pk,
         asignacion_cliente_id_064__tipo_asignacion='1'
     )
-
-    print(vacantes)
 
     context = {
         'data': data,

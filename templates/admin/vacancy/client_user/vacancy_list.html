@@ -31,13 +31,13 @@ Listado de vacantes
                 <div class="card-body p-4">
                     <div class="default-table-area all-projects">
                         <div class="table-responsive">
-                            <table class="table align-middle text-center" id="myTable">
+                            <table class="table align-middle text-center" id="tabla-vacantes">
                                 <thead>
                                     <tr>
                                         <th scope="col" class="text-center">ID</th>
-                                        <th scope="col" class="text-center">VACANTE</th>
-                                        <th scope="col" class="text-center">CARGO</th>
-                                        <th scope="col" class="text-center"># POSICIONES</th>
+                                        <th scope="col" class="text-center">Vacante</th>
+                                        <th scope="col" class="text-center">Cargo</th>
+                                        <th scope="col" class="text-center">Pocisiones</th>
                                         <th scope="col" class="text-center">F. CREACIÓN</th>
                                         <th scope="col" class="text-center">F. PRESENTACIÓN</th>
                                         <th scope="col" class="text-center">F. CIERRE</th>
@@ -101,6 +101,24 @@ Listado de vacantes
 
 {% block js %} 
 <script>
-    
+    let miTabla; // Declara la variable aquí, en el ámbito global
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Aquí es donde "modificas" el comportamiento de la tabla
+        const opcionesDeTabla = {
+            ShowSearch: true,         // Mostrar la barra de búsqueda
+            ShowSelect: true,  
+            PageSize: 2,           // Mostrar el selector de cuántas filas ver
+            SelectionNumber: [10, 20, 50, 100], // Números para el selector de filas
+                     // Número de filas por defecto
+            // HideColumn: ['ID'],       // Ocultar la columna 'ID'
+            ShowHighlight: true,      // Resaltar el texto buscado
+            ShowTfoot: false,          // Mostrar el footer de la tabla
+        };
+
+        // Crear la instancia de la tabla
+        miTabla = new RdataTB('tabla-vacantes', opcionesDeTabla);
+        miTabla.sort('ID'); // 👈 Asegúrate de que la columna se llame 
+    });
 </script>  
 {% endblock js %}
