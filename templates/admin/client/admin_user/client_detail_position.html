@@ -43,7 +43,7 @@ Cliente
 	</div>
     
 	<div class="row">
-		<div class="col-md-12">
+		<div class="col-md-6">
 			<div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
                     <form method="post" id="form_cliente_cargos">
@@ -53,32 +53,39 @@ Cliente
                     </form>
 				</div>
 			</div>
+		</div>
+        <div class="col-md-6">
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-body p-4">
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-md-12">
                             <div class="default-table-area all-products">
                                 <div class="table-responsive">
-                                    <table class="table align-middle" id="myTable">
+                                    <table class="table align-center" id="tabla-cargos">
                                         <thead>
                                             <tr>
-                                                <th scope="col">ID</th>
-                                                <th scope="col">FECHA</th>
-                                                <th scope="col">CARGO</th>
-                                                <th scope="col">CONFIGURAR</th>
+                                                <th scope="col">Id</th>
+                                                <th scope="col">Cargo</th>
+                                                <th scope="col">Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for e in position_client %}
                                             <tr>
-                                                <td class="text-body">{{ e.id }}</td>
-                                                <td class="text-body">{{ e.fecha_creado|date:"Y-m-d" }}</td>
-                                                <td class="text-body">{{ e.nombre_cargo }}</td>
+                                                <td class="text-body"  style="text-align: center; vertical-align: middle;">{{ e.id }}</td>
+                                                <td class="text-body"  style="text-align: center; vertical-align: middle;">{{ e.nombre_cargo }}</td>
                                                 <td>
-                                                    <div class="d-flex align-items-center gap-1">
-                                                        <a href = "{% url 'clientes:cliente_cargos_configuracion' e.cliente.id e.id %}" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">
-                                                            <i class="material-symbols-outlined fs-16 text-body">visibility</i>
-                                                        </a>
+                                                    <div class="d-flex justify-content-center align-items-center gap-1">
+                                                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                            <a href="{% url 'clientes:cliente_cargos_configuracion' e.cliente.id e.id %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 ">
+                                                                <i class="material-symbols-outlined fs-16 text-danger">visibility</i>
+                                                            </a>
+                                                        </div>
+                                                        {% comment %} <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Asignar Candidatos">
+                                                            <a href="{% url 'vacantes:vacantes_asignar_analista_cliente' e.id  %}" class="btn bg-info bg-opacity-10 fw-medium text-info py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16 text-info">assignment_ind</i>
+                                                            </a>
+                                                        </div> {% endcomment %}
                                                     </div>
                                                 </td> 
                                             </tr>
@@ -91,7 +98,7 @@ Cliente
                     </div>
                 </div>
             </div>
-		</div>
+        </div>
 	</div>
 
 </div>
@@ -99,31 +106,20 @@ Cliente
 
 {% block js %} 
 <script>
-    $(document).ready(function() {
-        $('#clientes_listado').DataTable({
-            "language": {
-                "lengthMenu": "Mostrar _MENU_ registros por página",
-                "zeroRecords": "No se encontraron registros",
-                "info": "Mostrando página _PAGE_ de _PAGES_",
-                "infoEmpty": "No hay registros disponibles",
-                "infoFiltered": "(filtrado de _MAX_ registros totales)",
-                "search": "Buscar:",
-                "paginate": {
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                }
-            },
-            "columnDefs": [
-                {
-                    "targets": -1,
-                    "orderable": false,
-                    "searchable": false
-                }
-            ]
-        });
-    });
+    let miTabla;
+    document.addEventListener('DOMContentLoaded', function () {
+        const opcionesDeTabla = {
+            ShowSearch: true,
+            ShowSelect: true,
+            PageSize: 20,  // 👈 Registros por defecto
+            SelectionNumber: [10, 20, 50, 100],
+            ShowHighlight: true,
+            ShowTfoot: false,
+        };
 
-    // Initialize select2 for specific fields
-    initializeSelect2('#id_pruebas');
+        miTabla = new RdataTB('tabla-cargos', opcionesDeTabla); // asocia correctamente
+        // Ordenar por defecto por 'ID' en forma descendente
+        miTabla.sort('Id'); // 👈 Asegúrate de que la columna se llame 
+    });
 </script>  
 {% endblock js %}

@@ -7,6 +7,8 @@
 Vacantes Propias
 {% endblock %}
 
+
+
 {% block content %}
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
@@ -33,7 +35,8 @@ Vacantes Propias
 
     <div class="row">
 		<div class="col-md-12">
-			{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' %}
+			{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_client=True %}
+            
 		</div>
 	</div>
 
@@ -43,37 +46,82 @@ Vacantes Propias
 				<div class="card-body p-4">
                     <div class="row">
                         <div class="col-12">
-                            <a href="{% url 'vacantes:vacantes_crear_propias' data.cliente.id %}" class="btn btn-primary mb-3">Crear Vacante</a>
-                        </div>
-                        <div class="col-12">
-                            <div class="default-table-area all-products">
+                            <div class="default-table-area all-projects">
                                 <div class="table-responsive">
-                                    <table class="table align-middle" id="myTable">
+                                    <table class="table align-middle text-center" id="tabla-vacantes">
                                         <thead>
                                             <tr>
-                                                <th scope="col">ID</th>
-                                                <th scope="col">VACANTE</th>
-                                                <th scope="col">CARGO</th>
-                                                <th scope="col">FECHA</th>
-                                                <th scope="col">ANALISTA ASIGNADO</th>
-                                                <th scope="col">ESTADO VACANTE</th>
-                                                <th scope="col"></th>
+                                                <th scope="col" class="text-center">ID</th>
+                                                <th scope="col" class="text-center">Cargo</th>
+                                                <th scope="col" class="text-center"># Pocisiones</th>
+                                                <th scope="col" class="text-center">F. Creación</th>
+                                                <th scope="col" class="text-center">F. Presentación</th>
+                                                <th scope="col" class="text-center">F. Cierre</th>
+                                                <th scope="col" class="text-center">TOTAL</th>
+                                                <th scope="col" class="text-center">APLICADOS</th>
+                                                <th scope="col" class="text-center">EN PROCESO</th>
+                                                <th scope="col" class="text-center">FINALIZADOS</th>
+                                                <th scope="col" class="text-center">CANCELADOS</th>
+                                                <th scope="col" class="text-center">DESISTIDOS</th>
+                                                <th scope="col" class="text-center">NO APTOS</th>
+                                                <th scope="col" class="text-center">SELECCIONADOS</th>
+                                                <th scope="col" class="text-center">ESTADO</th>
+                                                <th scope="col" class="text-center">ACCIONES</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for e in vacantes %}
                                             <tr>
-                                                <td class="text-body">{{ e.id }}</td>
-                                                <td class="text-body">{{ e.titulo }}</td>
-                                                <td class="text-body">{{ e.cargo.nombre_cargo }}</td>
-                                                <td class="text-body">{{ e.fecha_creacion|date:"Y-m-d" }}</td>
-                                                <td class="text-body">{{ e.nombre_completo }}</td>
-                                                <td class="text-body">{{ e.vacante_estado }}</td>
-                                                <td>
-                                                    <div class="d-flex align-items-center gap-1">
-                                                        <a href="{% url 'vacantes:vacantes_editar_propias' data.cliente.id e.id %}" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" >
-                                                            <i class="material-symbols-outlined fs-16 text-body">edit</i>
-                                                        </a>
+                                                <td class="text-body text-center">{{e.id}}</td>
+                                                <td class="text-secondary text-center"><a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="fw-medium">{{e.cargo.nombre_cargo}}</a></td>
+                                                <td class="text-secondary text-center">{{e.numero_posiciones}}</td>
+                                                <td class="text-secondary text-center">{{ e.fecha_creacion|date:"Y-m-d" }}</td>
+                                                <td class="text-secondary text-center">{{ e.fecha_presentacion|date:"Y-m-d" }}</td>
+                                                <td class="text-secondary text-center">{{ e.fecha_cierre|date:"Y-m-d" }}</td>
+                                                <td class="text-secondary text-center">{{ e.total_aplicaciones }}</td>
+                                                <td class="text-secondary text-center">
+                                                    <span class="badge bg-warning bg-opacity-10 text-warning p-2 fs-12 fw-normal">{{ e.aplicadas }}</span>
+                                                </td>
+                                                <td class="text-secondary text-center">
+                                                    <span class="badge bg-info bg-opacity-10 text-info p-2 fs-12 fw-normal">{{ e.en_proceso }}</span>
+                                                </td>
+                                                <td class="text-secondary text-center">
+                                                    <span class="badge bg-primary bg-opacity-10 text-primary p-2 fs-12 fw-normal">{{ e.finalizadas }}</span>
+                                                </td>
+                                                <td class="text-secondary text-center">
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary p-2 fs-12 fw-normal">{{ e.canceladas }}</span>
+                                                </td>
+                                                <td class="text-secondary text-center">
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary p-2 fs-12 fw-normal">{{ e.desistidos }}</span>
+                                                </td>
+                                                <td class="text-secondary text-center">
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger p-2 fs-12 fw-normal">{{ e.no_aptas }}</span>
+                                                </td>
+                                                <td class="text-secondary text-center">
+                                                    <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">{{ e.seleccionados }}</span>
+                                                </td>
+
+                                                <td class="text-center">
+                                                    {% if e.estado_vacante == 1 %}
+                                                        <span class="badge bg-secondary bg-opacity-10 text-secondary p-2 fs-12 fw-normal">Activa</span>
+                                                    {% elif e.estado_vacante == 2 %}
+                                                        <span class="badge bg-warning bg-opacity-10 text-warning p-2 fs-12 fw-normal">En Proceso</span>
+                                                    {% elif e.estado_vacante == 3 %}
+                                                        <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">Finalizada</span>
+                                                    {% elif e.estado_vacante == 4 %}
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger p-2 fs-12 fw-normal">Cancelada</span>
+                                                    {% else %}
+                                                        <span class="badge bg-light bg-opacity-10 text-dark p-2 fs-12 fw-normal">Desconocido</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="d-flex justify-content-center align-items-center gap-1">
+                                                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                            <a href="{% url 'vacantes:vacantes_editar_propias' data.cliente.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16">edit</i>
+                                                            </a>
+                                                            
+                                                        </div>
                                                     </div>
                                                 </td> 
                                             </tr>
@@ -94,63 +142,25 @@ Vacantes Propias
 
 {% block js %} 
 <script>
-    $(document).ready(function() {
-        $('#clientes_listado_politicas').DataTable({
-            "language": {
-                "lengthMenu": "Mostrar _MENU_ registros por página",
-                "zeroRecords": "No se encontraron registros",
-                "info": "Mostrando página _PAGE_ de _PAGES_",
-                "infoEmpty": "No hay registros disponibles",
-                "infoFiltered": "(filtrado de _MAX_ registros totales)",
-                "search": "Buscar:",
-                "paginate": {
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                }
-            },
-            "columnDefs": [
-                {
-                    "targets": -1,
-                    "orderable": false,
-                    "searchable": false
-                }
-            ]
-        });
+    let miTabla; // Declara la variable aquí, en el ámbito global
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Aquí es donde "modificas" el comportamiento de la tabla
+        const opcionesDeTabla = {
+            ShowSearch: true,         // Mostrar la barra de búsqueda
+            ShowSelect: true,  
+            PageSize: 2,           // Mostrar el selector de cuántas filas ver
+            SelectionNumber: [10, 20, 50, 100], // Números para el selector de filas
+                     // Número de filas por defecto
+            // HideColumn: ['ID'],       // Ocultar la columna 'ID'
+            ShowHighlight: true,      // Resaltar el texto buscado
+            ShowTfoot: false,          // Mostrar el footer de la tabla
+        };
+
+        // Crear la instancia de la tabla
+        miTabla = new RdataTB('tabla-vacantes', opcionesDeTabla);
+        miTabla.sort('ID'); // 👈 Asegúrate de que la columna se llame 
     });
-
-    // Initialize select2 for specific fields
-    initializeSelect2('#id_cargo');
-    initializeSelect2('#id_edad');
-    initializeSelect2('#id_genero');
-    initializeSelect2('#id_tiempo_experiencia');
-    initializeSelect2('#id_modalidad');
-    initializeSelect2('#id_jornada');
-    initializeSelect2('#id_tipo_salario');
-    initializeSelect2('#id_nivel_estudio');
-    initializeSelect2('#id_lugar_trabajo');
-    initializeSelect2('#id_termino_contrato');
-    initializeSelect2('#id_profesion_estudio');
-    initializeSelect2('#id_frecuencia_pago');
-    initializeSelect2('#id_nivel_idioma');
-    initializeSelect2('#id_horario_final');
-    initializeSelect2('#id_horario_inicio');
-    initializeSelect2('#id_estudios_complementarios_certificado');
-    initializeSelect2('#id_numero_posiciones');
-    initializeSelect2('#id_cantidad_presentar');
-    initializeSelect2('#id_estado_estudio');
-    initializeSelect2('#id_idioma');
-    initializeSelect2('#id_edad_inicial');
-    initializeSelect2('#id_edad_final');
-
-    inicializarTagify('id_soft_skills');
-    inicializarTagify('id_hard_skills');
-    inicializarTagify('id_funciones_responsabilidades');
-    inicializarTagify('id_estudios_complementarios');
-
-    // Lista personalizada para el campo 2
-    const semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-    incializarTagifyLista('id_horario', semana);
-    
 
 </script>  
 {% endblock js %}
