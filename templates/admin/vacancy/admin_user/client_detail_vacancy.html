@@ -48,7 +48,7 @@ Vacantes Propias
                         <div class="col-12">
                             <div class="default-table-area all-projects">
                                 <div class="table-responsive">
-                                    <table class="table align-middle text-center" id="tabla-vacantes">
+                                    <table class="table align-middle text-center" id="myTable">
                                         <thead>
                                             <tr>
                                                 <th scope="col" class="text-center">ID</th>
@@ -120,6 +120,9 @@ Vacantes Propias
                                                             <a href="{% url 'vacantes:vacantes_editar_propias' data.cliente.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
                                                                 <i class="material-symbols-outlined fs-16">edit</i>
                                                             </a>
+                                                            <a href="{% url 'vacantes:vacantes_gestion_propias' data.cliente.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16">inbox_customize</i>
+                                                            </a>
                                                             
                                                         </div>
                                                     </div>
@@ -141,26 +144,5 @@ Vacantes Propias
 {% endblock %}
 
 {% block js %} 
-<script>
-    let miTabla; // Declara la variable aquí, en el ámbito global
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Aquí es donde "modificas" el comportamiento de la tabla
-        const opcionesDeTabla = {
-            ShowSearch: true,         // Mostrar la barra de búsqueda
-            ShowSelect: true,  
-            PageSize: 2,           // Mostrar el selector de cuántas filas ver
-            SelectionNumber: [10, 20, 50, 100], // Números para el selector de filas
-                     // Número de filas por defecto
-            // HideColumn: ['ID'],       // Ocultar la columna 'ID'
-            ShowHighlight: true,      // Resaltar el texto buscado
-            ShowTfoot: false,          // Mostrar el footer de la tabla
-        };
-
-        // Crear la instancia de la tabla
-        miTabla = new RdataTB('tabla-vacantes', opcionesDeTabla);
-        miTabla.sort('ID'); // 👈 Asegúrate de que la columna se llame 
-    });
-
-</script>  
 {% endblock js %}

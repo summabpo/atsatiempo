@@ -52,6 +52,7 @@
                             <a class="nav-link 
                             {% if request.resolver_match.url_name == 'vacantes_propias'  %}active{% endif %}
                             {% if request.resolver_match.url_name == 'vacantes_crear_propias'  %}active{% endif %}
+                            {% if request.resolver_match.url_name == 'vacantes_gestion_propias'  %}active{% endif %}
                             " href="{% url 'vacantes:vacantes_propias' data.cliente.id %}">Vacantes</a>
                         </li>
                         <li class="nav-item">
@@ -68,6 +69,23 @@
                                 <a href="{% url 'vacantes:vacantes_crear_propias' data.cliente.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-inline-flex align-items-center">
                                     <i class="material-symbols-outlined fs-16 me-2">add_circle</i> Crear Vacante
                                 </a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if elements_vacancy %}
+                        <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                            <div class="btn-group" role="group">
+                                <div class="btn-group dropstart" role="group">
+                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Menu de vacante
+                                    </button>
+                                    <ul class="bg-primary bg-opacity-10 fw-medium text-primary dropdown-menu">
+                                        <li><a class="dropdown-item active" href="#">Crear Reclutado</a></li>
+                                        <li><a class="dropdown-item" href="#">Crear Entrevista</a></li>
+                                        <li><a class="dropdown-item" href="#">Asignar Analista</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     {% endif %}

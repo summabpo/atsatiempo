@@ -25,7 +25,7 @@ class RdataTB {
         this.DataTable = [];
         this.DataSorted = [];
         this.DataToRender = [];
-        this.PageSize = 10;
+        this.PageSize = 20;
         this.Assc = false;
         this.DataSearch = [];
         this.i = 0;
@@ -33,7 +33,7 @@ class RdataTB {
         this.DataTableRaw = [];
         this.searchValue = '';
         this.ListHiding = [];
-        this.SelectionNumber = [10, 15, 20, 50],
+        this.SelectionNumber = [10, 20, 50, 100],
         this.SelectElementString = '';
         this.ShowHighlight = false;
         this.listTypeDate = [];
