@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q, Value, Case, When, CharField
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 
+from applications.services.service_interview import query_interview_all
+from applications.services.service_recruited import query_recruited_vacancy_id
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.entrevista.models import Cli057AsignacionEntrevista
@@ -404,3 +406,26 @@ def list_vacanty_from_client(request, pk):
     }
 
     return render(request, 'admin/vacancy/admin_user/client_detail_vacancy.html', context) 
+
+@login_required
+@validar_permisos('acceso_admin')
+def vacanty_management_from_client(request, pk, vacante_id):
+
+    # Data cliente a mostrar
+    data = query_client_detail(pk)
+    vacante = get_object_or_404(Cli052Vacante, id=vacante_id)
+    # Obtener información de las entrevistas por vacante
+    entrevistas = query_interview_all()
+    entrevistas = entrevistas.filter(asignacion_vacante__vacante_id_052=vacante.id)
+
+    # Obtener los reclutados asociados a la vacante
+    reclutados = query_recruited_vacancy_id(vacante.id)
+
+    context = {
+        'data': data,
+        'vacante': vacante,
+        'reclutados': reclutados,
+        'entrevistas': entrevistas,
+    }
+
+    return render(request, 'admin/vacancy/admin_user/client_detail_vacancy_management.html', context) 
