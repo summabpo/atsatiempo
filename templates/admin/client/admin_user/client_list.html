@@ -30,7 +30,7 @@ Listado de Clientes
 				<div class="col-12">
                     <div class="default-table-area  all-projects">
                         <div class="table-responsive">
-                            <table class="table align-middle text-center" id="tabla-clientes">
+                            <table class="table align-middle text-center" id="myTable">
                                 <thead>
                                     <tr>
                                         <th scope="col" class="text-center">ID</th>
@@ -85,28 +85,6 @@ Listado de Clientes
 </div>
 {% endblock %}
 
-{% block js %} 
-<script>
-    let miTabla; // Declara la variable aquí, en el ámbito global
+{% block js %}
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Aquí es donde "modificas" el comportamiento de la tabla
-        const opcionesDeTabla = {
-            ShowSearch: true,         // Mostrar la barra de búsqueda
-            ShowSelect: true,  
-            PageSize: 2,           // Mostrar el selector de cuántas filas ver
-            SelectionNumber: [10, 20, 50, 100], // Números para el selector de filas
-                     // Número de filas por defecto
-            // HideColumn: ['ID'],       // Ocultar la columna 'ID'
-            ShowHighlight: true,      // Resaltar el texto buscado
-            ShowTfoot: false,          // Mostrar el footer de la tabla
-        };
-
-        // Crear la instancia de la tabla
-        miTabla = new RdataTB('tabla-clientes', opcionesDeTabla);
-        miTabla.sort('Id'); // 👈 Asegúrate de que la columna se llame 
-    });
-
-
-</script>  
 {% endblock js %}

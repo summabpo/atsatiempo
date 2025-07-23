@@ -19,28 +19,371 @@ Detalle vacante
 						<span class="text-secondary fw-medium hover" >Inicio</span>
 					</a>
 				</li>
-                <li class="breadcrumb-item active" aria-current="page">
-					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
-						<span class="text-secondary fw-medium hover" >Listado de Vacantes</span>
+                {% if request.session.grupo_id == 1 %}
+                    <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'clientes:cliente_ver' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Listado de Clientes</span>
 					</a>
-				</li>
-                <li class="breadcrumb-item active" aria-current="page">
-					<a href="{% url 'reclutados:vacantes_reclutados_cliente' vacante.id %}" class="d-flex align-items-center text-decoration-none">
-						<span class="text-secondary fw-medium hover" >Personal Reclutado</span>
-					</a>
-				</li>
-				<li class="breadcrumb-item active" aria-current="page">
-					<span class="fw-medium">Detalle Persona Reclutada</span>
-				</li>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_propias' vacante.asignacion_cliente_id_064.id_cliente_asignado.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_gestion_propias' vacante.asignacion_cliente_id_064.id_cliente_asignado.id vacante.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Gestión de Vacante</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <span class="fw-medium">Detalle Persona Reclutada</span>
+                    </li>
+                {% endif %}
+
+                {% if request.session.grupo_id == 3 %}
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Listado de Vacantes</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'reclutados:vacantes_reclutados_cliente' vacante.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Personal Reclutado</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <span class="fw-medium">Detalle Persona Reclutada</span>
+                    </li>
+                {% endif %}
+                
 			</ol>
 		</nav>
 	</div>
     <div class="row">
-		<div class="col-3">
+		<div class="col-md-12">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+                    <p class="text-primary my-2 fs-4 fw-semibold">Gestión reclutamiento</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    {% if candidato.imagen_perfil %}
+                                        <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2 wh-75" alt="{{ candidato.imagen_perfil.url }}">
+                                    {% else %}
+                                        <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2 wh-75" alt="user">
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="fs-17 mb-1 fw-semibold">{{ candidato.nombre_completo }}</h4>
+                                    <span class="fs-14">Candidato</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="row">
+                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div class="flex-shrink-0">
+                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-primary bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Aplicó</h4>
+                                            <span>{{reclutado.fecha_aplicacion}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div class="flex-shrink-0">
+                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-warning bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Actualización</h4>
+                                            <span>{{reclutado.fecha_actualizacion}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div class="flex-shrink-0">
+                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-{{reclutado.obtener_estado_con_color.color}} bg-gary-light rounded-circle bg-for-dark-mode">person_alert</i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="fs-14 fw-semibold mb-1">Estado</h4>
+                                            <span></span>
+                                            <span class="badge bg-opacity-10 bg-{{reclutado.obtener_estado_con_color.color}} py-1 px-2 text-{{reclutado.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{reclutado.obtener_estado_con_color.estado}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+		<div class="col-md-3">
             {% include "admin/vacancy/common_template/info_vacancy.html" %}
         </div>
-		<div class="col-9">
-            <div class="card bg-white border-0 rounded-3 mb-4">
+		<div class="col-md-9">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card bg-white border-0 rounded-3 mb-4">
+                        <div class="card-body p-4">
+                            <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="candidato-tab" data-bs-toggle="tab" data-bs-target="#candidato-tab-pane" type="button" role="tab" aria-controls="candidato-tab-pane" aria-selected="true">Perfil Candidato</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="entrevista-tab" data-bs-toggle="tab" data-bs-target="#entrevista-tab-pane" type="button" role="tab" aria-controls="entrevista-tab-pane" aria-selected="false">Entrevistas</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="historico-tab" data-bs-toggle="tab" data-bs-target="#historico-tab-pane" type="button" role="tab" aria-controls="historico-tab-pane" aria-selected="false">Histórico</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="candidato-tab-pane" role="tabpanel" aria-labelledby="candidato-tab" tabindex="0">
+                                    <div style="max-width: 1200px; width: 100%; margin-left: auto; margin-right: auto;">
+                                        <!-- Contenido Principal del Dashboard -->
+                                        <main style="display: flex; flex-wrap: wrap; margin-left: -1rem; margin-right: -1rem;">
+
+                                            <!-- Columna Izquierda -->
+                                            <div style="width: 100%; max-width: 100%; flex: 1 0 340px; padding: 1rem; box-sizing: border-box; margin-bottom: 1.5rem;">
+                                                
+                                                <!-- Tarjeta de Perfil -->
+                                                <div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); height: 100%; display: flex; flex-direction: column;">
+                                                    <div style="padding: 2rem; text-align: center;">
+                                                        {% if candidato.imagen_perfil %}
+                                                            <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2 wh-75" style="width: 100px; height: 100px; border-radius: 50%; margin-left: auto; margin-right: auto; margin-bottom: 1rem; border: 4px solid #dee2e6; alt="{{ candidato.imagen_perfil.url }}">
+                                                        {% else %}
+                                                            <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2 wh-75" style="width: 100px; height: 100px; border-radius: 50%; margin-left: auto; margin-right: auto; margin-bottom: 1rem; border: 4px solid #dee2e6; alt="user">
+                                                        {% endif %}
+                                                        <h2 style="font-size: 1.5rem; font-weight: 600; color: #212529; margin: 0;">{{ candidato.nombre_completo }}</h2>
+                                                        <p style="color: #6c757d; margin: 0.25rem 0 1.5rem 0;">Desarrollador de Software Senior</p>
+                                                        <button style="background-color: #b10022; color: #ffffff; font-weight: 500; padding: 0.6rem 1.2rem; border-radius: 0.5rem; display: inline-flex; align-items: center; border: none; cursor: pointer; font-size: 0.9rem;">
+                                                            <span class="material-symbols-outlined text-white" style="margin-right: 0.75rem;">download</span>
+                                                            Descargar Hoja de Vida
+                                                        </button>
+                                                    </div>
+                                                    <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid #dee2e6; margin-top: auto;">
+                                                        <h3 style="font-size: 1rem; font-weight: 600; color: #212529; margin-top: 1.5rem; margin-bottom: 1rem;">Información de Contacto</h3>
+                                                        <div style="margin-bottom: 1rem;">
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">email</span>EMAIL</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">juan.perez@example.com</span>
+                                                        </div>
+                                                        <div style="margin-bottom: 1rem;">
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-icons" style="font-size: 1.1rem; margin-right: 0.75rem; color: #b10022;">phone</span>TELÉFONO</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">+57 300 123 4567</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-icons" style="font-size: 1.1rem; margin-right: 0.75rem; color: #b10022;">location_on</span>UBICACIÓN</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">Bogotá, Colombia</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Columna Derecha -->
+                                            <div style="width: 100%; max-width: 100%; flex: 2 1 500px; padding: 1rem; box-sizing: border-box;">
+                                                <div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); margin-bottom: 1.5rem; padding: 1.5rem;">
+                                                    <h3 style="margin: 0 0 1.5rem 0; font-size: 1.25rem; font-weight: 600; color: #212529; display: flex; align-items: center;">
+                                                        <span class="material-symbols-outlined text-primary" style="margin-right: 0.75rem;">school</span>
+                                                        Formación Académica
+                                                    </h3>
+                                                    <div>
+                                                        <!-- Primer elemento de la línea de tiempo -->
+                                                        <div style="position: relative; padding-left: 2rem; padding-bottom: 2rem;">
+                                                            <div style="position: absolute; left: 0; top: 5px; height: 100%; width: 2px; background-color: #dee2e6;"></div>
+                                                            <div style="position: absolute; left: -7px; top: 5px; width: 14px; height: 14px; background-color: #b10022; border-radius: 50%; border: 2px solid #ffffff;"></div>
+                                                            <p style="font-weight: 600; color: #212529; margin:0;">Universidad Nacional de Colombia</p>
+                                                            <p style="color: #6c757d; margin:0;">Ingeniería de Sistemas y Computación</p>
+                                                            <p style="color: #6c757d; margin:0; font-size: 0.9rem;">2014 - 2018</p>
+                                                        </div>
+                                                        <!-- Segundo y último elemento de la línea de tiempo -->
+                                                        <div style="position: relative; padding-left: 2rem;">
+                                                            <div style="position: absolute; left: -7px; top: 5px; width: 14px; height: 14px; background-color: #b10022; border-radius: 50%; border: 2px solid #ffffff;"></div>
+                                                            <p style="font-weight: 600; color: #212529; margin:0;">Platzi</p>
+                                                            <p style="color: #6c757d; margin:0;">Certificado en Desarrollo Web Avanzado</p>
+                                                            <p style="color: #6c757d; margin:0; font-size: 0.9rem;">2019</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); margin-bottom: 1.5rem; padding: 1.5rem;">
+                                                    <h3 style="margin: 0 0 1.5rem 0; font-size: 1.25rem; font-weight: 600; color: #212529; display: flex; align-items: center;">
+                                                        <span class="material-symbols-outlined text-primary" style="margin-right: 0.75rem;">work</span>
+                                                        Experiencia Laboral
+                                                    </h3>
+                                                    <div>
+                                                        <!-- Primer elemento de la línea de tiempo -->
+                                                        <div style="position: relative; padding-left: 2rem; padding-bottom: 2rem;">
+                                                            <div style="position: absolute; left: 0; top: 5px; height: 100%; width: 2px; background-color: #dee2e6;"></div>
+                                                            <div style="position: absolute; left: -7px; top: 5px; width: 14px; height: 14px; background-color: #b10022; border-radius: 50%; border: 2px solid #ffffff;"></div>
+                                                            <p style="font-weight: 600; color: #212529; margin:0;">Líder de Desarrollo en Tech Solutions Inc.</p>
+                                                            <p style="color: #6c757d; margin:0;">Ene 2021 - Presente</p>
+                                                        </div>
+                                                        <!-- Segundo y último elemento de la línea de tiempo -->
+                                                        <div style="position: relative; padding-left: 2rem;">
+                                                            <div style="position: absolute; left: -7px; top: 5px; width: 14px; height: 14px; background-color: #b10022; border-radius: 50%; border: 2px solid #ffffff;"></div>
+                                                            <p style="font-weight: 600; color: #212529; margin:0;">Ingeniero de Software en Innovate Corp.</p>
+                                                            <p style="color: #6c757d; margin:0;">Jun 2018 - Dic 2020</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); padding: 1.5rem;">
+                                                    <h3 style="margin: 0 0 1rem 0; font-size: 1.25rem; font-weight: 600; color: #212529; display: flex; align-items: center;">
+                                                        <span class="material-symbols-outlined text-primary" style="margin-right: 0.75rem;">star_outline</span>
+                                                        Habilidades Principales
+                                                    </h3>
+                                                    <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">Python</span>
+                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">JavaScript</span>
+                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">React</span>
+                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">Node.js</span>
+                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">SQL</span>
+                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">Docker</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </main>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="entrevista-tab-pane" role="tabpanel" aria-labelledby="entrevista-tab" tabindex="0">
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            <!-- Button trigger modal -->
+                                            <button type="button" class="btn btn-success text-white py-2 px-4 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalEntrevista">
+                                                Crear Entrevista
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="modalEntrevista" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form method="post" id="form_crear_entrevista">
+                                                    <div class="modal-body">
+                                                        {% csrf_token %}
+                                                        {% crispy form %}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cerrar</button>
+                                                        <button type="submit" id="form_crear_entrevista" class="btn btn-primary text-white"  form="form_crear_entrevista">Crear</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="default-table-area all-projects">
+                                        <div class="table-responsive">
+                                            <table class="table align-middle text-center" id="myTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col" class="text-center">ID</th>
+                                                        <th scope="col" class="text-center">FECHA ASIGNACIÓN</th>
+                                                        <th scope="col" class="text-center">ENTREVISTADOR</th>
+                                                        <th scope="col" class="text-center">FECHA</th>
+                                                        <th scope="col" class="text-center">HORA</th>
+                                                        <th scope="col" class="text-center">TIPO ENTREVISTA</th>
+                                                        <th class="text-center">ESTADO</th>
+                                                        <th scope="col" class="text-center">ACCIONES</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for e in entrevista %}
+                                                    <tr>
+                                                        <td class="text-body text-center">{{e.id}}</td>
+                                                        <td class="text-body">{{e.fecha_asignacion}}</td>
+                                                        <td class="text-body">{{e.usuario_asignado.primer_nombre}} {{e.usuario_asignado.primer_apellido}}</td>
+                                                        <td class="text-body">{{e.fecha_entrevista}}</td>
+                                                        <td class="text-body">{{e.hora_entrevista}}</td>
+                                                        <td class="text-body">{{e.get_tipo_entrevista_display}}</td>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-opacity-10 bg-{{e.obtener_nombre_estado_color.color}} py-1 px-2 text-{{e.obtener_nombre_estado_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_nombre_estado_color.estado}}</span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                                <a href="{% url 'entrevistas:entrevistar_gestionar_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                                    <i class="material-symbols-outlined fs-16 text-danger">edit_document</i>
+                                                                </a>
+                                                            </div>
+                                                        </td> 
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane fade" id="historico-tab-pane" role="tabpanel" aria-labelledby="historico-tab" tabindex="0">
+                                    <div class="accordion-body">
+                                        <div class="card bg-white border-0 rounded-3 mb-4">
+                                            <div class="card-body p-4">
+                                                <div class="mb-4">
+                                                    <h3 class="mb-0 text-primary">Historial de Aplicación</h3>
+                                                </div>
+                                                <div class="timeline-wrap">
+                                                    {% for h in historial %}
+                                                    <div class="timeline-item-2 mb-5">
+                                                        <div class="text p-4 rounded-3 shadow-sm border-start border-4 {% if h.estado == 'Entrevista Aprobada' %}border-success bg-white{% elif h.estado == 'Entrevista Programada' %}border-warning bg-white{% else %}border-secondary bg-white{% endif %}">
+                                                            <h5 class="fw-bold mb-2 text-dark">
+                                                                <span class="material-symbols-outlined me-1 {% if h.estado == 'Entrevista Aprobada' %}text-success{% elif h.estado == 'Entrevista Programada' %}text-warning{% else %}text-muted{% endif %}">event</span>
+                                                                Estado: {{ h.estado }}
+                                                            </h5>
+                                                            <p class="mb-2 text-secondary">{{ h.descripcion|default:"Sin descripción disponible." }}</p>
+                                                    
+                                                            <ul class="ps-0 mb-3 list-unstyled d-flex align-items-center flex-wrap small">
+                                                                <li class="d-flex align-items-center me-4">
+                                                                    <span class="material-symbols-outlined me-2 text-primary">person</span>
+                                                                    <strong>Usuario:</strong> {{ h.usuario }}
+                                                                </li>
+                                                                <li class="d-flex align-items-center me-4">
+                                                                    <span class="material-symbols-outlined me-2 text-primary">work</span>
+                                                                    <strong>Vacante:</strong> {{ h.vacante }}
+                                                                </li>
+                                                            </ul>
+                                                    
+                                                            <span class="d-block text-muted">
+                                                                <span class="fw-semibold">ID Aplicación:</span> {{ h.aplicacion_id }}
+                                                            </span>
+                                                        </div>
+                                                    
+                                                        <div class="icon {{ forloop.counter|add:"1" }}">
+                                                            <div></div>
+                                                        </div>
+                                                    
+                                                        <div class="time">
+                                                            <span class="badge bg-primary text-white fs-6">
+                                                                {{ h.fecha|date:"H:i A, d M Y" }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-body p-4">
                     <div class="row">
                         <div class="col-4">
@@ -277,103 +620,7 @@ Detalle vacante
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="card bg-white border-0 rounded-3 mb-4">
-                        <div class="card-body p-4">
-                            <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Entrevistas</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Pruebas</button>
-                                </li>
-                            </ul>
-                            <div class="tab-content" id="myTabContent">
-                                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-                                    
-                                    <div class="row">
-                                        <div class="col-12 text-center">
-                                            <!-- Button trigger modal -->
-                                            <button type="button" class="btn btn-success text-white py-2 px-4 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalEntrevista">
-                                                Crear Entrevista
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="modalEntrevista" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <form method="post" id="form_crear_entrevista">
-                                                    <div class="modal-body">
-                                                        {% csrf_token %}
-                                                        {% crispy form %}
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cerrar</button>
-                                                        <button type="submit" id="form_crear_entrevista" class="btn btn-primary text-white"  form="form_crear_entrevista">Crear</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="default-table-area all-projects">
-                                        <div class="table-responsive">
-                                            <table class="table align-middle text-center" id="myTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col" class="text-center">ID</th>
-                                                        <th scope="col" class="text-center">FECHA ASIGNACIÓN</th>
-                                                        <th scope="col" class="text-center">ENTREVISTADOR</th>
-                                                        <th scope="col" class="text-center">FECHA</th>
-                                                        <th scope="col" class="text-center">HORA</th>
-                                                        <th scope="col" class="text-center">TIPO ENTREVISTA</th>
-                                                        <th class="text-center">ESTADO</th>
-                                                        <th scope="col" class="text-center">ACCIONES</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for e in entrevista %}
-                                                    <tr>
-                                                        <td class="text-body text-center">{{e.id}}</td>
-                                                        <td class="text-body">{{e.fecha_asignacion}}</td>
-                                                        <td class="text-body">{{e.usuario_asignado.primer_nombre}} {{e.usuario_asignado.primer_apellido}}</td>
-                                                        <td class="text-body">{{e.fecha_entrevista}}</td>
-                                                        <td class="text-body">{{e.hora_entrevista}}</td>
-                                                        <td class="text-body">{{e.get_tipo_entrevista_display}}</td>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-opacity-10 bg-{{e.obtener_nombre_estado_color.color}} py-1 px-2 text-{{e.obtener_nombre_estado_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_nombre_estado_color.estado}}</span>
-                                                        </td>
-                                                        <td>
-                                                            <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
-                                                                <a href="{% url 'entrevistas:entrevistar_gestionar_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
-                                                                    <i class="material-symbols-outlined fs-16 text-danger">edit_document</i>
-                                                                </a>
-                                                            </div>
-                                                        </td> 
-                                                    </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-                                    <p>This is some placeholder content the Home tab's associated content. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling. You can use it with tabs, pills, and any other .nav-powered navigation.</p>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
 </div>

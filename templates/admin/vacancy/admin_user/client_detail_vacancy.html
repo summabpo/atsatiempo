@@ -51,6 +51,8 @@ Vacantes Propias
                                     <table class="table align-middle text-center" id="myTable">
                                         <thead>
                                             <tr>
+                                                <th scope="col" class="text-center">ACCIONES</th>
+                                                <th scope="col" class="text-center">ESTADO</th>
                                                 <th scope="col" class="text-center">ID</th>
                                                 <th scope="col" class="text-center">Cargo</th>
                                                 <th scope="col" class="text-center"># Pocisiones</th>
@@ -65,13 +67,38 @@ Vacantes Propias
                                                 <th scope="col" class="text-center">DESISTIDOS</th>
                                                 <th scope="col" class="text-center">NO APTOS</th>
                                                 <th scope="col" class="text-center">SELECCIONADOS</th>
-                                                <th scope="col" class="text-center">ESTADO</th>
-                                                <th scope="col" class="text-center">ACCIONES</th>
+                                                
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for e in vacantes %}
                                             <tr>
+                                                <td class="text-center">
+                                                    <div class="d-flex justify-content-center align-items-center gap-1">
+                                                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                            <a href="{% url 'vacantes:vacantes_editar_propias' data.cliente.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16">edit</i>
+                                                            </a>
+                                                            <a href="{% url 'vacantes:vacantes_gestion_propias' data.cliente.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16">inbox_customize</i>
+                                                            </a>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </td> 
+                                                <td class="text-center">
+                                                    {% if e.estado_vacante == 1 %}
+                                                        <span class="badge bg-secondary bg-opacity-10 text-secondary p-2 fs-12 fw-normal">Activa</span>
+                                                    {% elif e.estado_vacante == 2 %}
+                                                        <span class="badge bg-warning bg-opacity-10 text-warning p-2 fs-12 fw-normal">En Proceso</span>
+                                                    {% elif e.estado_vacante == 3 %}
+                                                        <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">Finalizada</span>
+                                                    {% elif e.estado_vacante == 4 %}
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger p-2 fs-12 fw-normal">Cancelada</span>
+                                                    {% else %}
+                                                        <span class="badge bg-light bg-opacity-10 text-dark p-2 fs-12 fw-normal">Desconocido</span>
+                                                    {% endif %}
+                                                </td>
                                                 <td class="text-body text-center">{{e.id}}</td>
                                                 <td class="text-secondary text-center"><a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="fw-medium">{{e.cargo.nombre_cargo}}</a></td>
                                                 <td class="text-secondary text-center">{{e.numero_posiciones}}</td>
@@ -100,33 +127,6 @@ Vacantes Propias
                                                 <td class="text-secondary text-center">
                                                     <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">{{ e.seleccionados }}</span>
                                                 </td>
-
-                                                <td class="text-center">
-                                                    {% if e.estado_vacante == 1 %}
-                                                        <span class="badge bg-secondary bg-opacity-10 text-secondary p-2 fs-12 fw-normal">Activa</span>
-                                                    {% elif e.estado_vacante == 2 %}
-                                                        <span class="badge bg-warning bg-opacity-10 text-warning p-2 fs-12 fw-normal">En Proceso</span>
-                                                    {% elif e.estado_vacante == 3 %}
-                                                        <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">Finalizada</span>
-                                                    {% elif e.estado_vacante == 4 %}
-                                                        <span class="badge bg-danger bg-opacity-10 text-danger p-2 fs-12 fw-normal">Cancelada</span>
-                                                    {% else %}
-                                                        <span class="badge bg-light bg-opacity-10 text-dark p-2 fs-12 fw-normal">Desconocido</span>
-                                                    {% endif %}
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="d-flex justify-content-center align-items-center gap-1">
-                                                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
-                                                            <a href="{% url 'vacantes:vacantes_editar_propias' data.cliente.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
-                                                                <i class="material-symbols-outlined fs-16">edit</i>
-                                                            </a>
-                                                            <a href="{% url 'vacantes:vacantes_gestion_propias' data.cliente.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
-                                                                <i class="material-symbols-outlined fs-16">inbox_customize</i>
-                                                            </a>
-                                                            
-                                                        </div>
-                                                    </div>
-                                                </td> 
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -144,5 +144,7 @@ Vacantes Propias
 {% endblock %}
 
 {% block js %} 
+<script>
 
+</script>  
 {% endblock js %}

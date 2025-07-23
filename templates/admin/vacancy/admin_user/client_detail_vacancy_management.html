@@ -49,377 +49,524 @@ Vacantes Propias
         <div class="col-md-3">
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
-                    <p class="text-primary my-2 fs-4 fw-semibold">Información Vacante</p>
+                    <p class="text-primary my-2 fs-4 fw-semibold">Resumen Vacante</p>
                 </div>
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-4">
-                <div class="flex-shrink-0 position-relative">
-                    <img src="{{ request.session.imagen_url }}" class="rounded-circle" style="width: 65px; height: 65px;" alt="nft">
-                </div>
-                <div class="flex-grow-1 ms-3">
-                    <h4 class="fs-24 fw-semibold mb-1">{{vacante.titulo}}</h4>
-                    <span class="fs-12">ID: {{vacante.id}}</span>
-                </div>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0 position-relative">
-                        <img src="{% static 'admin/images/schedule2.png' %}" style="width: 30px; height: 30px;" alt="schedule2">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                        <span class="fs-12">Creada en</span>
-                        <h4 class="fs-14 fw-semibold mb-0">{{ vacante.fecha_creacion|date:"F d, Y" }}</h4>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0 position-relative">
-                        <img src="{% static 'admin/images/schedule2.png' %}" style="width: 30px; height: 30px;" alt="schedule2">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                        <span class="fs-12">Cierre en</span>
-                        <h4 class="fs-14 fw-semibold mb-0">{{ vacante.fecha_creacion|date:"F d, Y" }}</h4>
-                    </div>
-                </div>
-            </div>
-
-            <div class="d-flex flex-wrap justify-content-between gap-3 rounded-3 bg-body-bg p-3 px-sm-4 mb-4">
-                <div class="text-center">
-                    <span class="fs-12 d-block mb-1 text-body"># vacantes</span>
-                    <h3 class="mb-0 fw-semibold fs-14">{{vacante.numero_posiciones}}</h3>
-                </div>
-                <div class="text-center">
-                    <span class="fs-12 d-block mb-1 text-body">Presentar</span>
-                    <h3 class="mb-0 fw-semibold fs-14">{{vacante.cantidad_presentar}}</h3>
-                </div>
-                <div class="text-center">
-                    <span class="fs-12 d-block mb-1 text-body">Ciudad</span>
-                    <h3 class="mb-0 fw-semibold fs-14">{{vacante.perfil_vacante.lugar_trabajo.nombre}}</h3>
-                </div>
-            </div>
-
-            <h3 class="mb-3">Descripción</h3>
-            <p class="ps-0 mb-md-5 mb-4 list-unstyled">{{vacante.descripcion_vacante}}</p>
-
-            <h3 class="mb-3">Ubicación</h3>
-            <iframe src="{{vacante.perfil_vacante.url_mapa}}" class="d-block w-100 rounded-3 mb-md-5 mb-4" style="height: 250px;"></iframe>
-
-
-            <h3 class="mb-3">Características de la Vacante</h3>
-            <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
-                {% if vacante.perfil_vacante %}
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">calendar_month</span>
-                <span>Edad entre <b>{{ vacante.perfil_vacante.edad_inicial }} y {{ vacante.perfil_vacante.edad_final }} años</b></span>
-                </li>
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">wc</span>
-                <span>Género requerido: <b>{{ vacante.perfil_vacante.get_genero_display }}</b></span>
-                </li>
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">work_history</span>
-                <span>Experiencia mínima: <b>{{ vacante.perfil_vacante.get_tiempo_experiencia_display }}</b></span>
-                </li>
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">desktop_windows</span>
-                <span>Modalidad: <b>{{ vacante.perfil_vacante.get_modalidad_display }}</b></span>
-                </li>
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">schedule</span>
-                <span>Jornada: <b>{{ vacante.perfil_vacante.get_jornada_display }}</b></span>
-                </li>
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">translate</span>
-                <span>Idioma requerido: <b>{{ vacante.perfil_vacante.get_idioma_display }} (Nivel: {{ vacante.perfil_vacante.get_nivel_idioma_display }})</b></span>
-                </li>
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
-                <span>Profesión o estudio: <b>{{ vacante.perfil_vacante.profesion_estudio.nombre }}</b></span>
-                </li>
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
-                <span>Nivel de estudio: <b>{{ vacante.perfil_vacante.get_nivel_estudio_display }}</b></span>
-                </li>
-                {% else %}
-                <li>No se ha definido un perfil de vacante para esta vacante.</li>
-                {% endif %}
-            </ul>
-            
-            <h3 class="mb-3">Ubicación y Contrato</h3>
-            <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
-                {% if vacante.perfil_vacante %}
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">location_on</span>
-                <span>Ciudad: <b>{{ vacante.perfil_vacante.lugar_trabajo }}</b></span>
-                </li>
-                {% if vacante.perfil_vacante.barrio %}
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">map</span>
-                <span>Barrio: <b>{{ vacante.perfil_vacante.barrio }}</b></span>
-                </li>
-                {% endif %}
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">home_pin</span>
-                <span>Dirección: <b>{{ vacante.perfil_vacante.direccion }}</b></span>
-                </li>
-                <li class="mb-2 d-flex align-items-center">
-                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">description</span>
-                <span>Tipo de contrato: <b>{{ vacante.perfil_vacante.get_termino_contrato_display }}</b></span>
-                </li>
-                {% endif %}
-            </ul>
-            <!-- 
-            <button type="button" class="btn btn btn-primary py-2 px-4 text-white fw-semibold" data-bs-toggle="modal" data-bs-target="#staticBackdrop3">
-                Ver Detalle Vacante
-            </button>
-                
-            
-            <div class="modal fade" id="staticBackdrop3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop3Label" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Información de la Vacante</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="flex-shrink-0 position-relative">
+                            <img src="{{ request.session.imagen_url }}" class="rounded-circle" style="width: 65px; height: 65px;" alt="nft">
                         </div>
-                        <div class="modal-body">
-                            <h3 class="mb-3">Características de la Vacante</h3>
-                            <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
-                                {% if vacante.perfil_vacante %}
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">calendar_month</span>
-                                <span>Edad entre <b>{{ vacante.perfil_vacante.edad_inicial }} y {{ vacante.perfil_vacante.edad_final }} años</b></span>
-                                </li>
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">wc</span>
-                                <span>Género requerido: <b>{{ vacante.perfil_vacante.get_genero_display }}</b></span>
-                                </li>
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">work_history</span>
-                                <span>Experiencia mínima: <b>{{ vacante.perfil_vacante.get_tiempo_experiencia_display }}</b></span>
-                                </li>
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">desktop_windows</span>
-                                <span>Modalidad: <b>{{ vacante.perfil_vacante.get_modalidad_display }}</b></span>
-                                </li>
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">schedule</span>
-                                <span>Jornada: <b>{{ vacante.perfil_vacante.get_jornada_display }}</b></span>
-                                </li>
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">translate</span>
-                                <span>Idioma requerido: <b>{{ vacante.perfil_vacante.get_idioma_display }} (Nivel: {{ vacante.perfil_vacante.get_nivel_idioma_display }})</b></span>
-                                </li>
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
-                                <span>Profesión o estudio: <b>{{ vacante.perfil_vacante.profesion_estudio.nombre }}</b></span>
-                                </li>
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
-                                <span>Nivel de estudio: <b>{{ vacante.perfil_vacante.get_nivel_estudio_display }}</b></span>
-                                </li>
-                                {% else %}
-                                <li>No se ha definido un perfil de vacante para esta vacante.</li>
-                                {% endif %}
-                            </ul>
-                            
-                            <h3 class="mb-3">Ubicación y Contrato</h3>
-                            <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
-                                {% if vacante.perfil_vacante %}
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">location_on</span>
-                                <span>Ciudad: <b>{{ vacante.perfil_vacante.lugar_trabajo }}</b></span>
-                                </li>
-                                {% if vacante.perfil_vacante.barrio %}
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">map</span>
-                                <span>Barrio: <b>{{ vacante.perfil_vacante.barrio }}</b></span>
-                                </li>
-                                {% endif %}
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">home_pin</span>
-                                <span>Dirección: <b>{{ vacante.perfil_vacante.direccion }}</b></span>
-                                </li>
-                                <li class="mb-2 d-flex align-items-center">
-                                <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">description</span>
-                                <span>Tipo de contrato: <b>{{ vacante.perfil_vacante.get_termino_contrato_display }}</b></span>
-                                </li>
-                                {% endif %}
-                            </ul>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cerrar</button>
+                        <div class="flex-grow-1 ms-3">
+                            <h4 class="fs-24 fw-semibold mb-1">{{vacante.titulo}}</h4>
+                            <span class="fs-12">ID: {{vacante.id}}</span>
                         </div>
                     </div>
-                </div>
-            </div>
-            -->
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0 position-relative">
+                                <img src="{% static 'admin/images/schedule2.png' %}" style="width: 30px; height: 30px;" alt="schedule2">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <span class="fs-12">Creada en</span>
+                                <h4 class="fs-14 fw-semibold mb-0">{{ vacante.fecha_creacion|date:"F d, Y" }}</h4>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0 position-relative">
+                                <img src="{% static 'admin/images/schedule2.png' %}" style="width: 30px; height: 30px;" alt="schedule2">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <span class="fs-12">Cierre en</span>
+                                <h4 class="fs-14 fw-semibold mb-0">{{ vacante.fecha_creacion|date:"F d, Y" }}</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-between gap-3 rounded-3 bg-body-bg p-3 px-sm-4 mb-4">
+                        <div class="text-center">
+                            <span class="fs-12 d-block mb-1 text-body"># vacantes</span>
+                            <h3 class="mb-0 fw-semibold fs-14">{{vacante.numero_posiciones}}</h3>
+                        </div>
+                        <div class="text-center">
+                            <span class="fs-12 d-block mb-1 text-body">Presentar</span>
+                            <h3 class="mb-0 fw-semibold fs-14">{{vacante.cantidad_presentar}}</h3>
+                        </div>
+                        <div class="text-center">
+                            <span class="fs-12 d-block mb-1 text-body">Ciudad</span>
+                            <h3 class="mb-0 fw-semibold fs-14">{{vacante.perfil_vacante.lugar_trabajo.nombre}}</h3>
+                        </div>
+                    </div>
+
+                    <h3 class="mb-3">Descripción</h3>
+                    <p class="ps-0 mb-md-5 mb-4 list-unstyled">{{vacante.descripcion_vacante}}</p>
+
+                    <h3 class="mb-3">Ubicación</h3>
+                    <iframe src="{{vacante.perfil_vacante.url_mapa}}" class="d-block w-100 rounded-3 mb-md-5 mb-4" style="height: 250px;"></iframe>
+
+
+                    <h3 class="mb-3">Características de la Vacante</h3>
+                    <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
+                        {% if vacante.perfil_vacante %}
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">calendar_month</span>
+                        <span>Edad entre <b>{{ vacante.perfil_vacante.edad_inicial }} y {{ vacante.perfil_vacante.edad_final }} años</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">wc</span>
+                        <span>Género requerido: <b>{{ vacante.perfil_vacante.get_genero_display }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">work_history</span>
+                        <span>Experiencia mínima: <b>{{ vacante.perfil_vacante.get_tiempo_experiencia_display }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">desktop_windows</span>
+                        <span>Modalidad: <b>{{ vacante.perfil_vacante.get_modalidad_display }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">schedule</span>
+                        <span>Jornada: <b>{{ vacante.perfil_vacante.get_jornada_display }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">translate</span>
+                        <span>Idioma requerido: <b>{{ vacante.perfil_vacante.get_idioma_display }} (Nivel: {{ vacante.perfil_vacante.get_nivel_idioma_display }})</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
+                        <span>Profesión o estudio: <b>{{ vacante.perfil_vacante.profesion_estudio.nombre }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
+                        <span>Nivel de estudio: <b>{{ vacante.perfil_vacante.get_nivel_estudio_display }}</b></span>
+                        </li>
+                        {% else %}
+                        <li>No se ha definido un perfil de vacante para esta vacante.</li>
+                        {% endif %}
+                    </ul>
+                    
+                    <h3 class="mb-3">Ubicación y Contrato</h3>
+                    <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
+                        {% if vacante.perfil_vacante %}
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">location_on</span>
+                        <span>Ciudad: <b>{{ vacante.perfil_vacante.lugar_trabajo }}</b></span>
+                        </li>
+                        {% if vacante.perfil_vacante.barrio %}
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">map</span>
+                        <span>Barrio: <b>{{ vacante.perfil_vacante.barrio }}</b></span>
+                        </li>
+                        {% endif %}
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">home_pin</span>
+                        <span>Dirección: <b>{{ vacante.perfil_vacante.direccion }}</b></span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">description</span>
+                        <span>Tipo de contrato: <b>{{ vacante.perfil_vacante.get_termino_contrato_display }}</b></span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <!-- 
+                    <button type="button" class="btn btn btn-primary py-2 px-4 text-white fw-semibold" data-bs-toggle="modal" data-bs-target="#staticBackdrop3">
+                        Ver Detalle Vacante
+                    </button>
+                        
+                    
+                    <div class="modal fade" id="staticBackdrop3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop3Label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Información de la Vacante</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h3 class="mb-3">Características de la Vacante</h3>
+                                    <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
+                                        {% if vacante.perfil_vacante %}
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">calendar_month</span>
+                                        <span>Edad entre <b>{{ vacante.perfil_vacante.edad_inicial }} y {{ vacante.perfil_vacante.edad_final }} años</b></span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">wc</span>
+                                        <span>Género requerido: <b>{{ vacante.perfil_vacante.get_genero_display }}</b></span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">work_history</span>
+                                        <span>Experiencia mínima: <b>{{ vacante.perfil_vacante.get_tiempo_experiencia_display }}</b></span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">desktop_windows</span>
+                                        <span>Modalidad: <b>{{ vacante.perfil_vacante.get_modalidad_display }}</b></span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">schedule</span>
+                                        <span>Jornada: <b>{{ vacante.perfil_vacante.get_jornada_display }}</b></span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">translate</span>
+                                        <span>Idioma requerido: <b>{{ vacante.perfil_vacante.get_idioma_display }} (Nivel: {{ vacante.perfil_vacante.get_nivel_idioma_display }})</b></span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
+                                        <span>Profesión o estudio: <b>{{ vacante.perfil_vacante.profesion_estudio.nombre }}</b></span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">school</span>
+                                        <span>Nivel de estudio: <b>{{ vacante.perfil_vacante.get_nivel_estudio_display }}</b></span>
+                                        </li>
+                                        {% else %}
+                                        <li>No se ha definido un perfil de vacante para esta vacante.</li>
+                                        {% endif %}
+                                    </ul>
+                                    
+                                    <h3 class="mb-3">Ubicación y Contrato</h3>
+                                    <ul class="ps-0 mb-md-5 mb-4 list-unstyled">
+                                        {% if vacante.perfil_vacante %}
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">location_on</span>
+                                        <span>Ciudad: <b>{{ vacante.perfil_vacante.lugar_trabajo }}</b></span>
+                                        </li>
+                                        {% if vacante.perfil_vacante.barrio %}
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">map</span>
+                                        <span>Barrio: <b>{{ vacante.perfil_vacante.barrio }}</b></span>
+                                        </li>
+                                        {% endif %}
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">home_pin</span>
+                                        <span>Dirección: <b>{{ vacante.perfil_vacante.direccion }}</b></span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                        <span class="material-symbols-outlined text-danger me-2" style="font-size: 20px;">description</span>
+                                        <span>Tipo de contrato: <b>{{ vacante.perfil_vacante.get_termino_contrato_display }}</b></span>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    -->
                 </div>
             </div>
         </div>
 		<div class="col-md-9">
+
 			<div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
-                    <p class="text-primary my-2 fs-4 fw-semibold">Personal Reclutado</p>
+                    <p class="text-primary my-2 fs-4 fw-semibold">Gestión Vacante: {{vacante.titulo}}</p>
                 </div>
                 <div class="card-body p-4">
-                    <div class="default-table-area all-projects">
-                        <div class="table-responsive">
-                            <table class="table align-middle text-center" id="myTable">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">ID</th>
-                                        <th scope="col">DOCUMENTO</th>
-                                        <th scope="col">CANDIDATO</th>
-                                        <th scope="col">ESTADO</th>
-                                        <th scope="col">ACCIONES</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for e in reclutados %}
-                                    <tr>
-                                        <td class="text-body">{{e.id}}</td>
-                                        <td class="text-body">{{e.candidato_documento}}</td>
+                    <nav>
+                        <div class="nav nav-tabs mb-4" id="nav-tab" role="tablist">
+                            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Información</button>
+                            <button class="nav-link" id="nav-reclutado-tab" data-bs-toggle="tab" data-bs-target="#nav-reclutado" type="button" role="tab" aria-controls="nav-reclutado" aria-selected="false">Reclutados</button>
+                            <button class="nav-link" id="nav-entrevista-tab" data-bs-toggle="tab" data-bs-target="#nav-entrevista" type="button" role="tab" aria-controls="nav-entrevista" aria-selected="false">Entrevista</button>
+                            <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</button>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+                            <div class="container-fluid p-4 p-md-5">
+                                <div class="row g-4">
 
-                                        <td>
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                {% if e.candidato_imagen_perfil %}
-                                                    <img src="/media_uploads/{{ e.candidato_imagen_perfil}}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
-                                                {% else %}
-                                                    <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
-                                                {% endif %}
-                                                
-                                                <div class="ms-2 ps-1">
-                                                    <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="fw-medium">{{e.candidato_nombre}}</a>
+                                    <!-- Columna Principal: Detalles de la Vacante -->
+                                    <div class="col-lg-8">
+                                        <div class="card" style="border: none; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); transition: all 0.3s ease-in-out;">
+                                            <!-- Encabezado de la vacante -->
+                                            <div class="card-header" style="background-color: #fff; border-bottom: 1px solid #e9ecef; padding: 1.5rem;">
+                                                <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                                    <img src="https://placehold.co/100x100/0d6efd/ffffff?text=Logo" alt="Logo de la Empresa" class="me-3 mb-3 mb-md-0" style="width: 60px; height: 60px; object-fit: contain; border-radius: 0.5rem; border: 1px solid #eee;">
+                                                    <div class="flex-grow-1">
+                                                        <h2 class="mb-1" style="font-weight: 700;">Desarrollador/a Frontend Senior (React)</h2>
+                                                        <p class="text-muted mb-0">
+                                                            <i class="bi bi-building"></i> Tech Solutions Inc. &nbsp;·&nbsp; 
+                                                            <i class="bi bi-geo-alt-fill"></i> Bogotá, Colombia
+                                                        </p>
+                                                    </div>
+                                                    <div class="mt-3 mt-md-0">
+                                                        <span class="badge bg-success-subtle text-success-emphasis rounded-pill" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                                            <i class="bi bi-check-circle"></i> Abierta
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-opacity-10 bg-{{e.obtener_estado_con_color.color}} py-1 px-2 text-{{e.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_estado_con_color.estado}}</span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex align-items-center justify-content-center gap-1">
-                                                <!-- 
-                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                                                    <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+
+                                            <!-- Cuerpo de la tarjeta con detalles -->
+                                            <div class="card-body" style="padding: 1.5rem;">
+                                                <!-- Información clave -->
+                                                <div class="d-flex flex-wrap gap-3 mb-4 pb-4 border-bottom">
+                                                    <div class="p-3 bg-light rounded-3 text-center flex-grow-1">
+                                                        <h6 class="text-muted small mb-1" style="font-weight: 700;">Salario (COP)</h6>
+                                                        <p class="h5 mb-0" style="font-weight: 700;">$8M - $10M</p>
+                                                    </div>
+                                                    <div class="p-3 bg-light rounded-3 text-center flex-grow-1">
+                                                        <h6 class="text-muted small mb-1" style="font-weight: 700;">Contrato</h6>
+                                                        <p class="h5 mb-0" style="font-weight: 700;">Indefinido</p>
+                                                    </div>
+                                                    <div class="p-3 bg-light rounded-3 text-center flex-grow-1">
+                                                        <h6 class="text-muted small mb-1" style="font-weight: 700;">Modalidad</h6>
+                                                        <p class="h5 mb-0" style="font-weight: 700;">Híbrido</p>
+                                                    </div>
+                                                    <div class="p-3 bg-light rounded-3 text-center flex-grow-1">
+                                                        <h6 class="text-muted small mb-1" style="font-weight: 700;">Experiencia</h6>
+                                                        <p class="h5 mb-0" style="font-weight: 700;">+5 Años</p>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Descripción del Puesto -->
+                                                <h4 class="mb-3" style="font-weight: 700;">Descripción del Puesto</h4>
+                                                <p class="text-secondary mb-4">
+                                                    Estamos buscando un Desarrollador Frontend Senior con amplia experiencia en React para unirse a nuestro equipo dinámico. Serás responsable de desarrollar y mantener aplicaciones web de alta calidad, colaborando con diseñadores y desarrolladores backend para crear interfaces de usuario fluidas y atractivas.
+                                                </p>
+
+                                                <!-- Responsabilidades -->
+                                                <h4 class="mb-3" style="font-weight: 700;">Responsabilidades</h4>
+                                                <ul class="list-unstyled text-secondary mb-4">
+                                                    <li class="mb-2"><i class="bi bi-check-lg text-primary me-2"></i>Diseñar y construir interfaces de usuario modernas y responsivas con React.js.</li>
+                                                    <li class="mb-2"><i class="bi bi-check-lg text-primary me-2"></i>Optimizar componentes para máximo rendimiento en una amplia gama de dispositivos.</li>
+                                                    <li class="mb-2"><i class="bi bi-check-lg text-primary me-2"></i>Colaborar con el equipo de producto para definir y prototipar nuevas funcionalidades.</li>
+                                                    <li class="mb-2"><i class="bi bi-check-lg text-primary me-2"></i>Escribir código limpio, mantenible y bien documentado.</li>
+                                                </ul>
+
+                                                <!-- Requisitos -->
+                                                <h4 class="mb-3" style="font-weight: 700;">Requisitos</h4>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">React.js</span>
+                                                    <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">JavaScript (ES6+)</span>
+                                                    <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">TypeScript</span>
+                                                    <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">Redux / Zustand</span>
+                                                    <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">HTML5 & CSS3</span>
+                                                    <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">Git</span>
+                                                    <span class="badge bg-secondary-subtle text-secondary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">REST APIs</span>
+                                                    <span class="badge bg-secondary-subtle text-secondary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">Metodologías Ágiles</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Pie de la tarjeta con botones de acción -->
+                                            <div class="card-footer bg-white text-center p-3">
+                                                <button class="btn btn-primary px-5 me-2" style="background-color: #0d6efd; border-color: #0d6efd; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">
+                                                    <i class="bi bi-send-fill me-2"></i>Aplicar Ahora
+                                                </button>
+                                                <button class="btn btn-outline-secondary" style="font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">
+                                                    <i class="bi bi-bookmark me-2"></i>Guardar Vacante
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Columna Secundaria: Información Adicional -->
+                                    <div class="col-lg-4">
+                                        <!-- Tarjeta de la empresa -->
+                                        <div class="card mb-4" style="border: none; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); transition: all 0.3s ease-in-out;">
+                                            <div class="card-body" style="padding: 1.5rem;">
+                                                <h5 class="card-title mb-3" style="font-weight: 700;">Sobre Tech Solutions Inc.</h5>
+                                                <p class="card-text text-secondary small">
+                                                    Somos una empresa líder en innovación tecnológica, dedicada a crear soluciones de software que transforman industrias. Nuestro equipo está compuesto por profesionales apasionados por la tecnología y la excelencia.
+                                                </p>
+                                                <a href="#" class="btn btn-sm btn-outline-primary w-100">
+                                                    Ver Perfil de la Empresa <i class="bi bi-arrow-right-short"></i>
                                                 </a>
-                                                -->
-                                                <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
-                                                    <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
-                                                        <i class="material-symbols-outlined fs-16 text-danger">manage_accounts</i>
+                                            </div>
+                                        </div>
+
+                                        <!-- Tarjeta de vacantes similares -->
+                                        <div class="card" style="border: none; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); transition: all 0.3s ease-in-out;">
+                                            <div class="card-body" style="padding: 1.5rem;">
+                                                <h5 class="card-title mb-3" style="font-weight: 700;">Vacantes Similares</h5>
+                                                <div class="list-group list-group-flush">
+                                                    <a href="#" class="list-group-item list-group-item-action px-0" style="border-left: none; border-right: none; border-top: none;">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <h6 class="mb-1" style="font-weight: 700;">Lead Developer - React & Node</h6>
+                                                        </div>
+                                                        <p class="mb-1 small text-muted">Innovate Corp · Remoto</p>
+                                                    </a>
+                                                    <a href="#" class="list-group-item list-group-item-action px-0" style="border-left: none; border-right: none;">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <h6 class="mb-1" style="font-weight: 700;">UI/UX Engineer</h6>
+                                                        </div>
+                                                        <p class="mb-1 small text-muted">Creative Minds · Medellín, CO</p>
+                                                    </a>
+                                                    <a href="#" class="list-group-item list-group-item-action px-0" style="border-left: none; border-right: none; border-bottom: none;">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <h6 class="mb-1" style="font-weight: 700;">Fullstack Developer (MERN)</h6>
+                                                        </div>
+                                                        <p class="mb-1 small text-muted">Data Systems · Híbrido</p>
                                                     </a>
                                                 </div>
-                                                
-                                                <!-- 
-                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                                                    <i class="material-symbols-outlined fs-16 text-danger">delete</i>
-                                                </a>
-                                                -->
                                             </div>
-                                        </td> 
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-			</div>
-			<div class="card bg-white border-0 rounded-3 mb-4">
-                <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
-                    <p class="text-primary my-2 fs-4 fw-semibold">Entrevistas</p>
-                </div>
-                <div class="card-body p-4">
-                    <div class="default-table-area all-projects">
-                        <div class="table-responsive">
-                            <table class="table align-middle text-center" id="myTable">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">ID</th>
-                                        <th scope="col">FECHA</th>
-                                        <th scope="col">HORA</th>
-                                        <th scope="col">LUGAR / ENLACE</th>
-                                        <th scope="col">TIPO ASIGNACION</th>
-                                        <th scope="col">CANDIDATO</th>
-                                        <th scope="col">ANALISTA RESPONSABLE</th>
-                                        <th scope="col">ESTADO</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for e in entrevistas %}
-                                    <tr>
-                                        <td class="text-body">{{e.id}}</td>
-                                        <td class="text-body">{{e.fecha_entrevista}}</td>
-                                        <td class="text-body">{{e.hora_entrevista}}</td>
-										<td class="text-body">{{e.lugar_enlace}}</td>
-                                        <td class="text-body">{{e.obtener_tipo_entrevista}}</td>
-                                        <td>
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                {% if e.imagen_candidato %}
-                                                    <img src="/media_uploads/{{ e.imagen_candidato}}" class="wh-40 rounded-3" alt="{{ e.imagen_candidato }}">
-                                                {% else %}
-                                                    <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
-                                                {% endif %}
-                                                
-                                                <div class="ms-2 ps-1">
-                                                    {{e.nombre_candidato}}
-                                                </div>
-                                            </div>
-                                            
-                                        </td>
-                                        
-                                        <td class="text-body">{{e.nombre_asignado}}</td>
-                                        <td class="text-body">
-											<span class="badge bg-opacity-10 bg-{{e.obtener_nombre_estado_color.color}} py-1 px-2 text-{{e.obtener_nombre_estado_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_nombre_estado_color.estado}}</span>
-										</td>
+                        <div class="tab-pane fade" id="nav-reclutado" role="tabpanel" aria-labelledby="nav-reclutado-tab" tabindex="0">
+                            <div class="default-table-area all-projects">
+                                <div class="table-responsive">
+                                    <table class="table align-middle text-center" id="reclutamiento-tabla">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">DOCUMENTO</th>
+                                                <th scope="col">CANDIDATO</th>
+                                                <th scope="col">ESTADO</th>
+                                                <th scope="col">ACCIONES</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for e in reclutados %}
+                                            <tr>
+                                                <td class="text-body">{{e.id}}</td>
+                                                <td class="text-body">{{e.candidato_documento}}</td>
 
-                                        {% comment %} <td>
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                {% if e.candidato_imagen_perfil %}
-                                                    <img src="/media_uploads/{{ e.candidato_imagen_perfil}}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
-                                                {% else %}
-                                                    <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
-                                                {% endif %}
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-center">
+                                                        {% if e.candidato_imagen_perfil %}
+                                                            <img src="/media_uploads/{{ e.candidato_imagen_perfil}}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
+                                                        {% else %}
+                                                            <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
+                                                        {% endif %}
+                                                        
+                                                        <div class="ms-2 ps-1">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="fw-medium">{{e.candidato_nombre}}</a>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-opacity-10 bg-{{e.obtener_estado_con_color.color}} py-1 px-2 text-{{e.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_estado_con_color.estado}}</span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-center gap-1">
+                                                        <!-- 
+                                                        <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                                        </a>
+                                                        -->
+                                                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16 text-danger">manage_accounts</i>
+                                                            </a>
+                                                        </div>
+                                                        
+                                                        <!-- 
+                                                        <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                                        </a>
+                                                        -->
+                                                    </div>
+                                                </td> 
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-entrevista" role="tabpanel" aria-labelledby="nav-entrevista-tab" tabindex="0">
+                            <div class="default-table-area all-projects">
+                                <div class="table-responsive">
+                                    <table class="table align-middle text-center" id="entrevista-tabla">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">FECHA</th>
+                                                <th scope="col">HORA</th>
+                                                <th scope="col">LUGAR / ENLACE</th>
+                                                <th scope="col">TIPO ASIGNACION</th>
+                                                <th scope="col">CANDIDATO</th>
+                                                <th scope="col">ANALISTA RESPONSABLE</th>
+                                                <th scope="col">ESTADO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for e in entrevistas %}
+                                            <tr>
+                                                <td class="text-body">{{e.id}}</td>
+                                                <td class="text-body">{{e.fecha_entrevista}}</td>
+                                                <td class="text-body">{{e.hora_entrevista}}</td>
+                                                <td class="text-body">{{e.lugar_enlace}}</td>
+                                                <td class="text-body">{{e.obtener_tipo_entrevista}}</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-center">
+                                                        {% if e.imagen_candidato %}
+                                                            <img src="/media_uploads/{{ e.imagen_candidato}}" class="wh-40 rounded-3" alt="{{ e.imagen_candidato }}">
+                                                        {% else %}
+                                                            <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
+                                                        {% endif %}
+                                                        
+                                                        <div class="ms-2 ps-1">
+                                                            {{e.nombre_candidato}}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </td>
                                                 
-                                                <div class="ms-2 ps-1">
-                                                    <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="fw-medium">{{e.candidato_nombre}}</a>
-                                                </div>
-                                            </div>
-                                            
-                                        </td>
-                                        <td class="text-secondary">{{ e.fecha_aplicacion|date:"Y-m-d" }}</td>
-                                        <td class="text-secondary">{{ e.fecha_actualizacion|date:"Y-m-d" }}</td>
-                                        <td class="text-secondary">{{ e.usuario_asignado_nombre }}</td>
-                                        <td>
-                                            <span class="badge bg-opacity-10 bg-{{e.obtener_estado_con_color.color}} py-1 px-2 text-{{e.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_estado_con_color.estado}}</span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex align-items-center justify-content-center gap-1">
-                                                <!-- 
-                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                                                    <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
-                                                </a>
-                                                -->
-                                                <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
-                                                    <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
-                                                        <i class="material-symbols-outlined fs-16 text-danger">manage_accounts</i>
-                                                    </a>
-                                                </div>
-                                                
-                                                <!-- 
-                                                <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                                                    <i class="material-symbols-outlined fs-16 text-danger">delete</i>
-                                                </a>
-                                                -->
-                                            </div>
-                                        </td>  {% endcomment %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                                <td class="text-body">{{e.nombre_asignado}}</td>
+                                                <td class="text-body">
+                                                    <span class="badge bg-opacity-10 bg-{{e.obtener_nombre_estado_color.color}} py-1 px-2 text-{{e.obtener_nombre_estado_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_nombre_estado_color.estado}}</span>
+                                                </td>
+
+                                                {% comment %} <td>
+                                                    <div class="d-flex align-items-center justify-content-center">
+                                                        {% if e.candidato_imagen_perfil %}
+                                                            <img src="/media_uploads/{{ e.candidato_imagen_perfil}}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
+                                                        {% else %}
+                                                            <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
+                                                        {% endif %}
+                                                        
+                                                        <div class="ms-2 ps-1">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="fw-medium">{{e.candidato_nombre}}</a>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </td>
+                                                <td class="text-secondary">{{ e.fecha_aplicacion|date:"Y-m-d" }}</td>
+                                                <td class="text-secondary">{{ e.fecha_actualizacion|date:"Y-m-d" }}</td>
+                                                <td class="text-secondary">{{ e.usuario_asignado_nombre }}</td>
+                                                <td>
+                                                    <span class="badge bg-opacity-10 bg-{{e.obtener_estado_con_color.color}} py-1 px-2 text-{{e.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_estado_con_color.estado}}</span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-center gap-1">
+                                                        <!-- 
+                                                        <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                                        </a>
+                                                        -->
+                                                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16 text-danger">manage_accounts</i>
+                                                            </a>
+                                                        </div>
+                                                        
+                                                        <!-- 
+                                                        <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                                        </a>
+                                                        -->
+                                                    </div>
+                                                </td>  {% endcomment %}
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">
+                            <p>This is some placeholder content the <strong>Contact tab's</strong> associated content. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling. You can use it with tabs, pills, and any other .nav-powered navigation.</p>
                         </div>
                     </div>
-                </div>
-			</div>
+                <div>
+            </div>
+			
+			
 		</div>
 	</div>
     
@@ -428,7 +575,18 @@ Vacantes Propias
 
 {% block js %} 
 <script>
-    
+
+let reclutamiento_tabla = new DataTable('#reclutamiento-tabla', {
+language: {
+    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+},
+});
+
+let entrevista_tabla = new DataTable('#entrevista-tabla', {
+language: {
+    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+},
+});
 
 </script>  
 {% endblock js %}

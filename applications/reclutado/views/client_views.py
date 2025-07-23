@@ -119,7 +119,9 @@ def detail_vacancy_recruited(request, pk):
 @validar_permisos('acceso_admin', 'acceso_cliente')
 def detail_recruited(request, pk):
     url_actual = f"{request.scheme}://{request.get_host()}"
+   
     validar_registro = False
+
     usuario_id = request.session.get('_auth_user_id')
 
 
@@ -138,8 +140,13 @@ def detail_recruited(request, pk):
     
 
     # Verificar si el cliente_id está en la sesión
-    cliente_id = request.session.get('cliente_id')
-    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+    if request.session['grupo_id'] == 1:
+        cliente_id = asignacion_vacante.vacante_id_052.asignacion_cliente_id_064.id_cliente_asignado.id
+        print(cliente_id)
+        cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+    else:
+        cliente_id = request.session.get('cliente_id')
+        cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
     
     # Obtener información de la vacante
     vacante = query_vacanty_detail().get(id=asignacion_vacante.vacante_id_052.id)

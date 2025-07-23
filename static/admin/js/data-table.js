@@ -33,7 +33,7 @@ class RdataTB {
         this.DataTableRaw = [];
         this.searchValue = '';
         this.ListHiding = [];
-        this.SelectionNumber = [10, 20, 50, 100],
+        this.SelectionNumber = [10, 15, 20, 50],
         this.SelectElementString = '';
         this.ShowHighlight = false;
         this.listTypeDate = [];
