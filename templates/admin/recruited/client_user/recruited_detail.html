@@ -167,19 +167,41 @@ Detalle vacante
                                                             Descargar Hoja de Vida
                                                         </button>
                                                     </div>
-                                                    <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid #dee2e6; margin-top: auto;">
+                                                    <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid #dee2e6;">
                                                         <h3 style="font-size: 1rem; font-weight: 600; color: #212529; margin-top: 1.5rem; margin-bottom: 1rem;">Información de Contacto</h3>
                                                         <div style="margin-bottom: 1rem;">
-                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">email</span>EMAIL</strong>
-                                                            <span style="color: #212529; padding-left: 1.85rem;">juan.perez@example.com</span>
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">badge</span>DOCUMENTO</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.numero_documento }}</span>
                                                         </div>
+                                                        
                                                         <div style="margin-bottom: 1rem;">
-                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-icons" style="font-size: 1.1rem; margin-right: 0.75rem; color: #b10022;">phone</span>TELÉFONO</strong>
-                                                            <span style="color: #212529; padding-left: 1.85rem;">+57 300 123 4567</span>
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">email</span>EMAIL</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.email }}</span>
                                                         </div>
+                                                        
+                                                        <div style="margin-bottom: 1rem;">
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">phone</span>TELÉFONO</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.telefono }}</span>
+                                                        </div>
+                                                        <br>
                                                         <div>
-                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-icons" style="font-size: 1.1rem; margin-right: 0.75rem; color: #b10022;">location_on</span>UBICACIÓN</strong>
-                                                            <span style="color: #212529; padding-left: 1.85rem;">Bogotá, Colombia</span>
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">wc</span>GENERO</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.sexo }}</span>
+                                                        </div>
+                                                        <br>
+                                                        <div>
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">calendar_month</span>FECHA NACIMIENTO</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.fecha_nacimiento }}</span>
+                                                        </div>
+                                                        <br>
+                                                        <div>
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">percent</span>PERFIL COMPLETADO</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.porcentaje }}%</span>
+                                                        </div>
+                                                        <br>
+                                                        <div>
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">location_on</span>UBICACIÓN</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{info_detalle_candidato.ciudad }}, Colombia</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -193,21 +215,18 @@ Detalle vacante
                                                         Formación Académica
                                                     </h3>
                                                     <div>
+                                                        {% for edu in info_detalle_candidato.educacion %}
                                                         <!-- Primer elemento de la línea de tiempo -->
                                                         <div style="position: relative; padding-left: 2rem; padding-bottom: 2rem;">
                                                             <div style="position: absolute; left: 0; top: 5px; height: 100%; width: 2px; background-color: #dee2e6;"></div>
                                                             <div style="position: absolute; left: -7px; top: 5px; width: 14px; height: 14px; background-color: #b10022; border-radius: 50%; border: 2px solid #ffffff;"></div>
-                                                            <p style="font-weight: 600; color: #212529; margin:0;">Universidad Nacional de Colombia</p>
-                                                            <p style="color: #6c757d; margin:0;">Ingeniería de Sistemas y Computación</p>
-                                                            <p style="color: #6c757d; margin:0; font-size: 0.9rem;">2014 - 2018</p>
+                                                            <p style="font-weight: 600; color: #212529; margin:0;">{{ edu.institucion }}</p>
+                                                            <p style="color: #6c757d; margin:0;">{{ edu.titulo }} ({{ edu.tipo_estudio }})</p>
+                                                            <p style="color: #6c757d; margin:0; font-size: 0.9rem;">{{ edu.fecha_inicial }} - {{ edu.fecha_final }}</p>
                                                         </div>
-                                                        <!-- Segundo y último elemento de la línea de tiempo -->
-                                                        <div style="position: relative; padding-left: 2rem;">
-                                                            <div style="position: absolute; left: -7px; top: 5px; width: 14px; height: 14px; background-color: #b10022; border-radius: 50%; border: 2px solid #ffffff;"></div>
-                                                            <p style="font-weight: 600; color: #212529; margin:0;">Platzi</p>
-                                                            <p style="color: #6c757d; margin:0;">Certificado en Desarrollo Web Avanzado</p>
-                                                            <p style="color: #6c757d; margin:0; font-size: 0.9rem;">2019</p>
-                                                        </div>
+                                                        {% empty %}
+                                                            <p>No se registran estudios.</p>
+                                                        {% endfor %}
                                                     </div>
                                                 </div>
 
@@ -217,34 +236,33 @@ Detalle vacante
                                                         Experiencia Laboral
                                                     </h3>
                                                     <div>
+                                                        {% for exp in info_detalle_candidato.experiencia %}
                                                         <!-- Primer elemento de la línea de tiempo -->
                                                         <div style="position: relative; padding-left: 2rem; padding-bottom: 2rem;">
                                                             <div style="position: absolute; left: 0; top: 5px; height: 100%; width: 2px; background-color: #dee2e6;"></div>
                                                             <div style="position: absolute; left: -7px; top: 5px; width: 14px; height: 14px; background-color: #b10022; border-radius: 50%; border: 2px solid #ffffff;"></div>
-                                                            <p style="font-weight: 600; color: #212529; margin:0;">Líder de Desarrollo en Tech Solutions Inc.</p>
-                                                            <p style="color: #6c757d; margin:0;">Ene 2021 - Presente</p>
+                                                            <p style="font-weight: 600; color: #212529; margin:0;"> {{ exp.entidad }} ({{ exp.sector }}).</p>
+                                                            <p style="color: #6c757d; margin:0;">{{ exp.cargo }}</p>
+                                                            <p style="color: #6c757d; margin:0;">{{ exp.fecha_inicial }} a {{ exp.fecha_final }}</p>
                                                         </div>
-                                                        <!-- Segundo y último elemento de la línea de tiempo -->
-                                                        <div style="position: relative; padding-left: 2rem;">
-                                                            <div style="position: absolute; left: -7px; top: 5px; width: 14px; height: 14px; background-color: #b10022; border-radius: 50%; border: 2px solid #ffffff;"></div>
-                                                            <p style="font-weight: 600; color: #212529; margin:0;">Ingeniero de Software en Innovate Corp.</p>
-                                                            <p style="color: #6c757d; margin:0;">Jun 2018 - Dic 2020</p>
-                                                        </div>
+                                                        {% empty %}
+                                                            <p>No se registran experiencias laborales.</p>
+                                                        {% endfor %}
+                                                        
                                                     </div>
                                                 </div>
 
                                                 <div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); padding: 1.5rem;">
                                                     <h3 style="margin: 0 0 1rem 0; font-size: 1.25rem; font-weight: 600; color: #212529; display: flex; align-items: center;">
                                                         <span class="material-symbols-outlined text-primary" style="margin-right: 0.75rem;">star_outline</span>
-                                                        Habilidades Principales
+                                                        Soft Skills
                                                     </h3>
                                                     <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
-                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">Python</span>
-                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">JavaScript</span>
-                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">React</span>
-                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">Node.js</span>
-                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">SQL</span>
-                                                        <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">Docker</span>
+                                                        {% for skill in info_detalle_candidato.skills %}
+                                                            <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">{{ skill.nombre }}</span>
+                                                        {% empty %}
+                                                            <li class="list-group-item">No se registran habilidades.</li>
+                                                        {% endfor %}
                                                     </div>
                                                 </div>
                                             </div>
@@ -381,246 +399,6 @@ Detalle vacante
                     </div>
                 </div>
             </div>
-
-
-             <div class="card bg-white border-0 rounded-3 mb-4">
-                <div class="card-body p-4">
-                    <div class="row">
-                        <div class="col-4">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    {% if candidato.imagen_perfil %}
-                                        <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2 wh-75" alt="{{ candidato.imagen_perfil.url }}">
-                                    {% else %}
-                                        <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2 wh-75" alt="user">
-                                    {% endif %}
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h4 class="fs-17 mb-1 fw-semibold">{{ candidato.nombre_completo }}</h4>
-                                    <span class="fs-14">Candidato</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-8">
-                            <div class="row">
-                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <div class="flex-shrink-0">
-                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-primary bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Aplicó</h4>
-                                            <span>{{reclutado.fecha_aplicacion}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <div class="flex-shrink-0">
-                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-warning bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Actualización</h4>
-                                            <span>{{reclutado.fecha_actualizacion}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <div class="flex-shrink-0">
-                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-{{reclutado.obtener_estado_con_color.color}} bg-gary-light rounded-circle bg-for-dark-mode">person_alert</i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h4 class="fs-14 fw-semibold mb-1">Estado</h4>
-                                            <span></span>
-                                            <span class="badge bg-opacity-10 bg-{{reclutado.obtener_estado_con_color.color}} py-1 px-2 text-{{reclutado.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{reclutado.obtener_estado_con_color.estado}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="accordion faq-wrapper" id="accordionExample">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                            Registro de Aplicación de la Vacante
-                                        </button>
-                                    </h2>
-                                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body">
-                                            <div class="card bg-white border-0 rounded-3 mb-4">
-                                                <div class="card-body p-4">
-                                                    <div class="mb-4">
-                                                        <h3 class="mb-0 text-primary">Historial de Aplicación</h3>
-                                                    </div>
-                                                    <div class="timeline-wrap">
-                                                        {% for h in historial %}
-                                                        <div class="timeline-item-2 mb-5">
-                                                            <div class="text p-4 rounded-3 shadow-sm border-start border-4 {% if h.estado == 'Entrevista Aprobada' %}border-success bg-white{% elif h.estado == 'Entrevista Programada' %}border-warning bg-white{% else %}border-secondary bg-white{% endif %}">
-                                                                <h5 class="fw-bold mb-2 text-dark">
-                                                                    <span class="material-symbols-outlined me-1 {% if h.estado == 'Entrevista Aprobada' %}text-success{% elif h.estado == 'Entrevista Programada' %}text-warning{% else %}text-muted{% endif %}">event</span>
-                                                                    Estado: {{ h.estado }}
-                                                                </h5>
-                                                                <p class="mb-2 text-secondary">{{ h.descripcion|default:"Sin descripción disponible." }}</p>
-                                                        
-                                                                <ul class="ps-0 mb-3 list-unstyled d-flex align-items-center flex-wrap small">
-                                                                    <li class="d-flex align-items-center me-4">
-                                                                        <span class="material-symbols-outlined me-2 text-primary">person</span>
-                                                                        <strong>Usuario:</strong> {{ h.usuario }}
-                                                                    </li>
-                                                                    <li class="d-flex align-items-center me-4">
-                                                                        <span class="material-symbols-outlined me-2 text-primary">work</span>
-                                                                        <strong>Vacante:</strong> {{ h.vacante }}
-                                                                    </li>
-                                                                </ul>
-                                                        
-                                                                <span class="d-block text-muted">
-                                                                    <span class="fw-semibold">ID Aplicación:</span> {{ h.aplicacion_id }}
-                                                                </span>
-                                                            </div>
-                                                        
-                                                            <div class="icon {{ forloop.counter|add:"1" }}">
-                                                                <div></div>
-                                                            </div>
-                                                        
-                                                            <div class="time">
-                                                                <span class="badge bg-primary text-white fs-6">
-                                                                    {{ h.fecha|date:"H:i A, d M Y" }}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        {% endfor %}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="accordion faq-wrapper" id="accordionExample">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                            Información General Candidato
-                                        </button>
-                                    </h2>
-                                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body">
-                                            <div class="card bg-white border-0 rounded-3 mb-4">
-                                                <div class="card-body p-4">
-                                                    <div class="row">
-                                                        <!-- Columna izquierda: Información del candidato -->
-                                                        <div class="col-md-5">
-                                                            <div class="card shadow-sm mb-4">
-                                                                <div class="card-header bg-primary text-white">
-                                                                    <span class="material-symbols-outlined me-2">person</span> Información Personal
-                                                                </div>
-                                                                <div class="card-body">
-                                                                    <p><span class="material-symbols-outlined text-danger me-2">email</span><strong>Email:</strong> {{ info_detalle_candidato.email }}</p>
-                                                                    <p><span class="material-symbols-outlined text-danger me-2">call</span><strong>Teléfono:</strong> {{ info_detalle_candidato.telefono }}</p>
-                                                                    <p><span class="material-symbols-outlined text-danger me-2">wc</span><strong>Sexo:</strong> {{ info_detalle_candidato.sexo }}</p>
-                                                                    <p><span class="material-symbols-outlined text-danger me-2">calendar_month</span><strong>Nacimiento:</strong> {{ info_detalle_candidato.fecha_nacimiento }}</p>
-                                                                    <p><span class="material-symbols-outlined text-danger me-2">location_on</span><strong>Ciudad:</strong> {{ info_detalle_candidato.ciudad }}</p>
-                                                                    <p><span class="material-symbols-outlined text-danger me-2">badge</span><strong>Documento:</strong> {{ info_detalle_candidato.numero_documento }}</p>
-                                                                    <p><span class="material-symbols-outlined text-danger me-2">percent</span><strong>Perfil Completo:</strong> {{ info_detalle_candidato.porcentaje }}%</p>
-                                                                    <p><span class="material-symbols-outlined text-danger me-2">description</span>
-                                                                        <strong>Hoja de Vida:</strong>
-                                                                        {% if info_detalle_candidato.hoja_de_vida %}
-                                                                            <a href="{{ info_detalle_candidato.hoja_de_vida }}" target="_blank">Ver documento</a>
-                                                                        {% else %}
-                                                                            No disponible
-                                                                        {% endif %}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                
-                                                        <!-- Columna derecha: Educación, Experiencia y Habilidades -->
-                                                        <div class="col-md-7">
-                                                            <!-- Educación -->
-                                                            <div class="card shadow-sm mb-4">
-                                                                <div class="card-header bg-success text-white">
-                                                                    <span class="material-symbols-outlined me-2">school</span> Formación Académica
-                                                                </div>
-                                                                <div class="card-body">
-                                                                    {% for edu in info_detalle_candidato.educacion %}
-                                                                        <div class="mb-3">
-                                                                            <p><strong>Institución:</strong> {{ edu.institucion }}</p>
-                                                                            <p><strong>Título:</strong> {{ edu.titulo }} ({{ edu.tipo_estudio }})</p>
-                                                                            <p><strong>Duración:</strong> {{ edu.fecha_inicial }} a {{ edu.fecha_final }}</p>
-                                                                            <p><strong>Carrera:</strong> {{ edu.carrera }} | <strong>Grado en:</strong> {{ edu.grado_en }}</p>
-                                                                            <p><strong>Fortalezas:</strong> {{ edu.fortalezas }}</p>
-                                                                            <p><strong>Ciudad:</strong> {{ edu.ciudad }} | <strong>Estado:</strong> {{ edu.estado }}</p>
-                                                                            <hr>
-                                                                        </div>
-                                                                    {% empty %}
-                                                                        <p>No se registran estudios.</p>
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                
-                                                            <!-- Experiencia -->
-                                                            <div class="card shadow-sm mb-4">
-                                                                <div class="card-header bg-warning text-white">
-                                                                    <span class="material-symbols-outlined me-2">work</span> Experiencia Laboral
-                                                                </div>
-                                                                <div class="card-body">
-                                                                    {% for exp in info_detalle_candidato.experiencia %}
-                                                                        <div class="mb-3">
-                                                                            <p><strong>Entidad:</strong> {{ exp.entidad }} ({{ exp.sector }})</p>
-                                                                            <p><strong>Cargo:</strong> {{ exp.cargo }}</p>
-                                                                            <p><strong>Fechas:</strong> {{ exp.fecha_inicial }} a {{ exp.fecha_final }}</p>
-                                                                            <p><strong>Activo:</strong> {{ exp.activo }} | <strong>Estado:</strong> {{ exp.estado }}</p>
-                                                                            <p><strong>Logro:</strong> {{ exp.logro }}</p>
-                                                                            <hr>
-                                                                        </div>
-                                                                    {% empty %}
-                                                                        <p>No se registran experiencias laborales.</p>
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                
-                                                            <!-- Habilidades -->
-                                                            <div class="card shadow-sm">
-                                                                <div class="card-header bg-info text-white">
-                                                                    <span class="material-symbols-outlined me-2">star</span> Habilidades
-                                                                </div>
-                                                                <div class="card-body">
-                                                                    <ul class="list-group">
-                                                                        {% for skill in info_detalle_candidato.skills %}
-                                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                                                <span><span class="material-symbols-outlined text-success me-2">check_circle</span>{{ skill.nombre }}</span>
-                                                                                <span class="badge bg-secondary">{{ skill.nivel }}</span>
-                                                                            </li>
-                                                                        {% empty %}
-                                                                            <li class="list-group-item">No se registran habilidades.</li>
-                                                                        {% endfor %}
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
         </div>
     </div>
 </div>
