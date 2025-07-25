@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q, Value, Case, When, CharField
-from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
+from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli078MotivadoresCandidato
 
 from applications.reclutado.forms.FormRecruited import ReclutadoCrearForm
 from applications.services.service_interview import query_interview_all
@@ -71,168 +71,216 @@ def create_vacanty_from_client(request, pk):
         asignacion_cliente_id_064__tipo_asignacion='1'  # Aquí va el campo correcto
     )
 
+    asignacion_cliente = Cli064AsignacionCliente.objects.get(id_cliente_asignado=pk)
+
+
     form = VacancyFormAllV2(cliente_id=pk)
 
     if request.method == 'POST':
         form = VacancyFormAllV2(request.POST, cliente_id=pk)
 
         if form.is_valid():
-
             #datos principales
-            titulo = form.cleaned_data['titulo']                            #perfil de la vacante
-            cargo = form.cleaned_data['cargo']                              #perfil de la vacante
-            numero_posiciones = form.cleaned_data['numero_posiciones']      #perfil de la vacante
-            cantidad_presentar = form.cleaned_data['cantidad_presentar']     #perfil de la vacante    
-            fecha_presentacion = form.cleaned_data['fecha_presentacion']    #vacante
-            
-
-            #detalles del trabajo
+            cargo = form.cleaned_data['cargo']
+            cargo_obj= Cli068Cargo.objects.get(id=cargo)
             termino_contrato = form.cleaned_data['termino_contrato']
-            tiempo_experiencia = form.cleaned_data['tiempo_experiencia']
             modalidad = form.cleaned_data['modalidad']
-            jornada = form.cleaned_data['jornada']
-            
-            #lugar del trabajo
+            numero_posiciones = form.cleaned_data['numero_posiciones']
+            cantidad_presentar = form.cleaned_data['cantidad_presentar']
+            fecha_presentacion = form.cleaned_data['fecha_presentacion']
             lugar_trabajo = form.cleaned_data['lugar_trabajo']
-            barrio =  form.cleaned_data['barrio']
-            direccion =  form.cleaned_data['direccion']
-            url_mapa = form.cleaned_data['url_mapa']
-            
-            horario_inicio = form.cleaned_data['horario_inicio']
-            horario_final = form.cleaned_data['horario_final']
-            hora_inicio = form.cleaned_data['hora_inicio']
-            hora_final = form.cleaned_data['hora_final']
-            
-            #requisitos y habilidades
-            soft_skills = form.cleaned_data['soft_skills']
-            hard_skills = form.cleaned_data['hard_skills']
-            idioma = form.cleaned_data['idioma']
-            nivel_idioma = form.cleaned_data['nivel_idioma']
-            profesion_estudio = form.cleaned_data['profesion_estudio']
-            nivel_estudio = form.cleaned_data['nivel_estudio']
-            edad_inicial = form.cleaned_data['edad_inicial']
-            edad_final = form.cleaned_data['edad_final']
-            genero = form.cleaned_data['genero']
-            
-
-            #informacion salarial
-            salario = form.cleaned_data['salario']
-            
+            barrio = form.cleaned_data['barrio']
+            direccion = form.cleaned_data['direccion']
+            salario = form.cleaned_data['salario'].replace('.', '')
             tipo_salario = form.cleaned_data['tipo_salario']
             frecuencia_pago = form.cleaned_data['frecuencia_pago']
             salario_adicional = form.cleaned_data['salario_adicional']
+            edad_inicial = form.cleaned_data['edad_inicial']
+            edad_final = form.cleaned_data['edad_final']   
+            genero = form.cleaned_data['genero']
+            motivo_vacante = form.cleaned_data['motivo_vacante']
+            otro_motivo = form.cleaned_data['otro_motivo']
+            
+            json_motivo =  []
+            json_motivo.append({
+                "motivo_vacante":motivo_vacante,
+                "otro_motivo":otro_motivo
+            })
 
-            #responsabilidad del cargo
-            funciones_responsabilidades = form.cleaned_data['funciones_responsabilidades']
+            horarios = []
+            for i in range(1, 4):
+                horario_inicio = form.cleaned_data.get(f'horario_inicio_{i}')
+                horario_final = form.cleaned_data.get(f'horario_final_{i}')
+                hora_inicio = form.cleaned_data.get(f'hora_inicio_{i}')
+                hora_final = form.cleaned_data.get(f'hora_final_{i}')
+                if all([horario_inicio, horario_final, hora_inicio, hora_final]):
+                    horarios.append({
+                        "horario_inicio": horario_inicio,
+                        "horario_final": horario_final,
+                        "hora_inicio": str(hora_inicio),
+                        "hora_final": str(hora_final),
+                    })
+            json_horarios = json.dumps(horarios, ensure_ascii=False)
+            
+            funcion_responsabilidad = []
+            for i in range(1,4):
+                funciones_responsabilidades = form.cleaned_data.get(f'funciones_responsabilidades_{i}')
+                if funciones_responsabilidades:
+                    funcion_responsabilidad.append({
+                        "funcion_responsabilidad": funciones_responsabilidades,
+                    })
+            json_funciones = json.dumps(funcion_responsabilidad, ensure_ascii=False)
 
-            #descripcion de la vacante
-            descripcion_vacante = form.cleaned_data['descripcion_vacante']
+            # requisitos tecnicos
+            experiencia = []
+            for i in range(1,4):
+                tiempo_experiencia = form.cleaned_data.get(f'tiempo_experiencia_{i}')
+                experiencia_especifica_en = form.cleaned_data.get(f'experiencia_especifica_en_{i}')
+                if all([tiempo_experiencia, experiencia_especifica_en]):
+                    experiencia.append({
+                        "tiempo_experiencia" : tiempo_experiencia,
+                        "experiencia_especifica_en" : experiencia_especifica_en,
+                    })
+            json_experiencia = json.dumps(experiencia, ensure_ascii=False)
 
-            #creacion del perfil de la vacante
-            perfil_vacante, perfil_vacante_nuevo = Cli073PerfilVacante.objects.get_or_create(
-                edad_inicial=edad_inicial,
-                edad_final=edad_final,
-                genero=genero,
-                tiempo_experiencia=tiempo_experiencia,
+            idiomas = []
+            for i in range(1,4):
+                idioma = form.cleaned_data.get(f'idioma_{i}')
+                nivel_idioma = form.cleaned_data.get(f'nivel_idioma_{i}')
+                if all([idioma, nivel_idioma]):
+                    idiomas.append({
+                        "idioma" : idioma,
+                        "nivel_idioma" : nivel_idioma,
+                    })
+            json_idiomas = json.dumps(idiomas, ensure_ascii=False)
+
+            profesion_estudio = form.cleaned_data['profesion_estudio']
+            nivel_estudio = form.cleaned_data['nivel_estudio']
+            estado_estudio = form.cleaned_data['estado_estudio']
+
+            estudios_complentarios_all = []
+            for i in range(1,4):
+                estudios_complementarios = form.cleaned_data.get(f'estudios_complementarios_{i}')
+                estudios_complementarios_certificado = form.cleaned_data.get(f'estudios_complementarios_certificado_{i}')
+
+                if all([estudios_complementarios, estudios_complementarios_certificado]):
+                    estudios_complentarios_all.append({
+                        "estudio" : estudios_complementarios,
+                        "certificado_estudios_complementarios" : estudios_complementarios_certificado,
+                    })
+            json_estudios_complementarios = json.dumps(estudios_complentarios_all, ensure_ascii=False)
+
+            # Competencias
+            relacionales = form.cleaned_data.get('skill_relacionales', [])
+            personales = form.cleaned_data.get('skill_personales', [])
+            cognitivas = form.cleaned_data.get('skill_cognitivas', [])
+            digitales = form.cleaned_data.get('skill_digitales', [])
+            liderazgo = form.cleaned_data.get('skill_liderazgo', [])
+            
+            all_selected_skills = (
+                list(relacionales) +
+                list(personales) +
+                list(cognitivas) +
+                list(digitales) +
+                list(liderazgo)
+            )
+
+            
+            #fitcultural 
+            grupo_fit_1 = form.cleaned_data.get('grupo_fit_1', [])
+            grupo_fit_2 = form.cleaned_data.get('grupo_fit_2', [])
+            grupo_fit_3 = form.cleaned_data.get('grupo_fit_3', [])
+            grupo_fit_4 = form.cleaned_data.get('grupo_fit_4', [])
+            grupo_fit_5 = form.cleaned_data.get('grupo_fit_5', [])
+
+            all_grupo_fit = (
+                list(grupo_fit_1) +
+                list(grupo_fit_2) +
+                list(grupo_fit_3) +
+                list(grupo_fit_4) +
+                list(grupo_fit_5) 
+            )
+
+            #motivadores
+            motivadores_candidato = form.cleaned_data.get('motivadores_candidato')
+            otro_motivador = form.cleaned_data.get('otro_motivador')
+
+            #Comentarios 
+            comentarios= form.cleaned_data.get('comentarios')
+            descripcion_vacante = form.cleaned_data.get('descripcion_vacante')
+
+            #creacion perfil de la vacante
+            perfil_vacante = Cli073PerfilVacante.objects.create(
+                edad_inicial= edad_inicial,
+                edad_final= edad_final,
+                genero= genero,
+                tiempo_experiencia= 6,
                 modalidad=modalidad,
-                jornada=jornada,
                 salario=salario,
-                tipo_salario=tipo_salario,
+                tipo_salario= tipo_salario,
                 frecuencia_pago=frecuencia_pago,
-                salario_adicional=salario_adicional,
-                idioma=idioma,
-                nivel_idioma=nivel_idioma,
-                profesion_estudio=Cli055ProfesionEstudio.objects.get(id=profesion_estudio),
-                nivel_estudio=nivel_estudio,
-                estado_estudio=False,  # Assuming default value
-                lugar_trabajo=Cat004Ciudad.objects.get(id=lugar_trabajo),
+                salario_adicional= salario_adicional,
+                idioma= None,
+                nivel_idioma=None,
+                profesion_estudio= Cli055ProfesionEstudio.objects.get(id=profesion_estudio), # ForeignKey a Cli055ProfesionEstudio
+                nivel_estudio= nivel_estudio,
+                estado_estudio= estado_estudio,
+                lugar_trabajo = Cat004Ciudad.objects.get(id=lugar_trabajo),
+                barrio= barrio,
+                direccion= direccion,
+                url_mapa= None,
                 termino_contrato=termino_contrato,
-                estado=Cat001Estado.objects.get(id=1),
-                horario_inicio=horario_inicio,  # Assuming default value
-                horario_final=horario_final,  # Assuming default value
-                hora_inicio=hora_inicio,  # Assuming default value
-                hora_final=hora_final,  # Assuming default value
-                barrio=barrio,  # Assuming default value
-                direccion=direccion,  # Assuming default value
-                url_mapa=url_mapa  # Assuming default value
+                horario_inicio= None,
+                horario_final= None,
+                hora_inicio= None,
+                hora_final= None,
+                motivo_vacante= json_motivo,
+                horario= json_horarios,
+                experiencia_laboral= json_experiencia,
+                idiomas=json_idiomas,
+                estudio_complementario= json_estudios_complementarios,
+                funciones_responsabilidades=json_funciones
             )
 
-        
-            #verificacion de asignación vacante
-            asignacion_cliente, asignacion_cliente_created = Cli064AsignacionCliente.objects.get_or_create(
-                id_cliente_maestro=Cli051Cliente.objects.get(id=1000),
-                id_cliente_asignado=Cli051Cliente.objects.get(id=pk),
-                defaults={'tipo_asignacion': '1', 'estado': Cat001Estado.objects.get(id=1)}
-            )
-
-            #creacion de la vacante
             vacante = Cli052Vacante.objects.create(
-                titulo=titulo,
-                numero_posiciones=numero_posiciones,
+                cargo = cargo_obj,
+                numero_posiciones = numero_posiciones,
                 cantidad_presentar=cantidad_presentar,
-                estado_vacante=1,
-                estado_id_001=Cat001Estado.objects.get(id=1),
-                fecha_presentacion=fecha_presentacion,
-                # usuario_asignado=request.user,
-                asignacion_cliente_id_064=asignacion_cliente,
-                cargo=Cli068Cargo.objects.get(id=cargo),
-                perfil_vacante=perfil_vacante,
-                descripcion_vacante=descripcion_vacante
+                titulo = f'Vacante para el cargo:{cargo_obj.nombre_cargo}',
+                motivadores = Cli078MotivadoresCandidato.objects.get(id=motivadores_candidato),
+                otro_motivador = otro_motivador,
+                fecha_presentacion = fecha_presentacion,
+                asignacion_cliente_id_064 = asignacion_cliente,
+                perfil_vacante = perfil_vacante,
+                descripcion_vacante = descripcion_vacante, 
+                comentarios = comentarios
             )
 
-            # Convertir el string JSON en un objeto Python (lista de diccionarios)
-            skills = json.loads(soft_skills)
-            
-            # Ahora puedes iterar sobre la lista de diccionarios
-            for skill in skills:
-                # Intentar obtener el objeto soft_skills
-                soft_skills, created = Cli053SoftSkill.objects.get_or_create(
-                    nombre = skill['value'],
-                    defaults={'estado_id_001': Cat001Estado.objects.get(id=1)}
-                )
+            # 1. Elimina las relaciones existentes para esta vacante.
+            # Esto es crucial para manejar actualizaciones y evitar errores por la restricción 'unique_together'.
+            Cli052VacanteSoftSkillsId053.objects.filter(cli052vacante=vacante).delete()
 
-                Cli052VacanteSoftSkillsId053.objects.create(
+            # 2. Prepara una lista de los nuevos objetos a crear.
+            # Usar 'cli053softskill_id' es más eficiente porque evita consultar cada objeto SoftSkill.
+            objetos_a_crear = [
+                Cli052VacanteSoftSkillsId053(
                     cli052vacante=vacante,
-                    cli053softskill=soft_skills
+                    cli053softskill_id=skill_obj.id 
                 )
+                for skill_obj in all_selected_skills 
+            ]
 
-
-            # Convertir el string JSON en un objeto Python (lista de diccionarios)
-            skills = json.loads(hard_skills)
+            # 3. Inserta todos los nuevos registros en una sola consulta (si la lista no está vacía).
+            if objetos_a_crear:
+                Cli052VacanteSoftSkillsId053.objects.bulk_create(objetos_a_crear)
             
-            # Ahora puedes iterar sobre la lista de diccionarios
-            for skill in skills:
-                # Intentar obtener el objeto hard_skills
-                hard_skills, created = Cli054HardSkill.objects.get_or_create(
-                    nombre = skill['value'],
-                    defaults={'estado_id_001': Cat001Estado.objects.get(id=1)}
-                )
-
-                Cli052VacanteHardSkillsId054.objects.create(
-                    cli052vacante=vacante,
-                    cli054hardskill=hard_skills
-                )
-
-            # Iteraciones con las funciones y la vacante
-            funciones_responsabilidades = json.loads(funciones_responsabilidades)
-            for funcion in funciones_responsabilidades:
-                funcion_responsabilidad, created = Cli072FuncionesResponsabilidades.objects.get_or_create(
-                    nombre=funcion['value'],
-                    defaults={'estado': Cat001Estado.objects.get(id=1)}
-                )
-
-                Cli074AsignacionFunciones.objects.create(
-                    vacante=vacante,
-                    funcion_responsabilidad=funcion_responsabilidad,
-                    estado=Cat001Estado.objects.get(id=1)
-                )
-
-            # form.save()
+            vacante.fit_cultural.set(all_grupo_fit)
+            
             messages.success(request, 'Vacante creada correctamente')
-            return redirect('vacantes:vacantes_propias', pk=pk)
-
+            return redirect('vacantes:vacantes_propias' pk=pk)
         else:
-            print(form.errors)
+            messages.error(request, 'Por favor revise el formulario, errores encontrados.')
+            
     else:
         form = VacancyFormAllV2(cliente_id=pk)
 
