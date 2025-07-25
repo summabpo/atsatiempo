@@ -1,0 +1,88 @@
+{% load static %}
+<script>
+    $(document).ready(function() {
+
+    // Otro motivo vacante
+    function toggleOtroMotivo() {
+        const valorMotivo = $('#id_motivo_vacante').val();
+
+        // Solo mostrar cuando el valor sea específicamente 'OT'
+        if (valorMotivo === 'OT') {
+            $('#id_otro_motivo').show();
+        } else {
+            $('#id_otro_motivo').hide();
+            $('#id_otro_motivo').val('');
+        }
+    }
+
+    $('#id_motivo_vacante').on('change', toggleOtroMotivo);
+    toggleOtroMotivo();  // Ejecutar al cargar la página
+
+    // Motivadores Candidato
+    function toggleOtroMotivador() {
+        const valorMotivador = $('#id_motivadores_candidato').val();
+
+        // Solo mostrar cuando el valor sea específicamente '5'
+        if (valorMotivador == 5) {
+            $('#id_otro_motivador').show();
+        } else {
+            $('#id_otro_motivador').hide();
+            $('#id_otro_motivador').val('');
+        }
+    }
+
+    $('#id_motivadores_candidato').on('change', toggleOtroMotivador);
+    toggleOtroMotivador();  // Ejecutar al cargar la página
+
+
+});
+
+
+    // Initialize select2 for specific fields
+    // Initialize select2 for specific fields
+    initializeSelect2('#id_cargo');
+    initializeSelect2('#id_edad');
+    initializeSelect2('#id_genero');
+    initializeSelect2('#id_tiempo_experiencia');
+    initializeSelect2('#id_modalidad');
+    initializeSelect2('#id_jornada');
+    initializeSelect2('#id_tipo_salario');
+    initializeSelect2('#id_nivel_estudio');
+    initializeSelect2('#id_lugar_trabajo');
+    initializeSelect2('#id_termino_contrato');
+    initializeSelect2('#id_profesion_estudio');
+    initializeSelect2('#id_frecuencia_pago');
+    initializeSelect2('#id_nivel_idioma');
+    initializeSelect2('#id_motivo_vacante');
+    initializeSelect2('#id_motivadores_candidato');
+    
+    initializeSelect2('#id_estudios_complementarios_certificado_1');
+    initializeSelect2('#id_estudios_complementarios_certificado_2');
+    initializeSelect2('#id_estudios_complementarios_certificado_3');
+    initializeSelect2('#id_numero_posiciones');
+    initializeSelect2('#id_cantidad_presentar');
+    initializeSelect2('#id_estado_estudio');
+    initializeSelect2('#id_idioma');
+    initializeSelect2('#id_edad_inicial');
+    initializeSelect2('#id_edad_final');
+    initializeSelect2('#id_idioma_1');
+    initializeSelect2('#id_idioma_2');
+    initializeSelect2('#id_nivel_idioma_1');
+    initializeSelect2('#id_nivel_idioma_2');
+    
+
+    initializeSelect2('#id_tiempo_experiencia_1');
+    initializeSelect2('#id_tiempo_experiencia_2');
+    initializeSelect2('#id_tiempo_experiencia_3');
+
+    initializeSelect2('#id_horario_final_1');
+    initializeSelect2('#id_horario_inicio_1');
+    initializeSelect2('#id_horario_final_2');
+    initializeSelect2('#id_horario_inicio_2');
+    initializeSelect2('#id_horario_final_3');
+    initializeSelect2('#id_horario_inicio_3');
+
+    // Lista personalizada para el campo 2
+    const semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    incializarTagifyLista('id_horario', semana);
+</script>
