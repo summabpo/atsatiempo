@@ -41,7 +41,6 @@ Vacantes Propias
     <div class="row">
 		<div class="col-md-12">
 			{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_vacancy=True %}
-            
 		</div>
 	</div>
 
@@ -576,17 +575,77 @@ Vacantes Propias
 {% block js %} 
 <script>
 
-let reclutamiento_tabla = new DataTable('#reclutamiento-tabla', {
-language: {
-    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-},
-});
+{% if form.errors %}
+    var myModal = new bootstrap.Modal(document.getElementById('reclutadoCandidato'));
+    myModal.show();
+{% endif %}
 
-let entrevista_tabla = new DataTable('#entrevista-tabla', {
-language: {
-    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-},
-});
+$(document).ready(function () {
+        const inputDocumento = $('#id_numero_documento');
+        const apiUrl = "{% url 'reclutados:api_canidate_document' %}";
+
+        inputDocumento.on('blur', function () {
+            const numeroDocumento = $(this).val().trim();
+
+            if (numeroDocumento.length > 0) {
+                $.ajax({
+                    url: apiUrl,
+                    method: 'POST',
+                    data: {
+                        numero_documento: numeroDocumento,
+                        vacante_id: '{{ vacante.id }}',
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        if (data.status == 'error') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message,
+                                confirmButtonText: 'Aceptar'
+                            });
+                            
+                            // Limpiar los campos si hay error
+                            $('#id_primer_nombre').val('');
+                            $('#id_segundo_nombre').val('');
+                            $('#id_primer_apellido').val('');
+                            $('#id_segundo_apellido').val('');
+                            $('#id_email').val('');
+                            $('#id_telefono').val('');
+                            return;
+                        }
+
+                        // Llenar campos
+                        $('#id_primer_nombre').val(data.primer_nombre || '');
+                        $('#id_segundo_nombre').val(data.segundo_nombre || '');
+                        $('#id_primer_apellido').val(data.primer_apellido || '');
+                        $('#id_segundo_apellido').val(data.segundo_apellido || '');
+                        $('#id_email').val(data.email || '');
+                        $('#id_telefono').val(data.telefono || '');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error al buscar candidato:', error);
+                        /*
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error al buscar candidato.',
+                            confirmButtonText: 'Aceptar'
+                        });
+                        */
+                        
+                        // Limpiar los campos si hay error
+                        $('#id_primer_nombre').val('');
+                        $('#id_segundo_nombre').val('');
+                        $('#id_primer_apellido').val('');
+                        $('#id_segundo_apellido').val('');
+                        $('#id_email').val('');
+                        $('#id_telefono').val('');
+                    }
+                });
+            }
+        });
+    });
 
 </script>  
 {% endblock js %}
