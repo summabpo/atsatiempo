@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Count
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli068Cargo, Cli077FitCultural, Cli078MotivadoresCandidato
-from applications.candidato.models import Can101Candidato
+from applications.candidato.models import Can101Candidato, Can104Skill
 from applications.usuarios.models import UsuarioBase
 
 #choices
@@ -141,6 +141,7 @@ class Cli052Vacante(models.Model):
     perfil_vacante = models.ForeignKey(Cli073PerfilVacante, on_delete=models.CASCADE, null=True, blank=True)
     descripcion_vacante = models.TextField(null=True, blank=True)
     comentarios = models.TextField(null=True, blank=True)
+    habilidades = models.ManyToManyField(Can104Skill, related_name="habilidades_vacante")
     
 
     def __str__(self):

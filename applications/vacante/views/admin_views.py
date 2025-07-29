@@ -82,10 +82,10 @@ def create_vacanty_from_client(request, pk):
         if form.is_valid():
             # --- 1. Recolecta los datos de los campos JSON en listas de Python ---
             # Motivo de la vacante (tu lógica original ya era correcta)
-            motivo_vacante_data = [{
-                "motivo_vacante": form.cleaned_data['motivo_vacante'],
-                "otro_motivo": form.cleaned_data['otro_motivo']
-            }]
+            motivo_vacante_data = {
+                "motivo": form.cleaned_data.get('motivo_vacante'),
+                "otro_motivo": form.cleaned_data.get('otro_motivo')
+            }
 
             # Horarios
             horarios_data = []
@@ -189,12 +189,9 @@ def create_vacanty_from_client(request, pk):
                 descripcion_vacante=form.cleaned_data.get('descripcion_vacante'),
                 comentarios=form.cleaned_data.get('comentarios')
             )
-
-            # --- 4. Asigna las relaciones ManyToMany de forma eficiente ---
             
-            # Soft Skills
-            # ✅ Convertimos cada QuerySet a una lista antes de sumar
-            skill_objects = (
+            # 1. Combina todos los objetos skill del formulario en una sola lista
+            skills_seleccionadas = (
                 list(form.cleaned_data.get('skill_relacionales', [])) +
                 list(form.cleaned_data.get('skill_personales', [])) +
                 list(form.cleaned_data.get('skill_cognitivas', [])) +
@@ -202,19 +199,9 @@ def create_vacanty_from_client(request, pk):
                 list(form.cleaned_data.get('skill_liderazgo', []))
             )
 
-            if skill_objects:
-                # Preparamos una lista de los nuevos registros para la tabla intermedia
-                # ✅ skill_object es un objeto completo, por lo que usamos skill_object.id
-                objetos_a_crear = [
-                    Cli052VacanteSoftSkillsId053(
-                        cli052vacante=vacante,
-                        cli053softskill_id=skill_object.id 
-                    )
-                    for skill_object in skill_objects
-                ]
-                
-                # Insertamos todos los registros en una sola consulta para mayor eficiencia
-                Cli052VacanteSoftSkillsId053.objects.bulk_create(objetos_a_crear)
+            # 2. Usa .set() en tu nuevo campo 'habilidades'. Django hace todo el trabajo.
+            if skills_seleccionadas:
+                vacante.habilidades.set(skills_seleccionadas)
 
             # Fit Cultural (El método .set() SÍ funciona aquí, asumiendo que su tabla intermedia es manejada por Django)
             fit_cultural_objects = (
@@ -253,6 +240,7 @@ def edit_vacanty_from_client(request, pk, vacante_id):
     data = query_client_detail(pk)
 
     vacante = get_object_or_404(Cli052Vacante, id=vacante_id)
+    habilidades_guardadas = vacante.habilidades.all() 
     perfil_vacante = vacante.perfil_vacante
 
     # IDs de Skills extraídos de la tabla can_104_skill
@@ -277,7 +265,7 @@ def edit_vacanty_from_client(request, pk, vacante_id):
         'modalidad': perfil_vacante.modalidad if perfil_vacante else None,
         'cantidad_presentar': vacante.cantidad_presentar,
         'numero_posiciones': vacante.numero_posiciones,
-        'fecha_presentacion': vacante.fecha_presentacion,
+        'fecha_presentacion': vacante.fecha_presentacion.strftime('%Y-%m-%d') if vacante.fecha_presentacion else None,
         'barrio': perfil_vacante.barrio if perfil_vacante else None,
         'direccion': perfil_vacante.direccion if perfil_vacante else None,
         'salario': str(perfil_vacante.salario) if perfil_vacante and perfil_vacante.salario else None,
@@ -294,6 +282,11 @@ def edit_vacanty_from_client(request, pk, vacante_id):
         'otro_motivador': vacante.otro_motivador,
         'comentarios': vacante.comentarios,
         'descripcion_vacante': vacante.descripcion_vacante,
+        'skill_relacionales': habilidades_guardadas,
+        'skill_personales': habilidades_guardadas,
+        'skill_cognitivas': habilidades_guardadas,
+        'skill_digitales': habilidades_guardadas,
+        'skill_liderazgo': habilidades_guardadas,
     }
 
     # Extraer datos de campos JSON del perfil_vacante
@@ -344,12 +337,6 @@ def edit_vacanty_from_client(request, pk, vacante_id):
                     bloque = funcion.get('bloque', 1)
                     initial[f'funciones_responsabilidades_{bloque}'] = funcion.get('funcion', '')
 
-    # Skills (ManyToMany fields) - AHORA FILTRAMOS POR ID
-    initial['skill_relacionales'] = list(vacante.soft_skills_id_053.filter(id__in=SKILLS_RELACIONALES_IDS).values_list('id', flat=True))
-    initial['skill_personales'] = list(vacante.soft_skills_id_053.filter(id__in=SKILLS_PERSONALES_IDS).values_list('id', flat=True))
-    initial['skill_cognitivas'] = list(vacante.soft_skills_id_053.filter(id__in=SKILLS_COGNITIVAS_IDS).values_list('id', flat=True))
-    initial['skill_digitales'] = list(vacante.soft_skills_id_053.filter(id__in=SKILLS_DIGITALES_IDS).values_list('id', flat=True))
-    initial['skill_liderazgo'] = list(vacante.soft_skills_id_053.filter(id__in=SKILLS_LIDERAZGO_IDS).values_list('id', flat=True))
 
     # Fit cultural
     initial['grupo_fit_1'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_1_IDS).values_list('id', flat=True))
@@ -372,6 +359,12 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             vacante.comentarios = form.cleaned_data['comentarios']
             vacante.motivadores = Cli078MotivadoresCandidato.objects.get(id=form.cleaned_data['motivadores_candidato']) if form.cleaned_data['motivadores_candidato'] else None
             vacante.otro_motivador = form.cleaned_data['otro_motivador']
+            vacante.habilidades.set(form.cleaned_data.get('skill_relacionales', []))
+            vacante.habilidades.set(form.cleaned_data.get('skill_personales', []))
+            vacante.habilidades.set(form.cleaned_data.get('skill_cognitivas', []))
+            vacante.habilidades.set(form.cleaned_data.get('skill_digitales', []))
+            vacante.habilidades.set(form.cleaned_data.get('skill_liderazgo', []))
+
             vacante.save()
 
             # Update perfil_vacante
@@ -473,22 +466,18 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             perfil_vacante.save()
 
             # Update skills (ManyToMany fields)
-            # Soft skills
-            vacante.soft_skills_id_053.clear()
-            skill_relacionales = form.cleaned_data.get('skill_relacionales', [])
-            skill_personales = form.cleaned_data.get('skill_personales', [])
-            skill_cognitivas = form.cleaned_data.get('skill_cognitivas', [])
-            skill_digitales = form.cleaned_data.get('skill_digitales', [])
-            skill_liderazgo = form.cleaned_data.get('skill_liderazgo', [])
-            
-            # Combinar todas las skills seleccionadas
-            todas_skills = list(skill_relacionales) + list(skill_personales) + list(skill_cognitivas) + list(skill_digitales) + list(skill_liderazgo)
-            vacante.soft_skills_id_053.add(*todas_skills)
-            
-            # Hard skills (si tienes este campo en el formulario)
-            # vacante.hard_skills_id_054.clear()
-            # hard_skills = form.cleaned_data.get('hard_skills', [])
-            # vacante.hard_skills_id_054.add(*hard_skills)
+            # 1. Recolecta todos los objetos 'skill' del formulario en una sola lista
+            skills_seleccionadas = (
+                list(form.cleaned_data.get('skill_relacionales', [])) +
+                list(form.cleaned_data.get('skill_personales', [])) +
+                list(form.cleaned_data.get('skill_cognitivas', [])) +
+                list(form.cleaned_data.get('skill_digitales', [])) +
+                list(form.cleaned_data.get('skill_liderazgo', []))
+            )
+
+            # 2. ✅ Usa .set() para actualizar la relación.
+            # Esto borra las habilidades viejas y agrega las nuevas automáticamente.
+            vacante.habilidades.set(skills_seleccionadas)
             
             # Fit cultural
             vacante.fit_cultural.clear()

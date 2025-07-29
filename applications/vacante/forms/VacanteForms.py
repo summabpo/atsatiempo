@@ -2214,7 +2214,6 @@ class VacancyAssingForm(forms.Form):
 
         return cleaned_data
 
-
 class VacancyFormAllV2(forms.Form):
     
     titulo = forms.CharField(
@@ -2432,6 +2431,8 @@ class VacancyFormAllV2(forms.Form):
             'rows': 2
         })
     )
+
+
 
     skill_relacionales = forms.ModelMultipleChoiceField(
             queryset=Can104Skill.objects.filter(estado_id_004=1, grupo=1).order_by('id'),
@@ -2757,7 +2758,7 @@ class VacancyFormAllV2(forms.Form):
                     'placeholder': 'Ingrese la descripción de la vacante',
                     'rows': 5,
                     'cols': 30,
-                    'id': 'id_descripcion_vacante'
+                    'id': 'id_comentarios'
                 }
             ),
             required=False
@@ -2894,18 +2895,11 @@ class VacancyFormAllV2(forms.Form):
             idioma = cleaned_data.get(f'idioma_{i}')
             nivel_idioma = cleaned_data.get(f'nivel_idioma_{i}')
 
-            if i == 1:
-                # Primer idioma: ambos campos son obligatorios
-                if not idioma:
-                    self.add_error(f'idioma_{i}', 'El campo Idioma 1 es obligatorio.')
-                if not nivel_idioma:
-                    self.add_error(f'nivel_idioma_{i}', 'El campo Nivel 1 es obligatorio.')
-            else:
-                # Idiomas adicionales: validación cruzada solo si uno está lleno
-                if idioma and not nivel_idioma:
-                    self.add_error(f'nivel_idioma_{i}', f'Debe seleccionar el nivel para el idioma #{i}.')
-                elif nivel_idioma and not idioma:
-                    self.add_error(f'idioma_{i}', f'Debe seleccionar el idioma #{i}.')
+            # Validación cruzada para ambos idiomas: si uno está lleno, el otro también debe estarlo
+            if idioma and not nivel_idioma:
+                self.add_error(f'nivel_idioma_{i}', f'Debe seleccionar el nivel para el idioma #{i}.')
+            elif nivel_idioma and not idioma:
+                self.add_error(f'idioma_{i}', f'Debe seleccionar el idioma #{i}.')
         
         profesion_estudio = cleaned_data.get('profesion_estudio')
         if not profesion_estudio:
@@ -2971,7 +2965,7 @@ class VacancyFormAllV2(forms.Form):
                 self.add_error('comentarios', 'El campo Comentarios finales no puede exceder los 500 caracteres.')
         
         descripcion_vacante = cleaned_data.get('descripcion_vacante')   
-        if len(descripcion_vacante) > 500:
+        if len(descripcion_vacante) > 1000:
             self.add_error('descripcion_vacante', 'El campo Descripción vacante no puede exceder los 500 caracteres.')
         
         return cleaned_data
