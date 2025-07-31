@@ -89,6 +89,8 @@ class Cli073PerfilVacante(models.Model):
     idioma = models.CharField(max_length=100, choices=IDIOMA_CHOICES_STATIC, blank=True, null=True)
     nivel_idioma = models.CharField(max_length=2, choices=NIVEL_IDIOMA_CHOICES_STATIC, blank=True, null=True)
     profesion_estudio = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE, blank=True, null=True)
+    grupo_profesion = models.ForeignKey(Cli075GrupoProfesion, on_delete=models.CASCADE, blank=True, null=True)
+    profesion_estudio_listado = models.TextField(blank=True, null=True)
     nivel_estudio = models.CharField(max_length=1, choices=NIVEL_ESTUDIO_CHOICES_STATIC, blank=True, null=True)
     estado_estudio = models.BooleanField(default=False, blank=True, null=True)
     lugar_trabajo = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
@@ -109,6 +111,7 @@ class Cli073PerfilVacante(models.Model):
     idiomas = models.JSONField(blank=True, null=True, help_text="Idiomas en formato JSON")
     estudio_complementario = models.JSONField(blank=True, null=True, help_text="Estudios complementarios en formato JSON")
     funciones_responsabilidades = models.JSONField(blank=True, null=True, help_text="Funciones en formato JSON")
+    
 
     def __str__(self):
         return f"Perfil Vacante {self.id} - {self.profesion_estudio}"

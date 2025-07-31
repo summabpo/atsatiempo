@@ -1,6 +1,10 @@
 {% load static %}
 <script>
-    $(document).ready(function() {
+    window.PROFESIONES_API_URL = "{% url 'vacantes:profesiones_whitelist' %}";
+
+    console.log(window.PROFESIONES_API_URL);
+
+$(document).ready(function() {
 
     // Otro motivo vacante
     function toggleOtroMotivo() {
@@ -34,173 +38,220 @@
     $('#id_motivadores_candidato').on('change', toggleOtroMotivador);
     toggleOtroMotivador();  // Ejecutar al cargar la página
 
-
-});
-
-
-    // Initialize select2 for specific fields
-    // Initialize select2 for specific fields
-    initializeSelect2('#id_cargo');
-    initializeSelect2('#id_edad');
-    initializeSelect2('#id_genero');
-    initializeSelect2('#id_tiempo_experiencia');
-    initializeSelect2('#id_modalidad');
-    initializeSelect2('#id_jornada');
-    initializeSelect2('#id_tipo_salario');
-    initializeSelect2('#id_nivel_estudio');
-    initializeSelect2('#id_lugar_trabajo');
-    initializeSelect2('#id_termino_contrato');
-    initializeSelect2('#id_profesion_estudio');
-    initializeSelect2('#id_frecuencia_pago');
-    initializeSelect2('#id_nivel_idioma');
-    initializeSelect2('#id_motivo_vacante');
-    initializeSelect2('#id_motivadores_candidato');
-    
-    initializeSelect2('#id_estudios_complementarios_certificado_1');
-    initializeSelect2('#id_estudios_complementarios_certificado_2');
-    initializeSelect2('#id_estudios_complementarios_certificado_3');
-    initializeSelect2('#id_numero_posiciones');
-    initializeSelect2('#id_cantidad_presentar');
-    initializeSelect2('#id_estado_estudio');
-    initializeSelect2('#id_idioma');
-    initializeSelect2('#id_edad_inicial');
-    initializeSelect2('#id_edad_final');
-    initializeSelect2('#id_idioma_1');
-    initializeSelect2('#id_idioma_2');
-    initializeSelect2('#id_nivel_idioma_1');
-    initializeSelect2('#id_nivel_idioma_2');
-    
-
-    initializeSelect2('#id_tiempo_experiencia_1');
-    initializeSelect2('#id_tiempo_experiencia_2');
-    initializeSelect2('#id_tiempo_experiencia_3');
-
-    initializeSelect2('#id_horario_final_1');
-    initializeSelect2('#id_horario_inicio_1');
-    initializeSelect2('#id_horario_final_2');
-    initializeSelect2('#id_horario_inicio_2');
-    initializeSelect2('#id_horario_final_3');
-    initializeSelect2('#id_horario_inicio_3');
-
-    // Lista personalizada para el campo 2
-    document.addEventListener('DOMContentLoaded', function() {
-        // Ubicamos el campo de texto de destino por su ID
-        const targetTextarea = document.getElementById('id_descripcion_vacante');
-    
-        // Si el campo existe, le añadimos un "oyente" para el evento 'focus'.
-        // 'focus' se dispara en el momento exacto en que el usuario hace clic en el campo.
-        if (targetTextarea) {
-            targetTextarea.addEventListener('focus', generateVacancyParagraph);
+    // Función para mostrar/ocultar campos según el tipo seleccionado
+    function toggleCamposProfesion() {
+        const tipoSeleccionado = $('#id_tipo_profesion').val();
+        
+        // Ocultar todos los campos
+        $('#campo_especifica, #campo_grupo, #campo_listado').hide();
+        
+        // Mostrar solo el campo correspondiente
+        switch(tipoSeleccionado) {
+            case 'especifica':
+                $('#campo_especifica').show();
+                break;
+            case 'grupo':
+                $('#campo_grupo').show();
+                break;
+            case 'listado':
+                $('#campo_listado').show();
+                break;
         }
-    
-        /**
-         * Función auxiliar para obtener el valor de un campo de forma segura.
-         */
-        function getFieldValue(elementId) {
-            const element = document.getElementById(elementId);
-            if (!element) return '';
-            if (element.tagName === 'SELECT' && element.selectedIndex > 0) {
-                return element.options[element.selectedIndex].text;
-            }
-            return element.value.trim();
+    }
+
+    // Event listener para el cambio de tipo
+    $('#id_tipo_profesion').on('change', function() {
+        toggleCamposProfesion();
+        
+        // Limpiar campos no seleccionados
+        const tipoSeleccionado = $(this).val();
+        if (tipoSeleccionado !== 'especifica') {
+            $('#id_profesion_estudio').val('').trigger('change');
         }
-    
-        /**
-         * Función auxiliar para obtener los valores de un campo de selección múltiple.
-         */
-        function getMultiSelectValues(elementId) {
-            const selectElement = document.getElementById(elementId);
-            if (!selectElement) return [];
-            return Array.from(selectElement.selectedOptions).map(option => option.text);
+        if (tipoSeleccionado !== 'grupo') {
+            $('#id_grupo_profesion').val('').trigger('change');
         }
-    
-        /**
-         * Función para unir elementos de una lista en un texto gramaticalmente correcto.
-         * Ejemplo: ['A', 'B', 'C'] se convierte en "A, B y C".
-         */
-        function formatListToText(items) {
-            if (items.length === 0) return '';
-            if (items.length === 1) return items[0];
-            if (items.length === 2) return items.join(' y ');
-            return items.slice(0, -1).join(', ') + ' y ' + items.slice(-1);
-        }
-    
-        /**
-         * Función principal que se ejecuta al hacer clic (focus) en el campo.
-         * Redacta el párrafo de la descripción de la vacante.
-         */
-        function generateVacancyParagraph() {
-            // --- 1. Recopilar todos los datos del formulario ---
-            const cargo = getFieldValue('id_cargo');
-            const modalidad = getFieldValue('id_modalidad');
-            const lugar_trabajo = getFieldValue('id_lugar_trabajo');
-            const termino_contrato = getFieldValue('id_termino_contrato');
-            const salario = getFieldValue('id_salario');
-            const tipo_salario = getFieldValue('id_tipo_salario');
-            const profesion = getFieldValue('id_profesion_estudio');
-            const nivelEstudio = getFieldValue('id_nivel_estudio');
-            const tiempoExp1 = getFieldValue('id_tiempo_experiencia_1');
-            const exp1 = getFieldValue('id_experiencia_especifica_en_1');
-            const idioma1 = getFieldValue('id_idioma_1');
-            const nivelIdioma1 = getFieldValue('id_nivel_idioma_1');
-    
-            const funciones = [
-                getFieldValue('id_funciones_responsabilidades_1'),
-                getFieldValue('id_funciones_responsabilidades_2'),
-                getFieldValue('id_funciones_responsabilidades_3')
-            ].filter(Boolean).map(f => f.toLowerCase());
-    
-            const allSkills = [
-                ...getMultiSelectValues('id_skill_relacionales'),
-                ...getMultiSelectValues('id_skill_personales'),
-                ...getMultiSelectValues('id_skill_cognitivas'),
-                ...getMultiSelectValues('id_skill_digitales'),
-                ...getMultiSelectValues('id_skill_liderazgo')
-            ].map(s => s.toLowerCase());
-    
-            // --- 2. Construir el párrafo oración por oración ---
-            const sentences = [];
-    
-            if (cargo) {
-                sentences.push(`Nos encontramos en la búsqueda de un(a) ${cargo} para unirse a nuestro equipo.`);
-            }
-    
-            let roleDetails = [];
-            if (lugar_trabajo) roleDetails.push(`en ${lugar_trabajo}`);
-            if (modalidad) roleDetails.push(`bajo una modalidad ${modalidad.toLowerCase()}`);
-            if (termino_contrato) roleDetails.push(`con un contrato a término ${termino_contrato.toLowerCase()}`);
-            if (roleDetails.length > 0) {
-                sentences.push(`La posición se desarrollará ${roleDetails.join(', ')}.`);
-            }
-    
-            if (funciones.length > 0) {
-                sentences.push(`Dentro de sus principales responsabilidades se encontrarán ${formatListToText(funciones)}.`);
-            }
-    
-            let requirements = [];
-            if (profesion && nivelEstudio) {
-                requirements.push(`formación como ${nivelEstudio} en ${profesion}`);
-            }
-            if (exp1 && tiempoExp1) {
-                requirements.push(`una experiencia mínima de ${tiempoExp1} en ${exp1}`);
-            }
-            if (idioma1 && nivelIdioma1) {
-                requirements.push(`dominio del idioma ${idioma1} a un nivel ${nivelIdioma1.toLowerCase()}`);
-            }
-            if (requirements.length > 0) {
-                sentences.push(`Para esta vacante, el perfil ideal deberá contar con ${formatListToText(requirements)}.`);
-            }
-    
-            if (allSkills.length > 0) {
-                sentences.push(`Adicionalmente, valoramos un alto desarrollo de competencias como ${formatListToText(allSkills)}.`);
-            }
-            
-            if (salario) {
-                sentences.push(`La oferta salarial para este cargo es de $${salario} ${tipo_salario.toLowerCase()}.`);
-            }
-    
-            // --- 3. Unir las oraciones y mostrar el texto en el campo ---
-            targetTextarea.value = sentences.join(' ');
+        if (tipoSeleccionado !== 'listado') {
+            $('#id_profesion_estudio_listado').val('');
         }
     });
+
+    // Inicializar al cargar la página
+    toggleCamposProfesion();
+
+    // Configuración de Tagify para el campo listado
+    var input = document.getElementById(id_profesion_estudio_listado);
+    console.log(input)
+});
+
+    
+
+// Initialize select2 for specific fields
+initializeSelect2('#id_cargo');
+initializeSelect2('#id_edad');
+initializeSelect2('#id_genero');
+initializeSelect2('#id_tiempo_experiencia');
+initializeSelect2('#id_modalidad');
+initializeSelect2('#id_jornada');
+initializeSelect2('#id_tipo_salario');
+initializeSelect2('#id_nivel_estudio');
+initializeSelect2('#id_lugar_trabajo');
+initializeSelect2('#id_termino_contrato');
+initializeSelect2('#id_profesion_estudio');
+initializeSelect2('#id_frecuencia_pago');
+initializeSelect2('#id_nivel_idioma');
+initializeSelect2('#id_motivo_vacante');
+initializeSelect2('#id_motivadores_candidato');
+
+initializeSelect2('#id_estudios_complementarios_certificado_1');
+initializeSelect2('#id_estudios_complementarios_certificado_2');
+initializeSelect2('#id_estudios_complementarios_certificado_3');
+initializeSelect2('#id_numero_posiciones');
+initializeSelect2('#id_cantidad_presentar');
+initializeSelect2('#id_estado_estudio');
+initializeSelect2('#id_idioma');
+initializeSelect2('#id_edad_inicial');
+initializeSelect2('#id_edad_final');
+initializeSelect2('#id_idioma_1');
+initializeSelect2('#id_idioma_2');
+initializeSelect2('#id_nivel_idioma_1');
+initializeSelect2('#id_nivel_idioma_2');
+
+
+initializeSelect2('#id_tiempo_experiencia_1');
+initializeSelect2('#id_tiempo_experiencia_2');
+initializeSelect2('#id_tiempo_experiencia_3');
+
+initializeSelect2('#id_horario_final_1');
+initializeSelect2('#id_horario_inicio_1');
+initializeSelect2('#id_horario_final_2');
+initializeSelect2('#id_horario_inicio_2');
+initializeSelect2('#id_horario_final_3');
+initializeSelect2('#id_horario_inicio_3');
+
+initializeSelect2('#id_tipo_profesion');
+initializeSelect2('#id_profesion_estudio');
+initializeSelect2('#id_grupo_profesion');
+
+// Lista personalizada para el campo 2
+document.addEventListener('DOMContentLoaded', function() {
+    // Ubicamos el campo de texto de destino por su ID
+    const targetTextarea = document.getElementById('id_descripcion_vacante');
+
+    // Si el campo existe, le añadimos un "oyente" para el evento 'focus'.
+    // 'focus' se dispara en el momento exacto en que el usuario hace clic en el campo.
+    if (targetTextarea) {
+        targetTextarea.addEventListener('focus', generateVacancyParagraph);
+    }
+
+    /**
+        * Función auxiliar para obtener el valor de un campo de forma segura.
+        */
+    function getFieldValue(elementId) {
+        const element = document.getElementById(elementId);
+        if (!element) return '';
+        if (element.tagName === 'SELECT' && element.selectedIndex > 0) {
+            return element.options[element.selectedIndex].text;
+        }
+        return element.value.trim();
+    }
+
+    /**
+        * Función auxiliar para obtener los valores de un campo de selección múltiple.
+        */
+    function getMultiSelectValues(elementId) {
+        const selectElement = document.getElementById(elementId);
+        if (!selectElement) return [];
+        return Array.from(selectElement.selectedOptions).map(option => option.text);
+    }
+
+    /**
+        * Función para unir elementos de una lista en un texto gramaticalmente correcto.
+        * Ejemplo: ['A', 'B', 'C'] se convierte en "A, B y C".
+        */
+    function formatListToText(items) {
+        if (items.length === 0) return '';
+        if (items.length === 1) return items[0];
+        if (items.length === 2) return items.join(' y ');
+        return items.slice(0, -1).join(', ') + ' y ' + items.slice(-1);
+    }
+
+    /**
+        * Función principal que se ejecuta al hacer clic (focus) en el campo.
+        * Redacta el párrafo de la descripción de la vacante.
+        */
+    function generateVacancyParagraph() {
+        // --- 1. Recopilar todos los datos del formulario ---
+        const cargo = getFieldValue('id_cargo');
+        const modalidad = getFieldValue('id_modalidad');
+        const lugar_trabajo = getFieldValue('id_lugar_trabajo');
+        const termino_contrato = getFieldValue('id_termino_contrato');
+        const salario = getFieldValue('id_salario');
+        const tipo_salario = getFieldValue('id_tipo_salario');
+        const profesion = getFieldValue('id_profesion_estudio');
+        const nivelEstudio = getFieldValue('id_nivel_estudio');
+        const tiempoExp1 = getFieldValue('id_tiempo_experiencia_1');
+        const exp1 = getFieldValue('id_experiencia_especifica_en_1');
+        const idioma1 = getFieldValue('id_idioma_1');
+        const nivelIdioma1 = getFieldValue('id_nivel_idioma_1');
+
+        const funciones = [
+            getFieldValue('id_funciones_responsabilidades_1'),
+            getFieldValue('id_funciones_responsabilidades_2'),
+            getFieldValue('id_funciones_responsabilidades_3')
+        ].filter(Boolean).map(f => f.toLowerCase());
+
+        const allSkills = [
+            ...getMultiSelectValues('id_skill_relacionales'),
+            ...getMultiSelectValues('id_skill_personales'),
+            ...getMultiSelectValues('id_skill_cognitivas'),
+            ...getMultiSelectValues('id_skill_digitales'),
+            ...getMultiSelectValues('id_skill_liderazgo')
+        ].map(s => s.toLowerCase());
+
+        // --- 2. Construir el párrafo oración por oración ---
+        const sentences = [];
+
+        if (cargo) {
+            sentences.push(`Nos encontramos en la búsqueda de un(a) ${cargo} para unirse a nuestro equipo.`);
+        }
+
+        let roleDetails = [];
+        if (lugar_trabajo) roleDetails.push(`en ${lugar_trabajo}`);
+        if (modalidad) roleDetails.push(`bajo una modalidad ${modalidad.toLowerCase()}`);
+        if (termino_contrato) roleDetails.push(`con un contrato a término ${termino_contrato.toLowerCase()}`);
+        if (roleDetails.length > 0) {
+            sentences.push(`La posición se desarrollará ${roleDetails.join(', ')}.`);
+        }
+
+        if (funciones.length > 0) {
+            sentences.push(`Dentro de sus principales responsabilidades se encontrarán ${formatListToText(funciones)}.`);
+        }
+
+        let requirements = [];
+        if (profesion && nivelEstudio) {
+            requirements.push(`formación como ${nivelEstudio} en ${profesion}`);
+        }
+        if (exp1 && tiempoExp1) {
+            requirements.push(`una experiencia mínima de ${tiempoExp1} en ${exp1}`);
+        }
+        if (idioma1 && nivelIdioma1) {
+            requirements.push(`dominio del idioma ${idioma1} a un nivel ${nivelIdioma1.toLowerCase()}`);
+        }
+        if (requirements.length > 0) {
+            sentences.push(`Para esta vacante, el perfil ideal deberá contar con ${formatListToText(requirements)}.`);
+        }
+
+        if (allSkills.length > 0) {
+            sentences.push(`Adicionalmente, valoramos un alto desarrollo de competencias como ${formatListToText(allSkills)}.`);
+        }
+        
+        if (salario) {
+            sentences.push(`La oferta salarial para este cargo es de $${salario} ${tipo_salario.toLowerCase()}.`);
+        }
+
+        // --- 3. Unir las oraciones y mostrar el texto en el campo ---
+        targetTextarea.value = sentences.join(' ');
+    }
+});
 </script>

@@ -6,7 +6,7 @@ from decimal import Decimal
 
 #models
 from applications.candidato.models import Can104Skill
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli075GrupoProfesion
 from applications.common.models import Cat004Ciudad
 from applications.cliente.models import Cli051Cliente, Cli068Cargo, Cli076GrupoFitCultural, Cli077FitCultural, Cli078MotivadoresCandidato
 from applications.usuarios.models import UsuarioBase
@@ -2544,6 +2544,52 @@ class VacancyFormAllV2(forms.Form):
         )
     )
 
+    profesion_estudio = forms.ChoiceField(
+        label='Profesión Específica',
+        choices=[('', 'Seleccione una opción...')],
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+            'data-placeholder': 'Seleccione una profesión',
+        }),
+        required=False
+    )
+
+    tipo_profesion = forms.ChoiceField(
+        label='Tipo de Selección de Profesión',
+        choices=[
+            ('', 'Seleccione una opción...'),
+            ('especifica', 'Profesión Específica'),
+            ('grupo', 'Grupo de Profesiones'),
+            ('listado', 'Listado Personalizado')
+        ],
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+            'data-placeholder': 'Seleccione el tipo de profesión',
+        }),
+        required=False
+    )
+
+    grupo_profesion = forms.ChoiceField(
+        label='Grupo de Profesiones',
+        choices=[('', 'Seleccione una opción...')],
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+            'data-placeholder': 'Seleccione un grupo',
+        }),
+        required=False
+    )
+
+    profesion_estudio_listado = forms.CharField(
+        label='Listado Personalizado de Profesiones',
+        widget=forms.TextInput(attrs={
+            'class': 'tagify--custom-dropdown',
+            'placeholder': 'Escriba las profesiones...',
+        }),
+        required=False
+    )
     
     def __init__(self, *args, cliente_id=None, **kwargs):
         super(VacancyFormAllV2, self).__init__(*args, **kwargs)
@@ -2778,6 +2824,16 @@ class VacancyFormAllV2(forms.Form):
             required=False
         )
 
+        # Cargar profesiones específicas
+        profesiones = Cli055ProfesionEstudio.objects.filter(estado_id_001=1).order_by('nombre')
+        profesion_choices = [('', 'Seleccione una opción...')] + [(p.id, p.nombre) for p in profesiones]
+        self.fields['profesion_estudio'].choices = profesion_choices
+
+        # Cargar grupos de profesiones
+        grupos = Cli075GrupoProfesion.objects.filter(estado=1).order_by('nombre')
+        grupo_choices = [('', 'Seleccione una opción...')] + [(g.id, g.nombre) for g in grupos]
+        self.fields['grupo_profesion'].choices = grupo_choices
+
     def clean(self):
         cleaned_data = super().clean()
         
@@ -2967,5 +3023,28 @@ class VacancyFormAllV2(forms.Form):
         descripcion_vacante = cleaned_data.get('descripcion_vacante')   
         if len(descripcion_vacante) > 1000:
             self.add_error('descripcion_vacante', 'El campo Descripción vacante no puede exceder los 500 caracteres.')
+
+        tipo_profesion = cleaned_data.get('tipo_profesion')
+        profesion_especifica = cleaned_data.get('profesion_estudio')
+        grupo_profesion = cleaned_data.get('grupo_profesion')
+        listado_profesion = cleaned_data.get('profesion_estudio_listado')
+
+        # Validación: solo una opción debe estar seleccionada
+        campos_llenos = sum([
+            bool(profesion_especifica),
+            bool(grupo_profesion),
+            bool(listado_profesion)
+        ])
+
+        if not tipo_profesion:
+            self.add_error('tipo_profesion', 'Debe seleccionar un tipo de profesión.')
+        elif tipo_profesion == 'especifica' and not profesion_especifica:
+            self.add_error('profesion_estudio', 'Debe seleccionar una profesión específica.')
+        elif tipo_profesion == 'grupo' and not grupo_profesion:
+            self.add_error('grupo_profesion', 'Debe seleccionar un grupo de profesiones.')
+        elif tipo_profesion == 'listado' and not listado_profesion:
+            self.add_error('profesion_estudio_listado', 'Debe ingresar al menos una profesión en el listado.')
+        elif campos_llenos > 1:
+            self.add_error(None, 'Solo puede seleccionar una opción: profesión específica, grupo de profesiones, o listado personalizado.')
         
         return cleaned_data

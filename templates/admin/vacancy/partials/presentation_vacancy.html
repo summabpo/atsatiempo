@@ -1,0 +1,286 @@
+{% load static %}
+{% load custom_tags %}
+
+<div class="container-fluid p-4 p-md-5">
+    <div class="row g-4">
+        <!-- Columna Principal: Detalles de la Vacante -->
+        <div class="col-lg-8">
+            <div class="card" style="border: none; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); transition: all 0.3s ease-in-out;">
+                <!-- Encabezado de la vacante -->
+                <div class="card-header" style="background-color: #fff; border-bottom: 1px solid #e9ecef; padding: 1.5rem;">
+                    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                        {% if data.cliente.logo %}
+                            <img src="{{ data.cliente.logo }}" alt="Logo de {{ data.cliente.razon_social }}" class="me-3 mb-3 mb-md-0" style="width: 60px; height: 60px; object-fit: contain; border-radius: 0.5rem; border: 1px solid #eee;">
+                        {% else %}
+                            <img src="https://placehold.co/100x100/b10022/ffffff?text={{ data.cliente.razon_social|slice:':2'|upper }}" alt="Logo de {{ data.cliente.razon_social }}" class="me-3 mb-3 mb-md-0" style="width: 60px; height: 60px; object-fit: contain; border-radius: 0.5rem; border: 1px solid #eee;">
+                        {% endif %}
+                        <div class="flex-grow-1">
+                            <h2 class="mb-1" style="font-weight: 700;">
+                                {{ vacante.cargo.nombre_cargo }}
+                            </h2>
+                            <p class="text-muted mb-0">
+                                <span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">domain</span>
+                                <b class="text-primary">{{ data.cliente.razon_social }}</b>,&nbsp; &nbsp; 
+                                <span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">map</span>
+                                <b>{{ vacante.perfil_vacante.lugar_trabajo.nombre }}</b>
+                                {% if vacante.perfil_vacante.barrio %} 
+                                    ,&nbsp; &nbsp;
+                                    <span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">location_on</span>
+                                    <b>{{ vacante.perfil_vacante.barrio }}</b>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="mt-3 mt-md-0">
+                            {% if vacante.estado_vacante == 1 %}
+                                <span class="badge bg-success-subtle text-success-emphasis rounded-pill" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                    <i class="bi bi-check-circle"></i> Activa
+                                </span>
+                            {% elif vacante.estado_vacante == 2 %}
+                                <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                    <i class="bi bi-clock"></i> En Proceso
+                                </span>
+                            {% elif vacante.estado_vacante == 3 %}
+                                <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                    <i class="bi bi-check2-all"></i> Finalizada
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                    <i class="bi bi-x-circle"></i> Cancelada
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cuerpo de la tarjeta con detalles -->
+                <div class="card-body" style="padding: 1.5rem;">
+                    <!-- Información clave -->
+                    <div class="d-flex flex-wrap gap-3 mb-4 pb-4 border-bottom">
+                        <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-center flex-grow-1">
+                            <h6 class="text-muted small mb-1" style="font-weight: 700;">Salario (COP)</h6>
+                            <p class="h5 mb-0" style="font-weight: 700;">
+                                {% if vacante.perfil_vacante.salario %}
+                                    ${{ vacante.perfil_vacante.salario|format_number }}
+                                    {% if vacante.perfil_vacante.salario_adicional %}
+                                        - $ {{ vacante.perfil_vacante.salario_adicional|format_number }}
+                                    {% endif %}
+                                {% else %}
+                                    A convenir
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-center flex-grow-1">
+                            <h6 class="text-muted small mb-1" style="font-weight: 700;">Contrato</h6>
+                            <p class="h5 mb-0" style="font-weight: 700;">
+                                {% if vacante.perfil_vacante.termino_contrato == 'F' %}
+                                    Fijo
+                                {% elif vacante.perfil_vacante.termino_contrato == 'I' %}
+                                    Indefinido
+                                {% elif vacante.perfil_vacante.termino_contrato == 'O' %}
+                                    Obra Labor
+                                {% else %}
+                                    Sin especificar
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-center flex-grow-1">
+                            <h6 class="text-muted small mb-1" style="font-weight: 700;">Modalidad</h6>
+                            <p class="h5 mb-0" style="font-weight: 700;">
+                                {% if vacante.perfil_vacante.modalidad == 'R' %}
+                                    Remoto
+                                {% elif vacante.perfil_vacante.modalidad == 'P' %}
+                                    Presencial
+                                {% elif vacante.perfil_vacante.modalidad == 'H' %}
+                                    Híbrido
+                                {% else %}
+                                    Sin especificar
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-center flex-grow-1">
+                            <h6 class="text-muted small mb-1" style="font-weight: 700;">Experiencia</h6>
+                            <p class="h5 mb-0" style="font-weight: 700;">
+                                {% if vacante.perfil_vacante.tiempo_experiencia == 6 %}
+                                    Sin Experiencia
+                                {% elif vacante.perfil_vacante.tiempo_experiencia == 1 %}
+                                    1 año
+                                {% elif vacante.perfil_vacante.tiempo_experiencia == 2 %}
+                                    2 años
+                                {% elif vacante.perfil_vacante.tiempo_experiencia == 3 %}
+                                    3 años
+                                {% elif vacante.perfil_vacante.tiempo_experiencia == 4 %}
+                                    4 años
+                                {% elif vacante.perfil_vacante.tiempo_experiencia == 5 %}
+                                    5 años o más
+                                {% else %}
+                                    Sin especificar
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Descripción del Puesto -->
+                    <h4 class="mb-3" style="font-weight: 700;">Descripción del Puesto</h4>
+                    <p class="text-secondary mb-4" style="text-align: justify;">
+                        {% if vacante.descripcion_vacante %}
+                            {{ vacante.descripcion_vacante }}
+                        {% else %}
+                            No hay descripción disponible para esta vacante.
+                        {% endif %}
+                    </p>
+
+                    <!-- Responsabilidades -->
+                    {% if vacante.perfil_vacante.funciones_responsabilidades %}
+                    <h4 class="mb-3" style="font-weight: 700;">Responsabilidades</h4>
+                    <ul class="list-unstyled text-secondary mb-4">
+                        {% for funcion in vacante.perfil_vacante.funciones_responsabilidades %}
+                        <li><span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">check</span>{{ funcion.funcion }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <!-- Requisitos -->
+                    <h4 class="mb-3" style="font-weight: 700;">Requisitos</h4>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if vacante.perfil_vacante.profesion_estudio %}
+                            <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">{{ vacante.perfil_vacante.profesion_estudio.nombre }}</span>
+                        {% endif %}
+                        
+                        {% if vacante.perfil_vacante.nivel_estudio %}
+                            <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                {% if vacante.perfil_vacante.nivel_estudio == '1' %}
+                                    Sin estudios
+                                {% elif vacante.perfil_vacante.nivel_estudio == '2' %}
+                                    Primaria
+                                {% elif vacante.perfil_vacante.nivel_estudio == '3' %}
+                                    Secundaria/Bachillerato
+                                {% elif vacante.perfil_vacante.nivel_estudio == '4' %}
+                                    Técnico
+                                {% elif vacante.perfil_vacante.nivel_estudio == '5' %}
+                                    Tecnólogo
+                                {% elif vacante.perfil_vacante.nivel_estudio == '6' %}
+                                    Universitario
+                                {% elif vacante.perfil_vacante.nivel_estudio == '7' %}
+                                    Postgrado
+                                {% elif vacante.perfil_vacante.nivel_estudio == '8' %}
+                                    Diplomado
+                                {% elif vacante.perfil_vacante.nivel_estudio == '9' %}
+                                    Curso
+                                {% endif %}
+                            </span>
+                        {% endif %}
+
+                        {% if vacante.perfil_vacante.idioma %}
+                            <span class="badge bg-secondary-subtle text-secondary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                {% if vacante.perfil_vacante.idioma == 'ES' %}
+                                    Español
+                                {% elif vacante.perfil_vacante.idioma == 'EN' %}
+                                    Inglés
+                                {% elif vacante.perfil_vacante.idioma == 'FR' %}
+                                    Francés
+                                {% elif vacante.perfil_vacante.idioma == 'DE' %}
+                                    Alemán
+                                {% elif vacante.perfil_vacante.idioma == 'IT' %}
+                                    Italiano
+                                {% elif vacante.perfil_vacante.idioma == 'PT' %}
+                                    Portugués
+                                {% elif vacante.perfil_vacante.idioma == 'RU' %}
+                                    Ruso
+                                {% elif vacante.perfil_vacante.idioma == 'ZH' %}
+                                    Chino
+                                {% elif vacante.perfil_vacante.idioma == 'JP' %}
+                                    Japonés
+                                {% elif vacante.perfil_vacante.idioma == 'AR' %}
+                                    Árabe
+                                {% else %}
+                                    {{ vacante.perfil_vacante.idioma }}
+                                {% endif %}
+                                {% if vacante.perfil_vacante.nivel_idioma %}
+                                    ({{ vacante.perfil_vacante.nivel_idioma }})
+                                {% endif %}
+                            </span>
+                        {% endif %}
+
+                        {% for skill in vacante.hard_skills_id_054.all %}
+                            <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">{{ skill.nombre }}</span>
+                        {% endfor %}
+
+                        {% for skill in vacante.soft_skills_id_053.all %}
+                            <span class="badge bg-secondary-subtle text-secondary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">{{ skill.nombre }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Pie de la tarjeta con botones de acción -->
+                <div class="card-footer bg-white text-center p-3">
+                    <a href="{% url 'vacantes:vacantes_editar_propias' data.cliente.id vacante.id %}" class="btn btn-primary px-5 me-2" style="background-color: #0d6efd; border-color: #0d6efd; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">
+                        <i class="bi bi-pencil-fill me-2"></i>Editar Vacante
+                    </a>
+                    <button class="btn btn-outline-secondary" style="font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">
+                        <i class="bi bi-download me-2"></i>Exportar Datos
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Secundaria: Información Adicional -->
+        <div class="col-lg-4">
+            <!-- Tarjeta de la empresa -->
+            <div class="card mb-4" style="border: none; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); transition: all 0.3s ease-in-out;">
+                <div class="card-body" style="padding: 1.5rem;">
+                    <h5 class="card-title mb-3" style="font-weight: 700;">Sobre {{ data.cliente.razon_social }}</h5>
+                    <p class="card-text text-secondary small">
+                        {% if data.cliente.descripcion %}
+                            {{ data.cliente.descripcion }}
+                        {% else %}
+                            Información de la empresa no disponible.
+                        {% endif %}
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'clientes:cliente_detalle' data.cliente.id %}" class="btn btn-sm btn-outline-primary flex-fill">
+                            Ver Perfil de la Empresa <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#perfilVacanteModal">
+                            <i class="bi bi-building me-1"></i>Ver Perfil Empresa
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta de estadísticas de la vacante -->
+            <div class="card" style="border: none; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); transition: all 0.3s ease-in-out;">
+                <div class="card-body" style="padding: 1.5rem;">
+                    <h5 class="card-title mb-3" style="font-weight: 700;">Estadísticas de la Vacante</h5>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item px-0" style="border-left: none; border-right: none; border-top: none;">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1" style="font-weight: 700;">Posiciones</h6>
+                                <span class="badge bg-primary rounded-pill">{{ vacante.numero_posiciones }}</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-0" style="border-left: none; border-right: none;">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1" style="font-weight: 700;">A Presentar</h6>
+                                <span class="badge bg-info rounded-pill">{{ vacante.cantidad_presentar|default:"N/A" }}</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-0" style="border-left: none; border-right: none;">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1" style="font-weight: 700;">Creada</h6>
+                                <span class="text-muted small">{{ vacante.fecha_creacion|date:"d/m/Y" }}</span>
+                            </div>
+                        </div>
+                        {% if vacante.fecha_cierre %}
+                        <div class="list-group-item px-0" style="border-left: none; border-right: none; border-bottom: none;">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1" style="font-weight: 700;">Cierre</h6>
+                                <span class="text-muted small">{{ vacante.fecha_cierre|date:"d/m/Y" }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

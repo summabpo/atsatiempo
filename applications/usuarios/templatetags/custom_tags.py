@@ -51,4 +51,21 @@ URLS_VACANTES_ANALISTA  = [
 
 @register.filter(name='is_active_url_analista_interno_vacante')
 def is_active_url_analista_interno_vacante(url_name):
-    return url_name in URLS_VACANTES_ANALISTA 
+    return url_name in URLS_VACANTES_ANALISTA
+
+@register.filter(name='format_number')
+def format_number(value):
+    """
+    Filtro para formatear números con separadores de miles usando puntos
+    Ejemplo: 1500000 -> 1.500.000
+    """
+    if value is None:
+        return "0"
+    
+    try:
+        # Convertir a entero y luego a string
+        num = int(float(value))
+        # Formatear con separadores de miles usando puntos
+        return f"{num:,}".replace(",", ".")
+    except (ValueError, TypeError):
+        return str(value) 

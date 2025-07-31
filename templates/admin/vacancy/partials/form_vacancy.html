@@ -244,12 +244,27 @@
                     <h6 class="mb-0 pe-3 text-primary fw-bold">Estudios o profesión</h6>
                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 mb-3">
+                    {{ form.tipo_profesion|as_crispy_field }}
+                </div>
+                
+                <!-- Campos condicionales -->
+                <div id="campo_especifica" class="col-md-6" style="display:none;">
                     {{ form.profesion_estudio|as_crispy_field }}
-                </div> 
+                </div>
+                
+                <div id="campo_grupo" class="col-md-6" style="display:none;">
+                    {{ form.grupo_profesion|as_crispy_field }}
+                </div>
+                
+                <div id="campo_listado" class="col-md-6" style="display:none;">
+                    {{ form.profesion_estudio_listado|as_crispy_field }}
+                </div>
+                
                 <div class="col-md-4">
                     {{ form.nivel_estudio|as_crispy_field }}
-                </div> 
+                </div>
+                
                 <div class="col-md-2">
                     {{ form.estado_estudio|as_crispy_field }}
                 </div> 
@@ -440,3 +455,4 @@
         </div>
     </div>
 </form>
+
