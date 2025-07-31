@@ -1,5 +1,5 @@
 // tagify custom 
-function TagifyList(campoId, listaSugerencias = []) {
+function TagifyList(campoId, apiUrl) {
     let input = document.getElementById(campoId);
 
     if (!input) {
@@ -8,20 +8,34 @@ function TagifyList(campoId, listaSugerencias = []) {
     }
 
     let opciones = {
-        whitelist: listaSugerencias,
-        maxTags: 10, // Número máximo de tags permitidos
+        whitelist: [],
+        maxTags: 10,
         dropdown: {
             maxItems: 10,
             classname: "tags-look",
-            enabled: 0, // Mostrar sugerencias siempre
+            enabled: 1, // Cambiar a 1 para mostrar dropdown
             closeOnSelect: false
         }
     };
 
     // Inicializar Tagify solo si no se ha aplicado antes
     if (!input.classList.contains("tagify-applied")) {
-        new Tagify(input, opciones);
-        input.classList.add("tagify-applied"); // Evita inicialización duplicada
+        let tagify = new Tagify(input, opciones);
+        input.classList.add("tagify-applied");
+
+        // Cargar datos desde la API
+        if (apiUrl) {
+            $.ajax({
+                url: apiUrl,
+                method: 'GET',
+                success: function(data) {
+                    tagify.whitelist = data;
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error cargando profesiones:', error);
+                }
+            });
+        }
     }
 }
 

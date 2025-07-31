@@ -29,11 +29,7 @@ Politicas Cliente
 		<div class="col-12">
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-body p-4">
-                    <form method="post" id="form_vacante_todos">
-                        {% csrf_token %}
-                        {% crispy form %}
-                        <button id="form_vacante_todos" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_vacante_todos">Guardar</button>
-                    </form>
+                    {% include 'admin/vacancy/partials/form_vacancy.html' %}
                 </div>
             </div>
         </div>
@@ -66,6 +62,8 @@ Politicas Cliente
             ]
         });
     });
+
+    {% include 'admin/vacancy/partials/js_form_vacancy.html' %} 
 
     // Initialize select2 for specific fields
     initializeSelect2('#id_tipo_cliente');
