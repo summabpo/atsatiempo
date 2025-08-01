@@ -5,7 +5,7 @@ from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, 
 from applications.reclutado.forms.FormRecruited import ReclutadoCrearForm
 from applications.services.service_interview import query_interview_all
 from applications.services.service_recruited import query_recruited_vacancy_id
-from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones
+from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones, Cli075GrupoProfesion
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import Permiso
@@ -147,6 +147,24 @@ def create_vacanty_from_client(request, pk):
                     })
 
             # --- 2. Crea el Perfil de la Vacante pasando los objetos Python ---
+            # Handle grupo_profesion field properly
+            grupo_profesion_value = form.cleaned_data['grupo_profesion']
+            grupo_profesion_obj = None
+            if grupo_profesion_value and grupo_profesion_value != '':
+                try:
+                    grupo_profesion_obj = Cli075GrupoProfesion.objects.get(id=grupo_profesion_value)
+                except Cli075GrupoProfesion.DoesNotExist:
+                    grupo_profesion_obj = None
+            
+            # Handle profesion_estudio field properly
+            profesion_estudio_value = form.cleaned_data['profesion_estudio']
+            profesion_estudio_obj = None
+            if profesion_estudio_value and profesion_estudio_value != '':
+                try:
+                    profesion_estudio_obj = Cli055ProfesionEstudio.objects.get(id=profesion_estudio_value)
+                except Cli055ProfesionEstudio.DoesNotExist:
+                    profesion_estudio_obj = None
+            
             perfil_vacante = Cli073PerfilVacante.objects.create(
                 edad_inicial=form.cleaned_data['edad_inicial'],
                 edad_final=form.cleaned_data['edad_final'],
@@ -157,7 +175,7 @@ def create_vacanty_from_client(request, pk):
                 tipo_salario=form.cleaned_data['tipo_salario'],
                 frecuencia_pago=form.cleaned_data['frecuencia_pago'],
                 salario_adicional=form.cleaned_data['salario_adicional'],
-                profesion_estudio_id=form.cleaned_data['profesion_estudio'],
+                profesion_estudio=profesion_estudio_obj,
                 nivel_estudio=form.cleaned_data['nivel_estudio'],
                 estado_estudio=form.cleaned_data['estado_estudio'],
                 lugar_trabajo_id=form.cleaned_data['lugar_trabajo'],
@@ -170,7 +188,10 @@ def create_vacanty_from_client(request, pk):
                 experiencia_laboral=experiencia_data,
                 idiomas=idiomas_data,
                 estudio_complementario=estudios_data,
-                funciones_responsabilidades=funciones_data
+                funciones_responsabilidades=funciones_data,
+                tipo_profesion=form.cleaned_data['tipo_profesion'],
+                profesion_estudio_listado=form.cleaned_data['profesion_estudio_listado'],
+                grupo_profesion=grupo_profesion_obj
             )
 
             # --- 3. Crea la Vacante ---
@@ -257,6 +278,38 @@ def edit_vacanty_from_client(request, pk, vacante_id):
     FIT_GRUPO_4_IDS = [14, 15, 16]
     FIT_GRUPO_5_IDS = [17, 18, 19, 20]
 
+    # Función para procesar profesion_estudio_listado
+    def procesar_profesion_listado(listado_json):
+        if not listado_json:
+            return ""
+        try:
+            # Si es un string JSON, parsearlo y devolverlo como string JSON válido
+            if isinstance(listado_json, str):
+                # Verificar si ya es JSON válido
+                try:
+                    data = json.loads(listado_json)
+                    # Si es una lista de objetos con 'value' e 'id', devolver el JSON original
+                    if isinstance(data, list) and len(data) > 0 and isinstance(data[0], dict) and 'value' in data[0]:
+                        return listado_json
+                    else:
+                        # Si no tiene el formato esperado, convertirlo
+                        return json.dumps([{"value": item, "id": i} for i, item in enumerate(data)])
+                except json.JSONDecodeError:
+                    # Si no es JSON válido, crear el formato correcto
+                    return json.dumps([{"value": listado_json, "id": 0}])
+            else:
+                # Si ya es una lista o dict, convertirlo al formato correcto
+                if isinstance(listado_json, list):
+                    if len(listado_json) > 0 and isinstance(listado_json[0], dict) and 'value' in listado_json[0]:
+                        return json.dumps(listado_json)
+                    else:
+                        return json.dumps([{"value": item, "id": i} for i, item in enumerate(listado_json)])
+                else:
+                    return json.dumps([{"value": str(listado_json), "id": 0}])
+        except (json.JSONDecodeError, TypeError, AttributeError):
+            # Si no es JSON válido, devolver como string simple
+            return json.dumps([{"value": str(listado_json), "id": 0}]) if listado_json else ""
+
     # Construir initial data para el formulario
     initial = {
         'titulo': vacante.titulo,
@@ -282,12 +335,17 @@ def edit_vacanty_from_client(request, pk, vacante_id):
         'otro_motivador': vacante.otro_motivador,
         'comentarios': vacante.comentarios,
         'descripcion_vacante': vacante.descripcion_vacante,
-        'skill_relacionales': habilidades_guardadas,
-        'skill_personales': habilidades_guardadas,
-        'skill_cognitivas': habilidades_guardadas,
-        'skill_digitales': habilidades_guardadas,
-        'skill_liderazgo': habilidades_guardadas,
+        'tipo_profesion': perfil_vacante.tipo_profesion if perfil_vacante else None,
+        'grupo_profesion': perfil_vacante.grupo_profesion_id if perfil_vacante and perfil_vacante.grupo_profesion else None,
+        'profesion_estudio_listado': procesar_profesion_listado(perfil_vacante.profesion_estudio_listado) if perfil_vacante else None,
     }
+
+    # Cargar skills correctamente por grupo
+    initial['skill_relacionales'] = habilidades_guardadas.filter(id__in=SKILLS_RELACIONALES_IDS)
+    initial['skill_personales'] = habilidades_guardadas.filter(id__in=SKILLS_PERSONALES_IDS)
+    initial['skill_cognitivas'] = habilidades_guardadas.filter(id__in=SKILLS_COGNITIVAS_IDS)
+    initial['skill_digitales'] = habilidades_guardadas.filter(id__in=SKILLS_DIGITALES_IDS)
+    initial['skill_liderazgo'] = habilidades_guardadas.filter(id__in=SKILLS_LIDERAZGO_IDS)
 
     # Extraer datos de campos JSON del perfil_vacante
     if perfil_vacante:
@@ -337,7 +395,6 @@ def edit_vacanty_from_client(request, pk, vacante_id):
                     bloque = funcion.get('bloque', 1)
                     initial[f'funciones_responsabilidades_{bloque}'] = funcion.get('funcion', '')
 
-
     # Fit cultural
     initial['grupo_fit_1'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_1_IDS).values_list('id', flat=True))
     initial['grupo_fit_2'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_2_IDS).values_list('id', flat=True))
@@ -359,11 +416,6 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             vacante.comentarios = form.cleaned_data['comentarios']
             vacante.motivadores = Cli078MotivadoresCandidato.objects.get(id=form.cleaned_data['motivadores_candidato']) if form.cleaned_data['motivadores_candidato'] else None
             vacante.otro_motivador = form.cleaned_data['otro_motivador']
-            vacante.habilidades.set(form.cleaned_data.get('skill_relacionales', []))
-            vacante.habilidades.set(form.cleaned_data.get('skill_personales', []))
-            vacante.habilidades.set(form.cleaned_data.get('skill_cognitivas', []))
-            vacante.habilidades.set(form.cleaned_data.get('skill_digitales', []))
-            vacante.habilidades.set(form.cleaned_data.get('skill_liderazgo', []))
 
             vacante.save()
 
@@ -377,12 +429,15 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             perfil_vacante.tipo_salario = form.cleaned_data['tipo_salario']
             perfil_vacante.frecuencia_pago = form.cleaned_data['frecuencia_pago']
             perfil_vacante.salario_adicional = form.cleaned_data['salario_adicional']
-            perfil_vacante.profesion_estudio = Cli055ProfesionEstudio.objects.get(id=form.cleaned_data['profesion_estudio'])
+            perfil_vacante.profesion_estudio = Cli055ProfesionEstudio.objects.get(id=form.cleaned_data['profesion_estudio']) if form.cleaned_data['profesion_estudio'] else None
             perfil_vacante.nivel_estudio = form.cleaned_data['nivel_estudio']
-            perfil_vacante.lugar_trabajo = Cat004Ciudad.objects.get(id=form.cleaned_data['lugar_trabajo'])
+            perfil_vacante.lugar_trabajo = Cat004Ciudad.objects.get(id=form.cleaned_data['lugar_trabajo']) if form.cleaned_data['lugar_trabajo'] else None
             perfil_vacante.termino_contrato = form.cleaned_data['termino_contrato']
             perfil_vacante.barrio = form.cleaned_data['barrio']
             perfil_vacante.direccion = form.cleaned_data['direccion']
+            perfil_vacante.tipo_profesion = form.cleaned_data['tipo_profesion']
+            perfil_vacante.grupo_profesion = Cli075GrupoProfesion.objects.get(id=form.cleaned_data['grupo_profesion']) if form.cleaned_data['grupo_profesion'] else None
+            perfil_vacante.profesion_estudio_listado = form.cleaned_data['profesion_estudio_listado']
             
             # Guardar datos JSON
             # Motivo de la vacante

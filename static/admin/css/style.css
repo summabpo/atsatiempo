@@ -20791,152 +20791,77 @@ Swiper Slider Style
   color: red !important;
 }
 
-/* Contenedor principal de Tagify */
+.tags-look .tagify__dropdown__item{
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: 3px;
+  padding: .3em .5em;
+  border: 1px solid #CCC;
+  background: #F3F3F3;
+  margin: .2em;
+  font-size: .85em;
+  color: black;
+  transition: 0s;
+}
+
+/* Ocultar el input original cuando se aplica Tagify */
+.tagify-applied {
+    display: none !important;
+}
+
+/* Estilos para el dropdown de Tagify */
+.tagify__dropdown {
+    z-index: 9999;
+}
+
+.tagify__dropdown__item {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.tagify__dropdown__item:hover {
+    background-color: #f8f9fa;
+}
+
+.tagify__dropdown__item--active {
+    background-color: #e3f2fd;
+    color: #0000ce;
+    
+}
+
+/* Campo Tagify con fondo blanco y bordes tipo campo de formulario */
 .tagify {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  align-items: center !important; /* Centrar verticalmente */
-  height: auto !important; /* Ajuste de altura automática */
-  min-height: 40px !important; /* Altura mínima */
-  max-width: 100%;
-  border-radius: var(--bs-border-radius) !important;
-  font-size: 15px; /* var(--bs-body-font-size) !important; */
-  border: 1px solid var(--bs-border-color) !important;
-  padding: 5px 10px !important;
-  box-sizing: border-box !important;
-  overflow-y: auto !important; /* Permite que el contenido se expanda */
-  max-height: 200px !important; /* Ajusta el límite de crecimiento */
+  background: #fff;           /* Fondo blanco */
+  border: 1px solid #CCC;     /* Borde estándar */
+  border-radius: 4px;         /* Bordes redondeados */
+  width: 100%;
+  min-height: 40px;
+  display: flex;
+  flex-wrap: wrap;            /* Permite crecer a varias filas */
+  align-items: flex-start;
+  gap: 4px;
+  padding: 4px 8px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
 }
 
-/* Contenedor interno donde se renderizan los tags */
-.tagify__wrapper {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  align-items: center !important; /* Centrar verticalmente */
-  width: 100% !important;
-  gap: 4px; /* Espaciado entre tags */
-}
-
-/* Ajustar los tags para que no se desborden */
-.tagify__tag {
-  font-size: 0.85rem !important;
-  border-radius: var(--bs-border-radius-sm) !important;
-  padding: 2px 6px !important;
-  background-color: var(--bs-light-bg-subtle) !important;
-  color: var(--bs-body-color) !important;
-  white-space: nowrap !important;
-  margin: 2px !important; /* Espaciado entre los tags */
-}
-
-/* Hacer que el input de Tagify se expanda y no colapse */
+/* El input interno crece y se adapta, sin fondo extra */
 .tagify__input {
-  flex-grow: 1 !important;
-  min-width: 100px !important;
-  max-width: 100% !important;
-  height: auto !important;
-  margin: 2px !important;
-  align-self: center !important; /* Centrar verticalmente */
+  background: transparent;
+  min-width: 80px;
+  width: auto !important;
+  flex-grow: 1;
+  flex-shrink: 1;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1em;
 }
 
-/* Evitar que el input desaparezca cuando hay muchos tags */
-.tagify__input::after {
-  content: "\200b"; /* Espaciado invisible para evitar colapsos */
+/* Opcional: mejora visual cuando está enfocado */
+.tagify:focus-within {
+  border-color: #0000ce;
+  box-shadow: 0 0 0 2px #e0f0ff;
 }
 
-/* Ajustar el campo cuando está en foco */
-.tagify--focus {
-  border-color: var(--bs-primary) !important;
-  box-shadow: 0 0 5px rgba(var(--bs-primary-rgb), 0.2) !important;
-}
-
-.service-card {
-	border: 1px solid #dee2e6;
-	border-left: 2px solid #B10022; /* Margen roja y fina */
-	border-radius: 0.5rem;
-	padding: 1.5rem;
-	margin-bottom: 1.5rem;
-	text-align: center;
-	
-}
-
-.service-icon {
-	font-size: 2rem;
-	margin-bottom: 0.75rem;
-}
-
-.job-card {
-	border: 1px solid #dee2e6;
-	border-left: 2px solid #B10022; /* Margen roja y fina */
-	border-radius: 0.5rem;
-	padding: 1.5rem;
-	margin-bottom: 1.5rem;
-	background-color: #f8f9f9;
-}
-
-.job-title {
-	font-weight: bold;
-	margin-bottom: 0.25rem;
-	color: #B10022;
-}
-
-.job-meta {
-	color: #6c757d;
-	font-size: 0.875rem;
-	margin-bottom: 0.5rem;
-}
-
-.job-description {
-	color: #343a40;
-	font-size: 0.9rem;
-	margin-bottom: 1rem;
-}
-
-.job-tags .badge {
-	margin-right: 0.25rem;
-}
-
-/* Estilo general de la tarjeta */
-/* .card {
-    border-radius: 12px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease-in-out;
-} */
-
-/* .card:hover {
-  transform: scale(1.0009);
-} */
-
-/* Estilo de la cabecera */
-/* .card-header {
-    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-50) 100%);
-    color: white;
-    padding: 1rem 1.5rem;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-} */
-
-/* .card-title {
-    font-size: 1rem;
-    font-weight: 400;
-} */
-
-/* Estilo del cuerpo */
-/* .card-body {
-    background-color: var(--bs-light-bg-subtle);
-    padding: 1.5rem;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-} */
-
-/* Agregar un borde lateral sutil para resaltar */
-/* .card::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: var(--bs-primary);
-    border-top-left-radius: 12px;
-    border-bottom-left-radius: 12px;
-} */

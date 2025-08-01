@@ -144,6 +144,12 @@ IDIOMA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     ('OT', 'Otro'),
 ]
 
+TIPO_PROFESION_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('E', 'Profesión Específica'),
+    ('G', 'Grupo de Profesiones'),
+    ('L', 'Listado Personalizado'),
+]
+
 EDAD_SELECT_CHOICES_STATIC = [('', 'Seleccione una opción... ')] + [
     (str(age), f'{age} años') for age in range(18, 51)
 ]

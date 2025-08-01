@@ -47,13 +47,13 @@ $(document).ready(function() {
         
         // Mostrar solo el campo correspondiente
         switch(tipoSeleccionado) {
-            case 'especifica':
+            case 'E':
                 $('#campo_especifica').show();
                 break;
-            case 'grupo':
+            case 'G':
                 $('#campo_grupo').show();
                 break;
-            case 'listado':
+            case 'L':
                 $('#campo_listado').show();
                 break;
         }
@@ -63,25 +63,62 @@ $(document).ready(function() {
     $('#id_tipo_profesion').on('change', function() {
         toggleCamposProfesion();
         
-        // Limpiar campos no seleccionados
         const tipoSeleccionado = $(this).val();
-        if (tipoSeleccionado !== 'especifica') {
+        
+        // Limpiar campos no seleccionados
+        if (tipoSeleccionado !== 'E') {
             $('#id_profesion_estudio').val('').trigger('change');
         }
-        if (tipoSeleccionado !== 'grupo') {
+        if (tipoSeleccionado !== 'G') {
             $('#id_grupo_profesion').val('').trigger('change');
         }
-        if (tipoSeleccionado !== 'listado') {
+        if (tipoSeleccionado !== 'L') {
             $('#id_profesion_estudio_listado').val('');
+            // Limpiar Tagify cuando se cambia a otro tipo
+            limpiarTagify('id_profesion_estudio_listado');
+        }
+        
+        // Inicializar Tagify solo cuando se selecciona "listado"
+        if (tipoSeleccionado === 'L') {
+            setTimeout(function() {
+                // Limpiar antes de aplicar
+                limpiarTagify('id_profesion_estudio_listado');
+                // Aplicar Tagify
+                TagifyList('id_profesion_estudio_listado', window.PROFESIONES_API_URL);
+            }, 100);
         }
     });
 
     // Inicializar al cargar la página
     toggleCamposProfesion();
-
-    // Configuración de Tagify para el campo listado
-    var input = document.getElementById(id_profesion_estudio_listado);
-    console.log(input)
+    
+    // Inicializar Tagify con datos existentes si el tipo es "L" y hay datos
+    const tipoProfesion = $('#id_tipo_profesion').val();
+    const profesionListado = $('#id_profesion_estudio_listado').val();
+    
+    if (tipoProfesion === 'L' && profesionListado) {
+        setTimeout(function() {
+            // Limpiar antes de aplicar
+            limpiarTagify('id_profesion_estudio_listado');
+            // Aplicar Tagify
+            TagifyList('id_profesion_estudio_listado', window.PROFESIONES_API_URL);
+            
+            // Cargar los datos existentes en Tagify
+            try {
+                const datosExistentes = JSON.parse(profesionListado);
+                if (Array.isArray(datosExistentes)) {
+                    const input = document.getElementById('id_profesion_estudio_listado');
+                    if (input && input.tagify) {
+                        // Extraer solo los valores para mostrar
+                        const valores = datosExistentes.map(item => item.value || item);
+                        input.tagify.addTags(valores);
+                    }
+                }
+            } catch (e) {
+                console.warn('Error parsing existing data:', e);
+            }
+        }, 200);
+    }
 });
 
     

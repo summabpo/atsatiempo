@@ -14,7 +14,7 @@ from applications.vacante.models import Cli052Vacante
 
 
 #choices
-from applications.services.choices import EDAD_SELECT_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_CHOICHES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIPO_CLIENTE_STATIC, EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC, HORARIO_CHOICES_STATIC, MOTIVO_VACANTE_CHOICES_STATIC
+from applications.services.choices import EDAD_SELECT_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_CHOICHES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIPO_CLIENTE_STATIC, EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_PROFESION_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC, HORARIO_CHOICES_STATIC, MOTIVO_VACANTE_CHOICES_STATIC
 
 class VacanteForm(forms.Form):
     # EXPERIENCIA_TIEMPO = [
@@ -2557,12 +2557,7 @@ class VacancyFormAllV2(forms.Form):
 
     tipo_profesion = forms.ChoiceField(
         label='Tipo de Selección de Profesión',
-        choices=[
-            ('', 'Seleccione una opción...'),
-            ('especifica', 'Profesión Específica'),
-            ('grupo', 'Grupo de Profesiones'),
-            ('listado', 'Listado Personalizado')
-        ],
+        choices= TIPO_PROFESION_CHOICES_STATIC,
         widget=forms.Select(attrs={
             'class': 'form-select form-select-solid',
             'data-control': 'select2',
@@ -2585,7 +2580,7 @@ class VacancyFormAllV2(forms.Form):
     profesion_estudio_listado = forms.CharField(
         label='Listado Personalizado de Profesiones',
         widget=forms.TextInput(attrs={
-            'class': 'tagify--custom-dropdown',
+            'class': 'form-control',
             'placeholder': 'Escriba las profesiones...',
         }),
         required=False
@@ -2957,9 +2952,7 @@ class VacancyFormAllV2(forms.Form):
             elif nivel_idioma and not idioma:
                 self.add_error(f'idioma_{i}', f'Debe seleccionar el idioma #{i}.')
         
-        profesion_estudio = cleaned_data.get('profesion_estudio')
-        if not profesion_estudio:
-            self.add_error('profesion_estudio', 'El campo Estudio o Profesión es obligatorio.') 
+        
         
         nivel_estudio = cleaned_data.get('nivel_estudio')
         if not nivel_estudio:
@@ -3028,6 +3021,8 @@ class VacancyFormAllV2(forms.Form):
         profesion_especifica = cleaned_data.get('profesion_estudio')
         grupo_profesion = cleaned_data.get('grupo_profesion')
         listado_profesion = cleaned_data.get('profesion_estudio_listado')
+        profesion_estudio = cleaned_data.get('profesion_estudio')
+        
 
         # Validación: solo una opción debe estar seleccionada
         campos_llenos = sum([
@@ -3038,13 +3033,18 @@ class VacancyFormAllV2(forms.Form):
 
         if not tipo_profesion:
             self.add_error('tipo_profesion', 'Debe seleccionar un tipo de profesión.')
-        elif tipo_profesion == 'especifica' and not profesion_especifica:
-            self.add_error('profesion_estudio', 'Debe seleccionar una profesión específica.')
-        elif tipo_profesion == 'grupo' and not grupo_profesion:
-            self.add_error('grupo_profesion', 'Debe seleccionar un grupo de profesiones.')
-        elif tipo_profesion == 'listado' and not listado_profesion:
-            self.add_error('profesion_estudio_listado', 'Debe ingresar al menos una profesión en el listado.')
-        elif campos_llenos > 1:
+        elif tipo_profesion == 'E':
+            if not profesion_especifica:
+                self.add_error('profesion_estudio', 'Debe seleccionar una profesión específica.')
+        elif tipo_profesion == 'G':
+            if not grupo_profesion:
+                self.add_error('grupo_profesion', 'Debe seleccionar un grupo de profesiones.')
+        elif tipo_profesion == 'L':
+            if not listado_profesion:
+                self.add_error('profesion_estudio_listado', 'Debe ingresar al menos una profesión en el listado.')
+
+        # Validación: solo una opción debe estar seleccionada
+        if campos_llenos > 1:
             self.add_error(None, 'Solo puede seleccionar una opción: profesión específica, grupo de profesiones, o listado personalizado.')
         
         return cleaned_data

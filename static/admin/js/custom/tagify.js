@@ -1,4 +1,18 @@
 // tagify custom 
+function limpiarTagify(campoId) {
+    let cleanId = campoId.replace('#', '');
+    let input = document.getElementById(cleanId);
+    
+    if (input && input.classList.contains("tagify-applied")) {
+        // Remover Tagify existente
+        let tagifyInstance = input.tagify;
+        if (tagifyInstance) {
+            tagifyInstance.destroy();
+        }
+        input.classList.remove("tagify-applied");
+    }
+}
+
 function TagifyList(campoId, apiUrl) {
     let input = document.getElementById(campoId);
 

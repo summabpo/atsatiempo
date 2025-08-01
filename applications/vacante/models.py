@@ -6,7 +6,7 @@ from applications.candidato.models import Can101Candidato, Can104Skill
 from applications.usuarios.models import UsuarioBase
 
 #choices
-from applications.services.choices import EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, HORARIO_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC , ESTADO_VACANTE_CHOICHES_STATIC
+from applications.services.choices import EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, HORARIO_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_PROFESION_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC , ESTADO_VACANTE_CHOICHES_STATIC
 
 # Create your models here.
 class Cli053SoftSkill(models.Model):
@@ -88,6 +88,7 @@ class Cli073PerfilVacante(models.Model):
     salario_adicional = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
     idioma = models.CharField(max_length=100, choices=IDIOMA_CHOICES_STATIC, blank=True, null=True)
     nivel_idioma = models.CharField(max_length=2, choices=NIVEL_IDIOMA_CHOICES_STATIC, blank=True, null=True)
+    tipo_profesion = models.CharField(max_length=1, choices=TIPO_PROFESION_CHOICES_STATIC, blank=True, null=True)
     profesion_estudio = models.ForeignKey(Cli055ProfesionEstudio, on_delete=models.CASCADE, blank=True, null=True)
     grupo_profesion = models.ForeignKey(Cli075GrupoProfesion, on_delete=models.CASCADE, blank=True, null=True)
     profesion_estudio_listado = models.TextField(blank=True, null=True)
