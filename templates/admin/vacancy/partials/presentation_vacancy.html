@@ -118,7 +118,7 @@
                             </p>
                         </div>
                     </div>
-
+                    <hr class="my-4">
                     <!-- Descripción del Puesto -->
                     <h4 class="mb-3" style="font-weight: 700;">Descripción del Puesto</h4>
                     <p class="text-secondary mb-4" style="text-align: justify;">
@@ -128,7 +128,7 @@
                             No hay descripción disponible para esta vacante.
                         {% endif %}
                     </p>
-
+                    <hr class="my-4">
                     <!-- Responsabilidades -->
                     {% if vacante.perfil_vacante.funciones_responsabilidades %}
                     <h4 class="mb-3" style="font-weight: 700;">Responsabilidades</h4>
@@ -138,38 +138,67 @@
                         {% endfor %}
                     </ul>
                     {% endif %}
-
+                    <hr class="my-4">
                     <!-- Requisitos -->
                     <h4 class="mb-3" style="font-weight: 700;">Requisitos</h4>
                     <div class="d-flex flex-wrap gap-2">
-                        {% if vacante.perfil_vacante.profesion_estudio %}
-                            <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">{{ vacante.perfil_vacante.profesion_estudio.nombre }}</span>
-                        {% endif %}
-                        
-                        {% if vacante.perfil_vacante.nivel_estudio %}
-                            <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
-                                {% if vacante.perfil_vacante.nivel_estudio == '1' %}
-                                    Sin estudios
-                                {% elif vacante.perfil_vacante.nivel_estudio == '2' %}
-                                    Primaria
-                                {% elif vacante.perfil_vacante.nivel_estudio == '3' %}
-                                    Secundaria/Bachillerato
-                                {% elif vacante.perfil_vacante.nivel_estudio == '4' %}
-                                    Técnico
-                                {% elif vacante.perfil_vacante.nivel_estudio == '5' %}
-                                    Tecnólogo
-                                {% elif vacante.perfil_vacante.nivel_estudio == '6' %}
-                                    Universitario
-                                {% elif vacante.perfil_vacante.nivel_estudio == '7' %}
-                                    Postgrado
-                                {% elif vacante.perfil_vacante.nivel_estudio == '8' %}
-                                    Diplomado
-                                {% elif vacante.perfil_vacante.nivel_estudio == '9' %}
-                                    Curso
+                        {% if vacante.perfil_vacante.tipo_profesion == 'E' %}
+                            <div class="mb-3">
+                                <span class="text-secondary">Se requiere que tenga titulo de <strong>{{ vacante.perfil_vacante.get_nivel_estudio_display }}</strong> en: <strong>{{ vacante.perfil_vacante.profesion_estudio.nombre }}</strong></span>
+                                <div class="mt-2">
+                                    <span class="badge bg-primary-subtle text-primary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                        <i class="bi bi-award me-1"></i>Profesión Específica
+                                    </span>
+                                </div>
+                            </div>
+                        {% elif vacante.perfil_vacante.tipo_profesion == 'G' %}
+                            <div class="mb-3">
+                                <span class="text-secondary">Se requiere que tenga titulo de <strong>{{ vacante.perfil_vacante.get_nivel_estudio_display }}</strong> en este grupo de profesiones: <strong>{{ vacante.perfil_vacante.grupo_profesion.nombre }}</strong></span>
+                                <div class="mt-2">
+                                    <span class="badge bg-success-subtle text-success-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                        <i class="bi bi-collection me-1"></i>Grupo de Profesiones
+                                    </span>
+                                </div>
+                                {% if vacante.perfil_vacante.tipo_profesion == 'G' and vacante.perfil_vacante.grupo_profesion %}
+                                    <div class="mt-3">
+                                        <div class="d-flex flex-wrap gap-2">
+                                            {% for profesion in vacante.perfil_vacante.grupo_profesion.profesiones %}
+                                                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle" style="font-size: 0.85rem; font-weight: 500; padding: 0.6em 1em; border-radius: 0.5rem;">
+                                                    <i class="bi bi-mortarboard-fill me-1"></i>{{ profesion.nombre }}
+                                                </span>
+                                            {% empty %}
+                                                <span class="text-muted fst-italic">No hay profesiones registradas en este grupo.</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
                                 {% endif %}
-                            </span>
+                            </div>
+                        {% elif vacante.perfil_vacante.tipo_profesion == 'L' %}
+                            <div class="mb-3">
+                                <span class="text-secondary">Se requiere que tenga titulo de <strong>{{ vacante.perfil_vacante.get_nivel_estudio_display }}</strong> en este listado de profesiones:</span>
+                                <div class="mt-2">
+                                    <span class="badge bg-success-subtle text-success-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                        <i class="bi bi-collection me-1"></i>Listado de Profesiones
+                                    </span>
+                                </div>
+                                {% if vacante.perfil_vacante.profesion_estudio_listado %}
+                                    <div class="mt-3">
+                                        <div class="d-flex flex-wrap gap-2">
+                                            {% for profesion in vacante.perfil_vacante.profesion_estudio_listado|parse_profesiones_json %}
+                                                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle" style="font-size: 0.85rem; font-weight: 500; padding: 0.6em 1em; border-radius: 0.5rem;">
+                                                    <i class="bi bi-mortarboard-fill me-1"></i>{{ profesion }}
+                                                </span>
+                                            {% empty %}
+                                                <span class="text-muted fst-italic">No hay profesiones seleccionadas en el listado.</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
                         {% endif %}
 
+                        
+                        
                         {% if vacante.perfil_vacante.idioma %}
                             <span class="badge bg-secondary-subtle text-secondary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
                                 {% if vacante.perfil_vacante.idioma == 'ES' %}
@@ -208,6 +237,76 @@
                         {% for skill in vacante.soft_skills_id_053.all %}
                             <span class="badge bg-secondary-subtle text-secondary-emphasis" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">{{ skill.nombre }}</span>
                         {% endfor %}
+                    </div>
+                    <hr class="my-4">
+                    <!-- Horarios -->
+                    <h4 class="mb-3" style="font-weight: 700;">Horarios</h4>
+                    <div class="d-flex flex-wrap gap-3">
+                        {% if vacante.perfil_vacante.horario %}
+                            {% for horario in vacante.perfil_vacante.horario|parse_horarios_json %}
+                                <div class="
+                                    card 
+                                    border-0 
+                                    shadow-sm 
+                                    bg-primary 
+                                    bg-opacity-10
+                                    {% if forloop.parentloop and forloop.parentloop.length == 1 %}
+                                        col-12
+                                    {% elif forloop.parentloop and forloop.parentloop.length == 2 %}
+                                        col-12 col-md-6
+                                    {% elif forloop.parentloop and forloop.parentloop.length == 3 %}
+                                        col-12 col-md-4
+                                    {% else %}
+                                        col-12 col-md-6 col-lg-4
+                                    {% endif %}
+                                    mb-3
+                                " >
+                                    <div class="card-body p-4 text-center">
+                                        <div class="d-flex align-items-center justify-content-center mb-3">
+                                            <i class="bi bi-calendar-range text-primary me-2" style="font-size: 1.3rem;"></i>
+                                            <h6 class="mb-0 fw-bold text-dark">Bloque {{ horario.bloque }}</h6>
+                                        </div>
+                                        <div class="mb-3">
+                                            <span class="badge bg-primary-subtle text-primary-emphasis px-3 py-2" style="font-size: 0.9rem; font-weight: 600;">
+                                                <i class="bi bi-calendar-week me-1"></i>{{ horario.rango_dias }}
+                                            </span>
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <div class="p-2 rounded" style="background: rgba(25, 135, 84, 0.1);">
+                                                    <small class="text-muted d-block mb-1">Inicio</small>
+                                                    <span class="fw-bold text-success">{{ horario.hora_inicio }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="p-2 rounded" style="background: rgba(220, 53, 69, 0.1);">
+                                                    <small class="text-muted d-block mb-1">Fin</small>
+                                                    <span class="fw-bold text-danger">{{ horario.hora_final }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="w-100">
+                                    <div class="alert alert-info border-0" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-info-circle me-2"></i>
+                                            <span>No hay horarios específicos registrados para esta vacante.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="w-100">
+                                <div class="alert alert-warning border-0" style="background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%);">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-clock me-2"></i>
+                                        <span>Información de horarios no disponible.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 

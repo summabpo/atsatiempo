@@ -42,6 +42,11 @@ class Cli075GrupoProfesion(models.Model):
     def __str__(self):
         return self.nombre
 
+    @property
+    def profesiones(self):
+        """Retorna todas las profesiones que pertenecen a este grupo"""
+        return self.cli055profesionestudio_set.filter(estado_id_001=1).order_by('nombre')
+
     class Meta:
         db_table = 'cli_075_grupo_profesion'
         verbose_name = 'GRUPO PROFESIÓN'
