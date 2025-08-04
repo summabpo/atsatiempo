@@ -109,7 +109,7 @@ def parse_horarios_json(value):
         dias_abreviados = {
             'L': 'Lunes',
             'M': 'Martes', 
-            'W': 'Miércoles',
+            'X': 'Miércoles',
             'J': 'Jueves',
             'V': 'Viernes',
             'S': 'Sábado',
