@@ -41,7 +41,7 @@ def apply_vacancy_detail(request, pk):
     # Obtener la aplicación de vacante específica
     try:
         vacancy = Cli056AplicacionVacante.objects.get(id=pk, candidato_101=candidato_id)
-        vacante = get_object_or_404(Cli052Vacante, id=vacancy.vacante_id_052.id, estado_id_001=1)
+        vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), id=vacancy.vacante_id_052.id, estado_id_001=1)
         historico_vacante = consultar_historial_aplicacion_vacante_candidate(vacancy.id)
     except Cli056AplicacionVacante.DoesNotExist:
         messages.error(request, "La aplicación de vacante no existe o no pertenece al candidato.")

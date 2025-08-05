@@ -474,7 +474,7 @@ def detail_vacancy(request, pk):
     
     # vacante = query_vacanty_detail().get(id=pk)
 
-    vacante = get_object_or_404(Cli052Vacante, id=pk)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), id=pk)
 
     # Pre-fill the form with the existing data from the vacante
     initial_data = {

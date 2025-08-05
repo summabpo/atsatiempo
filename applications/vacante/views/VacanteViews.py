@@ -323,7 +323,7 @@ def vacante_detalle(request, pk):
     candidato_id = candidato_id = request.session.get('candidato_id')
     candidato = get_object_or_404(Can101Candidato, id=candidato_id)
 
-    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), pk=pk)
     cliente = get_object_or_404(Cli051Cliente, id=vacante.cliente_id_051.id)
 
     try:

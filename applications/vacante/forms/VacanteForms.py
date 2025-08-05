@@ -3014,7 +3014,7 @@ class VacancyFormAllV2(forms.Form):
                 self.add_error('comentarios', 'El campo Comentarios finales no puede exceder los 500 caracteres.')
         
         descripcion_vacante = cleaned_data.get('descripcion_vacante')   
-        if len(descripcion_vacante) > 1000:
+        if len(descripcion_vacante) > 10000:
             self.add_error('descripcion_vacante', 'El campo Descripción vacante no puede exceder los 500 caracteres.')
 
         tipo_profesion = cleaned_data.get('tipo_profesion')
