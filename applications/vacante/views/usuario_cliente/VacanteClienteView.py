@@ -143,7 +143,7 @@ def vacantes_cliente(request):
 @login_required
 @validar_permisos('acceso_cliente')
 def gestion_vacante_reclutados(request, pk):
-    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), pk=pk)
     cliente_id = request.session.get('cliente_id')
     # Obtener el cliente usando el id de la sesión
     cliente = get_object_or_404(Cli051Cliente, pk=cliente_id)
@@ -165,7 +165,7 @@ def gestion_vacante_reclutados(request, pk):
 @login_required
 @validar_permisos('acceso_cliente')
 def gestion_vacante_entrevistas(request, pk):
-    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), pk=pk)
     cliente_id = request.session.get('cliente_id')
     # Obtener el cliente usando el id de la sesión
     cliente = get_object_or_404(Cli051Cliente, pk=cliente_id)
@@ -198,7 +198,7 @@ def gestion_entrevista(request, pk):
     
     reclutamiento = entrevista.asignacion_vacante
 
-    vacante = get_object_or_404(Cli052Vacante, id = reclutamiento.vacante_id_052.id)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), id = reclutamiento.vacante_id_052.id)
     candidato = get_object_or_404(Can101Candidato, id = reclutamiento.candidato_101.id)
         # Formulario Vacantes
     if request.method == 'POST': 

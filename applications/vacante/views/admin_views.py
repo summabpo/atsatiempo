@@ -592,7 +592,7 @@ def vacanty_management_from_client(request, pk, vacante_id):
 
     # Data cliente a mostrar
     data = query_client_detail(pk)
-    vacante = get_object_or_404(Cli052Vacante, id=vacante_id)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), id=vacante_id)
     # Obtener información de las entrevistas por vacante
     entrevistas = query_interview_all()
     entrevistas = entrevistas.filter(asignacion_vacante__vacante_id_052=vacante.id)
@@ -656,7 +656,7 @@ def vacanty_management_from_client(request, pk, vacante_id):
         else:
             form_errors = True
             messages.error(request, 'Error al crear el candidato. Verifique los datos.')
-            
+
     else:
         form_reclutados = ReclutadoCrearForm()
 

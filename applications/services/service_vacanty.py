@@ -65,3 +65,11 @@ def query_vacanty_with_skills_and_details():
         'perfil_vacante',
         'cli074asignacionfunciones_set__funcion_responsabilidad'
     )
+
+def get_vacanty_questions(vacante_id):
+    vacanty = Cli052Vacante.objects.filter(id=vacante_id)
+
+    
+
+    return vacanty
+

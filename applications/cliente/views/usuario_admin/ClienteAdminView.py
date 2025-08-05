@@ -363,7 +363,7 @@ def cliente_vacante(request, pk):
 @login_required
 @validar_permisos('acceso_admin')
 def cliente_vacante_detalle(request, pk):
-    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), pk=pk)
     cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
     candidato_aplicante = Cli056AplicacionVacante.objects.select_related(
         'vacante_id_052',
@@ -389,7 +389,7 @@ def cliente_vacante_detalle(request, pk):
 @login_required
 @validar_permisos('acceso_admin')
 def cliente_vacante_reclutado(request, pk):
-    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), pk=pk)
     asignacion_vacante = consulta_asignacion_vacante_id(vacante.id)
     cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
     candidato_aplicante = Cli056AplicacionVacante.objects.select_related(
@@ -414,7 +414,7 @@ def cliente_vacante_reclutado(request, pk):
 @login_required
 @validar_permisos('acceso_admin')
 def cliente_vacante_entrevista(request, pk):
-    vacante = get_object_or_404(Cli052Vacante, pk=pk)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), pk=pk)
     cliente = get_object_or_404(Cli051Cliente, pk=vacante.cliente_id_051.id)
 
     contadores_reclutados = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(pk)

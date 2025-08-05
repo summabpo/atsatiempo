@@ -54,7 +54,7 @@ def list_assigned_vacancies(request):
 @validar_permisos('acceso_analista_seleccion_ats')
 def detail_vacancy(request, pk):
     # vacante = query_vacanty_detail().get(id=pk)
-    vacante = get_object_or_404(Cli052Vacante, id=pk)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), id=pk)
 
     cliente_id = Cli051Cliente.objects.get(id=vacante.asignacion_cliente_id_064.id_cliente_asignado.id)
 
