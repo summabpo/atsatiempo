@@ -22,7 +22,7 @@ from django.db.models.functions import Concat
 from applications.vacante.forms.VacanteForms import VacancyFormAllV2, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll
 
 #views
-from applications.services.service_vacanty import query_vacanty_all
+from applications.services.service_vacanty import get_vacanty_questions, query_vacanty_all
 
 #query
 from applications.services.service_client import query_client_detail
@@ -597,6 +597,9 @@ def vacanty_management_from_client(request, pk, vacante_id):
     entrevistas = query_interview_all()
     entrevistas = entrevistas.filter(asignacion_vacante__vacante_id_052=vacante.id)
 
+    # Obtener preguntas de la vacante
+    preguntas = get_vacanty_questions(vacante.id)
+
     # Obtener los reclutados asociados a la vacante
     reclutados = query_recruited_vacancy_id(vacante.id)
 
@@ -666,6 +669,7 @@ def vacanty_management_from_client(request, pk, vacante_id):
         'reclutados': reclutados,
         'entrevistas': entrevistas,
         'form_reclutados' : form_reclutados,
+        'preguntas': preguntas,
     }
 
     return render(request, 'admin/vacancy/admin_user/client_detail_vacancy_management.html', context) 
