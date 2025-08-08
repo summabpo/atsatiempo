@@ -651,12 +651,16 @@
             </div>
         </div>
         <div class="card-footer bg-white text-center p-3">
+
+            {% comment %} {% if request.user.is_superuser or request.user.is_staff %}
             <a href="{% url 'vacantes:vacantes_editar_propias' data.cliente.id vacante.id %}" class="btn bg-primary text-primary bg-opacity-10 px-5 me-2" style="font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">
                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 20px;">edit</span>Editar Vacante
             </a>
             <button class="btn bg-info text-info bg-opacity-10" style="font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">
                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 20px;">download</span>Exportar Datos
             </button>
+            {% endif %} {% endcomment %}
+            
         </div>
     </div>
 </div>

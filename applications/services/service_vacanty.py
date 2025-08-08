@@ -119,68 +119,6 @@ def get_vacanty_questions(vacante_id):
                 "valores_relacionados": None
             })
 
-    # Tipo Profesión
-    tipo_profesion = getattr(perfil, 'tipo_profesion', None)
-    if tipo_profesion:
-        nivel_estudio = getattr(perfil, 'nivel_estudio', None)
-        nivel_estudio_display = dict(getattr(perfil._meta.get_field('nivel_estudio'), 'choices', [])).get(nivel_estudio, nivel_estudio)
-        if tipo_profesion == 'E':
-            # Profesión Específica
-            profesion_estudio = getattr(perfil, 'profesion_estudio', None)
-            pregunta_profesion = (
-                f"¿Cuenta con el nivel de estudio {nivel_estudio_display} en la profesión {profesion_estudio}?"
-            )
-            preguntas.append({
-                "bloque": 3,
-                "tipo_pregunta": "profesion_especifica",
-                "pregunta": pregunta_profesion,
-                "valores_relacionados": {
-                    "nivel_estudio": nivel_estudio_display,
-                    "profesion": profesion_estudio
-                }
-            })
-        elif tipo_profesion == 'G':
-            # Grupo de Profesiones
-            grupo_profesiones = getattr(perfil, 'grupo_profesiones', None)
-            if grupo_profesiones:
-                pregunta_grupo = (
-                    f"¿Cuenta con el nivel de estudio {nivel_estudio_display} y pertenece a alguno de los siguientes grupos de profesiones: {', '.join(grupo_profesiones)}?"
-                )
-                preguntas.append({
-                    "bloque": 3,
-                    "tipo_pregunta": "profesion_grupo",
-                    "pregunta": pregunta_grupo,
-                    "valores_relacionados": {
-                        "nivel_estudio": nivel_estudio_display,
-                        "grupos": grupo_profesiones
-                    }
-                })
-        elif tipo_profesion == 'L':
-            # Listado Personalizado
-            listado_profesiones = getattr(perfil, 'listado_profesiones', None)
-            if listado_profesiones:
-                # Si listado_profesiones es una lista de dicts con 'value' y 'id', mostrar solo los 'value' en la pregunta
-                if isinstance(listado_profesiones, list) and listado_profesiones and isinstance(listado_profesiones[0], dict):
-                    nombres_profesiones = [prof.get('value', '') for prof in listado_profesiones]
-                    ids_profesiones = [prof.get('id', '') for prof in listado_profesiones]
-                else:
-                    # Si es una lista de strings
-                    nombres_profesiones = listado_profesiones
-                    ids_profesiones = []
-                pregunta_listado = (
-                    f"¿Cuenta con el nivel de estudio {nivel_estudio_display} y alguna de las siguientes profesiones: {', '.join(nombres_profesiones)}?"
-                )
-                preguntas.append({
-                    "bloque": 3,
-                    "tipo_pregunta": "profesion_listado",
-                    "pregunta": pregunta_listado,
-                    "valores_relacionados": {
-                        "nivel_estudio": nivel_estudio_display,
-                        "profesiones": nombres_profesiones,
-                        "ids": ids_profesiones
-                    }
-                })
-
     # Estudios Complementarios
     estudios_complementarios = getattr(perfil, 'estudios_complementarios', None)
     if estudios_complementarios:
@@ -236,49 +174,128 @@ def get_vacanty_questions(vacante_id):
                 "pregunta": pregunta_idioma
             })
 
-    # Tipo Profesión
+    # Tipo Profesión V1
+    # perfil = vacante.perfil_vacante
+    # tipo_profesion = getattr(perfil, 'tipo_profesion', None)
+    # if tipo_profesion == 'E':
+    #     # Profesión Específica
+    #     nivel_estudio = getattr(perfil, 'nivel_estudio', None)
+    #     profesion_estudio = getattr(perfil, 'profesion_estudio', None)
+    #     nivel_estudio_display = dict(getattr(perfil._meta.get_field('nivel_estudio'), 'choices', [])).get(nivel_estudio, nivel_estudio)
+    #     profesion_nombre = str(profesion_estudio) if profesion_estudio else ''
+    #     pregunta = f"¿Cuenta con título de nivel {nivel_estudio_display} en la profesión de {profesion_nombre}?"
+    #     preguntas.append({
+    #         "bloque": 3,
+    #         "tipo_pregunta": "profesion",
+    #         "pregunta": pregunta
+    #     })
+    # elif tipo_profesion == 'L':
+    #     # Listado Personalizado
+    #     listado = getattr(perfil, 'profesion_estudio_listado', None)
+    #     if listado:
+    #         opciones = [op.strip() for op in listado.split(',') if op.strip()]
+    #         if not opciones:
+    #             opciones = [op.strip() for op in listado.split('\n') if op.strip()]
+    #         opciones_str = ', '.join(opciones)
+    #         pregunta = f"¿Cuenta con el título en alguna de las siguientes opciones: {opciones_str}?"
+    #     else:
+    #         pregunta = "¿Cuenta con el título en alguna de las opciones indicadas?"
+    #     preguntas.append({
+    #         "bloque": 3,
+    #         "tipo_pregunta": "profesion",
+    #         "pregunta": pregunta
+    #     })
+    # elif tipo_profesion == 'G':
+    #     # Grupo de Profesiones
+    #     grupo_profesion = getattr(perfil, 'grupo_profesion', None)
+    #     if grupo_profesion:
+    #         pregunta = f"¿Pertenece a alguno de los grupos de profesiones requeridos: {grupo_profesion}?"
+    #     else:
+    #         pregunta = "¿Pertenece a alguno de los grupos de profesiones requeridos?"
+    #     preguntas.append({
+    #         "bloque": 3,
+    #         "tipo_pregunta": "profesion",
+    #         "pregunta": pregunta
+    #     })
+
+ 
+
+    # Tipo Profesión V2
     perfil = vacante.perfil_vacante
     tipo_profesion = getattr(perfil, 'tipo_profesion', None)
-    if tipo_profesion == 'E':
-        # Profesión Específica
+    if tipo_profesion:
         nivel_estudio = getattr(perfil, 'nivel_estudio', None)
-        profesion_estudio = getattr(perfil, 'profesion_estudio', None)
         nivel_estudio_display = dict(getattr(perfil._meta.get_field('nivel_estudio'), 'choices', [])).get(nivel_estudio, nivel_estudio)
-        profesion_nombre = str(profesion_estudio) if profesion_estudio else ''
-        pregunta = f"¿Cuenta con título de nivel {nivel_estudio_display} en la profesión de {profesion_nombre}?"
-        preguntas.append({
-            "bloque": 3,
-            "tipo_pregunta": "profesion",
-            "pregunta": pregunta
-        })
-    elif tipo_profesion == 'L':
-        # Listado Personalizado
-        listado = getattr(perfil, 'profesion_estudio_listado', None)
-        if listado:
-            opciones = [op.strip() for op in listado.split(',') if op.strip()]
-            if not opciones:
-                opciones = [op.strip() for op in listado.split('\n') if op.strip()]
-            opciones_str = ', '.join(opciones)
-            pregunta = f"¿Cuenta con el título en alguna de las siguientes opciones: {opciones_str}?"
-        else:
-            pregunta = "¿Cuenta con el título en alguna de las opciones indicadas?"
-        preguntas.append({
-            "bloque": 3,
-            "tipo_pregunta": "profesion",
-            "pregunta": pregunta
-        })
-    elif tipo_profesion == 'G':
-        # Grupo de Profesiones
-        grupo_profesion = getattr(perfil, 'grupo_profesion', None)
-        if grupo_profesion:
-            pregunta = f"¿Pertenece a alguno de los grupos de profesiones requeridos: {grupo_profesion}?"
-        else:
-            pregunta = "¿Pertenece a alguno de los grupos de profesiones requeridos?"
-        preguntas.append({
-            "bloque": 3,
-            "tipo_pregunta": "profesion",
-            "pregunta": pregunta
-        })
+        if tipo_profesion == 'E':
+            # Profesión Específica
+            profesion_estudio = getattr(perfil, 'profesion_estudio', None)
+            pregunta_profesion = (
+                f"¿Cuenta con el nivel de estudio {nivel_estudio_display} en la profesión {profesion_estudio}?"
+            )
+            preguntas.append({
+                "bloque": 1,
+                "tipo_pregunta": "profesion_especifica",
+                "pregunta": pregunta_profesion,
+                "valores_relacionados": {
+                    "nivel_estudio": nivel_estudio_display,
+                    "profesion": profesion_estudio
+                }
+            })
+        elif tipo_profesion == 'G':
+            # Grupo de Profesiones
+            grupo_profesiones = getattr(perfil, 'grupo_profesiones', None)
+            if grupo_profesiones:
+                pregunta_grupo = (
+                    f"¿Cuenta con el nivel de estudio {nivel_estudio_display} y pertenece a alguno de los siguientes grupos de profesiones: {', '.join(grupo_profesiones)}?"
+                )
+                preguntas.append({
+                    "bloque": 2,
+                    "tipo_pregunta": "profesion_grupo",
+                    "pregunta": pregunta_grupo,
+                    "valores_relacionados": {
+                        "nivel_estudio": nivel_estudio_display,
+                        "grupos": grupo_profesiones
+                    }
+                })
+        elif tipo_profesion == 'L':
+            print(tipo_profesion)
+            # Listado Personalizado
+            listado_profesiones = getattr(perfil, 'profesion_estudio_listado', None)
+            if listado_profesiones:
+                nombres_profesiones = []
+                valores_relacionados = []
+                
+                # Parsear el JSON si es un string
+                if isinstance(listado_profesiones, str):
+                    try:
+                        import json
+                        listado_profesiones = json.loads(listado_profesiones)
+                    except Exception as e:
+                        print(f"Error parsing JSON: {e}")
+                        listado_profesiones = []
+                
+                # Si listado_profesiones es una lista de dicts con 'value' y 'id'
+                if isinstance(listado_profesiones, list) and listado_profesiones and isinstance(listado_profesiones[0], dict):
+                    for prof in listado_profesiones:
+                        nombre = prof.get('value', '')
+                        id_prof = prof.get('id', None)
+                        nombres_profesiones.append(nombre)
+                        valores_relacionados.append({"value": nombre, "id": id_prof})
+                elif isinstance(listado_profesiones, list):
+                    # Si es una lista de strings
+                    nombres_profesiones = listado_profesiones
+                    valores_relacionados = [{"value": nombre, "id": None} for nombre in nombres_profesiones]
+                
+                if nombres_profesiones:
+                    pregunta_listado = (
+                        f"¿Cuenta con el título en alguna de las siguientes profesiones: {', '.join(nombres_profesiones)}?"
+                    )
+                    preguntas.append({
+                        "bloque": 3,
+                        "tipo_pregunta": "profesion",
+                        "pregunta": pregunta_listado,
+                        "valores_relacionados": valores_relacionados
+                    })
 
     # Estudios complementarios
     estudios_complementarios = getattr(perfil, 'estudio_complementario', None)
@@ -307,9 +324,9 @@ def get_vacanty_questions(vacante_id):
                     certificado_bool = certificado == 1
                 if nombre:
                     if certificado_bool:
-                        pregunta = f"¿Cuenta con el estudio complementario: {nombre} y tiene certificado?"
+                        pregunta = f"¿Cuenta con el estudio complementario en {nombre} y tiene certificado?"
                     else:
-                        pregunta = f"¿Cuenta con el estudio complementario: {nombre}?"
+                        pregunta = f"¿Cuenta con el estudio complementario en {nombre}?"
                     preguntas.append({
                         "bloque": 4,
                         "tipo_pregunta": "estudio_complementario",
