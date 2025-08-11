@@ -174,52 +174,6 @@ def get_vacanty_questions(vacante_id):
                 "pregunta": pregunta_idioma
             })
 
-    # Tipo Profesión V1
-    # perfil = vacante.perfil_vacante
-    # tipo_profesion = getattr(perfil, 'tipo_profesion', None)
-    # if tipo_profesion == 'E':
-    #     # Profesión Específica
-    #     nivel_estudio = getattr(perfil, 'nivel_estudio', None)
-    #     profesion_estudio = getattr(perfil, 'profesion_estudio', None)
-    #     nivel_estudio_display = dict(getattr(perfil._meta.get_field('nivel_estudio'), 'choices', [])).get(nivel_estudio, nivel_estudio)
-    #     profesion_nombre = str(profesion_estudio) if profesion_estudio else ''
-    #     pregunta = f"¿Cuenta con título de nivel {nivel_estudio_display} en la profesión de {profesion_nombre}?"
-    #     preguntas.append({
-    #         "bloque": 3,
-    #         "tipo_pregunta": "profesion",
-    #         "pregunta": pregunta
-    #     })
-    # elif tipo_profesion == 'L':
-    #     # Listado Personalizado
-    #     listado = getattr(perfil, 'profesion_estudio_listado', None)
-    #     if listado:
-    #         opciones = [op.strip() for op in listado.split(',') if op.strip()]
-    #         if not opciones:
-    #             opciones = [op.strip() for op in listado.split('\n') if op.strip()]
-    #         opciones_str = ', '.join(opciones)
-    #         pregunta = f"¿Cuenta con el título en alguna de las siguientes opciones: {opciones_str}?"
-    #     else:
-    #         pregunta = "¿Cuenta con el título en alguna de las opciones indicadas?"
-    #     preguntas.append({
-    #         "bloque": 3,
-    #         "tipo_pregunta": "profesion",
-    #         "pregunta": pregunta
-    #     })
-    # elif tipo_profesion == 'G':
-    #     # Grupo de Profesiones
-    #     grupo_profesion = getattr(perfil, 'grupo_profesion', None)
-    #     if grupo_profesion:
-    #         pregunta = f"¿Pertenece a alguno de los grupos de profesiones requeridos: {grupo_profesion}?"
-    #     else:
-    #         pregunta = "¿Pertenece a alguno de los grupos de profesiones requeridos?"
-    #     preguntas.append({
-    #         "bloque": 3,
-    #         "tipo_pregunta": "profesion",
-    #         "pregunta": pregunta
-    #     })
-
- 
-
     # Tipo Profesión V2
     perfil = vacante.perfil_vacante
     tipo_profesion = getattr(perfil, 'tipo_profesion', None)

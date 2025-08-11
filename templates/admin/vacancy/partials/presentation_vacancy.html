@@ -14,8 +14,8 @@
                         <div class="card-body">
                             <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
 
-                                {% if data.cliente.logo %}
-                                    <img src="{{ data.cliente.logo }}" alt="Logo de {{ data.cliente.razon_social }}" class="me-3 mb-3 mb-md-0" style="width: 60px; height: 60px; object-fit: contain; border-radius: 0.5rem; border: 1px solid #eee;">
+                                {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.logo %}
+                                    <img src="{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.logo.url }}" alt="Logo de {{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}" class="me-3 mb-3 mb-md-0" style="width: 60px; height: 60px; object-fit: contain; border-radius: 0.5rem; border: 1px solid #eee;">
                                 {% else %}
                                     <img src="https://placehold.co/100x100/b10022/ffffff?text={{ data.cliente.razon_social|slice:':2'|upper }}" alt="Logo de {{ data.cliente.razon_social }}" class="me-3 mb-3 mb-md-0" style="width: 60px; height: 60px; object-fit: contain; border-radius: 0.5rem; border: 1px solid #eee;">
                                 {% endif %}
@@ -26,7 +26,7 @@
                                     </h2>
                                     <p class="text-muted mb-0">
                                         <span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">domain</span>
-                                        <b class="text-primary">{{ data.cliente.razon_social }}</b>,&nbsp; &nbsp; 
+                                        <b class="text-primary">{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}</b>,&nbsp; &nbsp; 
                                         <span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">map</span>
                                         <b>{{ vacante.perfil_vacante.lugar_trabajo.nombre }}</b>
                                         {% if vacante.perfil_vacante.barrio %} 
@@ -258,24 +258,24 @@
                             </p>
                         </div>
                         <div class="card-body">
-                            {% if data.cliente %}
+                            {% if vacante.asignacion_cliente_id_064.id_cliente_asignado %}
                                 <div class="mb-3">
                                     <div>
-                                        {% if data.cliente.razon_social %}
+                                        {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social %}
                                             <h5 class="mb-1 fw-bold" style="font-size: 1.15rem;">
-                                                {{ data.cliente.razon_social }}
+                                                {{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}
                                             </h5>
                                         {% endif %}
-                                        {% if data.cliente.ciudad %}
+                                        {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.ciudad %}
                                             <div class="text-secondary small mb-1">
-                                                {{ data.cliente.ciudad }}
+                                                {{ vacante.asignacion_cliente_id_064.id_cliente_asignado.ciudad }}
                                             </div>
                                         {% endif %}
                                     </div>
-                                    {% if data.cliente.perfil_empresarial %}
+                                    {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.perfil_empresarial %}
                                         <div class="mt-2">
                                             <span class="fw-semibold text-dark">Perfil/Descripción:</span>
-                                            <span class="text-secondary">{{ data.cliente.perfil_empresarial }}</span>
+                                            <span class="text-secondary">{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.perfil_empresarial }}</span>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -292,35 +292,35 @@
                                             <div class="modal-header bg-primary bg-opacity-10 border-0 rounded-top-4" style="margin-bottom: 0.5rem;">
                                                 <div class="container-fluid">
                                                     <div class="row align-items-center g-3">
-                                                        {% if data.cliente.logo %}
+                                                        {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.logo %}
                                                         <div class="col-auto d-flex align-items-center justify-content-center">
-                                                            <img src="{{ data.cliente.logo }}" alt="Logo {{ data.cliente.razon_social }}" class="rounded-circle border border-2 border-primary" style="width: 80px; height: 80px; object-fit: cover;">
+                                                            <img src="{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.logo.url }}" alt="Logo {{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}" class="rounded-circle border border-2 border-primary" style="width: 80px; height: 80px; object-fit: cover;">
                                                         </div>
                                                         {% endif %}
                                                         <div class="col">
                                                             <h4 class="modal-title text-primary fw-bold d-flex align-items-center gap-2 mb-1" id="modalInfoClienteLabel" style="font-size: 1.5rem;">
                                                                 <span class="material-symbols-outlined align-middle me-1" style="font-size: 28px; color: #d32f2f;">business</span>
-                                                                {{ data.cliente.razon_social }}
+                                                                {{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}
                                                             </h4>
                                                             <div class="d-flex flex-wrap gap-3">
                                                                 <div class="d-flex align-items-center text-secondary small me-3">
                                                                     <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px; color: #d32f2f;">location_on</span>
-                                                                    {{ data.cliente.ciudad }}
+                                                                    {{ vacante.perfil_vacante.lugar_trabajo.nombre }}
                                                                 </div>
-                                                                {% if data.cliente.estado %}
+                                                                {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.estado %}
                                                                 <div class="d-flex align-items-center text-secondary small me-3">
                                                                     <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px; color: #d32f2f;">flag</span>
-                                                                    {{ data.cliente.estado }}
+                                                                    {{ vacante.asignacion_cliente_id_064.id_cliente_asignado.estado }}
                                                                 </div>
                                                                 {% endif %}
                                                                 <div class="d-flex align-items-center text-secondary small me-3">
                                                                     <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px; color: #d32f2f;">badge</span>
-                                                                    NIT: <span class="ms-1">{{ data.cliente.nit }}</span>
+                                                                    NIT: <span class="ms-1">{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.nit }}</span>
                                                                 </div>
-                                                                {% if data.cliente.tipo_cliente %}
+                                                                {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.tipo_cliente %}
                                                                 <div class="d-flex align-items-center text-secondary small me-3">
                                                                     <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px; color: #d32f2f;">category</span>
-                                                                    {{ data.cliente.tipo_cliente }}
+                                                                    {{ vacante.asignacion_cliente_id_064.id_cliente_asignado.tipo_cliente }}
                                                                 </div>
                                                                 {% endif %}
                                                             </div>
@@ -337,69 +337,69 @@
                                                 <div class="row g-4">
                                                     <div class="col-md-6">
                                                         <ul class="list-group list-group-flush mb-3">
-                                                            {% if data.cliente.actividad_economica %}
+                                                            {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.actividad_economica %}
                                                             <li class="list-group-item border-0 px-0 mb-2 d-flex align-items-center">
                                                                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 22px; color: #d32f2f;">work</span>
                                                                 <span class="fw-bold me-1">Actividad Económica:</span>
-                                                                <span>{{ data.cliente.actividad_economica }}</span>
+                                                                <span>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.actividad_economica }}</span>
                                                             </li>
                                                             {% endif %}
-                                                            {% if data.cliente.direccion %}
+                                                            {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.direccion %}
                                                             <li class="list-group-item border-0 px-0 mb-2 d-flex align-items-center">
                                                                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 22px; color: #d32f2f;">home_pin</span>
                                                                 <span class="fw-bold me-1">Dirección:</span>
-                                                                <span>{{ data.cliente.direccion }}</span>
+                                                                <span>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.direccion }}</span>
                                                             </li>
                                                             {% endif %}
-                                                            {% if data.cliente.contacto %}
+                                                            {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.contacto %}
                                                             <li class="list-group-item border-0 px-0 mb-2 d-flex align-items-center">
                                                                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 22px; color: #d32f2f;">person</span>
                                                                 <span class="fw-bold me-1">Contacto:</span>
-                                                                <span>{{ data.cliente.contacto }}</span>
-                                                                {% if data.cliente.cargo %}
-                                                                    <span class="badge bg-primary-subtle text-primary-emphasis ms-2" style="font-size: 0.85em;">{{ data.cliente.cargo }}</span>
+                                                                <span>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.contacto }}</span>
+                                                                {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.cargo %}
+                                                                    <span class="badge bg-primary-subtle text-primary-emphasis ms-2" style="font-size: 0.85em;">{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.cargo }}</span>
                                                                 {% endif %}
                                                             </li>
                                                             {% endif %}
-                                                            {% if data.cliente.telefono %}
+                                                            {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.telefono %}
                                                             <li class="list-group-item border-0 px-0 mb-2 d-flex align-items-center">
                                                                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 22px; color: #d32f2f;">call</span>
                                                                 <span class="fw-bold me-1">Teléfono:</span>
-                                                                <span>{{ data.cliente.telefono }}</span>
+                                                                <span>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.telefono }}</span>
                                                             </li>
                                                             {% endif %}
-                                                            {% if data.cliente.email %}
+                                                            {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.email %}
                                                             <li class="list-group-item border-0 px-0 mb-2 d-flex align-items-center">
                                                                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 22px; color: #d32f2f;">mail</span>
                                                                 <span class="fw-bold me-1">Email:</span>
-                                                                <span>{{ data.cliente.email }}</span>
+                                                                <span>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.email }}</span>
                                                             </li>
                                                             {% endif %}
                                                         </ul>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <ul class="list-group list-group-flush mb-3">
-                                                            {% if data.cliente.referencias_laborales %}
+                                                                {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.referencias_laborales %}
                                                             <li class="list-group-item border-0 px-0 mb-2 d-flex align-items-center">
                                                                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 22px; color: #d32f2f;">assignment_ind</span>
                                                                 <span class="fw-bold me-1">Referencias Laborales:</span>
-                                                                <span>{{ data.cliente.referencias_laborales }}</span>
+                                                                <span>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.referencias_laborales }}</span>
                                                             </li>
                                                             {% endif %}
-                                                            {% if data.cliente.cantidad_colaboradores %}
+                                                            {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.cantidad_colaboradores %}
                                                             <li class="list-group-item border-0 px-0 mb-2 d-flex align-items-center">
                                                                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 22px; color: #d32f2f;">groups</span>
                                                                 <span class="fw-bold me-1">Colaboradores:</span>
-                                                                <span>{{ data.cliente.cantidad_colaboradores }}</span>
+                                                                <span>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.cantidad_colaboradores }}</span>
                                                             </li>
                                                             {% endif %}
                                                         </ul>
-                                                        {% if data.cliente.perfil_empresarial %}
+                                                        {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.perfil_empresarial %}
                                                         <div class="mb-2 d-flex align-items-start">
                                                             <span class="material-symbols-outlined align-middle me-2" style="font-size: 22px; color: #d32f2f;">description</span>
                                                             <div>
                                                                 <span class="fw-semibold text-dark">Perfil/Descripción:</span>
-                                                                <span class="text-secondary d-block">{{ data.cliente.perfil_empresarial }}</span>
+                                                                <span class="text-secondary d-block">{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.perfil_empresarial }}</span>
                                                             </div>
                                                         </div>
                                                         {% endif %}
@@ -579,6 +579,8 @@
                         
                     </div>
 
+                    
+                    {% if request.session.grupo_id == 1 or request.session.grupo_id == 3 %}
                     <!-- Tarjeta de estadísticas de la vacante -->
                     <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
                         <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
@@ -646,6 +648,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
 
                 </div>
             </div>

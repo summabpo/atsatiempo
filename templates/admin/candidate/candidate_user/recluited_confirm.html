@@ -35,6 +35,68 @@ Confirmación Aplicación Vacante | Dashboard
 
     <!-- Start Your Code -->
     <div class="row">
+
+        <!-- INSERT_YOUR_CODE -->
+        <div class="col-md-12">
+            <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-4 shadow-sm">
+                <div class="card-header bg-primary bg-opacity-10 align-middle text-center border-0"> 
+                    <p class="text-primary my-2 fs-4 fw-semibold">Aplicar a la vacante</p>
+                </div>
+                <div class="card-body p-4 text-center">
+                    {% if not centinel_vacante %}
+                        <div class="d-flex flex-column align-items-center justify-content-center py-4">
+                            <span class="material-symbols-outlined text-primary mb-3" style="font-size: 72px;">
+                                how_to_reg
+                            </span>
+                            <h3 class="mb-3 text-center">Confirmación de Aplicación</h3>
+                            <p class="ps-0 mb-md-4 mb-3 list-unstyled text-center" style="max-width: 500px;">
+                                Por favor, confirme su interés en aplicar a la vacante seleccionada. Si está de acuerdo, haga clic en el botón <b>"Confirmar Aplicación"</b>.
+                            </p>
+                            {% comment %} <a href="{% url 'reclutados:reclutados_aplicar_candidato' vacante.id %}" class="btn bg-primary bg-opacity-10 text-primary px-5 d-flex align-items-center gap-2 mt-2" style="font-size: 1.3rem;">
+                                <span class="material-symbols-outlined" style="font-size: 2rem;">check_circle</span>
+                                Confirmar Aplicación
+                            </a> {% endcomment %}
+                        <!-- INSERT_YOUR_CODE -->
+                        <!-- Modal Trigger Button -->
+                        <button type="button" class="btn btn-primary px-5 d-flex align-items-center gap-2 mt-2" style="font-size: 1.3rem;" data-bs-toggle="modal" data-bs-target="#preguntasReclutamientoModal">
+                            <span class="material-symbols-outlined" style="font-size: 2rem;">check_circle</span>
+                            Confirmar Aplicación
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="preguntasReclutamientoModal" tabindex="-1" aria-labelledby="preguntasReclutamientoModalLabel" aria-hidden="true">
+                          <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content">
+                              <div class="modal-header bg-primary bg-opacity-10">
+                                <h5 class="modal-title text-primary fw-semibold" id="preguntasReclutamientoModalLabel">Preguntas de Confirmación</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                              </div>
+                              <div class="modal-body">
+                                <form method="post" id="form-preguntas-reclutamiento">
+                                    {% csrf_token %}
+                                    {% if form %}
+                                        {% crispy form %}
+                                    {% else %}
+                                        <div class="alert alert-warning mb-0">No hay preguntas de confirmación para esta vacante.</div>
+                                    {% endif %}
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success d-flex align-items-center justify-content-center flex-column" role="alert">
+                            <span class="material-symbols-outlined text-success mb-2" style="font-size: 48px;">check_circle</span>
+                            <h3 class="mt-2 mb-2 text-success fw-bold">¡Aplicación Exitosa!</h3>
+                            <p class="mb-2 fs-5">Has aplicado correctamente a la vacante <b>{{ vacante.titulo|upper }}</b>.</p>
+                            <p class="mb-2 text-muted">Nuestro equipo revisará tu postulación y se pondrá en contacto contigo si avanzas en el proceso.</p>
+                            <a href="{% url 'vacantes:vacantes_list' %}" class="btn btn-primary px-4 mt-2">Ver más vacantes</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
         {% include 'admin/vacancy/partials/presentation_vacancy.html' %}
 
         <div class="col-md-6">
@@ -150,10 +212,17 @@ Confirmación Aplicación Vacante | Dashboard
             <div class="card border-0 rounded-2 p-4 bg-white mb-4">
                 <div class="card-body p-4">
                     {% if not centinel_vacante %}
-                        <h3 class="mb-3">Confirmación de Aplicación</h3>
-                        <p class="ps-0 mb-md-5 mb-4 list-unstyled">Por favor, confirme su interés en aplicar a la vacante seleccionada. Si está de acuerdo, haga clic en el botón "Confirmar Aplicación".</p>
-                        <div class="d-flex justify-content-end">
-                            <a href="{% url 'reclutados:reclutados_aplicar_candidato' vacante.id %}" class="btn btn-primary">Confirmar Aplicación</a>
+                        <div class="d-flex flex-column align-items-center justify-content-center text-center">
+                            <h3 class="mb-3">Confirmación de Aplicación</h3>
+                            <p class="ps-0 mb-md-5 mb-4 list-unstyled">
+                                Por favor, confirme su interés en aplicar a la vacante seleccionada. Si está de acuerdo, haga clic en el botón <b>"Confirmar Aplicación"</b>.
+                            </p>
+                            <a href="{% url 'reclutados:reclutados_aplicar_candidato' vacante.id %}" 
+                                class="btn btn-primary btn-lg px-5 py-3 d-flex align-items-center justify-content-center gap-2"
+                                style="font-size: 1.25rem; font-weight: 600; min-width: 320px;">
+                                <span class="material-symbols-outlined d-flex align-items-center justify-content-center" style="font-size: 2.2rem; line-height: 1;">how_to_reg</span>
+                                Confirmar Aplicación
+                            </a>
                         </div>
                     {% else %}
                         <div class="alert alert-success d-flex align-items-center" role="alert">
@@ -164,6 +233,7 @@ Confirmación Aplicación Vacante | Dashboard
                 </div>
             </div>
         </div>
+    
 </div>
 
         

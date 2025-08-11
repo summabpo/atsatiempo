@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q, Value, Case, When, CharField
 from applications.common.models import Cat001Estado
 from applications.common.views.EnvioCorreo import enviar_correo
+from applications.entrevista.forms.PreguntasReclutamientoForm import PreguntasReclutamiento
 from applications.reclutado.models import Cli056AplicacionVacante, Cli063AplicacionVacanteHistorial
 from applications.candidato.models import Can101Candidato
 from applications.services.service_vacanty import query_vacanty_with_skills_and_details
@@ -20,6 +21,7 @@ def confirm_apply_vacancy_recruited(request, pk):
     # Obtener la vacante y el candidato
     vacante = query_vacanty_with_skills_and_details().get(id=pk)
     candidato = get_object_or_404(Can101Candidato, pk=candidate_id)
+    form = PreguntasReclutamiento(vacante_id=pk)
     centinel_vacante = False
 
     # Verificar si el candidato ya ha aplicado a la vacante
@@ -32,6 +34,7 @@ def confirm_apply_vacancy_recruited(request, pk):
         'vacante': vacante,
         'candidato': candidato,
         'centinel_vacante': centinel_vacante,
+        'form': form
     }
 
     return render(request, 'admin/candidate/candidate_user/recluited_confirm.html', context)
