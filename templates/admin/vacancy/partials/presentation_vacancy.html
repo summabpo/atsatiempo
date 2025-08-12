@@ -1,7 +1,7 @@
 {% load static %}
 {% load custom_tags %}
 
-<div class="container-fluid">
+<div class="container-fluid mb-4">
     <div class="card bg-white">
         <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
             <p class="text-primary my-2 fs-4 fw-semibold">Vacante ID: {{ vacante.id }}</p>
@@ -653,16 +653,16 @@
                 </div>
             </div>
         </div>
-        <div class="card-footer bg-white text-center p-3">
+        <div class="card-footer bg-white text-center p-3 mb-4">
 
-            {% comment %} {% if request.user.is_superuser or request.user.is_staff %}
+            {% if request.session.grupo_id == 1 or request.session.grupo_id == 3 %}
             <a href="{% url 'vacantes:vacantes_editar_propias' data.cliente.id vacante.id %}" class="btn bg-primary text-primary bg-opacity-10 px-5 me-2" style="font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">
                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 20px;">edit</span>Editar Vacante
             </a>
             <button class="btn bg-info text-info bg-opacity-10" style="font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">
                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 20px;">download</span>Exportar Datos
             </button>
-            {% endif %} {% endcomment %}
+            {% endif %}
             
         </div>
     </div>

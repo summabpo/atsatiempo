@@ -22,6 +22,29 @@ def confirm_apply_vacancy_recruited(request, pk):
     vacante = query_vacanty_with_skills_and_details().get(id=pk)
     candidato = get_object_or_404(Can101Candidato, pk=candidate_id)
     form = PreguntasReclutamiento(vacante_id=pk)
+
+    if request.method == 'POST':
+        form = PreguntasReclutamiento(pk, request.POST)        
+        if form.is_valid():
+            print(form.cleaned_data)
+            asignacion_vacante = Cli056AplicacionVacante.objects.create(
+                candidato_101_id=candidate_id,
+                vacante_id_052_id=pk,
+                estado_aplicacion=1,
+                preguntas_reclutamiento=form.cleaned_data,
+                estado= get_object_or_404(Cat001Estado, pk=1)  # Estado activo por defecto
+            )
+
+            #funcion para crear registro en el historial y actualizar estado de la aplicacion de la vcatente
+            crear_historial_aplicacion(asignacion_vacante, 1, request.session.get('_auth_user_id'), 'Aplicación a Vacante por el candidato')
+
+            messages.success(request, 'Aplicación a la vacante realizada con éxito.')
+            return redirect('reclutados:reclutados_confirmar_aplicar_candidato', pk=pk)
+        else:
+            messages.error(request, 'Por favor, complete todos los campos requeridos.')
+    else:
+        form = PreguntasReclutamiento(vacante_id=pk)
+
     centinel_vacante = False
 
     # Verificar si el candidato ya ha aplicado a la vacante
