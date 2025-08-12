@@ -16,6 +16,7 @@ class Cli056AplicacionVacante(models.Model):
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     estado_aplicacion = models.IntegerField(choices=ESTADO_APLICACION_CHOICES_STATIC, default=1)
     estado = models.ForeignKey(Cat001Estado, on_delete=models.SET_NULL, null=True, blank=True, related_name='aplicaciones_vacante')
+    preguntas_reclutamiento = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return str(self.id)
