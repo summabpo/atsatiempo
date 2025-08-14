@@ -140,6 +140,9 @@ Detalle vacante
                                     <button class="nav-link" id="entrevista-tab" data-bs-toggle="tab" data-bs-target="#entrevista-tab-pane" type="button" role="tab" aria-controls="entrevista-tab-pane" aria-selected="false">Entrevistas</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions-tab-pane" type="button" role="tab" aria-controls="questions-tab-pane" aria-selected="false">Preguntas</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="historico-tab" data-bs-toggle="tab" data-bs-target="#historico-tab-pane" type="button" role="tab" aria-controls="historico-tab-pane" aria-selected="false">Histórico</button>
                                 </li>
                             </ul>
@@ -342,7 +345,50 @@ Detalle vacante
                                         </div>
                                     </div>
                                 </div>
-
+                                <div class="tab-pane fade" id="questions-tab-pane" role="tabpanel" aria-labelledby="questions-tab" tabindex="0">
+                                    <div class="row">
+                                        {% if reclutado.preguntas_reclutamiento %}
+                                            <div class="col-12">
+                                                <div class="row justify-content-center">
+                                                    <div class="col-md-12">
+                                                        <div class="card card bg-white border-1 rounded-3 mb-4">
+                                                            <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                                                                <p class="text-primary my-2 fs-4 fw-semibold">Respuestas requeridas de la vacante</p>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                {% for pregunta, respuesta in reclutado.preguntas_reclutamiento.items %}
+                                                                    <div class="row mb-3 align-items-center">
+                                                                        <div class="col-md-9 text-start pe-3">
+                                                                            <strong class="d-block mb-0 fs-6 text-dark"><b class="text-danger">{{ forloop.counter }} - </b> {{ pregunta|capfirst }}</strong>
+                                                                        </div>
+                                                                        <div class="col-md-3 text-end">
+                                                                            {% if respuesta|lower == "no" %}
+                                                                                <span class="badge fs-6 py-2 px-3 bg-secondary bg-opacity-10 text-secondary" style="font-weight: 500;">
+                                                                                    {{ respuesta|default:"Sin respuesta" }}
+                                                                                </span>
+                                                                            {% else %}
+                                                                                <span class="badge fs-6 py-2 px-3 bg-primary bg-opacity-10 text-primary" style="font-weight: 500;">
+                                                                                    {{ respuesta|default:"Sin respuesta" }}
+                                                                                </span>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    </div>
+                                                                    {% if not forloop.last %}
+                                                                        <hr>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="col-12 text-center">
+                                                <h5 class="text-muted">No hay preguntas de reclutamiento registradas.</h5>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                                 <div class="tab-pane fade" id="historico-tab-pane" role="tabpanel" aria-labelledby="historico-tab" tabindex="0">
                                     <div class="accordion-body">
                                         <div class="card bg-white border-0 rounded-3 mb-4">
