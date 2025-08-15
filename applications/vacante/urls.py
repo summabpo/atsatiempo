@@ -1,7 +1,9 @@
 from django.urls import path
 
 from components.apis.api_vacancy import profesiones_whitelist
-from .views import VacanteViews, EntrevistaView, admin_views, client_views, client_analyst_views, client_analyst_internal_views, candidate_views
+from .views import VacanteViews, EntrevistaView, admin_views, client_views, client_analyst_views, client_analyst_internal_views, candidate_views, common_view
+
+
 
 
 
@@ -18,6 +20,7 @@ urlpatterns = [
     path( url_principal+'mis_vacantes/crear/<int:pk>/', admin_views.create_vacanty_from_client, name='vacantes_crear_propias'),
     path( url_principal+'mis_vacantes/editar/<int:pk>/<int:vacante_id>/', admin_views.edit_vacanty_from_client, name='vacantes_editar_propias'),
     path( url_principal+'mis_vacantes/gestionar/<int:pk>/<int:vacante_id>/', admin_views.vacanty_management_from_client, name='vacantes_gestion_propias'),
+
 
     
     #client_user
@@ -43,6 +46,9 @@ urlpatterns = [
 
     #apis
     path( url_principal+'api/profesiones/whitelist/', profesiones_whitelist, name='profesiones_whitelist'),
+
+    #commons
+    path( url_principal+'match/<int:candidato_id>/<int:vacante_id>/', common_view.match, name='match'),
 
 
 
