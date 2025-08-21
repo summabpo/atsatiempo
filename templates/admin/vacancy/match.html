@@ -1,0 +1,772 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/match_styles.css' %}">
+{% endblock %}
+
+{% block title %}Match Candidato-Vacante | Talent Tray  {% endblock %}
+
+{% block content %}
+<div class="container-fluid match-container">
+    <!-- Header con información principal -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card match-header text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-2">
+                                <i class="fas fa-handshake me-2"></i>
+                                Match Candidato vs Vacante
+                            </h2>
+                            <p class="mb-0 opacity-75">Análisis detallado de compatibilidad entre candidato y posición</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                                                    <div class="d-flex align-items-center justify-content-end">
+                            <div class="me-3 candidate-vacancy-info">
+                                <h4 class="mb-0">{{ candidato.nombre }} {{ candidato.apellido }}</h4>
+                                <small class="opacity-75">Candidato</small>
+                            </div>
+                            <div class="mx-3">
+                                <i class="fas fa-arrow-right fa-2x opacity-50"></i>
+                            </div>
+                            <div class="candidate-vacancy-info">
+                                <h4 class="mb-0">{{ vacante.titulo }}</h4>
+                                <small class="opacity-75">Vacante</small>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard de Resumen -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3">
+                <i class="fas fa-chart-pie me-2 text-primary"></i>
+                Resumen del Match
+            </h4>
+        </div>
+        
+        <!-- Tarjetas de resumen por categoría -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card summary-card h-100">
+                <div class="card-body">
+                    <div class="icon-container">
+                        <i class="fas fa-laptop-code fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Hard Skills</h5>
+                    <div class="metric-row">
+                        <span class="metric-label">Experiencia:</span>
+                        <span class="metric-value badge bg-primary">{{ json_match.experiencia_profesional.puntaje|default:"0" }}/25</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Tecnologías:</span>
+                        <span class="metric-value badge bg-primary">{{ json_match.habilidades_tecnologias_especificas.puntaje|default:"0" }}/30</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Educación:</span>
+                        <span class="metric-value badge bg-primary">{{ json_match.nivel_educativo_certificaciones.puntaje|default:"0" }}/15</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card summary-card h-100">
+                <div class="card-body">
+                    <div class="icon-container">
+                        <i class="fas fa-users fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">Soft Skills</h5>
+                    <div class="metric-row">
+                        <span class="metric-label">Comunicación:</span>
+                        <span class="metric-value badge bg-success">{{ json_match.habilidades_comunicacion.puntaje|default:"0" }}/10</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Resolución:</span>
+                        <span class="metric-value badge bg-success">{{ json_match.resolucion_problemas.puntaje|default:"0" }}/5</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Liderazgo:</span>
+                        <span class="metric-value badge bg-success">{{ json_match.liderazgo_colaboracion.puntaje|default:"0" }}/5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card summary-card h-100">
+                <div class="card-body">
+                    <div class="icon-container">
+                        <i class="fas fa-heart fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">Cultural Fit</h5>
+                    <div class="metric-row">
+                        <span class="metric-label">Motivación:</span>
+                        <span class="metric-value badge bg-warning">{{ json_match.ambicion_motivacion_profesional.puntaje|default:"0" }}/5</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Fit Cultural:</span>
+                        <span class="metric-value badge bg-warning">{{ json_match.fit_cultural.puntaje|default:"0" }}/5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card summary-card h-100">
+                <div class="card-body">
+                    <div class="icon-container">
+                        <i class="fas fa-map-marker-alt fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title">Ubicación & Salario</h5>
+                    <div class="metric-row">
+                        <span class="metric-label">Ubicación:</span>
+                        <span class="metric-value">
+                            {% if json_match.ubicacion_y_salarial.ubicacion_match %}
+                                <span class="badge bg-success">✓</span>
+                            {% else %}
+                                <span class="badge bg-danger">✗</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Salario:</span>
+                        <span class="metric-value">
+                            {% if json_match.ubicacion_y_salarial.rango_salarial_match %}
+                                <span class="badge bg-success">✓</span>
+                            {% else %}
+                                <span class="badge bg-danger">✗</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Puntaje:</span>
+                        <span class="metric-value badge bg-info">{{ json_match.ubicacion_y_salarial.puntaje|default:"0" }}/10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparación Candidato vs Vacante -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card summary-card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-balance-scale me-2 text-primary"></i>
+                        Comparación Candidato vs Vacante
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Datos del Candidato -->
+                        <div class="col-md-6">
+                            <div class="text-center mb-3">
+                                <div class="avatar-lg mx-auto mb-3">
+                                    {% if candidato.imagen_perfil %}
+                                        <img src="{{ candidato.imagen_perfil.url }}" alt="Foto del candidato" class="rounded-circle" width="80" height="80">
+                                    {% else %}
+                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px;">
+                                            <i class="fas fa-user fa-2x text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <h5 class="text-primary">{{ candidato.nombre }} {{ candidato.apellido }}</h5>
+                                <p class="text-muted">Candidato</p>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="info-item">
+                                        <small class="text-muted">Email:</small>
+                                        <p class="mb-2">{{ candidato.email|default:"No especificado" }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="info-item">
+                                        <small class="text-muted">Teléfono:</small>
+                                        <p class="mb-2">{{ candidato.telefono|default:"No especificado" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <small class="text-muted">Ciudad:</small>
+                                <p class="mb-2">{{ candidato.ciudad_id_004|default:"No especificada" }}</p>
+                            </div>
+                            
+                            <div class="info-item">
+                                <small class="text-muted">Aspiración Salarial:</small>
+                                <p class="mb-2">${{ candidato.aspiracion_salarial|default:"No especificado" }}</p>
+                            </div>
+
+                            {% if candidato.motivadores %}
+                            <div class="info-item">
+                                <small class="text-muted">Motivadores:</small>
+                                <div class="mt-1">
+                                    {% if candidato.motivadores %}
+                                        {% for motivador in candidato.motivadores %}
+                                            {% if motivador.nombre %}
+                                                <span class="badge bg-light text-dark me-1">{{ motivador.nombre }}</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if candidato.fit_cultural %}
+                            <div class="info-item">
+                                <small class="text-muted">Fit Cultural:</small>
+                                <div class="mt-1">
+                                    {% if candidato.fit_cultural %}
+                                        {% for fit in candidato.fit_cultural %}
+                                            {% if fit.nombre %}
+                                                <span class="badge bg-light text-dark me-1">{{ fit.nombre }}</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Separador visual -->
+                        <div class="col-md-1 d-flex align-items-center justify-content-center">
+                            <div class="text-center">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-vs text-white"></i>
+                                </div>
+                                <div class="text-muted small">VS</div>
+                            </div>
+                        </div>
+
+                        <!-- Datos de la Vacante -->
+                        <div class="col-md-5">
+                            <div class="text-center mb-3">
+                                <div class="avatar-lg mx-auto mb-3">
+                                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px;">
+                                        <i class="fas fa-briefcase fa-2x text-white"></i>
+                                    </div>
+                                </div>
+                                <h5 class="text-success">{{ vacante.titulo }}</h5>
+                                <p class="text-muted">Vacante</p>
+                            </div>
+                            
+                            <div class="info-item">
+                                <small class="text-muted">Empresa:</small>
+                                <p class="mb-2">{{ vacante.cliente_id_001|default:"No especificada" }}</p>
+                            </div>
+                            
+                            <div class="info-item">
+                                <small class="text-muted">Lugar de Trabajo:</small>
+                                <p class="mb-2">{{ json_match.ubicacion_y_salarial.ciudad_vacante|default:"No especificado" }}</p>
+                            </div>
+                            
+                            <div class="info-item">
+                                <small class="text-muted">Salario Base:</small>
+                                <p class="mb-2">${{ json_match.ubicacion_y_salarial.rango_salarial_vacante.salario_base|default:"No especificado" }}</p>
+                            </div>
+                            
+                            <div class="info-item">
+                                <small class="text-muted">Salario Adicional:</small>
+                                <p class="mb-2">${{ json_match.ubicacion_y_salarial.rango_salarial_vacante.salario_adicional|default:"No especificado" }}</p>
+                            </div>
+                            
+                            <div class="info-item">
+                                <small class="text-muted">Salario Total:</small>
+                                <p class="mb-2 fw-bold text-success">${{ json_match.ubicacion_y_salarial.rango_salarial_vacante.salario_total|default:"No especificado" }}</p>
+                            </div>
+
+                            {% if vacante.motivadores %}
+                            <div class="info-item">
+                                <small class="text-muted">Motivador Requerido:</small>
+                                <p class="mb-2">
+                                    <span class="badge bg-success">{{ vacante.motivadores.nombre }}</span>
+                                </p>
+                            </div>
+                            {% endif %}
+
+                            {% if vacante.fit_cultural.all %}
+                            <div class="info-item">
+                                <small class="text-muted">Fit Cultural Requerido:</small>
+                                <div class="mt-1">
+                                    {% for fit in vacante.fit_cultural.all %}
+                                        <span class="badge bg-success me-1">{{ fit.nombre }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalles del Match por Criterio -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card summary-card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list-alt me-2 text-primary"></i>
+                        Detalles del Match por Criterio
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="accordionMatch">
+                        <!-- Experiencia Profesional -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingExperiencia">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExperiencia">
+                                    <i class="fas fa-briefcase me-2 text-primary"></i>
+                                    Experiencia Profesional
+                                    <span class="badge bg-primary ms-2">{{ json_match.experiencia_profesional.puntaje|default:"0" }}/25</span>
+                                </button>
+                            </h2>
+                            <div id="collapseExperiencia" class="accordion-collapse collapse show" data-bs-parent="#accordionMatch">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Preguntas de Experiencia:</h6>
+                                            {% if json_match.experiencia_profesional.preguntas %}
+                                                {% for pregunta in json_match.experiencia_profesional.preguntas %}
+                                                <div class="skill-item {% if pregunta.valor %}matched{% else %}unmatched{% endif %}">
+                                                    <span class="skill-name small">{{ pregunta.pregunta|truncatechars:50 }}</span>
+                                                    <span class="skill-status badge {% if pregunta.valor %}bg-success{% else %}bg-danger{% endif %}">
+                                                        {{ pregunta.respuesta|title }}
+                                                    </span>
+                                                </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <p class="text-muted">No hay preguntas de experiencia disponibles</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="text-center">
+                                                <div class="progress-circle mb-3" data-percentage="{{ json_match.experiencia_profesional.porcentaje_si|default:0 }}">
+                                                    <span class="progress-circle-text">{{ json_match.experiencia_profesional.porcentaje_si|default:0 }}%</span>
+                                                </div>
+                                                <p class="text-muted">Porcentaje de coincidencia</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Habilidades y Tecnologías -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingHabilidades">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHabilidades">
+                                    <i class="fas fa-laptop-code me-2 text-success"></i>
+                                    Habilidades y Tecnologías
+                                    <span class="badge bg-success ms-2">{{ json_match.habilidades_tecnologias_especificas.puntaje|default:"0" }}/30</span>
+                                </button>
+                            </h2>
+                            <div id="collapseHabilidades" class="accordion-collapse collapse" data-bs-parent="#accordionMatch">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Estudios Complementarios:</h6>
+                                            {% if json_match.habilidades_tecnologias_especificas.preguntas %}
+                                                {% for pregunta in json_match.habilidades_tecnologias_especificas.preguntas %}
+                                                <div class="skill-item {% if pregunta.valor %}matched{% else %}unmatched{% endif %}">
+                                                    <span class="skill-name small">{{ pregunta.pregunta|truncatechars:50 }}</span>
+                                                    <span class="skill-status badge {% if pregunta.valor %}bg-success{% else %}bg-danger{% endif %}">
+                                                        {{ pregunta.respuesta|title }}
+                                                    </span>
+                                                </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <p class="text-muted">No hay preguntas de estudios complementarios disponibles</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="text-center">
+                                                <div class="progress-circle mb-3" data-percentage="{{ json_match.habilidades_tecnologias_especificas.porcentaje_si|default:0 }}">
+                                                    <span class="progress-circle-text">{{ json_match.habilidades_tecnologias_especificas.porcentaje_si|default:0 }}%</span>
+                                                </div>
+                                                <p class="text-muted">Porcentaje de coincidencia</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nivel Educativo -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingEducacion">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEducacion">
+                                    <i class="fas fa-graduation-cap me-2 text-warning"></i>
+                                    Nivel Educativo y Certificaciones
+                                    <span class="badge bg-warning ms-2">{{ json_match.nivel_educativo_certificaciones.puntaje|default:"0" }}/15</span>
+                                </button>
+                            </h2>
+                            <div id="collapseEducacion" class="accordion-collapse collapse" data-bs-parent="#accordionMatch">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Profesiones del Candidato:</h6>
+                                            {% if json_match.nivel_educativo_certificaciones.profesiones_candidato %}
+                                                {% for profesion in json_match.nivel_educativo_certificaciones.profesiones_candidato %}
+                                                <div class="card mb-2">
+                                                    <div class="card-body p-2">
+                                                        <h6 class="mb-1">{{ profesion.nombre|default:"Sin profesión asignada" }}</h6>
+                                                        <small class="text-muted">
+                                                            {{ profesion.titulo|default:"" }} - {{ profesion.institucion|default:"" }}
+                                                        </small>
+                                                        {% if profesion.grado_en %}
+                                                            <span class="badge bg-success ms-2">Graduado</span>
+                                                        {% else %}
+                                                            <span class="badge bg-warning ms-2">En curso</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <p class="text-muted">No hay información de educación disponible</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Requerimientos de la Vacante:</h6>
+                                            {% if json_match.nivel_educativo_certificaciones.profesiones_vacante %}
+                                                {% for profesion in json_match.nivel_educativo_certificaciones.profesiones_vacante %}
+                                                <div class="card mb-2">
+                                                    <div class="card-body p-2">
+                                                        <h6 class="mb-1">
+                                                            {% if profesion.nombre %}
+                                                                {{ profesion.nombre }}
+                                                            {% elif profesion.texto %}
+                                                                {{ profesion.texto }}
+                                                            {% else %}
+                                                                No especificado
+                                                            {% endif %}
+                                                        </h6>
+                                                        <small class="text-muted">{{ profesion.tipo }}</small>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <p class="text-muted">No hay requerimientos de profesión especificados</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Habilidades de Comunicación -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingComunicacion">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseComunicacion">
+                                    <i class="fas fa-comments me-2 text-info"></i>
+                                    Habilidades de Comunicación
+                                    <span class="badge bg-info ms-2">{{ json_match.habilidades_comunicacion.puntaje|default:"0" }}/10</span>
+                                </button>
+                            </h2>
+                            <div id="collapseComunicacion" class="accordion-collapse collapse" data-bs-parent="#accordionMatch">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Habilidades Requeridas:</h6>
+                                            {% if json_match.habilidades_comunicacion.detalle %}
+                                                {% for habilidad in json_match.habilidades_comunicacion.detalle %}
+                                                <div class="skill-item {% if habilidad.coincide %}matched{% else %}unmatched{% endif %}">
+                                                    <span class="skill-name">{{ habilidad.nombre }}</span>
+                                                    <span class="skill-status badge {% if habilidad.coincide %}bg-success{% else %}bg-danger{% endif %}">
+                                                        {% if habilidad.coincide %}✓{% else %}✗{% endif %}
+                                                    </span>
+                                                </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <p class="text-muted">No hay habilidades de comunicación requeridas</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="text-center">
+                                                <div class="progress-circle mb-3" data-percentage="{{ json_match.habilidades_comunicacion.porcentaje|default:0 }}">
+                                                    <span class="progress-circle-text">{{ json_match.habilidades_comunicacion.porcentaje|default:0 }}%</span>
+                                                </div>
+                                                <p class="text-muted">Porcentaje de coincidencia</p>
+                                                <p class="small text-muted">
+                                                    {{ json_match.habilidades_comunicacion.total_coincidentes|default:0 }} de {{ json_match.habilidades_comunicacion.total_requeridas|default:0 }} habilidades
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JSON Completo (Colapsable) -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card json-container">
+                <div class="card-header json-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-code me-2 text-secondary"></i>
+                        JSON Completo del Match
+                        <button class="btn btn-sm btn-outline-light ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseJSON">
+                            <i class="fas fa-eye"></i> Ver/Ocultar
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary ms-2" type="button" onclick="copyJSON()">
+                            <i class="fas fa-copy"></i> Copiar JSON
+                        </button>
+                    </h5>
+                </div>
+                <div class="collapse" id="collapseJSON">
+                    <div class="card-body json-content">
+                        <div id="json-display">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-code fa-2x mb-2"></i>
+                                <p>Haz clic en "Ver/Ocultar" para mostrar el JSON</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.info-item {
+    margin-bottom: 1rem;
+}
+
+.info-item small {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-item p {
+    margin: 0;
+    font-weight: 500;
+}
+
+.avatar-lg {
+    width: 80px;
+    height: 80px;
+}
+
+.progress-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: conic-gradient(var(--primary-color) 0deg, var(--light-color) 0deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.progress-circle-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--light-color);
+    color: var(--primary-color);
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0, 123, 255, 0.25);
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+}
+
+.shadow-sm {
+    box-shadow: var(--shadow-sm) !important;
+}
+
+/* Estilos para el JSON */
+#json-display pre {
+    margin: 0;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #e9ecef;
+    background: transparent;
+    padding: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+#json-display code {
+    color: #e9ecef;
+    background: transparent;
+    padding: 0;
+    font-size: inherit;
+}
+
+/* Estilos para el toast */
+.toast {
+    min-width: 300px;
+}
+
+.toast-header {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.toast-header .btn-close {
+    filter: invert(1);
+}
+
+/* Mejoras para los círculos de progreso */
+.progress-circle {
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-circle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background: conic-gradient(#007bff 0deg, #e9ecef 0deg);
+    transition: all 0.3s ease;
+}
+</style>
+{% endblock %}
+
+{% block js %}
+<script>
+// Función para crear círculos de progreso dinámicos
+function createProgressCircles() {
+    const circles = document.querySelectorAll('.progress-circle');
+    circles.forEach(circle => {
+        const percentage = parseInt(circle.dataset.percentage);
+        const degrees = (percentage / 100) * 360;
+        
+        if (percentage > 0) {
+            circle.style.background = `conic-gradient(#007bff 0deg ${degrees}deg, #e9ecef ${degrees}deg 360deg)`;
+        }
+    });
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    createProgressCircles();
+    
+    // Agregar animaciones a las tarjetas
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('animate__animated', 'animate__fadeInUp');
+    });
+    
+    // Event listener para el acordeón del JSON
+    const jsonCollapse = document.getElementById('collapseJSON');
+    if (jsonCollapse) {
+        jsonCollapse.addEventListener('shown.bs.collapse', function() {
+            displayJSON();
+        });
+    }
+});
+
+// Función para mostrar JSON formateado
+function displayJSON() {
+    try {
+        const jsonData = {{ json_match|safe }};
+        const jsonDisplay = document.getElementById('json-display');
+        if (jsonDisplay && jsonData) {
+            const formattedJSON = JSON.stringify(jsonData, null, 2);
+            jsonDisplay.innerHTML = '<pre><code>' + formattedJSON + '</code></pre>';
+        }
+    } catch (error) {
+        console.error('Error al mostrar JSON:', error);
+        const jsonDisplay = document.getElementById('json-display');
+        if (jsonDisplay) {
+            jsonDisplay.innerHTML = '<p class="text-danger">Error al formatear el JSON</p>';
+        }
+    }
+}
+
+// Función para copiar JSON al portapapeles
+function copyJSON() {
+    try {
+        const jsonData = {{ json_match|safe }};
+        if (!jsonData) {
+            alert('No hay datos JSON disponibles para copiar');
+            return;
+        }
+        
+        const jsonText = JSON.stringify(jsonData, null, 2);
+        
+        navigator.clipboard.writeText(jsonText).then(() => {
+            // Mostrar notificación de éxito
+            const toast = document.createElement('div');
+            toast.className = 'toast show position-fixed';
+            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <strong class="me-auto">JSON Copiado</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    El JSON ha sido copiado al portapapeles
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }).catch(err => {
+            console.error('Error al copiar: ', err);
+            // Fallback para navegadores que no soportan clipboard API
+            const textArea = document.createElement('textarea');
+            textArea.value = jsonText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Mostrar notificación de éxito
+            alert('JSON copiado al portapapeles');
+        });
+    } catch (error) {
+        console.error('Error al procesar JSON:', error);
+        alert('Error al procesar el JSON');
+    }
+}
+</script>
+{% endblock %}

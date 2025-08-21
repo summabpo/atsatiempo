@@ -249,11 +249,6 @@ class candidateStudyForm(forms.Form):
             }
         )
     )
-    certificacion = forms.FileField(
-        label='CERTIFICACIÓN',
-        required=True,
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
-    )
 
     profesion_estudio = forms.ModelChoiceField(
         label='PROFESIÓN/ESTUDIO',
@@ -267,12 +262,27 @@ class candidateStudyForm(forms.Form):
             }
         )
     )
+    certificacion = forms.FileField(
+        label='CERTIFICACIÓN',
+        required=True,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
+
+    
 
     
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
         super().__init__(*args, **kwargs)
+
+        # Si el formulario está en modo edición (es decir, tiene datos iniciales o instance), quitamos 'data-dropdown-parent' de los widgets select
+        if self.initial or self.instance:
+            select_fields = ['tipo_estudio', 'ciudad_id_004', 'profesion_estudio']
+            for field_name in select_fields:
+                field = self.fields.get(field_name)
+                if field and hasattr(field.widget, 'attrs'):
+                    field.widget.attrs.pop('data-dropdown-parent', None)
         
         self.helper = FormHelper()
         self.helper.form_method = 'post'

@@ -8,6 +8,41 @@ Información Básica | Talent Tray
 {% endblock %}
 
 {% block styles %}
+<style>
+    /* Estilos para checkboxes en línea horizontal */
+	.fit-cultural-checkboxes .form-check {
+		display: inline-block !important;
+		margin-right: 20px !important;
+		margin-bottom: 10px !important;
+		min-width: 180px !important;
+	}
+
+	.fit-cultural-checkboxes .form-check-input {
+		margin-right: 8px !important;
+	}
+
+	.fit-cultural-checkboxes .form-check-label {
+		display: inline !important;
+		font-size: 14px !important;
+		white-space: nowrap !important;
+	}
+
+	/* Responsive para pantallas pequeñas */
+	@media (max-width: 768px) {
+		.fit-cultural-checkboxes .form-check {
+			min-width: 150px !important;
+			margin-right: 15px !important;
+		}
+	}
+
+	/* Estilos para motivadores también */
+	.motivadores .form-check {
+		display: inline-block !important;
+		margin-right: 20px !important;
+		margin-bottom: 10px !important;
+		min-width: 180px !important;
+	}
+</style>
 {% endblock %}
 
 {% block content %}

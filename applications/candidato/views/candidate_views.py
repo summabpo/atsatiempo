@@ -49,6 +49,25 @@ def candidate_info(request):
                 candidato.hoja_de_vida = form.cleaned_data['hoja_de_vida']
             candidato.email = form.cleaned_data['email']
             candidato.perfil = form.cleaned_data['perfil']
+            # Guardar la estructura de fit_cultural como lista de diccionarios con id y nombre
+            fit_cultural_objs = form.cleaned_data['fit_cultural']
+            if fit_cultural_objs:
+                fit_cultural_data = [
+                    {"id": fc.id, "nombre": fc.nombre}
+                    for fc in fit_cultural_objs
+                ]
+                candidato.fit_cultural = fit_cultural_data
+            else:
+                candidato.fit_cultural = []
+            motivadores_objs = form.cleaned_data['motivadores']
+            if motivadores_objs:
+                motivadores_data = [
+                    {"id": m.id, "nombre": m.nombre}
+                    for m in motivadores_objs
+                ]
+                candidato.motivadores = motivadores_data
+            else:
+                candidato.motivadores = []
             candidato.save()
 
             messages.success(request, 'Información básica actualizada exitosamente.')
@@ -63,16 +82,21 @@ def candidate_info(request):
             'segundo_nombre': candidato.segundo_nombre,
             'primer_apellido': candidato.primer_apellido,
             'segundo_apellido': candidato.segundo_apellido,
-            'ciudad_id_004': candidato.ciudad_id_004,
+            'ciudad_id_004': candidato.ciudad_id_004.id if candidato.ciudad_id_004 else None,
             'sexo': candidato.sexo,
             'fecha_nacimiento': candidato.fecha_nacimiento.strftime('%Y-%m-%d') if candidato.fecha_nacimiento else '',
             'telefono': candidato.telefono,
-            'skills': candidato.skills.all(),
-            'imagen_perfil': candidato.imagen_perfil,
-            'hoja_de_vida': candidato.hoja_de_vida,
+            # 'skills': candidato.skills.all(),  # Si el form no tiene este campo, omitirlo
+            # Los campos de archivo no se pasan en initial, se muestran en el form por el instance
             'numero_documento': candidato.numero_documento,
             'direccion': candidato.direccion,
             'perfil': candidato.perfil,
+            # fit_cultural y motivadores deben ser listas de ids para ModelMultipleChoiceField
+            'fit_cultural': [item['id'] for item in candidato.fit_cultural] if candidato.fit_cultural else [],
+            'motivadores': [item['id'] for item in candidato.motivadores] if candidato.motivadores else [],
+            'aspiracion_salarial': candidato.aspiracion_salarial,
+            'imagen_perfil': candidato.imagen_perfil,
+            'hoja_de_vida': candidato.hoja_de_vida,
         }
         
         form = CandidateForm(initial=initial_data, instance=candidato)

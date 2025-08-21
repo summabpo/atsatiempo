@@ -6,6 +6,7 @@ from crispy_forms.layout import Layout, Layout, Div, Submit, HTML, Row, Column, 
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.services.choices import GENERO_CHOICES_STATIC
 from ..models import Can101Candidato
+from applications.cliente.models import Cli078MotivadoresCandidato, Cli077FitCultural
 
 class CandidatoForm(forms.Form):
     # estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)
@@ -453,7 +454,7 @@ class CandidateForm(forms.Form):
     )
     hoja_de_vida = forms.FileField(
         label='HOJA DE VIDA',
-        required=True,
+        required=False,
         widget=forms.ClearableFileInput(attrs={
             'class': 'form-control form-control-solid'
         })
@@ -468,6 +469,36 @@ class CandidateForm(forms.Form):
             'rows': 4
         })
     )
+
+    aspiracion_salarial = forms.IntegerField(
+        label='ASPIRACIÓN SALARIAL',
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'placeholder': 'Aspiración Salarial',
+            'class': 'form-control form-control-solid'
+        })
+    )
+
+    
+
+    motivadores = forms.ModelMultipleChoiceField(
+        label='MOTIVADORES',
+        required=False,
+        queryset=Cli078MotivadoresCandidato.objects.filter(estado_id=1),
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'form-check-input'
+        }),
+    )
+
+    fit_cultural = forms.ModelMultipleChoiceField(
+        label='Fit Cultural',
+        queryset=Cli077FitCultural.objects.filter(estado_id=1),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'form-check-input'
+        }),
+    )
+    
 
 
     def __init__(self, *args, instance=None, **kwargs):
@@ -485,9 +516,10 @@ class CandidateForm(forms.Form):
                     Div('segundo_nombre', css_class='col-md-3'),
                     Div('primer_apellido', css_class='col-md-3'),
                     Div('segundo_apellido', css_class='col-md-3'),
-                    Div('numero_documento', css_class='col-md-4'),
-                    Div('fecha_nacimiento', css_class='col-md-4'),
-                    Div('sexo', css_class='col-md-4'),
+                    Div('numero_documento', css_class='col-md-3'),
+                    Div('fecha_nacimiento', css_class='col-md-3'),
+                    Div('sexo', css_class='col-md-3'),
+                    Div('aspiracion_salarial', css_class='col-md-3'),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -521,6 +553,15 @@ class CandidateForm(forms.Form):
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             ),
+            Div(
+                HTML("<h4 class='mb-3 text-primary'>Fit Cultural y Motivadores</h4>"),
+                Div(
+                    Div('fit_cultural', css_class='col-md-6 fit-cultural-checkboxes'),
+                    Div('motivadores', css_class='col-md-6 motivadores'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
         )
 
     def clean(self):
@@ -540,6 +581,8 @@ class CandidateForm(forms.Form):
         imagen_perfil = cleaned_data.get('imagen_perfil')
         hoja_de_vida = cleaned_data.get('hoja_de_vida')
         perfil = cleaned_data.get('perfil')
+        motivadores = cleaned_data.get('motivadores')
+        fit_cultural = cleaned_data.get('fit_cultural')
 
         # Validación de Perfil del Candidato
         if perfil:
@@ -649,6 +692,30 @@ class CandidateForm(forms.Form):
                 self.add_error('hoja_de_vida', 'Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
         else:
             self.add_error('hoja_de_vida', 'La hoja de vida es un campo obligatorio.')
+
+
+        # validación motivadores
+        # motivadores puede venir como QuerySet, lista de objetos, o lista de dicts (cuando se inicializa desde JSON)
+        print(motivadores)
+        motivadores_count = 0
+        if motivadores:
+            # Si es QuerySet o lista de objetos
+            try:
+                motivadores_count = len(motivadores)
+            except TypeError:
+                # Si es un solo objeto, lo convertimos a 1
+                motivadores_count = 1
+            # Si es lista de dicts (por ejemplo, [{'id': 1, 'nombre': 'X'}])
+            if isinstance(motivadores, dict):
+                motivadores_count = 1
+            elif isinstance(motivadores, list) and motivadores and isinstance(motivadores[0], dict):
+                motivadores_count = len(motivadores)
+        if motivadores_count > 2:
+            self.add_error('motivadores', 'Solo puede seleccionar máximo dos opciones de motivadores.')
         
+        #validacion fit cultural
+        if fit_cultural and len(fit_cultural) > 2:
+            self.add_error('fit_cultural', 'Solo puede seleccionar máximo dos opciones de fit cultural.')
+
         return cleaned_data
 
