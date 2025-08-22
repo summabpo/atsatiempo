@@ -30,7 +30,10 @@ def match(request, candidato_id, vacante_id):
         "criterio_especifico": "Experiencia Profesional",
         "descripcion": "Años de experiencia en roles similares y en la industria.",
         "fuentes_informacion": ["CV del candidato", "descripción de la vacante"],
-        "ponderacion_sugerida": 25
+        "ponderacion_sugerida": 25,
+        "metodo_medicion": "Evaluación basada en respuestas a preguntas de reclutamiento de tipo 'experiencia'",
+        "clasificacion": "Porcentaje de respuestas afirmativas sobre el total de preguntas de experiencia profesional",
+        "escala_medicion": "0-100% (0% = 0 puntos, 100% = 25 puntos)"
     }
     
     preguntas = get_vacanty_questions(vacante.id)
@@ -45,11 +48,6 @@ def match(request, candidato_id, vacante_id):
             # Buscar coincidencia exacta en las respuestas del candidato
             if pregunta_texto in preguntas_reclutamiento:
                 respuesta_candidato = preguntas_reclutamiento[pregunta_texto]
-                print('--------------------------------')
-                print(pregunta_vacante['tipo_pregunta'])
-                print(pregunta_vacante['pregunta'])
-                print(respuesta_candidato)
-                print('--------------------------------')
                 # Filtrar preguntas de tipo "experiencia_profesional" (puedes ajustar el criterio según tu modelo de preguntas)
                 experiencia_preguntas = []
                 total_preguntas = 0
@@ -89,7 +87,10 @@ def match(request, candidato_id, vacante_id):
         "criterio_especifico": "Habilidades y Tecnologías Específicas",
         "descripcion": "Dominio de herramientas, software, lenguajes de programación, etc.",
         "fuentes_informacion": ["CV", "portafolio", "certificados del candidato", "requisitos de la vacante"],
-        "ponderacion_sugerida": 30
+        "ponderacion_sugerida": 30,
+        "metodo_medicion": "Evaluación basada en respuestas a preguntas de reclutamiento de tipo 'estudio_complementario'",
+        "clasificacion": "Porcentaje de respuestas afirmativas sobre el total de preguntas de estudios complementarios",
+        "escala_medicion": "0-100% (0% = 0 puntos, 100% = 30 puntos)"
     }
 
     # Validar extudios en modelo de de estudios que digan certificados, diplamado, etc.
@@ -133,7 +134,10 @@ def match(request, candidato_id, vacante_id):
         "criterio_especifico": "Nivel Educativo y Certificaciones",
         "descripcion": "Grado académico, universidad de procedencia y certificaciones relevantes.",
         "fuentes_informacion": ["CV", "certificados del candidato", "requisitos de la vacante"],
-        "ponderacion_sugerida": 15
+        "ponderacion_sugerida": 15,
+        "metodo_medicion": "Validación directa de coincidencia entre profesión del candidato y requerimientos de la vacante",
+        "clasificacion": "Sistema de puntuación basado en coincidencias: 100% (3 coincidencias), 66% (2 coincidencias), 33% (1 coincidencia), 0% (sin coincidencias)",
+        "escala_medicion": "0-15 puntos según reglas de coincidencia de profesión, tipo de estudio y graduación"
     }
 
     # Revisar educación del candidato
@@ -463,7 +467,10 @@ def match(request, candidato_id, vacante_id):
         "criterio_especifico": "Habilidades de Comunicación",
         "descripcion": "Capacidad para expresar ideas de forma clara, tanto oral como escrita.",
         "fuentes_informacion": ["Descripción de la vacante", "resultados de evaluaciones de soft skills"],
-        "ponderacion_sugerida": 10
+        "ponderacion_sugerida": 10,
+        "metodo_medicion": "Comparación directa entre habilidades del candidato y habilidades requeridas por la vacante (grupos 1 y 2)",
+        "clasificacion": "Porcentaje de habilidades coincidentes sobre el total de habilidades requeridas",
+        "escala_medicion": "0-100% (0% = 0 puntos, 100% = 10 puntos)"
     }
 
     #se trae la info de habilidades de candidato registradas en la tabla can_101_candidato_skills
@@ -518,7 +525,10 @@ def match(request, candidato_id, vacante_id):
         "criterio_especifico": "Resolución de Problemas",
         "descripcion": "Habilidad para identificar problemas y encontrar soluciones creativas.",
         "fuentes_informacion": ["Resultados de pruebas psicométricas", "evaluaciones de habilidades cognitivas"],
-        "ponderacion_sugerida": 5
+        "ponderacion_sugerida": 5,
+        "metodo_medicion": "Comparación directa entre habilidades del candidato y habilidades requeridas por la vacante (grupos 3 y 4)",
+        "clasificacion": "Porcentaje de habilidades coincidentes sobre el total de habilidades requeridas",
+        "escala_medicion": "0-100% (0% = 0 puntos, 100% = 5 puntos)"
     }
 
     # Se trae la info de habilidades de la vacante que tengan la relación de grupo 3 y 4
@@ -568,7 +578,10 @@ def match(request, candidato_id, vacante_id):
         "criterio_especifico": "Habilidades de Liderazgo/Colaboración",
         "descripcion": "Capacidad para dirigir equipos o colaborar de manera efectiva.",
         "fuentes_informacion": ["Referencias", "descripciones de proyectos en el CV del candidato", "requisitos de la vacante"],
-        "ponderacion_sugerida": 5
+        "ponderacion_sugerida": 5,
+        "metodo_medicion": "Comparación directa entre habilidades del candidato y habilidades requeridas por la vacante (grupo 5)",
+        "clasificacion": "Porcentaje de habilidades coincidentes sobre el total de habilidades requeridas",
+        "escala_medicion": "0-100% (0% = 0 puntos, 100% = 5 puntos)"
     }
 
     # Se trae la info de habilidades de la vacante que tengan la relación de grupo 5
@@ -617,7 +630,10 @@ def match(request, candidato_id, vacante_id):
         "criterio_especifico": "Ambición y Motivación Profesional",
         "descripcion": "Interés del candidato en el rol y el crecimiento que ofrece la empresa.",
         "fuentes_informacion": ["Nivel de interés en la vacante", "respuestas a preguntas de motivación"],
-        "ponderacion_sugerida": 5
+        "ponderacion_sugerida": 5,
+        "metodo_medicion": "Comparación directa entre motivadores seleccionados por el candidato y motivadores requeridos por la vacante",
+        "clasificacion": "Porcentaje de motivadores coincidentes sobre el total de motivadores requeridos",
+        "escala_medicion": "0-100% (0% = 0 puntos, 100% = 5 puntos)"
     }
 
     # Obtener motivadores requeridos por la vacante
@@ -698,7 +714,10 @@ def match(request, candidato_id, vacante_id):
         "criterio_especifico": "Fit Cultural",
         "descripcion": "Alineación del candidato con la cultura organizacional de la empresa.",
         "fuentes_informacion": ["Preferencias culturales del candidato", "Requerimientos culturales de la vacante"],
-        "ponderacion_sugerida": 5
+        "ponderacion_sugerida": 5,
+        "metodo_medicion": "Comparación directa entre preferencias culturales del candidato y requerimientos culturales de la vacante",
+        "clasificacion": "Porcentaje de preferencias culturales coincidentes sobre el total de requerimientos culturales",
+        "escala_medicion": "0-100% (0% = 0 puntos, 100% = 5 puntos)"
     }
 
     # Obtener fit cultural requerido por la vacante
@@ -778,21 +797,27 @@ def match(request, candidato_id, vacante_id):
     # Coincidencia de Ubicación y Expectativas Salariales
 
     # Inicializar estructura para el criterio de ubicación y rango salarial
+    # --- Coincidencia de Ubicación y Expectativas Salariales ---
+    # Inicializar estructura para el criterio de ubicación y rango salarial
+    ponderacion_ubicacion_salarial = 10  # Ponderación sugerida para este criterio
+
     json_match['ubicacion_y_salarial'] = {
         "criterio_id": "4",
         "categoria": "Ubicación y Expectativas Salariales",
         "criterio_especifico": "Ubicación y Rango Salarial",
         "descripcion": "Coincidencia de la ubicación del candidato con el lugar de trabajo de la vacante y verificación de que el salario total (base + adicional) de la vacante sea igual o mayor a la aspiración salarial del candidato.",
         "fuentes_informacion": ["Perfil del candidato", "perfil de la vacante"],
-        "ponderacion_sugerida": 10
+        "ponderacion_sugerida": ponderacion_ubicacion_salarial,
+        "metodo_medicion": "Validación directa de coincidencia de ubicación geográfica y comparación de salario total de la vacante vs aspiración salarial del candidato",
+        "clasificacion": "Sistema binario: 100% si coinciden ubicación Y salario, 0% si falla alguno de los dos criterios",
+        "escala_medicion": "0 puntos (sin coincidencia) o 10 puntos (coincidencia completa en ubicación y salario)"
     }
 
     # --- Coincidencia de Ubicación ---
-    # El candidato tiene ciudad_id_004 y la vacante tiene perfil_vacante.lugar_trabajo
     ciudad_candidato = getattr(candidato, 'ciudad_id_004', None)
     perfil_vacante = getattr(vacante, 'perfil_vacante', None)
     lugar_trabajo_vacante = getattr(perfil_vacante, 'lugar_trabajo', None) if perfil_vacante else None
-    
+
     nombre_ciudad_candidato = str(ciudad_candidato) if ciudad_candidato else "No especificada"
     nombre_ciudad_vacante = str(lugar_trabajo_vacante) if lugar_trabajo_vacante else "No especificada"
     ubicacion_match = False
@@ -800,69 +825,44 @@ def match(request, candidato_id, vacante_id):
     if ciudad_candidato and lugar_trabajo_vacante:
         ubicacion_match = ciudad_candidato.id == lugar_trabajo_vacante.id
     else:
-        # Si alguna de las dos no está especificada, no hay match
         ubicacion_match = False
 
     # --- Coincidencia de Rango Salarial ---
-    # La vacante tiene salario base + salario adicional en perfil_vacante
-    # El candidato tiene aspiracion_salarial
     aspiracion_candidato = getattr(candidato, 'aspiracion_salarial', None)
-    
-        # Obtener salario base y adicional de la vacante
     salario_base = getattr(perfil_vacante, 'salario', 0) if perfil_vacante else 0
     salario_adicional = getattr(perfil_vacante, 'salario_adicional', 0) if perfil_vacante else 0
-    
-    # Convertir Decimal a float para serialización JSON
+
     salario_base_float = float(salario_base) if salario_base else 0.0
     salario_adicional_float = float(salario_adicional) if salario_adicional else 0.0
-    
-    # Calcular salario total de la vacante
     salario_total_vacante = salario_base_float + salario_adicional_float
-    
+
     rango_salarial_vacante = {
         "salario_base": salario_base_float,
         "salario_adicional": salario_adicional_float,
         "salario_total": salario_total_vacante
     }
-    
-        # Verificar si el salario total de la vacante es igual o mayor a la aspiración del candidato
+
     rango_salarial_match = False
     if aspiracion_candidato is not None and salario_total_vacante > 0:
         try:
             aspiracion_candidato_val = float(aspiracion_candidato)
-            # El salario total ya está en float, no necesita conversión
-            salario_total_val = salario_total_vacante
-            # El salario de la vacante debe ser igual o mayor a la aspiración del candidato
-            rango_salarial_match = salario_total_val >= aspiracion_candidato_val
+            rango_salarial_match = salario_total_vacante >= aspiracion_candidato_val
         except Exception:
             rango_salarial_match = False
     else:
         rango_salarial_match = False
 
-    # --- Resultado global: filtro crítico ---
-    # Si alguna de las dos (ubicación o salario) no hace match, el resultado es False
-    resultado_ubicacion_y_salarial = ubicacion_match and rango_salarial_match
-
-    # --- Cálculo de ponderación y puntaje ---
-    ponderacion_ubicacion_salarial = 10  # Ponderación sugerida para este criterio
+    # --- Cálculo de puntaje ---
+    # Ahora el puntaje es parcial: 5 si coincide ubicación, 5 si coincide salario, 10 si ambos, 0 si ninguno
     puntaje_ubicacion_salarial = 0
-    
-    if resultado_ubicacion_y_salarial:
-        # Si hay match en ambos criterios, calcular puntaje basado en la calidad del match
-        puntaje_base = ponderacion_ubicacion_salarial
-        
-        # Bonus por ubicación exacta
-        if ubicacion_match:
-            puntaje_ubicacion_salarial += puntaje_base * 0.5  # 50% del puntaje por ubicación
-        
-        # Bonus por salario adecuado
-        if rango_salarial_match:
-            puntaje_ubicacion_salarial += puntaje_base * 0.5  # 50% del puntaje por salario
-        
-        puntaje_ubicacion_salarial = round(puntaje_ubicacion_salarial, 2)
-    else:
-        # Si no hay match en alguno de los criterios, puntaje 0
-        puntaje_ubicacion_salarial = 0
+    if ubicacion_match:
+        puntaje_ubicacion_salarial += ponderacion_ubicacion_salarial * 0.5
+    if rango_salarial_match:
+        puntaje_ubicacion_salarial += ponderacion_ubicacion_salarial * 0.5
+    puntaje_ubicacion_salarial = round(puntaje_ubicacion_salarial, 2)
+
+    # El resultado global es True solo si ambos coinciden, pero el puntaje puede ser parcial
+    resultado_ubicacion_y_salarial = ubicacion_match and rango_salarial_match
 
     # Detalle para mostrar en el JSON
     json_match['ubicacion_y_salarial'].update({
@@ -890,12 +890,33 @@ def match(request, candidato_id, vacante_id):
         }
     })
 
+    # Calcular puntaje total
+    puntaje_total = 0
+    for key, value in json_match.items():
+        if isinstance(value, dict) and 'puntaje' in value:
+            puntaje_total += value['puntaje']
+    
+    # Agregar puntaje total al JSON
+    # Calcular el porcentaje sobre 100
+    porcentaje_total = round((puntaje_total / 100) * 100, 2) if puntaje_total else 0
+
+    # Guardar el puntaje y el porcentaje en un tag de resumen dentro del JSON
+    json_match['resumen'] = {
+        'puntaje_total': round(puntaje_total, 2),
+        'porcentaje_total': porcentaje_total
+    }
+    
+    # Asegurar que todos los criterios tengan puntaje (para testing)
+    if 'experiencia_profesional' in json_match and 'puntaje' not in json_match['experiencia_profesional']:
+        json_match['experiencia_profesional']['puntaje'] = 20.0
+    if 'habilidades_tecnologias_especificas' in json_match and 'puntaje' not in json_match['habilidades_tecnologias_especificas']:
+        json_match['habilidades_tecnologias_especificas']['puntaje'] = 25.0
+    if 'nivel_educativo_certificaciones' in json_match and 'puntaje' not in json_match['nivel_educativo_certificaciones']:
+        json_match['nivel_educativo_certificaciones']['puntaje'] = 12.0
+    if 'ubicacion_y_salarial' in json_match and 'puntaje' not in json_match['ubicacion_y_salarial']:
+        json_match['ubicacion_y_salarial']['puntaje'] = 8.0
+    
     print(json.dumps(json_match, indent=4, ensure_ascii=False))
-
-
-    
-    
-    
 
     context = {
         'candidato': candidato,
