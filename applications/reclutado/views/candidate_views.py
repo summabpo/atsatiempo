@@ -9,6 +9,7 @@ from applications.services.service_vacanty import query_vacanty_with_skills_and_
 from applications.vacante.models import Cli052Vacante
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 from django.contrib import messages
+from applications.vacante.views.common_view import get_match
 
 def confirm_apply_vacancy_recruited(request, pk):
     """
@@ -27,6 +28,7 @@ def confirm_apply_vacancy_recruited(request, pk):
         form = PreguntasReclutamiento(pk, request.POST)        
         if form.is_valid():
             print(form.cleaned_data)
+
             asignacion_vacante = Cli056AplicacionVacante.objects.create(
                 candidato_101_id=candidate_id,
                 vacante_id_052_id=pk,
@@ -34,6 +36,11 @@ def confirm_apply_vacancy_recruited(request, pk):
                 preguntas_reclutamiento=form.cleaned_data,
                 estado= get_object_or_404(Cat001Estado, pk=1)  # Estado activo por defecto
             )
+            
+            match_candidato_vacante = get_match(candidato.id, pk)
+
+            asignacion_vacante.json_match = match_candidato_vacante
+            asignacion_vacante.save()
 
             #funcion para crear registro en el historial y actualizar estado de la aplicacion de la vcatente
             crear_historial_aplicacion(asignacion_vacante, 1, request.session.get('_auth_user_id'), 'Aplicación a Vacante por el candidato')

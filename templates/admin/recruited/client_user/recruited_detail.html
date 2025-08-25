@@ -134,7 +134,10 @@ Detalle vacante
                         <div class="card-body p-4">
                             <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="candidato-tab" data-bs-toggle="tab" data-bs-target="#candidato-tab-pane" type="button" role="tab" aria-controls="candidato-tab-pane" aria-selected="true">Perfil Candidato</button>
+                                    <button class="nav-link active" id="match-tab" data-bs-toggle="tab" data-bs-target="#match-tab-pane" type="button" role="tab" aria-controls="match-tab-pane" aria-selected="true">Match Candidato Vacante</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link " id="candidato-tab" data-bs-toggle="tab" data-bs-target="#candidato-tab-pane" type="button" role="tab" aria-controls="candidato-tab-pane" aria-selected="true">Perfil Candidato</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="entrevista-tab" data-bs-toggle="tab" data-bs-target="#entrevista-tab-pane" type="button" role="tab" aria-controls="entrevista-tab-pane" aria-selected="false">Entrevistas</button>
@@ -147,7 +150,10 @@ Detalle vacante
                                 </li>
                             </ul>
                             <div class="tab-content" id="myTabContent">
-                                <div class="tab-pane fade show active" id="candidato-tab-pane" role="tabpanel" aria-labelledby="candidato-tab" tabindex="0">
+                                <div class="tab-pane fade show active" id="match-tab-pane" role="tabpanel" aria-labelledby="match-tab" tabindex="0">
+                                    {% include "admin/vacancy/partials/match_candidate_vacancy.html" %}
+                                </div>
+                                <div class="tab-pane fade" id="candidato-tab-pane" role="tabpanel" aria-labelledby="candidato-tab" tabindex="0">
                                     <div style="max-width: 1200px; width: 100%; margin-left: auto; margin-right: auto;">
                                         <!-- Contenido Principal del Dashboard -->
                                         <main style="display: flex; flex-wrap: wrap; margin-left: -1rem; margin-right: -1rem;">
