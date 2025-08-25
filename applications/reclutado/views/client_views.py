@@ -129,6 +129,18 @@ def detail_recruited(request, pk):
     # verificar información de asignación de la vacante
     asignacion_vacante = get_object_or_404(Cli056AplicacionVacante, id=pk)
 
+    # Obtener el json_match y parsearlo
+    json_match_raw = asignacion_vacante.json_match
+    
+    # Parsear el JSON string a diccionario Python
+    if json_match_raw:
+        try:
+            json_match = json.loads(json_match_raw)
+        except (json.JSONDecodeError, TypeError):
+            json_match = {}
+    else:
+        json_match = {}
+
     #obtener información del candidato
     info_candidato = get_object_or_404(Can101Candidato, id=asignacion_vacante.candidato_101.id)
     info_detalle_candidato = buscar_candidato(asignacion_vacante.candidato_101.id)
@@ -222,6 +234,7 @@ def detail_recruited(request, pk):
         'entrevista': entrevista,
         'info_detalle_candidato': info_detalle_candidato,
         'historial': historico_vacante,
+        'json_match': json_match,
     }
 
     return render(request, 'admin/recruited/client_user/recruited_detail.html', context)

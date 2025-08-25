@@ -1,0 +1,359 @@
+{% load static %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card bg-white border-0 rounded-3 mb-4">
+            <div class="card-header bg-primary bg-opacity-10 align-middle border-0 text-center"> 
+                <h4 class="text-primary my-2 fs-4 fw-semibold text-center">Resultado Match Candidato-Vacante</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <!-- Columna 1: Información del candidato -->
+                    <div class="col-md-4 d-flex flex-column align-items-center justify-content-center text-center">
+                        {% if candidato.imagen_perfil %}    
+                            <img src="/media_uploads/{{ candidato.imagen_perfil }}" class="rounded-circle mb-3" alt="{{ candidato }}" style="width: 90px; height: 90px; object-fit: cover; border: 3px solid #B10022;">
+                        {% else %}
+                            <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle mb-3" alt="user" style="width: 90px; height: 90px; object-fit: cover; border: 3px solid #B10022;">
+                        {% endif %}
+                        <h4 class="fw-bold mb-1" style="font-size: 1.5rem;">{{ candidato.primer_nombre }} {{ candidato.segundo_nombre }} {{ candidato.primer_apellido }} {{ candidato.segundo_apellido }}</h4>
+                        <div class="text-muted fs-5 mb-2">
+                            <i class="ri-map-pin-line me-1"></i>
+                            {{ candidato.ciudad_id_004|default:"Ciudad no registrada" }}
+                        </div>
+                    </div>
+                    <!-- Columna 2: Puntajes de cada sección del JSON -->
+                    <div class="col-md-4 d-flex flex-column align-items-center justify-content-center">
+                        {% if json_match.resumen %}
+                            {% with porcentaje=json_match.resumen.porcentaje_total puntaje=json_match.resumen.puntaje_total %}
+                                <div class="w-100 mb-4">
+                                    <div class="text-center fw-bold mb-2" style="font-size: 1.2rem; color: #B10022;">
+                                        Puntaje Total
+                                    </div>
+                                    <h2 class="text-center fw-bold mb-0 " style="color: #B10022; font-size: 5rem; line-height: 1;">
+                                        {{ puntaje|floatformat:0 }}
+                                        <span style="font-size:1.2rem; color:#888; margin-top:-0.2em; display:inline-block;">({{ porcentaje|floatformat:2 }}%)</span>
+                                    </h2>
+                                </div>
+                            {% endwith %}
+                        {% endif %}
+                        <h5 class="fw-semibold mb-3 text-primary">Puntaje por Criterio</h5>
+                        {% for key, value in json_match.items %}
+                            {% if value.puntaje is not None and value.ponderacion_sugerida %}
+                                <div class="w-100 mb-3">
+                                    <div class="text-center fw-semibold mb-1" style="font-size: 1.1rem;">{{ value.criterio_especifico|default:key|capfirst }}</div>
+                                    <div class="progress position-relative" style="height: 28px; background-color: #f0f0f0;">
+                                        {% widthratio value.puntaje value.ponderacion_sugerida 100 as porcentaje %}
+                                        <div class="progress-bar bg-primary bg-opacity-10 position-absolute start-50 translate-middle-x" 
+                                            role="progressbar"
+                                            style="
+                                                left: 50%;
+                                                transform: translateX(-50%);
+                                                width: {{ porcentaje }}%;
+                                                font-size: 1.1rem;
+                                                height: 100%;
+                                                border-radius: 0 0 0 0;
+                                            "
+                                            aria-valuenow="{{ porcentaje }}"
+                                            aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                        <div class="position-absolute top-50 start-50 translate-middle w-100 text-center" style="pointer-events: none; font-size: 1.1rem;">
+                                            {{ value.puntaje|floatformat:2 }} / {{ value.ponderacion_sugerida|default:"-" }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <!-- Columna 3: Información del cliente y vacante -->
+                    <div class="col-md-4 d-flex flex-column align-items-center justify-content-center text-center">
+                        {% if vacante.asignacion_cliente_id_064 and vacante.asignacion_cliente_id_064.id_cliente_asignado %}
+                            {% with cliente=vacante.asignacion_cliente_id_064.id_cliente_asignado %}
+                                <div class="d-flex flex-column align-items-center mt-2 w-100">
+                                    {% if cliente.logo %}
+                                        <img src="/media_uploads/{{ cliente.logo }}" class="mb-2" alt="{{ cliente.razon_social }}" style="width: 70px; height: 70px; object-fit: contain; border-radius: 10px; background: #fff;">
+                                    {% else %}
+                                        <img src="{% static 'admin/images/blank_company.png' %}" class="mb-2" alt="logo" style="width: 70px; height: 70px; object-fit: contain; border-radius: 10px; background: #fff;">
+                                    {% endif %}
+                                    <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">{{ vacante.cargo.nombre_cargo }}</h2>
+                                    <span class="fw-bold fs-5 mb-1">{{ cliente.razon_social }}</span>
+                                    <div class="text-muted fs-6 mb-2">
+                                        <i class="ri-map-pin-line me-1"></i>
+                                        {{ vacante.perfil_vacante.lugar_trabajo|default:"Lugar de trabajo no registrado" }}
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        {% else %}
+                            <div class="d-flex flex-column align-items-center mt-2 w-100">
+                                <h2 class="fw-bold mb-2" style="font-size: 1.6rem;">{{ vacante.titulo }}</h2>
+                                <div class="text-muted fs-6 mb-2">
+                                    <i class="ri-map-pin-line me-1"></i>
+                                    {{ vacante.lugar_trabajo|default:"Lugar de trabajo no registrado" }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card bg-white border-0 rounded-3 mb-4">
+            <div class="card-header bg-primary bg-opacity-10 align-middle border-0 text-center"> 
+                <h4 class="text-primary my-2 fs-4 fw-semibold text-center">Resumen Detallado por Criterios</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="accordion faq-wrapper" id="accordionCriterios">
+                    {% for key, value in json_match.items %}
+                        {% if value.criterio_especifico and value.puntaje is not None %}
+                            <div class="accordion-item border-0 shadow-sm mb-3" style="border-radius: 12px !important;">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button {% if not forloop.first %}collapsed{% endif %} border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ forloop.counter }}" style="border-radius: 12px 12px 0 0 !important; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                                        <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-warning bg-opacity-20 p-2 rounded-circle me-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="ri-tools-line" style="color: #FFD700; font-size: 1.3rem;"></i>
+                                                </div>
+                                                <div>
+                                                    <span class="fw-bold fs-5 text-dark">{{ value.criterio_especifico }}</span>
+                                                    <div class="text-muted small mt-1">{{ value.categoria }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-primary bg-opacity-10 p-2 rounded-pill me-3">
+                                                    <span class="badge bg-primary fs-6 px-3 py-2">{{ value.puntaje|floatformat:2 }} / {{ value.ponderacion_sugerida }}</span>
+                                                </div>
+                                                <i class="ri-arrow-down-s-line text-primary" style="font-size: 1.2rem;"></i>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#accordionCriterios">
+                                    <div class="accordion-body p-4" style="background: #ffffff; border-radius: 0 0 12px 12px;">
+                                        <!-- Información del criterio -->
+                                        <div class="row mb-4">
+                                            <div class="col-lg-8">
+                                                <div class="card border-0 shadow-sm h-100" style="border-radius: 10px;">
+                                                    <div class="card-body p-4">
+                                                        <h6 class="fw-bold text-primary mb-3 fs-5">
+                                                            <i class="ri-information-line me-2"></i>Descripción del Criterio
+                                                        </h6>
+                                                        <p class="text-muted mb-4 fs-6 lh-base">{{ value.descripcion }}</p>
+                                                        
+                                                        <div class="row g-3">
+                                                            <div class="col-md-6">
+                                                                <div class="bg-light p-3 rounded" style="border-left: 4px solid #007bff;">
+                                                                    <h6 class="fw-bold text-secondary mb-2 fs-6">Categoría</h6>
+                                                                    <p class="mb-0 fw-semibold text-dark">{{ value.categoria }}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="bg-light p-3 rounded" style="border-left: 4px solid #28a745;">
+                                                                    <h6 class="fw-bold text-secondary mb-2 fs-6">Fuentes de Información</h6>
+                                                                    <ul class="list-unstyled mb-0">
+                                                                        {% for fuente in value.fuentes_informacion %}
+                                                                            <li class="mb-1">
+                                                                                <i class="ri-check-line text-success me-2"></i>
+                                                                                <span class="small">{{ fuente }}</span>
+                                                                            </li>
+                                                                        {% endfor %}
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="card border-0 shadow-sm h-100" style="border-radius: 10px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                                                    <div class="card-body p-4">
+                                                        <h6 class="fw-bold text-center mb-4 fs-5 text-primary">
+                                                            <i class="ri-settings-3-line me-2"></i>Método de Evaluación
+                                                        </h6>
+                                                        <div class="mb-4">
+                                                            <small class="text-muted d-block mb-2 fw-semibold">Método:</small>
+                                                            <p class="mb-0 fw-semibold text-dark small lh-base">{{ value.metodo_medicion }}</p>
+                                                        </div>
+                                                        <div class="mb-4">
+                                                            <small class="text-muted d-block mb-2 fw-semibold">Clasificación:</small>
+                                                            <p class="mb-0 fw-semibold text-dark small lh-base">{{ value.clasificacion }}</p>
+                                                        </div>
+                                                        <div>
+                                                            <small class="text-muted d-block mb-2 fw-semibold">Escala:</small>
+                                                            <p class="mb-0 fw-semibold text-dark small lh-base">{{ value.escala_medicion }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Barra de progreso -->
+                                        <div class="mb-4">
+                                            <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+                                                <div class="card-body p-4">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <h6 class="fw-bold mb-0 fs-5 text-primary">
+                                                            <i class="ri-bar-chart-line me-2"></i>Progreso del Criterio
+                                                        </h6>
+                                                        <span class="badge bg-primary fs-6 px-3 py-2">{{ value.puntaje|floatformat:2 }} / {{ value.ponderacion_sugerida }}</span>
+                                                    </div>
+                                                    <div class="progress mb-2" style="height: 30px; border-radius: 15px; background-color: #e9ecef;">
+                                                        {% widthratio value.puntaje value.ponderacion_sugerida 100 as porcentaje %}
+                                                        <div class="progress-bar bg-warning shadow-sm" role="progressbar" 
+                                                            style="width: {{ porcentaje }}%; border-radius: 15px; transition: width 0.6s ease;" 
+                                                            aria-valuenow="{{ porcentaje }}" 
+                                                            aria-valuemin="0" 
+                                                            aria-valuemax="100">
+                                                            <span class="fw-bold text-dark">{{ porcentaje|floatformat:0 }}%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-center">
+                                                        <small class="text-muted">Progreso del criterio basado en la evaluación</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Detalles específicos según el tipo de criterio -->
+                                        {% if value.preguntas %}
+                                            <div class="mb-4">
+                                                <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+                                                    <div class="card-body p-4">
+                                                        <h6 class="fw-bold text-success mb-4 fs-5">
+                                                            <i class="ri-question-line me-2"></i>Preguntas de Evaluación
+                                                        </h6>
+                                                        <div class="row g-3">
+                                                            {% for pregunta in value.preguntas %}
+                                                                <div class="col-lg-6">
+                                                                    <div class="card border-0 {% if pregunta.valor %}bg-success bg-opacity-10 border-success{% else %}bg-danger bg-opacity-10 border-danger{% endif %} p-3 h-100" style="border-radius: 8px; border-width: 2px !important;">
+                                                                        <div class="d-flex align-items-start">
+                                                                            {% if pregunta.valor %}
+                                                                                <div class="bg-success bg-opacity-20 p-2 rounded-circle me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                                                                                    <i class="ri-check-line text-success" style="font-size: 1.1rem;"></i>
+                                                                                </div>
+                                                                            {% else %}
+                                                                                <div class="bg-danger bg-opacity-20 p-2 rounded-circle me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                                                                                    <i class="ri-close-line text-danger" style="font-size: 1.1rem;"></i>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                            <div class="flex-grow-1">
+                                                                                <p class="mb-2 fw-semibold text-dark small lh-base">{{ pregunta.pregunta }}</p>
+                                                                                <small class="text-muted">
+                                                                                    <strong>Respuesta:</strong> 
+                                                                                    <span class="fw-semibold {% if pregunta.valor %}text-success{% else %}text-danger{% endif %}">{{ pregunta.respuesta }}</span>
+                                                                                </small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if value.detalle %}
+                                            <div class="mb-4">
+                                                <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+                                                    <div class="card-body p-4">
+                                                        <h6 class="fw-bold text-info mb-4 fs-5">
+                                                            <i class="ri-lightbulb-line me-2"></i>Habilidades Evaluadas
+                                                        </h6>
+                                                        <div class="row g-3">
+                                                            {% for habilidad in value.detalle %}
+                                                                <div class="col-lg-6">
+                                                                    <div class="card border-0 {% if habilidad.coincide %}bg-success bg-opacity-10 border-success{% else %}bg-danger bg-opacity-10 border-danger{% endif %} p-3 h-100" style="border-radius: 8px; border-width: 2px !important;">
+                                                                        <div class="d-flex align-items-start">
+                                                                            {% if habilidad.coincide %}
+                                                                                <div class="bg-success bg-opacity-20 p-2 rounded-circle me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                                                                                    <i class="ri-check-line text-success" style="font-size: 1.1rem;"></i>
+                                                                                </div>
+                                                                            {% else %}
+                                                                                <div class="bg-danger bg-opacity-20 p-2 rounded-circle me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                                                                                    <i class="ri-close-line text-danger" style="font-size: 1.1rem;"></i>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                            <div class="flex-grow-1">
+                                                                                <p class="mb-2 fw-semibold text-dark small lh-base">{{ habilidad.nombre }}</p>
+                                                                                <small class="text-muted">
+                                                                                    <strong>ID:</strong> 
+                                                                                    <span class="fw-semibold text-dark">{{ habilidad.id }}</span>
+                                                                                </small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if value.logica_calificacion %}
+                                            <div class="mb-4">
+                                                <div class="card border-0 shadow-sm" style="border-radius: 10px; background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);">
+                                                    <div class="card-body p-4">
+                                                        <h6 class="fw-bold text-warning mb-4 fs-5">
+                                                            <i class="ri-calculator-line me-2"></i>Lógica de Calificación
+                                                        </h6>
+                                                        <p class="mb-4 fw-semibold text-dark">{{ value.logica_calificacion.descripcion }}</p>
+                                                        {% if value.logica_calificacion.reglas %}
+                                                            <h6 class="fw-semibold mb-3 fs-6 text-warning">Reglas de Puntuación:</h6>
+                                                            <ul class="list-unstyled mb-0">
+                                                                {% for porcentaje, descripcion in value.logica_calificacion.reglas.items %}
+                                                                    <li class="mb-2 p-2 bg-white bg-opacity-50 rounded">
+                                                                        <i class="ri-arrow-right-line text-warning me-2"></i>
+                                                                        <strong class="text-dark">{{ porcentaje }}:</strong> 
+                                                                        <span class="text-dark">{{ descripcion }}</span>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        <!-- Resumen del criterio -->
+                                        <div class="card border-0 shadow-sm" style="border-radius: 10px; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                                            <div class="card-body p-4">
+                                                <h6 class="fw-bold text-primary mb-4 fs-5 text-center">
+                                                    <i class="ri-pie-chart-line me-2"></i>Resumen del Criterio
+                                                </h6>
+                                                <div class="row text-center g-3">
+                                                    <div class="col-md-4">
+                                                        <div class="bg-white bg-opacity-70 p-3 rounded">
+                                                            <h6 class="fw-bold text-primary mb-2 fs-6">Puntaje Obtenido</h6>
+                                                            <h3 class="mb-0 text-primary fw-bold">{{ value.puntaje|floatformat:2 }}</h3>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="bg-white bg-opacity-70 p-3 rounded">
+                                                            <h6 class="fw-bold text-primary mb-2 fs-6">Ponderación</h6>
+                                                            <h3 class="mb-0 text-primary fw-bold">{{ value.ponderacion_sugerida }}</h3>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="bg-white bg-opacity-70 p-3 rounded">
+                                                            <h6 class="fw-bold text-primary mb-2 fs-6">Porcentaje</h6>
+                                                            {% widthratio value.puntaje value.ponderacion_sugerida 100 as porcentaje %}
+                                                            <h3 class="mb-0 text-primary fw-bold">{{ porcentaje|floatformat:1 }}%</h3>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
