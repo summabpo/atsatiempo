@@ -36,7 +36,6 @@ Listado de vacantes
                                     <tr>
                                         <th scope="col" class="text-center">ID</th>
                                         <th scope="col" class="text-center">CLIENTE</th>
-                                        <th scope="col" class="text-center">VACANTE</th>
                                         <th scope="col" class="text-center">CARGO</th>
                                         <th scope="col" class="text-center"># POSICIONES</th>
                                         <th scope="col" class="text-center">F. CREACIÓN</th>
@@ -59,10 +58,7 @@ Listado de vacantes
                                     <tr>
                                         <td class="text-body text-center">{{e.id}}</td>
                                         <td class="text-secondary text-center">{{e.asignacion_cliente_id_064.id_cliente_asignado.razon_social}}</td>
-                                        <td class="text-center">
-                                            <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="fw-medium">{{e.titulo}}</a>
-                                        </td>
-                                        <td class="text-secondary text-center">{{e.cargo.nombre_cargo}}</td>
+                                        <td class="text-secondary text-center"><a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="fw-medium">{{e.cargo.nombre_cargo}}</a></td>
                                         <td class="text-secondary text-center">{{e.numero_posiciones}}</td>
                                         <td class="text-secondary text-center">{{ e.fecha_creacion|date:"Y-m-d" }}</td>
                                         <td class="text-secondary text-center">{{ e.fecha_presentacion|date:"Y-m-d" }}</td>

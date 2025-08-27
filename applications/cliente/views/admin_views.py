@@ -11,7 +11,7 @@ from applications.usuarios.decorators  import validar_permisos
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli052VacanteSoftSkillsId053, Cli054HardSkill, Cli052VacanteHardSkillsId054
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.usuarios.models import Permiso
+from applications.usuarios.models import Permiso, UsuarioBase
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli065ActividadEconomica,  Cli051ClientePoliticas, Cli067PoliticasInternas, Cli051ClientePruebas, Cli066PruebasPsicologicas, Cli068Cargo, Cli069Requisito, Cli070AsignacionRequisito, Cli071AsignacionPrueba
 
 #form
@@ -377,3 +377,20 @@ def client_detail_required(request, pk):
     }
 
     return render(request, 'admin/client/admin_user/client_detail_required.html', contexto)
+
+@login_required
+@validar_permisos('acceso_admin')
+def client_detail_group_work(request, pk):
+
+    # Data cliente a mostrar
+    data = query_client_detail(pk)
+
+    # Obtener los usuarios internos del cliente
+    users_list = UsuarioBase.objects.filter(cliente_id_051=pk, group__in=[3, 4, 5])
+
+    contexto = {
+        'data': data,
+        'users_list': users_list,
+    }
+
+    return render(request, 'admin/client/admin_user/client_detail_group_work.html', contexto)

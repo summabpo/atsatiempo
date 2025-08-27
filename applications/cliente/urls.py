@@ -1,6 +1,6 @@
 from django.urls import path
 from applications.cliente.views import  ClienteView, CreacionUsuariosView
-from applications.cliente.views import admin_views, client_views
+from applications.cliente.views import admin_views, client_views, common_views
 from applications.cliente.views.preguntasView import PreguntasView
 
 #vistas del usuario administrador ATS
@@ -20,6 +20,15 @@ urlpatterns = [
     path( url_principal+'detalle/cargos/<int:pk>/', admin_views.client_detail_position, name='cliente_cargos'),
     path( url_principal+'detalle/requisitos/<int:pk>/', admin_views.client_detail_required, name='cliente_requisitos'),
     path( url_principal+'detalle/cargos/configuracion/<int:pk>/<int:cargo_id>/', admin_views.client_detail_position_config, name='cliente_cargos_configuracion'),
+    path( url_principal+'detalle/grupo_trabajo/<int:pk>/', admin_views.client_detail_group_work, name='client_detail_group_work'),
+
+    # APIs para modales de usuarios
+    path( url_principal+'ajax/crear_usuario/', common_views.crear_usuario_modal, name='ajax_crear_usuario'),
+    path( url_principal+'ajax/obtener_usuario/<int:pk>/', common_views.obtener_usuario_modal, name='ajax_obtener_usuario'),
+    path( url_principal+'ajax/actualizar_usuario/<int:pk>/', common_views.actualizar_usuario_modal, name='ajax_actualizar_usuario'),
+    path( url_principal+'ajax/cambiar_estado_usuario/<int:pk>/', common_views.cambiar_estado_usuario_modal, name='ajax_cambiar_estado_usuario'),
+    path( url_principal+'ajax/obtener_grupos/', common_views.obtener_grupos_activos, name='ajax_obtener_grupos'),
+
     
     #client_user
     path( url_principal+'informacion_principal', client_views.client_detail_info, name='info_principal_cliente'),

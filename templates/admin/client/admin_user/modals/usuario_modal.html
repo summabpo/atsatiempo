@@ -1,0 +1,237 @@
+<!-- Modal para Crear/Editar Usuario -->
+<div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Header del Modal -->
+            <div class="modal-header bg-primary bg-opacity-10 text-primary">
+                <h5 class="modal-title d-flex align-items-center" id="modalUsuarioLabel">
+                    <i class="material-symbols-outlined me-2 align-middle" style="vertical-align: middle;">person_add</i>
+                    <span id="modalTitle" class="align-middle">Crear Nuevo Usuario</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Body del Modal -->
+            <div class="modal-body">
+                <!-- Formulario -->
+                <form id="formUsuarioModal" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Campo oculto para el ID del usuario (para edición) -->
+                    <input type="hidden" id="usuario_id" name="usuario_id" value="">
+                    
+                    <!-- Campo oculto para el ID del cliente -->
+                    <input type="hidden" id="cliente_id" name="cliente_id" value="{{ data.cliente.id }}">
+
+                    <!-- Primera fila: Nombres -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_primer_nombre" class="form-label fw-semibold">
+                                Primer Nombre <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                    class="form-control" 
+                                    id="id_primer_nombre" 
+                                    name="primer_nombre" 
+                                    placeholder="Primer Nombre"
+                                    required>
+                            <div class="invalid-feedback" id="primer_nombre_error"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_segundo_nombre" class="form-label fw-semibold">
+                                Segundo Nombre
+                            </label>
+                            <input type="text" 
+                                    class="form-control" 
+                                    id="id_segundo_nombre" 
+                                    name="segundo_nombre" 
+                                    placeholder="Segundo Nombre (opcional)">
+                            <div class="invalid-feedback" id="segundo_nombre_error"></div>
+                        </div>
+                    </div>
+
+                    <!-- Segunda fila: Apellidos -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_primer_apellido" class="form-label fw-semibold">
+                                Primer Apellido <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                    class="form-control" 
+                                    id="id_primer_apellido" 
+                                    name="primer_apellido" 
+                                    placeholder="Primer Apellido"
+                                    required>
+                            <div class="invalid-feedback" id="primer_apellido_error"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_segundo_apellido" class="form-label fw-semibold">
+                                Segundo Apellido
+                            </label>
+                            <input type="text" 
+                                class="form-control" 
+                                id="id_segundo_apellido" 
+                                name="segundo_apellido" 
+                                placeholder="Segundo Apellido (opcional)">
+                            <div class="invalid-feedback" id="segundo_apellido_error"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tercera fila: Email y Teléfono -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_email" class="form-label fw-semibold">
+                                Correo Electrónico <span class="text-danger">*</span>
+                            </label>
+                            <input type="email" 
+                                class="form-control" 
+                                id="id_email" 
+                                name="email" 
+                                placeholder="correo@ejemplo.com"
+                                required>
+                            <div class="invalid-feedback" id="email_error"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_telefono" class="form-label fw-semibold">
+                                Teléfono
+                            </label>
+                            <input type="tel" 
+                                class="form-control" 
+                                id="id_telefono" 
+                                name="telefono" 
+                                placeholder="Teléfono (opcional)">
+                            <div class="invalid-feedback" id="telefono_error"></div>
+                        </div>
+                    </div>
+
+                    <!-- Cuarta fila: Grupo e Imagen -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_group" class="form-label fw-semibold">
+                                Grupo/Rol <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="id_group" name="group" required style="z-index: 9999; position: relative;">
+                                <option value="">Seleccione un grupo</option>
+                                <!-- Los grupos se cargarán dinámicamente -->
+                            </select>
+                            <div class="invalid-feedback" id="group_error"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_imagen_perfil" class="form-label fw-semibold">
+                                Imagen de Perfil
+                            </label>
+                            <input type="file" 
+                                class="form-control" 
+                                id="id_imagen_perfil" 
+                                name="imagen_perfil" 
+                                accept="image/*">
+                            <div class="invalid-feedback" id="imagen_perfil_error"></div>
+                            <small class="form-text text-muted">
+                                Formatos permitidos: JPG, JPEG, PNG. Máximo 5 MB.
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Previsualización de imagen actual (solo para edición) -->
+                    <div class="row mb-3" id="imagen_actual_container" style="display: none;">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Imagen Actual:</label>
+                            <div class="d-flex align-items-center">
+                                <img id="imagen_actual" src="" alt="Imagen actual" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                <div>
+                                    <small class="text-muted">Esta es la imagen actual del usuario. Selecciona una nueva imagen para reemplazarla.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mensajes de éxito/error -->
+                    <div id="mensajeModal" class="alert" style="display: none;"></div>
+                </form>
+            </div>
+
+            <!-- Footer del Modal -->
+            <div class="modal-footer">
+                <button type="button" class="btn bg-secondary bg-opacity-10 fw-medium text-secondary d-inline-flex align-items-center" data-bs-dismiss="modal">
+                    <i class="material-symbols-outlined me-1 align-middle" style="vertical-align: middle;">close</i>
+                    <span class="align-middle">Cancelar</span>
+                </button>
+                <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary d-inline-flex align-items-center" id="btnGuardarUsuario">
+                    <i class="material-symbols-outlined me-1 align-middle" style="vertical-align: middle;">save</i>
+                    <span id="btnGuardarText" class="align-middle">Guardar Usuario</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación para cambiar estado -->
+<div class="modal fade" id="modalConfirmarCambioEstado" tabindex="-1" aria-labelledby="modalConfirmarCambioEstadoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title" id="modalConfirmarCambioEstadoLabel">
+                    <i class="material-symbols-outlined me-2">warning</i>
+                    Confirmar Cambio de Estado
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">
+                    ¿Estás seguro de que deseas <strong id="accionCambioEstado">desactivar</strong> al usuario 
+                    <strong id="nombreUsuarioCambioEstado"></strong>?
+                </p>
+                <p class="text-muted small mt-2">
+                    <i class="material-symbols-outlined me-1">info</i>
+                    Los usuarios desactivados no podrán acceder al sistema, pero sus datos se mantendrán.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="material-symbols-outlined me-1">close</i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-warning" id="btnConfirmarCambioEstado">
+                    <i class="material-symbols-outlined me-1">block</i>
+                    Sí, Desactivar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de información de usuario creado -->
+<div class="modal fade" id="modalUsuarioCreado" tabindex="-1" aria-labelledby="modalUsuarioCreadoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary bg-opacity-10 text-primary">
+                <h5 class="modal-title d-flex align-items-center" id="modalUsuarioCreadoLabel">
+                    <i class="material-symbols-outlined me-2 align-middle" style="vertical-align: middle;">check_circle</i>
+                    <span class="align-middle">Usuario Creado Exitosamente</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">Información del Usuario:</h6>
+                    <div id="infoUsuarioCreado"></div>
+                    <hr>
+                    <p class="mb-0">
+                        <strong>Contraseña generada:</strong> 
+                        <code id="passwordGenerada" class="bg-light p-1 rounded"></code>
+                    </p>
+                    <small class="text-muted">
+                        <i class="material-symbols-outlined me-1">info</i>
+                        Guarda esta contraseña en un lugar seguro. El usuario deberá cambiarla en su primer inicio de sesión.
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-success bg-opacity-10 fw-medium text-success d-inline-flex align-items-center" data-bs-dismiss="modal">
+                    <i class="material-symbols-outlined me-1 align-middle" style="vertical-align: middle;">check</i>
+                    <span class="align-middle">Entendido</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
