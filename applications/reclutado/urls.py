@@ -22,5 +22,5 @@ urlpatterns = [
     #api
     path( url_principal+'api/buscar_candidato/', api_views.api_candidate_document, name='api_canidate_document'),
 
-
+    
 ]

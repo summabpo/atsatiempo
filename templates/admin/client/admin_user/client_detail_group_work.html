@@ -1,0 +1,164 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">CLIENTE: {{data.cliente.razon_social}}</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'clientes:cliente_ver' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Listado de Clientes</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Detalle Cliente</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+    <div class="row">
+		<div class="col-md-12">
+			{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_users_work_group=True %}
+		</div>
+	</div>
+    
+	<div class="row">
+		<div class="col-md-12">
+			{% include 'admin/client/admin_user/common_template/client_metrics.html' %}
+            <div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+                    <div class="default-table-area all-projects">
+                        <div class="table-responsive">
+                            <table class="table align-middle text-center" id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">#</th>
+                                        <th scope="col" class="text-center">Nombre</th>
+                                        <th scope="col" class="text-center">Correo</th>
+                                        <th scope="col" class="text-center">Teléfono</th>
+                                        <th scope="col" class="text-center">Grupo</th>
+                                        <th scope="col" class="text-center">Estado</th>
+                                        <th scope="col" class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users_list %}
+                                    <tr id="fila_usuario_{{ user.id }}">
+                                        <td class="text-body text-center">{{ forloop.counter }}</td>
+                                        <td class="text-secondary text-center">
+                                            {{ user.primer_nombre }} {{ user.segundo_nombre }} {{ user.primer_apellido }} {{ user.segundo_apellido }}
+                                        </td>
+                                        <td class="text-secondary text-center">{{ user.email }}</td>
+                                        <td class="text-secondary text-center">{{ user.telefono|default:"-" }}</td>
+                                        <td class="text-secondary text-center">
+                                            {% if user.group %}
+                                                {{ user.group.name }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if user.is_active %}
+                                                <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">Activo</span>
+                                            {% else %}
+                                                <span class="badge bg-danger bg-opacity-10 text-danger p-2 fs-12 fw-normal">Inactivo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center align-items-center gap-1">
+                                                <button class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" 
+                                                        onclick="usuarioModalManager.abrirModalEditar({{ user.id }})"
+                                                        title="Editar Usuario">
+                                                    <i class="material-symbols-outlined fs-16">edit</i>
+                                                </button>
+                                                <button class="btn bg-info bg-opacity-10 fw-medium text-info py-2 px-4" 
+                                                        onclick="usuarioModalManager.verUsuario({{ user.id }})"
+                                                        title="Ver Usuario">
+                                                    <i class="material-symbols-outlined fs-16">visibility</i>
+                                                </button>
+                                                {% if user.is_active %}
+                                                <button class="btn bg-warning bg-opacity-10 fw-medium text-warning py-2 px-4" 
+                                                        onclick="usuarioModalManager.abrirModalConfirmarCambioEstado({{ user.id }}, '{{ user.primer_nombre }} {{ user.primer_apellido }}', true)"
+                                                        title="Desactivar Usuario">
+                                                    <i class="material-symbols-outlined fs-16">block</i>
+                                                </button>
+                                                {% else %}
+                                                <button class="btn bg-success bg-opacity-10 fw-medium text-success py-2 px-4" 
+                                                        onclick="usuarioModalManager.abrirModalConfirmarCambioEstado({{ user.id }}, '{{ user.primer_nombre }} {{ user.primer_apellido }}', false)"
+                                                        title="Activar Usuario">
+                                                    <i class="material-symbols-outlined fs-16">check_circle</i>
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center">
+                                            <div class="text-muted py-4">
+                                                <i class="material-symbols-outlined fs-48 mb-3">group_off</i>
+                                                <p class="mb-0">No hay colaboradores registrados.</p>
+                                                <small>Haz clic en "Crear Usuario" para agregar el primer colaborador.</small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<!-- Incluir modales -->
+{% include 'admin/client/admin_user/modals/usuario_modal.html' %}
+
+{% endblock %}
+
+{% block js %} 
+<script src="{% static 'js/admin/client/usuario_modal.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#myTable').DataTable({
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar:",
+                "paginate": {
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            },
+            "columnDefs": [
+                {
+                    "targets": -1,
+                    "orderable": false,
+                    "searchable": false
+                }
+            ],
+            "order": [[0, "asc"]]
+        });
+
+        // Initialize select2 for specific fields
+        initializeSelect2('#id_ciudad_id_004');
+        initializeSelect2('#id_actividad_economica');
+    });
+</script>  
+{% endblock js %}

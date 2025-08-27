@@ -4,7 +4,11 @@
         <div class="card-body p-4">
             <div class="d-flex align-items-center mb-4">
                 <div class="flex-shrink-0 position-relative">
-                    <img src="{{ request.session.imagen_url }}" class="rounded-circle" style="width: 65px; height: 65px;" alt="nft">
+                    {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.logo_cliente %}
+                        <img src="{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.logo_cliente.url }}" class="rounded-circle" style="width: 65px; height: 65px;" alt="Logo Cliente">
+                    {% else %}
+                        <img src="{% static 'admin/images/default_company_logo.png' %}" class="rounded-circle" style="width: 65px; height: 65px;" alt="Logo por defecto">
+                    {% endif %}
                 </div>
                 <div class="flex-grow-1 ms-3">
                     <h4 class="fs-24 fw-semibold mb-1">{{vacante.titulo}}</h4>

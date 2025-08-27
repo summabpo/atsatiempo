@@ -10,12 +10,12 @@ def enviar_correo(tipo_correo, contexto, asunto, lista_destinatarios, correo_rem
         correo_remitente = settings.EMAIL_HOST_USER
     
     plantilla_correo = {
-        'bienvenida': 'authentication/correo_bienvenida.html',
-        'token': 'authentication/token_generado.html',
-        'creacion_usuario_cliente': 'cliente/creacion_usuario.html',
+        'bienvenida': 'admin/mails/correo_bienvenida.html',
+        'token': 'admin/mails/token_generado.html',
+        'creacion_usuario_cliente': 'admin/mails/creacion_usuario.html',
         'asignacion_entrevista_entrevista' : 'admin/mails/asignacion_entrevista_correo.html',
-        'cancelacion_vacante_correo' : 'vacante/plantilla_correo/cancelacion_vacante_correo.html',
-        'creacion_vacante' : 'vacante/plantilla_correo/creacion_vacante_correo.html',
+        'cancelacion_vacante_correo' : 'admin/mails/cancelacion_vacante_correo.html',
+        'creacion_vacante' : 'admin/mails/creacion_vacante_correo.html',
     }
 
     nombre_plantilla = plantilla_correo.get(tipo_correo)
