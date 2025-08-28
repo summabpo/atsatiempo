@@ -116,7 +116,7 @@ def detail_vacancy_recruited(request, pk):
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats')
 def detail_recruited(request, pk):
     url_actual = f"{request.scheme}://{request.get_host()}"
    
@@ -127,8 +127,8 @@ def detail_recruited(request, pk):
 
     
     # verificar información de asignación de la vacante
+    # asignacion_vacante = get_object_or_404(Cli056AplicacionVacante, id=pk)
     asignacion_vacante = get_object_or_404(Cli056AplicacionVacante, id=pk)
-
     # Obtener el json_match y parsearlo
     json_match_raw = asignacion_vacante.json_match
     
@@ -152,11 +152,14 @@ def detail_recruited(request, pk):
     
 
     # Verificar si el cliente_id está en la sesión
-    if request.session['grupo_id'] == 1:
+    if request.session['grupo_id'] == 1:  # Si es admin
         cliente_id = asignacion_vacante.vacante_id_052.asignacion_cliente_id_064.id_cliente_asignado.id
         print(cliente_id)
         cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
-    else:
+    elif request.session['grupo_id'] == 3 or request.session['grupo_id'] == 5 or request.session['grupo_id'] == 6:  # Si es analista_interno
+        cliente_id = asignacion_vacante.vacante_id_052.asignacion_cliente_id_064.id_cliente_asignado.id
+        cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+    else:  # Si es cliente directo
         cliente_id = request.session.get('cliente_id')
         cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
     
