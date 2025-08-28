@@ -30,64 +30,221 @@ Detalle vacante
 			</ol>
 		</nav>
 	</div>
+    
     <div class="row">
-		<div class="col-3">
-            {% include "admin/vacancy/common_template/info_vacancy.html" %}
-        </div>
-		<div class="col-9">
-            <!-- Menu -->
-            {% include "admin/vacancy/common_template/menu_vacancy_analist.html" %}
-
-            <!-- Inicio de Contenido -->
-            <div class="card border-0 rounded-2 p-4 bg-white mb-4">
+        <div class="col-md-12">
+			<div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+                    <p class="text-primary my-2 fs-4 fw-semibold">Gestión Vacante: {{vacante.titulo}}</p>
+                </div>
                 <div class="card-body p-4">
-					<form method="post" id="form_vacante_edit">
-                        {% csrf_token %}
-                        {% crispy form %}
-                        <button id="form_vacante_edit" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_vacante_edit">Guardar</button>
-                    </form>
-				</div>
-			</div>
-			<!-- Fin de Contenido -->
-        </div>
-    </div>
+                    <nav>
+                        <div class="nav nav-tabs mb-4" id="nav-tab" role="tablist">
+                            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Información</button>
+                            <button class="nav-link" id="nav-reclutado-tab" data-bs-toggle="tab" data-bs-target="#nav-reclutado" type="button" role="tab" aria-controls="nav-reclutado" aria-selected="false">Reclutados</button>
+                            <button class="nav-link" id="nav-entrevista-tab" data-bs-toggle="tab" data-bs-target="#nav-entrevista" type="button" role="tab" aria-controls="nav-entrevista" aria-selected="false">Entrevista</button>
+                            <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Preguntas Vacante</button>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+                            {% include 'admin/vacancy/partials/presentation_vacancy.html' %}
+                        </div>
+                        <div class="tab-pane fade" id="nav-reclutado" role="tabpanel" aria-labelledby="nav-reclutado-tab" tabindex="0">
+                            <div class="default-table-area all-projects">
+                                <div class="table-responsive">
+                                    <table class="table align-middle text-center" id="reclutamiento-tabla">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">DOCUMENTO</th>
+                                                <th scope="col">CANDIDATO</th>
+                                                <th scope="col">ESTADO</th>
+                                                <th scope="col">ACCIONES</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for e in reclutados %}
+                                            <tr>
+                                                <td class="text-body">{{e.id}}</td>
+                                                <td class="text-body">{{e.candidato_documento}}</td>
+
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-center">
+                                                        {% if e.candidato_imagen_perfil %}
+                                                            <img src="/media_uploads/{{ e.candidato_imagen_perfil}}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
+                                                        {% else %}
+                                                            <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
+                                                        {% endif %}
+                                                        
+                                                        <div class="ms-2 ps-1">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="fw-medium">{{e.candidato_nombre}}</a>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-opacity-10 bg-{{e.obtener_estado_con_color.color}} py-1 px-2 text-{{e.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_estado_con_color.estado}}</span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-center gap-1">
+                                                        <!-- 
+                                                        <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                                        </a>
+                                                        -->
+                                                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16 text-danger">manage_accounts</i>
+                                                            </a>
+                                                        </div>
+                                                        
+                                                        <!-- 
+                                                        <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                                        </a>
+                                                        -->
+                                                    </div>
+                                                </td> 
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-entrevista" role="tabpanel" aria-labelledby="nav-entrevista-tab" tabindex="0">
+                            <div class="default-table-area all-projects">
+                                <div class="table-responsive">
+                                    <table class="table align-middle text-center" id="entrevista-tabla">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">FECHA</th>
+                                                <th scope="col">HORA</th>
+                                                <th scope="col">LUGAR / ENLACE</th>
+                                                <th scope="col">TIPO ASIGNACION</th>
+                                                <th scope="col">CANDIDATO</th>
+                                                <th scope="col">ANALISTA RESPONSABLE</th>
+                                                <th scope="col">ESTADO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for e in entrevistas %}
+                                            <tr>
+                                                <td class="text-body">{{e.id}}</td>
+                                                <td class="text-body">{{e.fecha_entrevista}}</td>
+                                                <td class="text-body">{{e.hora_entrevista}}</td>
+                                                <td class="text-body">{{e.lugar_enlace}}</td>
+                                                <td class="text-body">{{e.obtener_tipo_entrevista}}</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-center">
+                                                        {% if e.imagen_candidato %}
+                                                            <img src="/media_uploads/{{ e.imagen_candidato}}" class="wh-40 rounded-3" alt="{{ e.imagen_candidato }}">
+                                                        {% else %}
+                                                            <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
+                                                        {% endif %}
+                                                        
+                                                        <div class="ms-2 ps-1">
+                                                            {{e.nombre_candidato}}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </td>
+                                                
+                                                <td class="text-body">{{e.nombre_asignado}}</td>
+                                                <td class="text-body">
+                                                    <span class="badge bg-opacity-10 bg-{{e.obtener_nombre_estado_color.color}} py-1 px-2 text-{{e.obtener_nombre_estado_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_nombre_estado_color.estado}}</span>
+                                                </td>
+
+                                                {% comment %} <td>
+                                                    <div class="d-flex align-items-center justify-content-center">
+                                                        {% if e.candidato_imagen_perfil %}
+                                                            <img src="/media_uploads/{{ e.candidato_imagen_perfil}}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
+                                                        {% else %}
+                                                            <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
+                                                        {% endif %}
+                                                        
+                                                        <div class="ms-2 ps-1">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="fw-medium">{{e.candidato_nombre}}</a>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </td>
+                                                <td class="text-secondary">{{ e.fecha_aplicacion|date:"Y-m-d" }}</td>
+                                                <td class="text-secondary">{{ e.fecha_actualizacion|date:"Y-m-d" }}</td>
+                                                <td class="text-secondary">{{ e.usuario_asignado_nombre }}</td>
+                                                <td>
+                                                    <span class="badge bg-opacity-10 bg-{{e.obtener_estado_con_color.color}} py-1 px-2 text-{{e.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_estado_con_color.estado}}</span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-center gap-1">
+                                                        <!-- 
+                                                        <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                            <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                                        </a>
+                                                        -->
+                                                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16 text-danger">manage_accounts</i>
+                                                            </a>
+                                                        </div>
+                                                        
+                                                        <!-- 
+                                                        <a href="#" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                                            <i class="material-symbols-outlined fs-16 text-danger">delete</i>
+                                                        </a>
+                                                        -->
+                                                    </div>
+                                                </td>  {% endcomment %}
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">
+                        
+                            <div class="mb-4">
+                                <div class="px-2 pt-2 pb-0">
+                                    <span class="fw-semibold text-secondary" style="font-size: 1.05rem;">
+                                        <i class="bi bi-question-circle me-1 text-primary"></i>
+                                        Preguntas generadas para la vacante
+                                    </span>
+                                </div>
+                                <div class="pt-2 px-2">
+                                    {% if preguntas %}
+                                        <ul class="ps-0 mb-0" style="list-style: none;">
+                                            {% for pregunta in preguntas %}
+                                                <li class="d-flex align-items-start mb-2">
+                                                    <span class="me-2 mt-1">
+                                                        <i class="material-symbols-outlined text-primary">help</i>
+                                                    </span>
+                                                    <span>{{ pregunta.pregunta }}</span>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <div class="alert alert-info mb-0">
+                                            No hay preguntas generadas para esta vacante.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div>
+            </div>
+		</div>
+	</div>
+
+
 </div>
 {% endblock %}
 
 {% block js %} 
-<script>
-    // Initialize select2 for specific fields
-    // Initialize select2 for specific fields
-    initializeSelect2('#id_cargo');
-    initializeSelect2('#id_edad');
-    initializeSelect2('#id_genero');
-    initializeSelect2('#id_tiempo_experiencia');
-    initializeSelect2('#id_modalidad');
-    initializeSelect2('#id_jornada');
-    initializeSelect2('#id_tipo_salario');
-    initializeSelect2('#id_nivel_estudio');
-    initializeSelect2('#id_lugar_trabajo');
-    initializeSelect2('#id_termino_contrato');
-    initializeSelect2('#id_profesion_estudio');
-    initializeSelect2('#id_frecuencia_pago');
-    initializeSelect2('#id_nivel_idioma');
-    initializeSelect2('#id_horario_final');
-    initializeSelect2('#id_horario_inicio');
-    initializeSelect2('#id_estudios_complementarios_certificado');
-    initializeSelect2('#id_numero_posiciones');
-    initializeSelect2('#id_cantidad_presentar');
-    initializeSelect2('#id_estado_estudio');
-    initializeSelect2('#id_idioma');
-    initializeSelect2('#id_edad_inicial');
-    initializeSelect2('#id_edad_final');
 
-    inicializarTagify('id_soft_skills');
-    inicializarTagify('id_hard_skills');
-    inicializarTagify('id_funciones_responsabilidades');
-    inicializarTagify('id_estudios_complementarios');
+{% include 'admin/vacancy/partials/js_form_vacancy.html' %} 
 
-    // Lista personalizada para el campo 2
-    const semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-    incializarTagifyLista('id_horario', semana);
-</script>  
 {% endblock js %}

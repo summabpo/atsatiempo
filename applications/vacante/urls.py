@@ -37,6 +37,7 @@ urlpatterns = [
     #client_analyst_internal_user
     path( url_principal+'asignadas/analista', client_analyst_internal_views.list_assigned_vacancies, name='vacantes_asignadas_analista_interno'),
     path( url_principal+'gestion/analista/<int:pk>/', client_analyst_internal_views.detail_vacancy, name='vacantes_gestion_analista_interno'),
+    path( url_principal+'gestion/analista/editar/<int:pk>/<int:vacante_id>/', client_analyst_internal_views.edit_vacancy, name='vacantes_editar_analista_interno'),
 
     #client_candidate_user
     path( url_principal+'aplicadas/candidato/', candidate_views.apply_vacancy, name='vacante_candidato_aplicadas'),
