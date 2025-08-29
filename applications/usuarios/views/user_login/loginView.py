@@ -352,7 +352,7 @@ def login_view(request):
                             if cliente.logo:
                                 request.session['imagen_url'] = cliente.logo.url
                             else:
-                                request.session['imagen_url'] = '/static/media/avatars/blank.png'
+                                request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
 
                             if cliente.tipo_cliente == '1':
                                 request.session['tipo_cliente'] = 'Standard'
@@ -379,12 +379,12 @@ def login_view(request):
                             if candidato.imagen_perfil:
                                 request.session['imagen_url'] = candidato.imagen_perfil.url
                             else:
-                                request.session['imagen_url'] = '/static/media/avatars/blank.png'
+                                request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
                             
                             request.session['tipo_usuario'] = 'Candidato'
 
                         if usuario.group.id == 1:
-                            request.session['imagen_url'] = '/media_uploads/ats/logo_atiempo.png'
+                            request.session['imagen_url'] = f'{settings.MEDIA_URL}ats/logo_talenttray.jpg'
                             request.session['tipo_usuario'] = 'Administrador'
 
                         request.session['grupo_id'] = usuario.group.id
