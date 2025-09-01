@@ -199,7 +199,7 @@ class ClienteForm(forms.Form):
                         Div('telefono', css_class='col-4'),
                         css_class='row'
                     ),
-                    css_class="mb-4 p-3 border rounded"  #  Opcional: Agregar estilo de borde y fondo
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  #  Opcional: Agregar estilo de borde y fondo
                 ),
                 Div(
                     Div(
@@ -209,7 +209,7 @@ class ClienteForm(forms.Form):
                         Div('cantidad_colaboradores', css_class='col'),
                         css_class='row'
                     ),
-                    css_class="mb-4 p-3 border rounded "  #  Opcional: Agregar estilo de borde y fondo
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  #  Opcional: Agregar estilo de borde y fondo
                 ),
             )
         )
@@ -964,3 +964,343 @@ class ClienteFormAsignacionPrueba(forms.Form):
                 self.add_error('prueba', 'La prueba ya está asignada a este cargo.')
 
         return cleaned_data
+
+
+
+class ClienteFormAsignacionCliente(forms.Form):
+    nit           = forms.CharField(label='NIT' , required=True  ,widget=forms.TextInput(attrs={'placeholder': ' Nit'}))
+    razon_social  = forms.CharField(label='RAZON SOCIAL', required=True ,widget=forms.TextInput(attrs={'placeholder': 'Razón Social'}))
+    email         = forms.CharField(label='EMAIL'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Email'}))
+    contacto      = forms.CharField(label='NOMBRE CONTACTO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Nombre Contacto'}))
+    telefono      = forms.CharField(label='TELEFONO'    , required=True ,widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
+    perfil_empresarial = forms.CharField(
+        label='PERFIL EMPRESARIAL',
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Descripción de la Empresa',
+                'rows': 5,  
+                'cols': 40,  
+                'class': 'fixed-size-textarea'
+            }
+        )
+    )
+    logo = forms.ImageField(label='LOGO', required=False)
+    
+    PAGO_NOMINA = [
+        ('1', 'Semanal'),
+        ('2', 'Quincenal'),
+        ('3', 'Mensual'),
+    ]
+    
+    periodicidad_pago = forms.ChoiceField(
+        label='PERIODICIDAD DE PAGO',
+        choices=[('', 'Seleccione una opción')] + PAGO_NOMINA,
+        widget=forms.Select(
+            attrs={
+                'class': 'form-select form-control select2',
+                'id': 'id_periodicidad_pago',
+                'data-control': 'select2',
+                'data-dropdown-parent': '#modalAsignarCliente',
+            }
+        ), required=False)
+
+    referencias_laborales = forms.IntegerField(
+        label='REFERENCIAS LABORALES',
+        required=False,
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Referencias Laborales'
+            }
+        ))
+
+    cantidad_colaboradores = forms.IntegerField(
+        label='CANTIDAD DE COLABORADORES',
+        required=False,
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Cantidad de Colaboradores'
+            }
+        ))
+    
+    contacto_cargo = forms.CharField(
+        label='CARGO DEL CONTACTO',
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Cargo del Contacto'
+            }
+        )
+    )
+
+    direccion_cargo = forms.CharField(
+        label='DIRECCIÓN DEL CONTACTO',
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Dirección del Contacto'
+            }
+        )
+    )
+
+    
+
+    def __init__(self, *args, **kwargs):
+        super(ClienteFormAsignacionCliente, self).__init__(*args, **kwargs)
+        
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.enctype = 'multipart/form-data'
+        self.helper.form_id = 'form_cliente_asignacion_cliente'
+
+
+
+        self.fields['nit'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Nit'
+        })
+
+        self.fields['razon_social'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social',
+            
+        })
+
+        cities = Cat004Ciudad.objects.all().order_by('nombre')
+        city_choices = [('', 'Seleccione una Ciudad')] + [(ciudad.id, f"{ciudad.nombre}") for ciudad in cities]
+
+        self.fields['ciudad_id_004'] = forms.ChoiceField(
+            label='CIUDAD',
+            choices=city_choices,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select form-control select2',
+                    'id': 'id_ciudad_id_004',
+                    'data-control': 'select2',
+                    'data-dropdown-parent': '#modalAsignarCliente',
+                    }
+        ), required=True)
+
+        activities = Cli065ActividadEconomica.objects.all().order_by('descripcion')
+        activity_choices = [('', 'Seleccione una Actividad Económica')] + [(actividad.id, f"{actividad.codigo} - {actividad.descripcion}") for actividad in activities]
+
+        self.fields['actividad_economica'] = forms.ChoiceField(
+            label='ACTIVIDAD ECONÓMICA',
+            choices=activity_choices,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select form-control select2',  # Clases CSS del campo  
+                    'data-control': 'select2',
+                    'data-placeholder': 'Seleccion una opción',
+                    'data-dropdown-parent': '#modalAsignarCliente',
+                    'id': 'id_actividad_economica'
+                    }
+            ), required=True)
+
+
+        
+
+        self.fields['email'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Ingrese Razón Social'
+        })
+
+        self.fields['contacto'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Contacto'
+        })
+
+        self.fields['telefono'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Teléfono'
+        })
+
+        self.fields['perfil_empresarial'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Perfil Empresarial'
+        })
+
+        self.fields['logo'].widget.attrs.update({
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'data-placeholder': 'Logo'
+        })
+
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Div(
+                        HTML("<h4 class='mb-3 text-primary'>Información Principal</h4>"),  
+                        Div('nit', css_class='col-md-12'),
+                        Div('razon_social', css_class='col-md-12'),
+                        Div('ciudad_id_004', css_class='col-md-6'),
+                        Div('logo', css_class='col-md-6'),
+                        Div('perfil_empresarial', css_class='col-md-12'),
+                        Div('actividad_economica', css_class='col-md-12'),
+                        css_class='row'
+                    ),
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  # 
+                ),
+                Div(
+                    Div(
+                        HTML("<h4 class='mb-3 text-primary'>Información Contacto</h4>"),  #  Agregar título con color y margen
+                        Div('contacto', css_class='col-md-12'),
+                        Div('contacto_cargo', css_class='col-md-12'),
+                        Div('direccion_cargo', css_class='col-4'),
+                        Div('email', css_class='col-md-4'),
+                        Div('telefono', css_class='col-md-4'),
+                        css_class='row'
+                    ),
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  #  Opcional: Agregar estilo de borde y fondo
+                ),
+                Div(
+                    Div(
+                        HTML("<h4 class='mb-3 text-primary'>Información Adicional</h4>"),  #  Agregar título con color y margen
+                        Div('periodicidad_pago', css_class='col-md-4'),
+                        Div('referencias_laborales', css_class='col-md-4'),
+                        Div('cantidad_colaboradores', css_class='col-md-4'),    
+                        css_class='row'
+                    ),
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  #  Opcional: Agregar estilo de borde y fondo
+                ),
+            )
+        )
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        nit = cleaned_data.get('nit')
+        razon_social = cleaned_data.get('razon_social')
+        telefono = cleaned_data.get('telefono')
+        contacto = cleaned_data.get('contacto')
+        perfil_empresarial = cleaned_data.get('perfil_empresarial')
+        email = cleaned_data.get('email')
+        logo = cleaned_data.get('logo')
+        actividad_economica = cleaned_data.get('actividad_economica')
+        tipo_cliente = cleaned_data.get('tipo_cliente')
+        periodicidad_pago = cleaned_data.get('periodicidad_pago')
+        referencias_laborales = cleaned_data.get('referencias_laborales')
+        cantidad_colaboradores = cleaned_data.get('cantidad_colaboradores')
+        contacto_cargo = cleaned_data.get('contacto_cargo')
+        direccion_cargo = cleaned_data.get('direccion_cargo')
+
+        if not contacto_cargo:
+            self.add_error('contacto_cargo', 'El Cargo del Contacto no puede estar vacío.')
+        else:
+            self.cleaned_data['contacto_cargo'] = contacto_cargo.upper()
+
+        if not direccion_cargo:
+            self.add_error('direccion_cargo', 'La Dirección del Contacto no puede estar vacía.')
+        else:
+            self.cleaned_data['direccion_cargo'] = direccion_cargo.upper()
+
+        
+
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', razon_social):
+            self.add_error('razon_social', "El nombre solo puede contener letras.")
+        else:
+            self.cleaned_data['razon_social'] = razon_social.upper()
+        
+        if not re.match(r'^\d{9}$', str(nit)):
+            self.add_error('nit','El NIT debe contener solo números y tener  9 dígitos.')
+
+        # Validación: si existe el NIT, no filtrar por email ni teléfono
+        # Si existe el NIT, no mostrar alerta, solo procesar los datos sin actualizar.
+
+        if not re.match(r'^\d{10}$', str(telefono)):
+            self.add_error('telefono','El teléfono debe contener solo números y tener 10 dígitos.')
+
+        # Verifica si el teléfono ya está registrado (solo si el NIT no existe)
+        if telefono and nit and not Cli051Cliente.objects.filter(nit=nit).exists():
+            if Cli051Cliente.objects.filter(telefono=telefono).exists():
+                self.add_error('telefono', 'El teléfono ya está registrado.')
+
+        if len(perfil_empresarial.split()) < 10:
+            self.add_error('perfil_empresarial','La descripción debe contener al menos 10 palabras')
+
+        if email and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            self.add_error('email','El email no es válido.')
+
+        # Verifica si el email ya está registrado (solo si el NIT no existe)
+        if email and nit and not Cli051Cliente.objects.filter(nit=nit).exists():
+            if Cli051Cliente.objects.filter(email=email).exists():
+                self.add_error('email','El email ya está registrado.')
+
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', contacto):
+            self.add_error('contacto','El Nombre del Contacto solo puede contener letras.')
+        else:
+            self.cleaned_data['contacto'] = contacto.upper()
+
+        # validacion imagen logo
+        tamanio_maximo = 5 * 1024 * 1024  # 5 MB
+        listado_extensiones = ['.jpg', '.jpeg', '.png']
+
+        if logo:
+            if logo.size > tamanio_maximo:
+                self.add_error('logo','El tamaño del archivo supera el tamaño permitido.')
+
+            extension = os.path.splitext(logo.name)[1].lower()
+            if extension not in listado_extensiones:
+                self.add_error('logo','El archivo no es válido.')
+
+            if Cli051Cliente.objects.filter(logo=logo.name).exists():
+                self.add_error('logo','Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
+
+        if not actividad_economica:
+            self.add_error('actividad_economica', 'Debe seleccionar una actividad económica.')
+
+        if not periodicidad_pago:
+            self.add_error('periodicidad_pago', 'Debe seleccionar una periodicidad de pago.')
+
+        if referencias_laborales is None:
+            self.add_error('referencias_laborales', 'Debe ingresar el número de referencias laborales.')
+        elif referencias_laborales < 0:
+            self.add_error('referencias_laborales', 'El número de referencias laborales no puede ser negativo.')
+
+        if cantidad_colaboradores is None:
+            self.add_error('cantidad_colaboradores', 'Debe ingresar la cantidad de colaboradores.')
+        elif cantidad_colaboradores < 1:
+            self.add_error('cantidad_colaboradores', 'La cantidad de colaboradores no puede ser negativa.')
+
+        return cleaned_data
+
+        # estado_id_001 = self.cleaned_data['estado_id_001']
+        nit = self.cleaned_data['nit']
+        razon_social = self.cleaned_data['razon_social']
+        ciudad_id_004 = self.cleaned_data['ciudad_id_004']
+        email = self.cleaned_data.get('email', '')
+        contacto = self.cleaned_data.get('contacto', '')
+        telefono = self.cleaned_data.get('telefono', '')
+        perfil_empresarial = self.cleaned_data.get('perfil_empresarial', '')
+        logo = self.cleaned_data.get('logo')
+        actividad_economica = self.cleaned_data['actividad_economica']
+        tipo_cliente = self.cleaned_data['tipo_cliente']
+        periodicidad_pago = self.cleaned_data['periodicidad_pago']
+        referencias_laborales = self.cleaned_data['referencias_laborales']
+        cantidad_colaboradores = self.cleaned_data['cantidad_colaboradores']
+        contacto_cargo = self.cleaned_data['contacto_cargo']
+        direccion_cargo = self.cleaned_data['direccion_cargo']
+        
+
+        # Lógica para guardar en tu modelo Cliente
+        cliente = Cli051Cliente(
+            estado_id_001=Cat001Estado.objects.get(id=1),
+            nit=nit,
+            razon_social=razon_social,
+            ciudad_id_004=Cat004Ciudad.objects.get(id=ciudad_id_004),
+            email=email,
+            contacto=contacto,
+            telefono=telefono,
+            perfil_empresarial=perfil_empresarial,
+            logo=logo,
+            actividad_economica=Cli065ActividadEconomica.objects.get(id=actividad_economica),
+            tipo_cliente=tipo_cliente,
+            periodicidad_pago=periodicidad_pago,
+            referencias_laborales=referencias_laborales,
+            cantidad_colaboradores=cantidad_colaboradores,
+            contacto_cargo=contacto_cargo,
+            direccion_cargo=direccion_cargo
+        )
+        cliente.save()

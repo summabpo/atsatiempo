@@ -1,0 +1,546 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}
+Grupos de Trabajo
+{% endblock %}
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">CLIENTES ASIGNADOS A: {{data.cliente.razon_social}}</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'clientes:cliente_ver' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Listado de Clientes</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Clientes Asignados</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+	
+	<!-- Descripción informativa -->
+	<div class="alert alert-info border-0 rounded-3 mb-4" role="alert">
+		<div class="d-flex align-items-center">
+			<i class="material-symbols-outlined fs-20 text-info me-2">info</i>
+			<div>
+				<strong>Información:</strong> Esta vista muestra todos los clientes que han sido asignados al cliente maestro <strong>{{data.cliente.razon_social}}</strong>. 
+				Estos clientes pueden ser gestionados desde esta interfaz.
+			</div>
+		</div>
+	</div>
+
+    <div class="row">
+		<div class="col-md-12">
+			{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_assigned_clients=True %}
+		</div>
+	</div>
+    
+	<div class="row">
+		<div class="col-md-12">
+			{% include 'admin/client/admin_user/common_template/client_metrics.html' %}
+            <div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-header bg-transparent border-0 p-4">
+					<div class="d-flex justify-content-between align-items-center">
+						<h5 class="mb-0 fw-semibold">Lista de Clientes Asignados</h5>
+						<div class="d-flex align-items-center gap-2">
+							<span class="badge bg-primary bg-opacity-10 text-primary p-2 fs-12">
+								Total: {{ clientes_asignados|length }} cliente{{ clientes_asignados|length|pluralize:"s" }}
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="card-body p-4">
+                    {% if clientes_asignados|length > 0 %}
+                    <div class="default-table-area all-projects">
+                        <div class="table-responsive">
+                            <table class="table align-middle text-center" id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">#</th>
+                                        <th scope="col" class="text-center">NIT</th>
+                                        <th scope="col" class="text-center">Razón Social</th>
+                                        <th scope="col" class="text-center">Email</th>
+                                        <th scope="col" class="text-center">Teléfono</th>
+                                        <th scope="col" class="text-center">Ciudad</th>
+                                        <th scope="col" class="text-center">Estado</th>
+                                        <th scope="col" class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cliente in clientes_asignados %}
+                                    <tr id="fila_cliente_{{ cliente.id }}">
+                                        <td class="text-body text-center">{{ forloop.counter }}</td>
+                                        <td class="text-secondary text-center">{{ cliente.nit }}</td>
+                                        <td class="text-secondary text-center">
+                                            <div class="d-flex align-items-center">
+                                                {% if cliente.logo %}
+                                                    <img src="{{ cliente.logo.url }}" class="wh-40 rounded-3" alt="{{ cliente.razon_social }}">
+                                                {% else %}  
+                                                    <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="cliente">
+                                                {% endif %}
+                                                
+                                                <div class="ms-2 ps-1">
+                                                    <h6 class="fw-medium fs-14 mb-0">{{ cliente.razon_social }}</h6>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-secondary text-center">{{ cliente.email|default:"-" }}</td>
+                                        <td class="text-secondary text-center">{{ cliente.telefono|default:"-" }}</td>
+                                        <td class="text-secondary text-center">
+                                            {% if cliente.ciudad_id_004 %}
+                                                {{ cliente.ciudad_id_004.nombre }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if cliente.estado_id_001.id == 1 %}
+                                                <span class="badge bg-success bg-opacity-10 text-success p-2 fs-12 fw-normal">Activo</span>
+                                            {% else %}
+                                                <span class="badge bg-danger bg-opacity-10 text-danger p-2 fs-12 fw-normal">Inactivo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center align-items-center gap-1">
+                                                <a href="{% url 'clientes:cliente_detalle' cliente.id %}" 
+                                                   class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4"
+                                                   title="Ver Detalle">
+                                                    <i class="material-symbols-outlined fs-16">visibility</i>
+                                                </a>
+                                                <a href="{% url 'clientes:cliente_detalle' cliente.id %}" 
+                                                   class="btn bg-info bg-opacity-10 fw-medium text-info py-2 px-4"
+                                                   title="Gestionar">
+                                                    <i class="material-symbols-outlined fs-16">edit</i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-muted py-5 text-center">
+                        <i class="material-symbols-outlined fs-72 mb-3">group_off</i>
+                        <p class="mb-0 fs-5">No hay clientes asignados.</p>
+                        <small>Este cliente maestro no tiene clientes asignados actualmente.</small>
+                    </div>
+                    {% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<!-- Modal para asignar cliente -->
+<div class="modal fade" id="modalAsignarCliente" tabindex="-1" aria-labelledby="modalAsignarClienteLabel" aria-hidden="true">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<div class="modal-header bg-primary bg-opacity-10 text-primary">
+				<h5 class="modal-title" id="modalAsignarClienteLabel">Asignar Nuevo Cliente</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+						<div class="modal-body">
+				<div class="alert alert-info">
+					<strong>Nota:</strong> Ingrese el NIT del cliente y el sistema buscará automáticamente la información del cliente.
+				</div>
+				
+				<!-- Formulario de asignación -->
+				<form method="post" id="form_cliente_asignacion_cliente" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div id="formulario_asignacion">
+						{% crispy form %}
+					</div>
+					
+					<!-- Resultado de la búsqueda -->
+					<div id="resultado_busqueda" class="d-none mt-3">
+						<!-- Aquí se mostrará el resultado de la búsqueda -->
+					</div>
+					
+					<!-- Botones del formulario -->
+					<div class="modal-footer border-0 px-0 pb-0">
+						<div class="row w-100 m-0">
+							<div class="col-12 col-md-4 px-1">
+								<button type="button" class="btn bg-secondary bg-opacity-10 fw-medium text-secondary py-2 px-4 w-100 d-flex align-items-center justify-content-center" data-bs-dismiss="modal">
+									<i class="material-symbols-outlined fs-16 me-1 d-flex align-items-center">arrow_back</i>
+									<span class="d-flex align-items-center">Atrás</span>
+								</button>
+							</div>
+							<div class="col-12 col-md-8 px-1">
+								<button type="submit" id="btn_asignar_cliente" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100 d-flex align-items-center justify-content-center" form="form_cliente_asignacion_cliente">
+									<i class="material-symbols-outlined fs-16 me-1 d-flex align-items-center">save</i>
+									<span class="d-flex align-items-center">Guardar Asignación</span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block js %} 
+<style>
+	/* Estilos para el loading overlay */
+	#loading-overlay {
+		backdrop-filter: blur(2px);
+		transition: all 0.3s ease;
+	}
+	
+	#loading-overlay .bg-white {
+		animation: pulse 2s infinite;
+	}
+	
+	@keyframes pulse {
+		0% { transform: scale(1); }
+		50% { transform: scale(1.05); }
+		100% { transform: scale(1); }
+	}
+</style>
+
+<script>
+	// Variables globales
+	let clienteEncontrado = null;
+	const clienteMaestroId = {{ data.cliente.id }};
+	let timeoutBusqueda = null;
+	
+	function abrirModalAsignarCliente() {
+		const modal = new bootstrap.Modal(document.getElementById('modalAsignarCliente'));
+		modal.show();
+		// Limpiar formulario al abrir
+		limpiarFormulario();
+	}
+	
+		// Función para buscar cliente por NIT (con debounce)
+	async function buscarClientePorNIT() {
+		const nit = $('#id_nit').val().trim();
+		
+		if (!nit) {
+			ocultarResultadoBusqueda();
+			$('#loading-overlay').fadeOut(200, function() {
+				$(this).remove();
+			}); // Limpiar loading si el campo está vacío
+			return;
+		}
+		
+		// Mostrar loading overlay
+		mostrarLoading();
+		
+		try {
+			const csrfToken = $('[name=csrfmiddlewaretoken]').val();
+			
+			const response = await fetch('{% url "clientes:api_buscar_cliente_nit" %}', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrfToken
+				},
+				body: JSON.stringify({ nit: nit })
+			});
+			
+			const data = await response.json();
+			
+			if (data.success) {
+				clienteEncontrado = data.cliente;
+				mostrarResultadoBusqueda(data.cliente);
+			} else {
+				// Cliente no encontrado
+				mostrarClienteNoEncontrado(nit);
+			}
+		} catch (error) {
+			console.error('Error en búsqueda:', error);
+			mostrarAlerta('Error al buscar el cliente. Intente nuevamente.', 'error');
+			$('#loading-overlay').fadeOut(200, function() {
+				$(this).remove();
+			}); // Ocultar loading en caso de error
+		}
+	}
+	
+	// Función para búsqueda automática con debounce
+	function buscarClienteAutomatico() {
+		const nit = $('#id_nit').val().trim();
+		
+		// Limpiar timeout anterior
+		if (timeoutBusqueda) {
+			clearTimeout(timeoutBusqueda);
+		}
+		
+		// Si el campo está vacío, limpiar resultados y ocultar loading
+		if (!nit) {
+			ocultarResultadoBusqueda();
+			$('#loading-overlay').fadeOut(200, function() {
+				$(this).remove();
+			});
+			return;
+		}
+		
+		// Esperar 800ms después de que el usuario deje de escribir
+		timeoutBusqueda = setTimeout(() => {
+			buscarClientePorNIT();
+		}, 800);
+	}
+	
+	// Función para mostrar loading overlay
+	function mostrarLoading() {
+		// Remover cualquier loading existente primero
+		$('#loading-overlay').remove();
+		
+		// Crear nuevo overlay
+		$('body').append(`
+			<div id="loading-overlay" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" 
+				 style="background-color: rgba(0, 0, 0, 0.5); z-index: 9999;">
+				<div class="bg-white rounded-3 p-4 text-center shadow-lg">
+					<div class="spinner-border text-primary mb-3" role="status">
+						<span class="visually-hidden">Cargando...</span>
+					</div>
+					<h6 class="mb-0 text-primary">Buscando cliente...</h6>
+					<small class="text-muted">Por favor espere</small>
+				</div>
+			</div>
+		`);
+		
+		// Timeout de seguridad para ocultar loading después de 3 segundos
+		setTimeout(() => {
+			$('#loading-overlay').fadeOut(300, function() {
+				$(this).remove();
+			});
+		}, 3000);
+	}
+	
+	// Función para ocultar loading overlay
+	function ocultarLoading() {
+		$('#loading-overlay').fadeOut(300, function() {
+			$(this).remove();
+		});
+	}
+	
+	// Función de seguridad para limpiar todos los loadings
+	function limpiarTodosLosLoadings() {
+		// Ocultar overlays con fadeOut y remover del DOM
+		$('#loading-overlay').fadeOut(300, function() {
+			$(this).remove();
+		});
+		$('#loading-formulario').fadeOut(300, function() {
+			$(this).remove();
+		});
+	}
+	
+	// Función de emergencia para forzar limpieza
+	function forzarLimpiado() {
+		// Remover todos los overlays del DOM
+		$('#loading-overlay').remove();
+		$('#loading-formulario').remove();
+		
+		// Mostrar alerta de confirmación
+		mostrarAlerta('Limpieza de emergencia completada', 'success');
+	}
+	
+	// Función para mostrar loading específico del formulario
+	function mostrarLoadingFormulario() {
+		// Esta función ya no se usa, pero la mantenemos por compatibilidad
+		console.log('Función mostrarLoadingFormulario() llamada pero no se usa');
+	}
+	
+	// Función para ocultar loading específico del formulario
+	function ocultarLoadingFormulario() {
+		// Esta función ya no se usa, pero la mantenemos por compatibilidad
+		console.log('Función ocultarLoadingFormulario() llamada pero no se usa');
+	}
+	
+	// Función para mostrar el resultado de la búsqueda
+	function mostrarResultadoBusqueda(cliente) {
+		const resultadoDiv = $('#resultado_busqueda');
+		
+		// OCULTAR LOADING INMEDIATAMENTE CON FADEOUT
+		$('#loading-overlay').fadeOut(200, function() {
+			$(this).remove();
+		});
+		
+		resultadoDiv.html(`
+			<div class="alert alert-success">
+				<div class="d-flex align-items-center">
+					<i class="material-symbols-outlined fs-20 text-success me-2">check_circle</i>
+					<div>
+						<strong>Cliente encontrado:</strong> ${cliente.razon_social} (${cliente.nit})
+						<br><small class="text-muted">Los datos del cliente han sido cargados automáticamente en el formulario.</small>
+					</div>
+				</div>
+			</div>
+		`);
+		
+		// Llenar automáticamente el formulario
+		llenarFormulario(cliente);
+		
+		// Habilitar el botón de asignar cliente
+		$('#btn_asignar_cliente').prop('disabled', false);
+		
+		resultadoDiv.removeClass('d-none');
+	}
+	
+		// Función para llenar el formulario con los datos del cliente usando jQuery
+	function llenarFormulario(cliente) {
+		// Mapeo de campos del formulario con los datos del cliente
+		const campos = {
+			'#id_nit': cliente.nit,
+			'#id_razon_social': cliente.razon_social,
+			'#id_email': cliente.email || '',
+			'#id_telefono': cliente.telefono || '',
+			'#id_contacto': cliente.contacto || '',
+			'#id_contacto_cargo': cliente.contacto_cargo || '',
+			'#id_direccion_cargo': cliente.direccion_cargo || '',
+			'#id_perfil_empresarial': cliente.perfil_empresarial || '',
+			'#id_cantidad_colaboradores': cliente.cantidad_colaboradores || '',
+			'#id_referencias_laborales': cliente.referencias_laborales || '',
+			'#id_periodicidad_pago': cliente.periodicidad_pago || '',
+			'#id_actividad_economica': cliente.actividad_economica_id || '',
+			'#id_ciudad_id_004': cliente.ciudad_id || ''
+		};
+		
+		// Llenar cada campo usando jQuery
+		$.each(campos, function(selector, valor) {
+			const $field = $(selector);
+			
+			if ($field.length > 0) {
+				$field.val(valor);
+				
+				// Si es un campo Select2, trigger el evento change
+				if ($field.hasClass('select2-hidden-accessible')) {
+					$field.trigger('change');
+				}
+			}
+		});
+		
+		// Agregar el ID del cliente encontrado como campo oculto
+		if (cliente.id) {
+			// Crear o actualizar campo oculto para el ID del cliente asignado
+			let $hiddenField = $('#id_cliente_asignado');
+			if ($hiddenField.length === 0) {
+				$hiddenField = $('<input>').attr({
+					type: 'hidden',
+					name: 'id_cliente_asignado',
+					id: 'id_cliente_asignado'
+				});
+				$('#form_cliente_asignacion_cliente').append($hiddenField);
+			}
+			$hiddenField.val(cliente.id);
+		}
+	}
+	
+	// Función para limpiar el formulario
+	function limpiarFormulario() {
+		$('#resultado_busqueda').addClass('d-none');
+		clienteEncontrado = null;
+		
+		// Limpiar timeout de búsqueda
+		if (timeoutBusqueda) {
+			clearTimeout(timeoutBusqueda);
+			timeoutBusqueda = null;
+		}
+		
+		// Ocultar loading si está activo con fadeOut
+		$('#loading-overlay').fadeOut(200, function() {
+			$(this).remove();
+		});
+		
+		// Resetear el formulario
+		$('#form_cliente_asignacion_cliente')[0].reset();
+		
+		// Limpiar campos Select2
+		$('#id_actividad_economica, #id_ciudad_id_004, #id_periodicidad_pago').val('').trigger('change');
+		
+		// Habilitar el botón de asignar cliente
+		$('#btn_asignar_cliente').prop('disabled', false);
+	}
+	
+	// Función para ocultar resultado de búsqueda
+	function ocultarResultadoBusqueda() {
+		$('#resultado_busqueda').addClass('d-none');
+	}
+	
+	// Función para mostrar cuando no se encuentra el cliente
+	function mostrarClienteNoEncontrado(nit) {
+		// OCULTAR LOADING INMEDIATAMENTE CON FADEOUT
+		$('#loading-overlay').fadeOut(200, function() {
+			$(this).remove();
+		});
+		
+		const resultadoDiv = $('#resultado_busqueda');
+		
+		resultadoDiv.html(`
+			<div class="alert alert-warning">
+				<div class="d-flex align-items-center">
+					<i class="material-symbols-outlined fs-20 text-warning me-2">warning</i>
+					<div>
+						<strong>Cliente no encontrado:</strong> No se encontró ningún cliente con el NIT ${nit}
+						<br><small class="text-muted">Verifique el NIT ingresado o registre el cliente primero.</small>
+					</div>
+				</div>
+			</div>
+		`);
+		
+		resultadoDiv.removeClass('d-none');
+	}
+	
+	// Función para mostrar alertas
+	function mostrarAlerta(mensaje, tipo) {
+		// Crear alerta temporal
+		const alertaDiv = $('<div>').addClass(`alert alert-${tipo === 'error' ? 'danger' : tipo} alert-dismissible fade show position-fixed`)
+			.css({
+				'top': '20px',
+				'right': '20px',
+				'z-index': '9999',
+				'min-width': '300px'
+			})
+			.html(`
+				${mensaje}
+				<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+			`);
+		
+		$('body').append(alertaDiv);
+		
+		// Remover después de 5 segundos
+		setTimeout(() => {
+			alertaDiv.remove();
+		}, 5000);
+	}
+	
+	// Función para refrescar la página después de asignar un cliente
+	function refrescarPagina() {
+		location.reload();
+	}
+	
+	// Event listeners para búsqueda automática en el campo NIT del formulario
+	$(document).ready(function() {
+		// Event listeners para el campo NIT
+		$('#id_nit').on('input blur', buscarClienteAutomatico);
+		
+		// Limpiar loading cuando se cierre el modal
+		$('#modalAsignarCliente').on('hidden.bs.modal', function() {
+			$('#loading-overlay').fadeOut(200, function() {
+				$(this).remove();
+			});
+		});
+		
+		// Inicializar Select2
+		initializeSelect2('#id_actividad_economica');
+		initializeSelect2('#id_ciudad_id_004');
+		initializeSelect2('#id_periodicidad_pago');
+	});
+</script>
+{% endblock js %}

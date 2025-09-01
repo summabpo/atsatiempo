@@ -362,6 +362,7 @@ def login_view(request):
                                 request.session['tipo_cliente'] = 'Asignado'
                             
                             request.session['tipo_usuario'] = 'Cliente'
+                            
                         
                         if usuario.group.id == 5:
                             request.session['imagen_url'] = usuario.imagen_perfil.url
