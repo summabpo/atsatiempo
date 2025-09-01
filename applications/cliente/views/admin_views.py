@@ -16,7 +16,7 @@ from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, 
 
 #form
 from applications.vacante.forms.VacanteForms import VacanteForm
-from ..forms.ClienteForms import ClienteForm, ClienteFormAsignacionPrueba, ClienteFormEdit, ClienteFormPoliticas, ClienteFormPruebas, ClienteFormCargos, ClienteFormRequisitos, ClienteFormAsignacionRequisito
+from ..forms.ClienteForms import ClienteForm, ClienteFormAsignacionCliente, ClienteFormAsignacionPrueba, ClienteFormEdit, ClienteFormPoliticas, ClienteFormPruebas, ClienteFormCargos, ClienteFormRequisitos, ClienteFormAsignacionRequisito
 
 #query
 from applications.services.service_client import query_client_all, query_client_detail
@@ -85,6 +85,74 @@ def client_detail(request, pk):
         'data' : data,
     }
     return render(request, 'admin/client/admin_user/client_detail.html', contexto)
+
+#mostrar clientes asignados al cliente headhunter
+@login_required
+@validar_permisos('acceso_admin')
+def client_detail_assigned(request, pk):
+    data = query_client_detail(pk)
+
+    # Filtra las asignaciones activas donde el cliente maestro es pk
+    # Mostrar todos los clientes que tienen la asignación por el id maestro (pk)
+    asignaciones_activas = Cli064AsignacionCliente.objects.filter(id_cliente_maestro=pk, estado__id=1)
+    clientes_asignados = Cli051Cliente.objects.filter(id__in=asignaciones_activas.values_list('id_cliente_asignado', flat=True))
+
+
+    form = ClienteFormAsignacionCliente()
+    if request.method == 'POST':
+        form = ClienteFormAsignacionCliente(request.POST, request.FILES)
+        if form.is_valid():
+            # form.save()
+            # guardar el cliente asignado
+            nit = form.cleaned_data['nit']
+            cliente_asignado, created = Cli051Cliente.objects.get_or_create(
+                nit=nit,
+                defaults={
+                    
+                    'razon_social': form.cleaned_data['razon_social'],
+                    'ciudad_id_004': Cat004Ciudad.objects.get(id=form.cleaned_data['ciudad_id_004']),
+                    'email': form.cleaned_data.get('email', ''),
+                    'contacto': form.cleaned_data.get('contacto', ''),
+                    'telefono': form.cleaned_data.get('telefono', ''),
+                    'perfil_empresarial': form.cleaned_data.get('perfil_empresarial', ''),
+                    'logo': form.cleaned_data.get('logo'),
+                    'actividad_economica': Cli065ActividadEconomica.objects.get(id=form.cleaned_data['actividad_economica']),
+                    'tipo_cliente': 1,
+                    'periodicidad_pago': form.cleaned_data['periodicidad_pago'],
+                    'referencias_laborales': form.cleaned_data['referencias_laborales'],
+                    'cantidad_colaboradores': form.cleaned_data['cantidad_colaboradores'],
+                    'contacto_cargo': form.cleaned_data['contacto_cargo'],
+                    'direccion_cargo': form.cleaned_data['direccion_cargo'],
+                    'estado_id_001': Cat001Estado.objects.get(id=1),
+                }
+            )
+
+            cliente_asignado = Cli051Cliente.objects.get(nit=nit)
+
+            # guardar la asignación
+            cliente_maestro = Cli051Cliente.objects.get(id=pk)
+            asignacion_cliente = Cli064AsignacionCliente(
+                id_cliente_maestro=cliente_maestro,
+                id_cliente_asignado=cliente_asignado,
+                estado=Cat001Estado.objects.get(id=1)
+            )
+            asignacion_cliente.save()
+
+            messages.success(request, 'Cliente Asignado!')
+            return redirect('clientes:client_detail_assigned', pk=pk)
+        else:
+            messages.error(request, form.errors)
+            print("Errores en el formulario:", form.errors)
+    else:
+        form = ClienteFormAsignacionCliente()
+
+    
+    contexto = {
+        'data' : data,
+        'clientes_asignados': clientes_asignados,
+        'form': form,
+    }
+    return render(request, 'admin/client/admin_user/client_detail_assigned.html', contexto)
 
 #mostrar información del cliente a editar
 @login_required

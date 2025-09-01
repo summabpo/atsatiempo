@@ -48,9 +48,15 @@
                             {% if request.resolver_match.url_name == 'client_detail_group_work' %}active{% endif %}
                             " href="{% url 'clientes:client_detail_group_work' data.cliente.id %}">Grupo de trabajo</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Clientes</a>
+
+                        {% if data.cliente.tipo_cliente == 'Cliente Headhunter' %}
+                        <li class="nav-item ">
+                            <a class="nav-link 
+                            {% if request.resolver_match.url_name == 'client_detail_assigned' %}active{% endif %}
+                            " href="{% url 'clientes:client_detail_assigned' data.cliente.id %}">Clientes</a>
                         </li>
+                        {% endif %}
+                        
                         <li class="nav-item">
                             <a class="nav-link 
                             {% if request.resolver_match.url_name == 'vacantes_propias'  %}active{% endif %}
@@ -119,6 +125,16 @@
                             <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary d-inline-flex align-items-center" id="btnCrearUsuario">
                                 <i class="material-symbols-outlined fs-16 me-2 align-middle" style="vertical-align: middle;">add_circle</i> 
                                 <span class="align-middle">Crear Usuario</span>
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if elements_assigned_clients %}
+                    <div class="d-flex justify-content-center align-items-center gap-1">
+                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                            <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalAsignarCliente">
+                                <i class="material-symbols-outlined fs-16 me-2">add_circle</i> Clientes Asignados
                             </button>
                         </div>
                     </div>

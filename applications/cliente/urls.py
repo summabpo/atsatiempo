@@ -2,6 +2,7 @@ from django.urls import path
 from applications.cliente.views import  ClienteView, CreacionUsuariosView
 from applications.cliente.views import admin_views, client_views, common_views
 from applications.cliente.views.preguntasView import PreguntasView
+from applications.cliente.views import api_views
 
 #vistas del usuario administrador ATS
 from .views.usuario_admin import ClienteAdminView
@@ -21,6 +22,7 @@ urlpatterns = [
     path( url_principal+'detalle/requisitos/<int:pk>/', admin_views.client_detail_required, name='cliente_requisitos'),
     path( url_principal+'detalle/cargos/configuracion/<int:pk>/<int:cargo_id>/', admin_views.client_detail_position_config, name='cliente_cargos_configuracion'),
     path( url_principal+'detalle/grupo_trabajo/<int:pk>/', admin_views.client_detail_group_work, name='client_detail_group_work'),
+    path( url_principal+'detalle/asignados/<int:pk>/', admin_views.client_detail_assigned, name='client_detail_assigned'),
 
     # APIs para modales de usuarios
     path( url_principal+'ajax/crear_usuario/', common_views.crear_usuario_modal, name='ajax_crear_usuario'),
@@ -28,6 +30,10 @@ urlpatterns = [
     path( url_principal+'ajax/actualizar_usuario/<int:pk>/', common_views.actualizar_usuario_modal, name='ajax_actualizar_usuario'),
     path( url_principal+'ajax/cambiar_estado_usuario/<int:pk>/', common_views.cambiar_estado_usuario_modal, name='ajax_cambiar_estado_usuario'),
     path( url_principal+'ajax/obtener_grupos/', common_views.obtener_grupos_activos, name='ajax_obtener_grupos'),
+
+    # APIs para asignación de clientes
+    path( url_principal+'api/buscar_cliente_nit/', api_views.buscar_cliente_por_nit, name='api_buscar_cliente_nit'),
+    path( url_principal+'api/verificar_asignacion/', api_views.verificar_asignacion_cliente, name='api_verificar_asignacion'),
 
     
     #client_user

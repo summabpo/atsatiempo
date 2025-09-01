@@ -3,7 +3,7 @@ from django.urls import path
 from .views.usuariosInternosATS import CreacionUsuarioInternoView
 from .views import client_views
 from applications.common.views import PruebasView
-from .views import login
+
 
 #new
 from applications.usuarios.views.user_login import loginView
