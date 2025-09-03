@@ -139,7 +139,7 @@ class Cli064AsignacionCliente(models.Model):
 
     id_cliente_maestro = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, related_name='cliente_maestro')
     id_cliente_asignado = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE, related_name='cliente_asignado')
-    fecha_asignacion = models.DateField(auto_now_add=True)
+    fecha_asignacion = models.DateField(auto_now_add=True)  
     tipo_asignacion = models.CharField(max_length=1, choices=TIPO_ASIGNACION_STATIC, default='1')
     estado = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
     def __str__(self):

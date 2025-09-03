@@ -19,11 +19,20 @@ Cliente
 						<span class="text-secondary fw-medium hover" >Inicio</span>
 					</a>
 				</li>
+				{% if request.session.grupo_id == 1 %}
 				<li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'clientes:cliente_ver' %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Listado de Clientes</span>
 					</a>
 				</li>
+				{% endif %}
+				{% if request.session.grupo_id == 3 %}
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'clientes:client_headhunter_asignados' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Clientes Asignados</span>
+					</a>
+				</li>
+				{% endif %}
 				<li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'clientes:cliente_detalle' data.cliente.id %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Detalle Cliente</span>

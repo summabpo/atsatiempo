@@ -665,3 +665,21 @@ def detail_vacancy_assign(request, pk):
     }
 
     return render(request, 'admin/vacancy/client_user/vacancy_detail_assign.html', context)
+
+#@login_required
+#@validar_permisos('acceso_cliente')
+def vacancy_client_assigned(request):
+    # Verificar si el cliente_id está en la sesión
+    cliente_id = request.session.get('cliente_id')
+    
+    vacantes = query_vacanty_all()
+    vacantes = vacantes.filter(
+        asignacion_cliente_id_064__id_cliente_maestro=cliente_id,
+        asignacion_cliente_id_064__tipo_asignacion='2'
+    )
+
+    context ={
+        'vacantes': vacantes,
+    }
+
+    return render(request, 'admin/vacancy/client_user/headhunter/vacancy_client_assigned.html', context)

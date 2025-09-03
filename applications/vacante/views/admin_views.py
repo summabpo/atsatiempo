@@ -71,8 +71,14 @@ def create_vacanty_from_client(request, pk):
         asignacion_cliente_id_064__tipo_asignacion='1'  # Aquí va el campo correcto
     )
 
-    asignacion_cliente = Cli064AsignacionCliente.objects.get(id_cliente_asignado=pk)
+    grupo_id = request.session.get('grupo_id')
+    if grupo_id == 1:
+        asignacion_cliente = Cli064AsignacionCliente.objects.get(id_cliente_asignado=pk, tipo_asignacion='1')
+    elif grupo_id == 3:
+        cliente_id = request.session.get('cliente_id')
+        asignacion_cliente = Cli064AsignacionCliente.objects.get(id_cliente_asignado=pk, id_cliente_maestro=cliente_id, tipo_asignacion='2')
 
+    print(f'asignacion_cliente: {asignacion_cliente.id}')
 
     form = VacancyFormAllV2(cliente_id=pk)
 
@@ -240,7 +246,20 @@ def create_vacanty_from_client(request, pk):
             messages.success(request, 'Vacante creada correctamente')
             return redirect('vacantes:vacantes_propias', pk=pk)
         else:
-            messages.error(request, 'Por favor revise el formulario, errores encontrados.')
+            # Procesar los errores del formulario para mostrarlos de forma ordenada en el SweetAlert
+            form_errors = form.errors
+            error_messages = []
+            for field, errors in form_errors.items():
+                # Si el campo es '__all__', mostrar solo el mensaje sin el nombre del campo
+                if field == '__all__':
+                    for error in errors:
+                        error_messages.append(error)
+                else:
+                    error_messages.append(f"{field}: {', '.join(errors)}")
+            
+            print(error_messages)
+            # Unir los mensajes con saltos de línea para mejor visualización
+            messages.error(request, f'Por favor revise el formulario, se encontraron los siguientes errores: ' + " ".join(error_messages))
             
     else:
         form = VacancyFormAllV2(cliente_id=pk)
@@ -569,15 +588,38 @@ def list_vacanty_from_client(request, pk):
 
     # Data cliente a mostrar
     data = query_client_detail(pk)
+    cliente_id = request.session.get('cliente_id')
 
     # Data
-    vacantes = query_vacanty_all()
 
-    #filtro para mostrar solo las vacantes del cliente
-    vacantes = vacantes.filter(
-        asignacion_cliente_id_064__id_cliente_asignado=pk,
-        asignacion_cliente_id_064__tipo_asignacion='1'
-    )
+    # Validar grupo_id desde la sesión para mostrar vacantes propias o de clientes asignados
+    grupo_id = request.session.get('grupo_id')
+    if grupo_id == 1:
+        vacantes = query_vacanty_all()
+
+        #filtro para mostrar solo las vacantes del cliente
+        vacantes = vacantes.filter(
+            asignacion_cliente_id_064__id_cliente_asignado=pk,
+            asignacion_cliente_id_064__tipo_asignacion='1'
+        )
+
+    if grupo_id == 3:
+        vacantes = query_vacanty_all()
+
+        # Buscar todas las asignaciones activas del cliente maestro (headhunter) al cliente asignado
+        asignaciones_cliente = Cli064AsignacionCliente.objects.filter(
+            id_cliente_asignado=pk,
+            id_cliente_maestro=cliente_id,
+            tipo_asignacion='2'
+        ).values_list('id', flat=True)
+
+        print(asignaciones_cliente)
+
+        # Mostrar solo las vacantes asociadas a cualquiera de las asignaciones encontradas
+        vacantes = vacantes.filter(
+            asignacion_cliente_id_064__in=asignaciones_cliente
+        )
+
 
     context = {
         'data': data,

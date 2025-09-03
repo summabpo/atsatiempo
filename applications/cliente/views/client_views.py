@@ -15,8 +15,8 @@ from applications.usuarios.models import Permiso
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli065ActividadEconomica,  Cli051ClientePoliticas, Cli067PoliticasInternas, Cli051ClientePruebas, Cli066PruebasPsicologicas, Cli068Cargo, Cli069Requisito, Cli070AsignacionRequisito, Cli071AsignacionPrueba
 
 #form
-from applications.vacante.forms.VacanteForms import VacanteForm
-from ..forms.ClienteForms import ClienteForm, ClienteFormAsignacionPrueba, ClienteFormEdit, ClienteFormPoliticas, ClienteFormPruebas, ClienteFormCargos, ClienteFormRequisitos, ClienteFormAsignacionRequisito
+from applications.vacante.forms.VacanteForms import VacancyAssingForm, VacanteForm
+from ..forms.ClienteForms import ClienteForm, ClienteFormAsignacionCliente, ClienteFormAsignacionPrueba, ClienteFormEdit, ClienteFormPoliticas, ClienteFormPruebas, ClienteFormCargos, ClienteFormRequisitos, ClienteFormAsignacionRequisito
 
 #query
 from applications.services.service_client import query_client_all, query_client_detail
@@ -331,3 +331,94 @@ def client_position_config(request, cargo_id):
 
     return render(request, 'admin/client/client_user/client_position_config.html', contexto)
 
+
+#listado clientes asignados al cliente headhunter
+@login_required
+@validar_permisos('acceso_cliente')
+def client_headhunter_assigned(request):
+    # Verificar si el cliente_id está en la sesión
+    cliente_id = request.session.get('cliente_id')
+
+    # Data cliente a mostrar
+    data = query_client_detail(cliente_id)
+
+    form = ClienteFormAsignacionCliente()
+    if request.method == 'POST':
+        form = ClienteFormAsignacionCliente(request.POST, request.FILES)
+        if form.is_valid():
+            # Obtener el NIT del formulario
+            nit = form.cleaned_data['nit']
+            
+            # Verificar si el cliente ya existe
+            try:
+                cliente_asignado = Cli051Cliente.objects.get(nit=nit)
+            except Cli051Cliente.DoesNotExist:
+                # Si no existe, crear el cliente
+                cliente_asignado = Cli051Cliente.objects.create(
+                    nit=nit,
+                    razon_social=form.cleaned_data['razon_social'],
+                    ciudad_id_004=Cat004Ciudad.objects.get(id=form.cleaned_data['ciudad_id_004']),
+                    email=form.cleaned_data.get('email', ''),
+                    contacto=form.cleaned_data.get('contacto', ''),
+                    telefono=form.cleaned_data.get('telefono', ''),
+                    perfil_empresarial=form.cleaned_data.get('perfil_empresarial', ''),
+                    logo=form.cleaned_data.get('logo'),
+                    actividad_economica=Cli065ActividadEconomica.objects.get(id=form.cleaned_data['actividad_economica']),
+                    tipo_cliente=1,
+                    periodicidad_pago=form.cleaned_data['periodicidad_pago'],
+                    referencias_laborales=form.cleaned_data['referencias_laborales'],
+                    cantidad_colaboradores=form.cleaned_data['cantidad_colaboradores'],
+                    contacto_cargo=form.cleaned_data['contacto_cargo'],
+                    direccion_cargo=form.cleaned_data['direccion_cargo'],
+                    estado_id_001=Cat001Estado.objects.get(id=1),
+                )
+
+            # Verificar si ya existe la asignación
+            cliente_maestro = Cli051Cliente.objects.get(id=cliente_id)
+            asignacion_existente = Cli064AsignacionCliente.objects.filter(
+                id_cliente_maestro=cliente_maestro,
+                id_cliente_asignado=cliente_asignado
+            ).first()
+
+            if asignacion_existente:
+                messages.warning(request, 'Este cliente ya está asignado.')
+            else:
+                # Crear la asignación
+                asignacion_cliente = Cli064AsignacionCliente(
+                    id_cliente_maestro=cliente_maestro,
+                    id_cliente_asignado=cliente_asignado,
+                    tipo_asignacion='2',
+                    estado=Cat001Estado.objects.get(id=1)
+                )
+                asignacion_cliente.save()
+                messages.success(request, 'Cliente asignado exitosamente!')
+
+            return redirect('clientes:client_headhunter_asignados')
+        else:
+            messages.error(request, form.errors)
+            print("Errores en el formulario:", form.errors)
+    else:
+        form = ClienteFormAsignacionCliente()
+
+    # Obtener las asignaciones donde este cliente es el maestro
+    asignaciones = Cli064AsignacionCliente.objects.filter(id_cliente_maestro_id=cliente_id)
+    
+    # Obtener los clientes asignados
+    clientes_asignados = [asignacion.id_cliente_asignado for asignacion in asignaciones]
+
+    context ={
+        'data': data,
+        'clientes_asignados': clientes_asignados,
+        'form': form,
+    }
+    return render(request, 'admin/client/client_user/headhunter/client_headhunter_assigned.html', context)
+
+#detalle de cliente asignado
+@login_required
+@validar_permisos('acceso_cliente')
+def client_headhunter_assigned_detail(request, pk):
+    cliente = get_object_or_404(Cli051Cliente, id=pk)
+    contexto ={
+        'cliente': cliente,
+    }
+    return render(request, 'admin/client/client_user/headhunter/client_headhunter_assigned_detail.html', contexto)

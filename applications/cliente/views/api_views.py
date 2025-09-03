@@ -7,7 +7,7 @@ from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 import json
 
 @login_required
-@validar_permisos('acceso_admin')
+@validar_permisos('acceso_admin', 'acceso_cliente')
 @csrf_exempt
 @require_http_methods(["POST"])
 def buscar_cliente_por_nit(request):
@@ -91,7 +91,7 @@ def buscar_cliente_por_nit(request):
         })
 
 @login_required
-@validar_permisos('acceso_admin')
+@validar_permisos('acceso_admin', 'acceso_cliente')
 @csrf_exempt
 @require_http_methods(["POST"])
 def verificar_asignacion_cliente(request):

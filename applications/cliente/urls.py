@@ -24,6 +24,9 @@ urlpatterns = [
     path( url_principal+'detalle/grupo_trabajo/<int:pk>/', admin_views.client_detail_group_work, name='client_detail_group_work'),
     path( url_principal+'detalle/asignados/<int:pk>/', admin_views.client_detail_assigned, name='client_detail_assigned'),
 
+    #client_headhunter_user
+    path( url_principal+'asignados/', client_views.client_headhunter_assigned, name='client_headhunter_asignados'),
+
     # APIs para modales de usuarios
     path( url_principal+'ajax/crear_usuario/', common_views.crear_usuario_modal, name='ajax_crear_usuario'),
     path( url_principal+'ajax/obtener_usuario/<int:pk>/', common_views.obtener_usuario_modal, name='ajax_obtener_usuario'),
