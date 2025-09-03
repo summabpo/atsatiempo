@@ -28,7 +28,7 @@ def generate_random_password(length=12):
     return ''.join(random.choice(characters) for i in range(length))
 
 @login_required
-@validar_permisos('acceso_admin')
+@validar_permisos('acceso_admin', 'acceso_cliente')
 @csrf_exempt
 @require_http_methods(["POST"])
 def crear_usuario_modal(request):
@@ -138,7 +138,7 @@ def crear_usuario_modal(request):
         }, status=500)
 
 @login_required
-@validar_permisos('acceso_admin')
+@validar_permisos('acceso_admin', 'acceso_cliente')
 @require_http_methods(["GET"])
 def obtener_usuario_modal(request, pk):
     """
@@ -175,7 +175,7 @@ def obtener_usuario_modal(request, pk):
         }, status=500)
 
 @login_required
-@validar_permisos('acceso_admin')
+@validar_permisos('acceso_admin', 'acceso_cliente')
 @csrf_exempt
 @require_http_methods(["POST"])
 def actualizar_usuario_modal(request, pk):
@@ -243,7 +243,7 @@ def actualizar_usuario_modal(request, pk):
         }, status=500)
 
 @login_required
-@validar_permisos('acceso_admin')
+@validar_permisos('acceso_admin', 'acceso_cliente')
 @csrf_exempt
 @require_http_methods(["POST"])
 def cambiar_estado_usuario_modal(request, pk):
@@ -291,7 +291,7 @@ def cambiar_estado_usuario_modal(request, pk):
         }, status=500)
 
 @login_required
-@validar_permisos('acceso_admin')
+@validar_permisos('acceso_admin', 'acceso_cliente')
 @require_http_methods(["GET"])
 def obtener_grupos_activos(request):
     """
