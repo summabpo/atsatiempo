@@ -50,6 +50,7 @@ Vacantes Clientes
                                                 <th scope="col" class="text-center">ACCIONES</th>
                                                 <th scope="col" class="text-center">ESTADO</th>
                                                 <th scope="col" class="text-center">ID</th>
+                                                <th scope="col" class="text-center">Cliente</th>
                                                 <th scope="col" class="text-center">Cargo</th>
                                                 <th scope="col" class="text-center"># Pocisiones</th>
                                                 <th scope="col" class="text-center">F. Creación</th>
@@ -72,10 +73,10 @@ Vacantes Clientes
                                                 <td class="text-center">
                                                     <div class="d-flex justify-content-center align-items-center gap-1">
                                                         <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
-                                                            <a href="#" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                            <a href="{% url 'vacantes:vacantes_editar_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
                                                                 <i class="material-symbols-outlined fs-16">edit</i>
                                                             </a>
-                                                            <a href="#" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                            <a href="{% url 'vacantes:vacantes_gestion_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
                                                                 <i class="material-symbols-outlined fs-16">inbox_customize</i>
                                                             </a>
                                                             
@@ -96,6 +97,16 @@ Vacantes Clientes
                                                     {% endif %}
                                                 </td>
                                                 <td class="text-body text-center">{{e.id}}</td>
+                                                <td class="text-secondary text-center">
+                                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                                        {% if e.asignacion_cliente_id_064.id_cliente_asignado.logo %}
+                                                            <img src="{{ e.asignacion_cliente_id_064.id_cliente_asignado.logo.url }}" alt="Logo" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+                                                        {% else %}
+                                                            <img src="{% static 'admin/images/default_company_logo.png' %}" alt="Logo por defecto" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+                                                        {% endif %}
+                                                        <span>{{ e.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}</span>
+                                                    </div>
+                                                </td>
                                                 <td class="text-secondary text-center"><a href="{% url 'vacantes:vacantes_detalle_cliente' e.id  %}" class="fw-medium">{{e.cargo.nombre_cargo}}</a></td>
                                                 <td class="text-secondary text-center">{{e.numero_posiciones}}</td>
                                                 <td class="text-secondary text-center">{{ e.fecha_creacion|date:"Y-m-d" }}</td>

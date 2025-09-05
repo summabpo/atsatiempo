@@ -57,6 +57,20 @@
 </li>
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'client_headhunter_asignados' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'cliente_detalle' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'cliente_info' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'cliente_politicas' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'cliente_pruebas' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'cliente_requisitos' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'cliente_cargos' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'cliente_cargos_configuracion' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'cliente_grupo_trabajo' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_propias' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_crear_propias' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_editar_propias' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_gestion_propias' %}open{% endif %}
+
+
     ">
     <a href="javascript:void(0);" class="menu-link menu-toggle 
     
@@ -66,7 +80,21 @@
     </a>
     <ul class="menu-sub">
         <li class="menu-item">
-            <a href="{% url 'clientes:client_headhunter_asignados' %}"  class="menu-link {% if request.resolver_match.url_name == 'client_headhunter_asignados' %}active{% endif %} ">
+            <a href="{% url 'clientes:client_headhunter_asignados' %}"  class="menu-link 
+            {% if request.resolver_match.url_name == 'client_headhunter_asignados' %}active{% endif %} 
+            {% if request.resolver_match.url_name == 'cliente_detalle' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'cliente_info' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'cliente_politicas' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'cliente_pruebas' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'cliente_requisitos' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'cliente_cargos' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'cliente_cargos_configuracion' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'cliente_grupo_trabajo' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'vacantes_propias' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'vacantes_crear_propias' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'vacantes_editar_propias' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'vacantes_gestion_propias' %}active{% endif %}
+            ">
                 Ver Clientes
             </a>
         </li>

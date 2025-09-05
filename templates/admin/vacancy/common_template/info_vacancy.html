@@ -4,14 +4,14 @@
         <div class="card-body p-4">
             <div class="d-flex align-items-center mb-4">
                 <div class="flex-shrink-0 position-relative">
-                    {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.logo_cliente %}
-                        <img src="{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.logo_cliente.url }}" class="rounded-circle" style="width: 65px; height: 65px;" alt="Logo Cliente">
+                    {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.logo %}
+                        <img src="{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.logo.url }}" class="rounded-circle" style="width: 65px; height: 65px;" alt="Logo Cliente">
                     {% else %}
                         <img src="{% static 'admin/images/default_company_logo.png' %}" class="rounded-circle" style="width: 65px; height: 65px;" alt="Logo por defecto">
                     {% endif %}
                 </div>
                 <div class="flex-grow-1 ms-3">
-                    <h4 class="fs-24 fw-semibold mb-1">{{vacante.titulo}}</h4>
+                    <h4 class="fs-16 fw-semibold mb-1">{{vacante.cargo.nombre_cargo}}</h4>
                     <span class="fs-12">ID: {{vacante.id}}</span>
                 </div>
             </div>
@@ -30,8 +30,8 @@
                         <img src="{% static 'admin/images/schedule2.png' %}" style="width: 30px; height: 30px;" alt="schedule2">
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <span class="fs-12">Cierre en</span>
-                        <h4 class="fs-14 fw-semibold mb-0">{{ vacante.fecha_creacion|date:"F d, Y" }}</h4>
+                        <span class="fs-12">Presentacion</span>
+                        <h4 class="fs-14 fw-semibold mb-0">{{ vacante.fecha_presentacion|date:"F d, Y" }}</h4>
                     </div>
                 </div>
             </div>

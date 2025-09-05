@@ -42,6 +42,11 @@ Detalle vacante
 
                 {% if request.session.grupo_id == 3 %}
                     <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'clientes:client_headhunter_asignados' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Clientes Asignados</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
                         <a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
                             <span class="text-secondary fw-medium hover" >Listado de Vacantes</span>
                         </a>

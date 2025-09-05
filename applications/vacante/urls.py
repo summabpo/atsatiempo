@@ -21,8 +21,6 @@ urlpatterns = [
     path( url_principal+'mis_vacantes/editar/<int:pk>/<int:vacante_id>/', admin_views.edit_vacanty_from_client, name='vacantes_editar_propias'),
     path( url_principal+'mis_vacantes/gestionar/<int:pk>/<int:vacante_id>/', admin_views.vacanty_management_from_client, name='vacantes_gestion_propias'),
 
-
-    
     #client_user
     # path( url_principal+'crear_vacante/', client_views.create_vacanty, name='vacantes_crear_cliente'),
     path( url_principal+'crear_vacante/', client_views.create_vacanty_v2, name='vacantes_crear_cliente'),
