@@ -299,7 +299,7 @@ def obtener_grupos_activos(request):
     Método: GET
     """
     try:
-        grupos = Grupo.objects.filter(activate=True).values('id', 'name', 'description')
+        grupos = Grupo.objects.filter(activate=True).exclude(id__in=[1, 6]).values('id', 'name', 'description')
         
         return JsonResponse({
             'success': True,

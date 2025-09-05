@@ -21,11 +21,20 @@ Vacantes Propias
 						<span class="text-secondary fw-medium hover" >Inicio</span>
 					</a>
 				</li>
+                {% if request.session.grupo_id == 1 %}
 				<li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'clientes:cliente_ver' %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Listado de Clientes</span>
 					</a>
 				</li>
+				{% endif %}
+				{% if request.session.grupo_id == 3 %}
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'clientes:client_headhunter_asignados' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Clientes Asignados</span>
+					</a>
+				</li>
+				{% endif %}
                 <li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'vacantes:vacantes_propias' data.cliente.id %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
@@ -57,6 +66,7 @@ Vacantes Propias
                             <button class="nav-link" id="nav-reclutado-tab" data-bs-toggle="tab" data-bs-target="#nav-reclutado" type="button" role="tab" aria-controls="nav-reclutado" aria-selected="false">Reclutados</button>
                             <button class="nav-link" id="nav-entrevista-tab" data-bs-toggle="tab" data-bs-target="#nav-entrevista" type="button" role="tab" aria-controls="nav-entrevista" aria-selected="false">Entrevista</button>
                             <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Preguntas Vacante</button>
+                            <button class="nav-link" id="nav-analista-tab" data-bs-toggle="tab" data-bs-target="#nav-analista" type="button" role="tab" aria-controls="nav-analista" aria-selected="false">Analista</button>
                         </div>
                     </nav>
                     <div class="tab-content" id="nav-tabContent">
@@ -243,6 +253,55 @@ Vacantes Propias
                                             No hay preguntas generadas para esta vacante.
                                         </div>
                                     {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-analista" role="tabpanel" aria-labelledby="nav-analista-tab" tabindex="0">
+                            <div class="card bg-white border-0 rounded-3 mb-4">
+                                <div class="card-body p-4">
+                                    <div class="row">
+                                        
+                                        {% if analista_asignado.id %}
+                                        <div class="col-6">
+                                            <h3 class="mb-3 fs-16 fw-semibold">Analista Actual</h3>
+                                            <div class="vcard p-3 border rounded">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    
+                                                    {% if analista_asignado.imagen_perfil %}
+                                                        <img src="{{analista_asignado.imagen_perfil.url}}" alt="Foto del Analista" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                                                    {% else %}
+                                                        <img src="{% static 'admin/images/blank.png' %}" alt="Foto del Analista" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                                                    {% endif %}
+                                                        
+                                                    
+                                                    <div> 
+                                                        <h5 class="mb-0 fw-bold">{{analista_asignado.primer_nombre}} {{analista_asignado.segundo_nombre}} {{analista_asignado.primer_apellido}} {{analista_asignado.segundo_apellido}}</h5>
+                                                        <small class="text-muted">{{analista_asignado.group.name}}</small>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <strong>Email:</strong> <a href="mailto:{{analista_asignado.email}}" class="text-decoration-none">{{analista_asignado.email}}</a>
+                                                </div>
+                                                <a href="#" class="btn btn-primary py-2 px-4 bg-primary bg-opacity-10 fw-semibold text-primary border-0 hover-bg">
+                                                    Ver Perfil Completo
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                
+                                        {% else %}    
+                                        <div class="col-12">
+                                        {% endif %}
+                                            
+                                        
+                                            <form method="post" id="form_vacante_asignar">
+                                                {% csrf_token %}
+                                                {% crispy form %}
+                                                <button id="form_vacante_asignar" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_vacante_asignar">Guardar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
