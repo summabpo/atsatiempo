@@ -338,6 +338,10 @@ def login_view(request):
                             'primer_apellido': usuario.primer_apellido,
                             'segundo_apellido': usuario.segundo_apellido,
                             'grupo_id': usuario.group.id,
+                            'cliente_id': usuario.cliente_id_051.id if usuario.cliente_id_051 else None,
+                            'cliente_nombre': usuario.cliente_id_051.razon_social if usuario.cliente_id_051 else None,
+                            'cliente_tipo': usuario.cliente_id_051.tipo_cliente if usuario.cliente_id_051 else None,
+                            'nombre_tipo_cliente': usuario.cliente_id_051.get_tipo_cliente_display() if usuario.cliente_id_051 else None,
                         }
                         
                         # Valida el usuario es de grupo cliente para mostrar el id cliente. 

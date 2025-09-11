@@ -364,7 +364,7 @@ def client_headhunter_assigned(request):
                     perfil_empresarial=form.cleaned_data.get('perfil_empresarial', ''),
                     logo=form.cleaned_data.get('logo'),
                     actividad_economica=Cli065ActividadEconomica.objects.get(id=form.cleaned_data['actividad_economica']),
-                    tipo_cliente=1,
+                    tipo_cliente=3,
                     periodicidad_pago=form.cleaned_data['periodicidad_pago'],
                     referencias_laborales=form.cleaned_data['referencias_laborales'],
                     cantidad_colaboradores=form.cleaned_data['cantidad_colaboradores'],
