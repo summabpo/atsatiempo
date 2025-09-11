@@ -25,14 +25,9 @@ urlpatterns = [
     #candidate
     path('inicio/candidato', loginView.dashboard_candidato, name='inicio_candidato'),
 
-
-
-
     #client
     path('cliente/grupo_trabajo_interno/', client_views.create_internal_client, name='users_client'),
     path('cliente/colaborador/<int:pk>', client_views.detail_internal_client, name='users_client_detail'),
-
-    
 
     # Seguridad
     # path('inicio', login.inicio_app, name='inicio'),

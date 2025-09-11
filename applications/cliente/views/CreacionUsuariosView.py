@@ -33,7 +33,7 @@ def usuario_interno(request):
     # Obtener un solo objeto cliente o lanzar un 404 si no existe
     cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
 
-    usuarios_internos = UsuarioBase.objects.filter(group__in=[4, 5], cliente_id_051=cliente)
+    usuarios_internos = UsuarioBase.objects.filter(group__in=[6], cliente_id_051=cliente)
 
     form_errores = False
 
@@ -109,7 +109,7 @@ def usuario_interno_ats(request):
     # Obtener un solo objeto cliente o lanzar un 404 si no existe
     cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
 
-    usuarios_internos = UsuarioBase.objects.filter(group__in=[4, 5], cliente_id_051=cliente)
+    usuarios_internos = UsuarioBase.objects.filter(group=5, cliente_id_051=cliente)
 
     form_errores = False
 

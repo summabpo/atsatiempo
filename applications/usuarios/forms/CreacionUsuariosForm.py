@@ -2,6 +2,8 @@ import re, os
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit, HTML, Div
+from django.http import request
+from applications.cliente.models import Cli051Cliente
 from applications.common.models import Cat004Ciudad
 from applications.usuarios.models import Grupo, UsuarioBase
 from django.db.models import Q
@@ -58,28 +60,13 @@ class CrearUsuarioInternoForm(forms.Form):
         })
     )
 
-    rol = forms.ChoiceField(
-        label='Rol del Usuario',
-        choices=[
-            ('', 'Seleccione un rol'),
-            ('4', 'Entrevistador'),
-            ('5', 'Analista de selección'),
-            
-        ],
-        required=True,
-        widget=forms.Select(attrs={
-            'class': 'form-select form-select-solid',
-            'data-control': 'select2',
-            'data-placeholder': 'Seleccione un rol',
-            'data-dropdown-parent': '#modal_grupo_trabajo',
-            
-        })
-    )
+    
 
     imagen_perfil = forms.ImageField(label='Imagen Perfil', required=False)
 
     # campo de ciudad
     def __init__(self, *args, **kwargs):
+        tipo_cliente = kwargs.pop('tipo_cliente', None)
         super().__init__(*args, **kwargs)
 
         # Configuración de Crispy Forms
@@ -88,6 +75,39 @@ class CrearUsuarioInternoForm(forms.Form):
         self.helper.form_id = 'form_crear_usuario'
         self.helper.enctype = 'multipart/form-data'
         self.helper.form_class = 'w-200'
+
+
+        if tipo_cliente == '1':
+            choices_rol=[
+                ('', 'Seleccione un rol'),
+                ('3', 'Cliente'),
+                ('4', 'Entrevistador'),
+                ('5', 'Analista de selección'),
+            ]
+        elif tipo_cliente == '2':
+            choices_rol=[
+                ('', 'Seleccione un rol'),
+                ('5', 'Analista de selección'),
+            ]
+        elif tipo_cliente == '3':
+            choices_rol=[
+                ('', 'Seleccione un rol'),
+                ('3', 'Cliente'),
+                ('4', 'Entrevistador'),
+            ]
+
+        self.fields['rol'] = forms.ChoiceField(
+            label='Rol del Usuario',
+            choices= choices_rol,
+            required=True,
+            widget=forms.Select(attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione un rol',
+                'data-dropdown-parent': '#modal_grupo_trabajo',
+                
+            })
+        )
 
         self.helper.layout = Layout(
             Row(

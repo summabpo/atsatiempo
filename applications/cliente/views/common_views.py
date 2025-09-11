@@ -38,7 +38,7 @@ def crear_usuario_modal(request):
     """
     try:
         # Obtener el cliente_id de la sesión o del request
-        cliente_id = request.session.get('cliente_id') or request.POST.get('cliente_id')
+        cliente_id = request.POST.get('cliente_id')
         
         if not cliente_id:
             return JsonResponse({
@@ -299,7 +299,7 @@ def obtener_grupos_activos(request):
     Método: GET
     """
     try:
-        grupos = Grupo.objects.filter(activate=True).exclude(id__in=[1, 6]).values('id', 'name', 'description')
+        grupos = Grupo.objects.filter(activate=True).exclude(id__in=[1, 2, 5, 6]).values('id', 'name', 'description')
         
         return JsonResponse({
             'success': True,

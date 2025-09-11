@@ -31,7 +31,6 @@ urlpatterns = [
     #client_headhunter_user
     path( url_principal+'clientes/', client_views.vacancy_client_assigned, name='vacantes_detalle_cliente_headhunter'),
 
-
     #client_analyst_user
     path( url_principal+'asignadas/', client_analyst_views.list_assigned_vacancies, name='vacantes_asignadas'),
 

@@ -23,10 +23,19 @@ def create_internal_client(request):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
 
-    #Obtener usuarios internos 
-    usuarios_internos = UsuarioBase.objects.filter(group__in=[4,5], is_active=True, cliente_id_051=cliente_id)
+    cliente_type = Cli051Cliente.objects.get(id=cliente_id).tipo_cliente
 
-    form = CrearUsuarioInternoForm()
+    if cliente_type == '1':
+        group_list = [3, 4, 5]
+    elif cliente_type == '2':
+        group_list = [5]
+    elif cliente_type == '3':
+        group_list = [3, 4]
+
+    #Obtener usuarios internos 
+    usuarios_internos = UsuarioBase.objects.filter(group__in=group_list, is_active=True, cliente_id_051=cliente_id)
+
+    form = CrearUsuarioInternoForm(tipo_cliente=cliente_type)
 
     if request.method == 'POST':
         form = CrearUsuarioInternoForm(request.POST, request.FILES)
@@ -79,7 +88,7 @@ def create_internal_client(request):
             print(form.errors)
             messages.error(request, 'Error al crear el usuario interno.')
     else:
-        form = CrearUsuarioInternoForm()
+        form = CrearUsuarioInternoForm(tipo_cliente=cliente_type)
 
     context = {
         'usuarios_internos': usuarios_internos,
@@ -96,7 +105,9 @@ def detail_internal_client(request, pk):
     cliente_id = request.session.get('cliente_id')
 
     #Obtener usuarios internos 
-    usuarios_detalle = UsuarioBase.objects.get(id=pk, group__in=[4,5], is_active=True, cliente_id_051=cliente_id)
+    usuarios_detalle = UsuarioBase.objects.get(id=pk, is_active=True, cliente_id_051=cliente_id)
+
+    cliente_type = Cli051Cliente.objects.get(id=cliente_id).tipo_cliente
 
     initial_data = {
         'primer_nombre': usuarios_detalle.primer_nombre,
@@ -111,7 +122,7 @@ def detail_internal_client(request, pk):
     
 
     if request.method == 'POST':
-        form = EditUsuarioInternoForm(request.POST, request.FILES, usuario=usuarios_detalle, initial=initial_data)
+        form = EditUsuarioInternoForm(request.POST, request.FILES, usuario=usuarios_detalle, initial=initial_data, tipo_cliente=cliente_type)
         if form.is_valid():
             primer_nombre = form.cleaned_data['primer_nombre']
             segundo_nombre = form.cleaned_data['segundo_nombre']

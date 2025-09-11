@@ -1,5 +1,13 @@
 {% load static %}
-<header class="header-area bg-redtray  mb-4 rounded-bottom-15" id="header-area"> <!-- bg-white -->
+{% if request.session.user_login.cliente_tipo == '1' %}
+    <header class="header-area bg-primary mb-4 rounded-bottom-15" id="header-area">
+{% elif request.session.user_login.cliente_tipo == '2' %}
+    <header style="background-color: #300a6e; border-color: #300a6e;" class="header-area mb-4 rounded-bottom-15" id="header-area">
+{% elif request.session.user_login.cliente_tipo == '3' %}
+    <header class="header-area bg-secondary bg-secondary-10 mb-4 rounded-bottom-15" id="header-area">
+{% else %}
+    <header class="header-area bg-redtray mb-4 rounded-bottom-15" id="header-area">
+{% endif %}
     <div class="row align-items-center">
         <div class="col-lg-4 col-sm-6">
             <div class="left-header-content">
@@ -9,6 +17,7 @@
                             <span class="material-symbols-outlined">menu</span>
                         </button>
                     </li>
+                    <!--
                     <li>
                         <form class="src-form position-relative">
                             <input type="text" class="form-control" placeholder="Buscar.....">
@@ -17,7 +26,7 @@
                             </button>
                         </form>
                     </li>
-                    <!--
+                    
                     <li>
                         <div class="dropdown notifications apps">
                             <button class="btn btn-secondary border-0 p-0 position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -77,6 +86,11 @@
         <div class="col-lg-8 col-sm-6">
             <div class="right-header-content mt-2 mt-sm-0">
                 <ul class="d-flex align-items-center justify-content-center justify-content-sm-end ps-0 mb-0 list-unstyled">
+                    <li class="header-right-item">
+                        <span class="fw-normal text-white me-4 flex-grow-1">
+                            {% if request.session.user_login.cliente_nombre %}{{ request.session.user_login.cliente_nombre }}{% else %} {% endif %}
+                        </span>
+                    </li>
                     <li class="header-right-item">
                         <div class="light-dark">
                             <button class="switch-toggle settings-btn dark-btn p-0 bg-transparent" id="switch-toggle">

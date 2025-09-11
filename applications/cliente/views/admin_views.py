@@ -453,10 +453,9 @@ def client_detail_group_work(request, pk):
 
     # Data cliente a mostrar
     data = query_client_detail(pk)
-
+    cliente_id = request.session.get('cliente_id')
     # Obtener los usuarios internos del cliente
-    users_list = UsuarioBase.objects.filter(cliente_id_051=pk, group__in=[3, 4, 5])
-
+    users_list = UsuarioBase.objects.filter(cliente_id_051=pk, group=4)
     contexto = {
         'data': data,
         'users_list': users_list,
