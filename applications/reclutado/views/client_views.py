@@ -30,7 +30,7 @@ from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion')
 def detail_vacancy_recruited(request, pk):
     form_errors = False
     # Verificar si el cliente_id está en la sesión
@@ -116,10 +116,10 @@ def detail_vacancy_recruited(request, pk):
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats', 'acceso_analista_seleccion')
 def detail_recruited(request, pk):
     url_actual = f"{request.scheme}://{request.get_host()}"
-   
+
     validar_registro = False
 
     usuario_id = request.session.get('_auth_user_id')

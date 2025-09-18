@@ -19,11 +19,20 @@ Detalle vacante
 						<span class="text-secondary fw-medium hover" >Inicio</span>
 					</a>
 				</li>
+				{% if request.session.grupo_id == 1 %}
                 <li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Listado de Vacantes</span>
 					</a>
 				</li>
+				{% endif %}
+				{% if request.session.grupo_id == 5 %}
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_asignadas' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+					</a>
+				</li>
+				{% endif %}
 				<li class="breadcrumb-item active" aria-current="page">
 					<span class="fw-medium">Detalle Vacante</span>
 				</li>
@@ -36,15 +45,10 @@ Detalle vacante
         </div>
 		<div class="col-9">
             {% include "admin/vacancy/common_template/metrics_menu_vacancy.html" %}
-
             <!-- Inicio de Contenido -->
             <div class="card border-0 rounded-2 p-4 bg-white mb-4">
                 <div class="card-body p-4">
-					<form method="post" id="form_vacante_edit">
-                        {% csrf_token %}
-                        {% crispy form %}
-                        <button id="form_vacante_edit" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_vacante_edit">Guardar</button>
-                    </form>
+					{% include 'admin/vacancy/partials/form_vacancy.html' %}
 				</div>
 			</div>
 			<!-- Fin de Contenido -->
@@ -54,39 +58,5 @@ Detalle vacante
 {% endblock %}
 
 {% block js %} 
-<script>
-    // Initialize select2 for specific fields
-    // Initialize select2 for specific fields
-    initializeSelect2('#id_cargo');
-    initializeSelect2('#id_edad');
-    initializeSelect2('#id_genero');
-    initializeSelect2('#id_tiempo_experiencia');
-    initializeSelect2('#id_modalidad');
-    initializeSelect2('#id_jornada');
-    initializeSelect2('#id_tipo_salario');
-    initializeSelect2('#id_nivel_estudio');
-    initializeSelect2('#id_lugar_trabajo');
-    initializeSelect2('#id_termino_contrato');
-    initializeSelect2('#id_profesion_estudio');
-    initializeSelect2('#id_frecuencia_pago');
-    initializeSelect2('#id_nivel_idioma');
-    initializeSelect2('#id_horario_final');
-    initializeSelect2('#id_horario_inicio');
-    initializeSelect2('#id_estudios_complementarios_certificado');
-    initializeSelect2('#id_numero_posiciones');
-    initializeSelect2('#id_cantidad_presentar');
-    initializeSelect2('#id_estado_estudio');
-    initializeSelect2('#id_idioma');
-    initializeSelect2('#id_edad_inicial');
-    initializeSelect2('#id_edad_final');
-
-    inicializarTagify('id_soft_skills');
-    inicializarTagify('id_hard_skills');
-    inicializarTagify('id_funciones_responsabilidades');
-    inicializarTagify('id_estudios_complementarios');
-
-    // Lista personalizada para el campo 2
-    const semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-    incializarTagifyLista('id_horario', semana);
-</script>  
+{% include 'admin/vacancy/partials/js_form_vacancy.html' %} 
 {% endblock js %}

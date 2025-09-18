@@ -28,6 +28,7 @@ urlpatterns = [
     path( url_principal+'detalle/<int:pk>/', client_views.detail_vacancy, name='vacantes_detalle_cliente'),
     path( url_principal+'detalle/entrevistas/<int:pk>/', client_views.detail_vacancy_interview, name='vacantes_entrevista_cliente'),
     path( url_principal+'asignar_analista/<int:pk>/', client_views.detail_vacancy_assign, name='vacantes_asignar_analista_cliente'),
+
     #client_headhunter_user
     path( url_principal+'clientes/', client_views.vacancy_client_assigned, name='vacantes_detalle_cliente_headhunter'),
 

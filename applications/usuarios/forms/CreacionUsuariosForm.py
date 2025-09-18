@@ -250,27 +250,35 @@ class EditUsuarioInternoForm(forms.Form):
         })
     )
 
-    rol = forms.ChoiceField(
-        label='Rol del Usuario',
-        choices=[
-            ('', 'Seleccione un rol'),
-            ('4', 'Entrevistador'),
-            ('5', 'Analista de selección'),
-            
-        ],
-        required=True,
-        widget=forms.Select(attrs={
-            'class': 'form-select form-select-solid',
-            'data-control': 'select2',
-            'data-placeholder': 'Seleccione un rol',
+    password = forms.CharField(
+        label='Contraseña', 
+        max_length=150,
+        required=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'placeholder': 'Ingrese la contraseña del usuario',
         })
     )
+
+    password_confirm = forms.CharField(
+
+        label='Confirmar Contraseña', 
+        max_length=150,
+        required=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-solid mb-3 mb-lg-0',
+            'placeholder': 'Ingrese la contraseña del usuario',
+        })
+    )
+
+    
 
     imagen_perfil = forms.ImageField(label='Imagen Perfil', required=False)
 
     # campo de ciudad
     def __init__(self, *args, **kwargs):
         self.usuario = kwargs.pop('usuario', None)
+        tipo_cliente = kwargs.pop('tipo_cliente', None)
         super().__init__(*args, **kwargs)
 
         # Configuración de Crispy Forms
@@ -279,6 +287,37 @@ class EditUsuarioInternoForm(forms.Form):
         self.helper.form_id = 'form_editar_usuario'
         self.helper.enctype = 'multipart/form-data'
         self.helper.form_class = 'w-200'
+
+        if tipo_cliente == '1':
+            choices_rol=[
+                ('', 'Seleccione un rol'),
+                ('3', 'Cliente'),
+                ('4', 'Entrevistador'),
+                ('5', 'Analista de selección'),
+            ]
+        elif tipo_cliente == '2':
+            choices_rol=[
+                ('', 'Seleccione un rol'),
+                ('5', 'Analista de selección'),
+            ]
+        elif tipo_cliente == '3':
+            choices_rol=[
+                ('', 'Seleccione un rol'),
+                ('3', 'Cliente'),
+                ('4', 'Entrevistador'),
+            ]
+
+        self.fields['rol'] = forms.ChoiceField(
+            label='Rol del Usuario',
+            choices= choices_rol,
+            required=True,
+            widget=forms.Select(attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione un rol',
+                
+            })
+        )
 
         self.helper.layout = Layout(
             # 🏗️ DATOS GENERALES
@@ -310,6 +349,15 @@ class EditUsuarioInternoForm(forms.Form):
             ),
             css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             ),
+            Div(
+            Div(
+                HTML("<h4 class='mb-3 text-primary'>Cambiar Contraseña</h4>"),
+                Div('password', css_class='col-6'),  # Password
+                Div('password_confirm', css_class='col-6'),  # Password Confirm
+                css_class='row'
+            ),
+            css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
         )
 
 
@@ -324,6 +372,8 @@ class EditUsuarioInternoForm(forms.Form):
         correo = cleaned_data.get('correo')
         rol = cleaned_data.get('rol')
         imagen_perfil = cleaned_data.get('imagen_perfil')
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
 
         # Función auxiliar para validar que un campo contenga solo letras
         def validar_solo_letras(valor, campo):
@@ -383,6 +433,12 @@ class EditUsuarioInternoForm(forms.Form):
             # Verificar el tamaño del archivo (5 MB máximo)
             if imagen_perfil.size > 5 * 1024 * 1024:
                 self.add_error('imagen_perfil', 'El tamaño de la imagen no debe exceder los 5 MB.')
+
+        #validar_password
+        if password:
+            if password != password_confirm:
+                self.add_error('password_confirm', 'Las contraseñas no coinciden.')
+
         return super().clean()
 
 class CrearUsuarioInternoAtsForm(forms.Form):
