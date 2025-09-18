@@ -239,11 +239,11 @@ document.addEventListener('DOMContentLoaded', function() {
         ].filter(Boolean).map(f => f.toLowerCase());
 
         const allSkills = [
-            ...getMultiSelectValues('id_skill_relacionales'),
-            ...getMultiSelectValues('id_skill_personales'),
-            ...getMultiSelectValues('id_skill_cognitivas'),
-            ...getMultiSelectValues('id_skill_digitales'),
-            ...getMultiSelectValues('id_skill_liderazgo')
+            getMultiSelectValues('id_skill_relacionales'),
+            getMultiSelectValues('id_skill_personales'),
+            getMultiSelectValues('id_skill_cognitivas'),
+            getMultiSelectValues('id_skill_digitales'),
+            getMultiSelectValues('id_skill_liderazgo')
         ].map(s => s.toLowerCase());
 
         // --- 2. Construir el párrafo oración por oración ---

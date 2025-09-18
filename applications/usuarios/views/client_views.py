@@ -119,8 +119,6 @@ def detail_internal_client(request, pk):
         'imagen_perfil': usuarios_detalle.imagen_perfil,
     }
 
-    
-
     if request.method == 'POST':
         form = EditUsuarioInternoForm(request.POST, request.FILES, usuario=usuarios_detalle, initial=initial_data, tipo_cliente=cliente_type)
         if form.is_valid():
@@ -131,6 +129,8 @@ def detail_internal_client(request, pk):
             correo = form.cleaned_data['correo']
             rol = form.cleaned_data['rol']
             imagen_perfil = form.cleaned_data['imagen_perfil']
+            password = form.cleaned_data['password']
+            password_confirm = form.cleaned_data['password_confirm']
 
             grupo = get_object_or_404(Grupo, id=rol)
 
@@ -143,6 +143,10 @@ def detail_internal_client(request, pk):
             usuarios_detalle.group = grupo
             if imagen_perfil:
                 usuarios_detalle.imagen_perfil = imagen_perfil
+
+            if password:
+
+                usuarios_detalle.password = make_password(password)
             
             usuarios_detalle.save()
 
@@ -152,7 +156,7 @@ def detail_internal_client(request, pk):
             print(form.errors)
             messages.error(request, 'Error al actualizar el usuario interno.')
     else:
-        form = EditUsuarioInternoForm(initial=initial_data)
+        form = EditUsuarioInternoForm(initial=initial_data, tipo_cliente=cliente_type)
 
     print(usuarios_detalle)
 

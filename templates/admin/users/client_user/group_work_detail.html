@@ -32,8 +32,152 @@ Detalle Colaborador
 	</div>
 
     <div class="row">
-        <div class="col-lg-12">
-            
+        <div class="col-lg-3">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+                    <p class="text-primary my-2 fs-4 fw-semibold">Información del Usuario</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="vcard text-center">
+                        <!-- Avatar Section -->
+                        <div class="d-flex flex-column align-items-center mb-4">
+                            {% if usuarios_detalle.imagen_perfil %}
+                                <img src="{{ usuarios_detalle.imagen_perfil.url }}" alt="Imagen de perfil" class="rounded-circle mb-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #B10022;">
+                            {% else %}
+                                <div class="rounded-circle mb-3 d-flex align-items-center justify-content-center bg-primary bg-opacity-10 shadow-sm" style="width: 100px; height: 100px; border: 3px solid #B10022;">
+                                    <i class="ri-user-line fs-32 text-primary"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Name and Role -->
+                            <div class="text-center">
+                                <h3 class="mb-2 text-dark fw-bold fs-4">
+                                    {{ usuarios_detalle.primer_nombre }} {{ usuarios_detalle.segundo_nombre }} {{ usuarios_detalle.primer_apellido }} {{ usuarios_detalle.segundo_apellido }}
+                                </h3>
+                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fs-6">
+                                    {{ usuarios_detalle.group.name }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Details Section -->
+                        <div class="vcard-details">
+                            <div class="d-flex align-items-center justify-content-center mb-3 p-3 bg-primary bg-opacity-10 rounded-3">
+                                <i class="ri-mail-line text-primary me-3 fs-5"></i>
+                                <span class="text-dark fw-medium">{{ usuarios_detalle.email }}</span>
+                            </div>
+                            
+                            <div class="d-flex align-items-center justify-content-center mb-3 p-3 bg-primary bg-opacity-10 rounded-3">
+                                <i class="ri-shield-user-line text-primary me-3 fs-5"></i>
+                                <span class="text-dark fw-medium">{{ usuarios_detalle.group.name }}</span>
+                            </div>
+                            
+                            <div class="d-flex align-items-center justify-content-center mb-3 p-3 bg-primary bg-opacity-10 rounded-3">
+                                <i class="ri-calendar-check-line text-primary me-3 fs-5"></i>
+                                <span class="text-dark fw-medium">Registrado: {{ usuarios_detalle.date_joined|date:"d/m/Y" }}</span>
+                            </div>
+                            
+                            {% if usuarios_detalle.is_active %}
+                                <div class="d-flex align-items-center justify-content-center mb-3 p-3 bg-success bg-opacity-10 rounded-3">
+                                    <i class="ri-checkbox-circle-line text-success me-3 fs-5"></i>
+                                    <span class="text-success fw-semibold">Usuario Activo</span>
+                                </div>
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center mb-3 p-3 bg-danger bg-opacity-10 rounded-3">
+                                    <i class="ri-close-circle-line text-danger me-3 fs-5"></i>
+                                    <span class="text-danger fw-semibold">Usuario Inactivo</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+                    <p class="text-primary my-2 fs-4 fw-semibold">Estadisticas del usuario</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center py-5">
+                        <i class="ri-bar-chart-line fs-48 text-muted mb-3"></i>
+                        <h5 class="text-muted">Estadisticas</h5>
+                        <p class="text-muted">Aquí se mostrarán las Estadisticas del usuario.</p>
+                    </div>
+                </div>
+            </div>
+            <!--  Información del Usuario  -->
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+                    <p class="text-primary my-2 fs-4 fw-semibold">Información del Usuario</p>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs nav-tabs-custom nav-justified mb-4" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="editar-usuario-tab" data-bs-toggle="tab" data-bs-target="#editar-usuario" type="button" role="tab" aria-controls="editar-usuario" aria-selected="true">
+                                <i class="ri-edit-line me-2"></i>Editar Usuario
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="vacantes-asignadas-tab" data-bs-toggle="tab" data-bs-target="#vacantes-asignadas" type="button" role="tab" aria-controls="vacantes-asignadas" aria-selected="false">
+                                <i class="ri-briefcase-line me-2"></i>Vacantes Asignadas
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="entrevistas-tab" data-bs-toggle="tab" data-bs-target="#entrevistas" type="button" role="tab" aria-controls="entrevistas" aria-selected="false">
+                                <i class="ri-calendar-line me-2"></i>Entrevistas
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content" id="myTabContent">
+                        <!-- Editar Usuario Tab -->
+                        <div class="tab-pane fade show active" id="editar-usuario" role="tabpanel" aria-labelledby="editar-usuario-tab">
+                            <div class="row">
+                                <div class="col-12">
+                                    <form method="post" id="form_editar_usuario" enctype="multipart/form-data">
+                                        <div class="modal-body">
+                                            {% csrf_token %}
+                                            {% crispy form %}
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <button type="submit" id="form_editar_usuario" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" form="form_editar_usuario">Gestionar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vacantes Asignadas Tab -->
+                        <div class="tab-pane fade" id="vacantes-asignadas" role="tabpanel" aria-labelledby="vacantes-asignadas-tab">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="text-center py-5">
+                                        <i class="ri-briefcase-line fs-48 text-muted mb-3"></i>
+                                        <h5 class="text-muted">Vacantes Asignadas</h5>
+                                        <p class="text-muted">Aquí se mostrarán las vacantes asignadas a este usuario.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Entrevistas Tab -->
+                        <div class="tab-pane fade" id="entrevistas" role="tabpanel" aria-labelledby="entrevistas-tab">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="text-center py-5">
+                                        <i class="ri-calendar-line fs-48 text-muted mb-3"></i>
+                                        <h5 class="text-muted">Entrevistas</h5>
+                                        <p class="text-muted">Aquí se mostrarán las entrevistas programadas para este usuario.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

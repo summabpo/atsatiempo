@@ -341,13 +341,17 @@ def login_view(request):
                             'cliente_id': usuario.cliente_id_051.id if usuario.cliente_id_051 else None,
                             'cliente_nombre': usuario.cliente_id_051.razon_social if usuario.cliente_id_051 else None,
                             'cliente_tipo': usuario.cliente_id_051.tipo_cliente if usuario.cliente_id_051 else None,
-                            'nombre_tipo_cliente': usuario.cliente_id_051.get_tipo_cliente_display() if usuario.cliente_id_051 else None,
                         }
                         
                         # Valida el usuario es de grupo cliente para mostrar el id cliente. 
                         if usuario.group.id == 4:
                             request.session['cliente_id'] = usuario.cliente_id_051.id
                             request.session['tipo_usuario'] = 'Cliente'
+
+                            if usuario.imagen_perfil:
+                                request.session['imagen_url'] = usuario.imagen_perfil.url
+                            else:
+                                request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
                             
                         if usuario.group.id == 3:
                             cliente_id = usuario.cliente_id_051.id

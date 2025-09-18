@@ -28,30 +28,56 @@ Vacantes Propias
 					</a>
 				</li>
 				{% endif %}
-				{% if request.session.grupo_id == 3 %}
+				{% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+					</a>
+				</li>
+				{% endif %}
+				{% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '2' %}
 				<li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'clientes:client_headhunter_asignados' %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Clientes Asignados</span>
 					</a>
 				</li>
-				{% endif %}
                 <li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'vacantes:vacantes_propias' data.cliente.id %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
 					</a>
 				</li>
+				{% endif %}
+                {% if request.session.grupo_id == 5 %}
+                <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_asignadas' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Vacantes Asignadas</span>
+					</a>
+				</li>
+				{% endif %}
 				<li class="breadcrumb-item active" aria-current="page">
 					<span class="fw-medium">Gestión de Vacante</span>
 				</li>
 			</ol>
 		</nav>
 	</div>
-
+    
+    
+    {% if request.session.grupo_id == 1 %}
+    <!-- Contenido para admin -->
     <div class="row">
 		<div class="col-md-12">
 			{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_vacancy=True %}
 		</div>
 	</div>
+    {% else %}
+        {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '2' %}
+        <div class="row">
+            <div class="col-md-12">
+                {% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_vacancy=True %}
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
 
 	<div class="row">
         <div class="col-md-12">
@@ -66,7 +92,9 @@ Vacantes Propias
                             <button class="nav-link" id="nav-reclutado-tab" data-bs-toggle="tab" data-bs-target="#nav-reclutado" type="button" role="tab" aria-controls="nav-reclutado" aria-selected="false">Reclutados</button>
                             <button class="nav-link" id="nav-entrevista-tab" data-bs-toggle="tab" data-bs-target="#nav-entrevista" type="button" role="tab" aria-controls="nav-entrevista" aria-selected="false">Entrevista</button>
                             <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Preguntas Vacante</button>
+                            {% if request.session.grupo_id != 5  %}
                             <button class="nav-link" id="nav-analista-tab" data-bs-toggle="tab" data-bs-target="#nav-analista" type="button" role="tab" aria-controls="nav-analista" aria-selected="false">Analista</button>
+                            {% endif %}
                         </div>
                     </nav>
                     <div class="tab-content" id="nav-tabContent">
@@ -282,7 +310,7 @@ Vacantes Propias
                                                 <div class="mb-2">
                                                     <strong>Email:</strong> <a href="mailto:{{analista_asignado.email}}" class="text-decoration-none">{{analista_asignado.email}}</a>
                                                 </div>
-                                                <a href="#" class="btn btn-primary py-2 px-4 bg-primary bg-opacity-10 fw-semibold text-primary border-0 hover-bg">
+                                                <a href="{% url 'accesses:users_client_detail' analista_asignado.id %}" class="btn btn-primary py-2 px-4 bg-primary bg-opacity-10 fw-semibold text-primary border-0 hover-bg">
                                                     Ver Perfil Completo
                                                 </a>
                                             </div>
@@ -292,12 +320,10 @@ Vacantes Propias
                                         {% else %}    
                                         <div class="col-12">
                                         {% endif %}
-                                            
-                                        
                                             <form method="post" id="form_vacante_asignar">
                                                 {% csrf_token %}
                                                 {% crispy form %}
-                                                <button id="form_vacante_asignar" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_vacante_asignar">Guardar</button>
+                                                <button id="form_vacante_asignar" name="submit_analista" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_vacante_asignar">Guardar</button>
                                             </form>
                                         </div>
                                     </div>
@@ -393,9 +419,14 @@ Vacantes Propias
 <script>
 
 {% if form.errors %}
-    var myModal = new bootstrap.Modal(document.getElementById('reclutadoCandidato'));
+    var myModal = new bootstrap.Modal(document.getElementById('perfilVacanteModal'));
     myModal.show();
 {% endif %}
+
+
+initializeSelect2('#id_analista_asignado');
+
+
 
 $(document).ready(function () {
         const inputDocumento = $('#id_numero_documento');

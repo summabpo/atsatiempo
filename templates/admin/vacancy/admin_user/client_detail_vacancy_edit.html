@@ -19,27 +19,61 @@ Vacantes Propias
 						<span class="text-secondary fw-medium hover" >Inicio</span>
 					</a>
 				</li>
+				{% if request.session.grupo_id == 1 %}
 				<li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'clientes:cliente_ver' %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Listado de Clientes</span>
 					</a>
 				</li>
+				{% endif %}
+				{% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '1' %}
 				<li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'vacantes:vacantes_propias' data.cliente.id %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
 					</a>
 				</li>
+				{% endif %}
+				{% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '2' %}
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'clientes:client_headhunter_asignados' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Clientes Asignados</span>
+					</a>
+				</li>
+				{% endif %}
+				{% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+					</a>
+				</li>
+				{% endif %}
+				{% if request.session.grupo_id == 5 %}
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_asignadas' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Vacantes Asignadas</span>
+					</a>
+				</li>
+				{% endif %}
 				<li class="breadcrumb-item active" aria-current="page">
 					<span class="fw-medium">Editar Vacante</span>
 				</li>
 			</ol>
 		</nav>
 	</div>
-
+	
 	<div class="row">
+		{% if request.session.grupo_id == 1 %}
 		<div class="col-md-12">
 			{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' %}
 		</div>
+		{% else %}
+			{% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '2' %}
+			<div class="col-md-12">
+				{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' %}
+			</div>
+			{% endif %}
+		{% endif %}
+		
 		<div class="col-md-12">
 			<div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 

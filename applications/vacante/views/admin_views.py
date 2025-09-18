@@ -26,6 +26,7 @@ from applications.services.service_vacanty import get_vacanty_questions, query_v
 
 #query
 from applications.services.service_client import query_client_detail
+from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
 
 #crear todas las vacantes
@@ -274,7 +275,7 @@ def create_vacanty_from_client(request, pk):
 
 #editar vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion')
 def edit_vacanty_from_client(request, pk, vacante_id):
     # Data cliente a mostrar
     data = query_client_detail(pk)
@@ -629,14 +630,16 @@ def list_vacanty_from_client(request, pk):
     return render(request, 'admin/vacancy/admin_user/client_detail_vacancy.html', context) 
 
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion')
 def vacanty_management_from_client(request, pk, vacante_id):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
+    form_errors = False
     
     # Data cliente a mostrar
     data = query_client_detail(pk)
     vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), id=vacante_id)
+    
 
     # Obtener información de las entrevistas por vacante
     entrevistas = query_interview_all()
@@ -659,6 +662,7 @@ def vacanty_management_from_client(request, pk, vacante_id):
             form_reclutados = ReclutadoCrearForm(request.POST)
             form = VacancyAssingForm(cliente_id=cliente_id)  # Mantener el otro formulario vacío
             if form_reclutados.is_valid():
+                
                 numero_documento = form_reclutados.cleaned_data['numero_documento']
                 primer_nombre = form_reclutados.cleaned_data['primer_nombre']
                 segundo_nombre = form_reclutados.cleaned_data['segundo_nombre']
@@ -708,17 +712,21 @@ def vacanty_management_from_client(request, pk, vacante_id):
                 messages.success(request, 'Candidato asignado en la vacante exitosamente.')
                 return redirect('vacantes:vacantes_gestion_propias', pk=pk, vacante_id=vacante_id)
             else:
+                form_errors = True
                 messages.error(request, 'Error al crear el candidato. Verifique los datos.')
         elif 'submit_analista' in request.POST:
             form = VacancyAssingForm(request.POST, cliente_id=cliente_id)
             form_reclutados = ReclutadoCrearForm()  # Mantener el otro formulario vacío
             if form.is_valid():
+                print(form.cleaned_data)
                 analista_asignado_id = form.cleaned_data['analista_asignado']
                 vacante.usuario_asignado = get_object_or_404(UsuarioBase, id=analista_asignado_id)
                 vacante.save()
+
                 messages.success(request, 'Analista asignado correctamente')
-                return redirect('vacantes:vacantes_asignar_analista_cliente', pk=pk)
+                return redirect('vacantes:vacantes_gestion_propias', pk=pk, vacante_id=vacante_id)
             else:
+                form_errors = True  
                 messages.error(request, 'Error al asignar el analista. Verifique los datos.')
         else:
             # Si no se reconoce el submit, mantener ambos formularios vacíos
@@ -737,6 +745,7 @@ def vacanty_management_from_client(request, pk, vacante_id):
         'preguntas': preguntas,
         'form': form,
         'analista_asignado': analista_asignado,
+        'form_errors': form_errors,
     }
 
     return render(request, 'admin/vacancy/admin_user/client_detail_vacancy_management.html', context) 
