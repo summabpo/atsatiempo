@@ -29,5 +29,8 @@ def query_interview_all():
             'usuario_asignado__segundo_apellido', 
         ),
         nombre_cliente=F('asignacion_vacante__vacante_id_052__asignacion_cliente_id_064__id_cliente_asignado__razon_social'),
+        logo_cliente=F('asignacion_vacante__vacante_id_052__asignacion_cliente_id_064__id_cliente_asignado__logo'),
         titulo_vacante=F('asignacion_vacante__vacante_id_052__titulo'),
+        cargo_vacante=F('asignacion_vacante__vacante_id_052__cargo__nombre_cargo'),
+        reclutado_id=F('asignacion_vacante__id'),
     )
