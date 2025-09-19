@@ -71,6 +71,11 @@
             {% include "admin/layout/partials/menu_sidebar/dashboard_sidebar_client.html" %}
         {% endif %}
 
+        <!-- CLIENTE ENTREVISTADOR -->
+        {% if request.session.grupo_id == 4 %}
+            {% include "admin/layout/partials/menu_sidebar/dashboard_sidebar_client_interviewer.html" %}
+        {% endif %}
+
         <!-- ANALISTA SELECCION CLIENTE -->
         {% if request.session.grupo_id == 5 %}
             {% include "admin/layout/partials/menu_sidebar/dashboard_sidebar_client_analyst.html" %}

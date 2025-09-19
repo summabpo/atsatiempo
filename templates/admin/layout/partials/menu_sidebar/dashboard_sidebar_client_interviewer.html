@@ -1,0 +1,19 @@
+{% load custom_tags %}
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">ENTREVISTAS</span>
+</li>
+<li class="menu-item 
+    {% if request.resolver_match.url_name == 'entrevistas_listado_entrevistador' %}open{% endif %}
+    ">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon red">event</span>
+        <span class="title">Entrevistas</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="{% url 'entrevistas:entrevistas_listado_entrevistador' %}"  class="menu-link {% if request.resolver_match.url_name == 'entrevistas_listado_entrevistador' %}active{% endif %}  ">
+                Ver Entrevistas
+            </a>
+        </li>
+    </ul>
+</li>

@@ -116,7 +116,7 @@ def detail_vacancy_recruited(request, pk):
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats', 'acceso_analista_seleccion')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats', 'acceso_analista_seleccion', 'acceso_cliente_entrevistador')
 def detail_recruited(request, pk):
     url_actual = f"{request.scheme}://{request.get_host()}"
 

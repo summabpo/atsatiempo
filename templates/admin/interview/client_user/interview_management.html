@@ -19,7 +19,7 @@ Detalle vacante
 						<span class="text-secondary fw-medium hover" >Inicio</span>
 					</a>
 				</li>
-                <li class="breadcrumb-item active" aria-current="page">
+                {% comment %} <li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Listado de Vacantes</span>
 					</a>
@@ -33,8 +33,19 @@ Detalle vacante
 					<a href="{% url 'reclutados:reclutados_detalle_cliente' reclutado.id %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Detalle Persona Reclutada</span>
 					</a>
-				</li>
-				<li class="breadcrumb-item active" aria-current="page">
+				</li> {% endcomment %}
+				
+
+                {% if request.session.grupo_id == 4 %}
+                    
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'entrevistas:entrevistas_listado_entrevistador' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Listado de Entrevistas</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="breadcrumb-item active" aria-current="page">
 					<span class="fw-medium">Gestión Entrevista</span>
 				</li>
 			</ol>

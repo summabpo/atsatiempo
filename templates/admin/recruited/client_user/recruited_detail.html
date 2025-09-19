@@ -21,9 +21,9 @@ Detalle vacante
 				</li>
                 {% if request.session.grupo_id == 1 %}
                     <li class="breadcrumb-item active" aria-current="page">
-					<a href="{% url 'clientes:cliente_ver' %}" class="d-flex align-items-center text-decoration-none">
-						<span class="text-secondary fw-medium hover" >Listado de Clientes</span>
-					</a>
+                        <a href="{% url 'clientes:cliente_ver' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Listado de Clientes</span>
+                        </a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
                         <a href="{% url 'vacantes:vacantes_propias' vacante.asignacion_cliente_id_064.id_cliente_asignado.id %}" class="d-flex align-items-center text-decoration-none">
@@ -35,9 +35,7 @@ Detalle vacante
                             <span class="text-secondary fw-medium hover" >Gestión de Vacante</span>
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        <span class="fw-medium">Detalle Persona Reclutada</span>
-                    </li>
+                    
                 {% endif %}
 
                 {% if request.session.grupo_id == 3 %}
@@ -56,11 +54,23 @@ Detalle vacante
                             <span class="text-secondary fw-medium hover" >Personal Reclutado</span>
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        <span class="fw-medium">Detalle Persona Reclutada</span>
-                    </li>
+                    
                 {% endif %}
+
+
+                {% if request.session.grupo_id == 4 %}
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'entrevistas:entrevistas_listado_entrevistador' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Listado de Entrevistas</span>
+                        </a>
+                    </li>
+                    
+                {% endif %}
+
                 
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span class="fw-medium">Detalle Persona Reclutada</span>
+                </li>
 			</ol>
 		</nav>
 	</div>
