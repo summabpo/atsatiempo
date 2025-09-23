@@ -95,6 +95,14 @@ class CrearUsuarioInternoForm(forms.Form):
                 ('3', 'Cliente'),
                 ('4', 'Entrevistador'),
             ]
+        else:
+            # Default choices when tipo_cliente is None or unexpected value
+            choices_rol=[
+                ('', 'Seleccione un rol'),
+                ('3', 'Cliente'),
+                ('4', 'Entrevistador'),
+                ('5', 'Analista de selección'),
+            ]
 
         self.fields['rol'] = forms.ChoiceField(
             label='Rol del Usuario',
@@ -305,6 +313,14 @@ class EditUsuarioInternoForm(forms.Form):
                 ('', 'Seleccione un rol'),
                 ('3', 'Cliente'),
                 ('4', 'Entrevistador'),
+            ]
+        else:
+            # Default choices when tipo_cliente is None or unexpected value
+            choices_rol=[
+                ('', 'Seleccione un rol'),
+                ('3', 'Cliente'),
+                ('4', 'Entrevistador'),
+                ('5', 'Analista de selección'),
             ]
 
         self.fields['rol'] = forms.ChoiceField(

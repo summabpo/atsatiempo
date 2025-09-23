@@ -69,6 +69,8 @@
     {% if request.resolver_match.url_name == 'vacantes_crear_propias' %}open{% endif %}
     {% if request.resolver_match.url_name == 'vacantes_editar_propias' %}open{% endif %}
     {% if request.resolver_match.url_name == 'vacantes_gestion_propias' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'cliente_asignados' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'client_detail_group_work' %}open{% endif %}
 
 
     ">
@@ -94,6 +96,8 @@
             {% if request.resolver_match.url_name == 'vacantes_crear_propias' %}active{% endif %}
             {% if request.resolver_match.url_name == 'vacantes_editar_propias' %}active{% endif %}
             {% if request.resolver_match.url_name == 'vacantes_gestion_propias' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'cliente_asignados' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'client_detail_group_work' %}active{% endif %}
             ">
                 Ver Clientes
             </a>

@@ -3,7 +3,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field , Div, HTML
 from applications.common.models import Cat004Ciudad, Cat001Estado
-from ..models import Cli051Cliente, Cli051ClientePruebas, Cli065ActividadEconomica, Cli067PoliticasInternas, Cli066PruebasPsicologicas, Cli068Cargo, Cli069Requisito, Cli070AsignacionRequisito, Cli071AsignacionPrueba, Cli051ClientePoliticas
+from ..models import Cli051Cliente, Cli051ClientePruebas, Cli064AsignacionCliente, Cli065ActividadEconomica, Cli067PoliticasInternas, Cli066PruebasPsicologicas, Cli068Cargo, Cli069Requisito, Cli070AsignacionRequisito, Cli071AsignacionPrueba, Cli051ClientePoliticas
 
 
 class ClienteForm(forms.Form):
@@ -347,6 +347,15 @@ class ClienteForm(forms.Form):
             direccion_cargo=direccion_cargo
         )
         cliente.save()
+
+        # Crear la asignación del cliente (Cli064AsignacionCliente)
+        asignacion_cliente = Cli064AsignacionCliente(
+            id_cliente_maestro=Cli051Cliente.objects.get(id=1000),
+            id_cliente_asignado=cliente,
+            tipo_asignacion='1',
+            estado=Cat001Estado.objects.get(id=1)
+        )
+        asignacion_cliente.save()
 
 class ClienteFormEdit(forms.Form):
     nit = forms.CharField(label='NIT', required=True, widget=forms.TextInput(attrs={'placeholder': 'Nit'}))
