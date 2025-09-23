@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
             getFieldValue('id_funciones_responsabilidades_1'),
             getFieldValue('id_funciones_responsabilidades_2'),
             getFieldValue('id_funciones_responsabilidades_3')
-        ].filter(Boolean).map(f => f.toLowerCase());
+        ].filter(Boolean).map(f => f && typeof f === 'string' ? f.toLowerCase() : f);
 
         const allSkills = [
             getMultiSelectValues('id_skill_relacionales'),
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
             getMultiSelectValues('id_skill_cognitivas'),
             getMultiSelectValues('id_skill_digitales'),
             getMultiSelectValues('id_skill_liderazgo')
-        ].map(s => s.toLowerCase());
+        ].map(s => s && typeof s === 'string' ? s.toLowerCase() : s);
 
         // --- 2. Construir el párrafo oración por oración ---
         const sentences = [];
@@ -255,8 +255,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let roleDetails = [];
         if (lugar_trabajo) roleDetails.push(`en ${lugar_trabajo}`);
-        if (modalidad) roleDetails.push(`bajo una modalidad ${modalidad.toLowerCase()}`);
-        if (termino_contrato) roleDetails.push(`con un contrato a término ${termino_contrato.toLowerCase()}`);
+        if (modalidad) roleDetails.push(`bajo una modalidad ${modalidad && typeof modalidad === 'string' ? modalidad.toLowerCase() : modalidad}`);
+        if (termino_contrato) roleDetails.push(`con un contrato a término ${termino_contrato && typeof termino_contrato === 'string' ? termino_contrato.toLowerCase() : termino_contrato}`);
         if (roleDetails.length > 0) {
             sentences.push(`La posición se desarrollará ${roleDetails.join(', ')}.`);
         }
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
             requirements.push(`una experiencia mínima de ${tiempoExp1} en ${exp1}`);
         }
         if (idioma1 && nivelIdioma1) {
-            requirements.push(`dominio del idioma ${idioma1} a un nivel ${nivelIdioma1.toLowerCase()}`);
+            requirements.push(`dominio del idioma ${idioma1} a un nivel ${nivelIdioma1 && typeof nivelIdioma1 === 'string' ? nivelIdioma1.toLowerCase() : nivelIdioma1}`);
         }
         if (requirements.length > 0) {
             sentences.push(`Para esta vacante, el perfil ideal deberá contar con ${formatListToText(requirements)}.`);
@@ -284,7 +284,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (salario) {
-            sentences.push(`La oferta salarial para este cargo es de $${salario} ${tipo_salario.toLowerCase()}.`);
+            const tipoSalarioText = tipo_salario && typeof tipo_salario === 'string' ? tipo_salario.toLowerCase() : '';
+            sentences.push(`La oferta salarial para este cargo es de $${salario} ${tipoSalarioText}.`);
         }
 
         // --- 3. Unir las oraciones y mostrar el texto en el campo ---

@@ -228,6 +228,8 @@ def detail_recruited(request, pk):
     else:
         form = EntrevistaCrearForm(grupo_id=4, cliente_id=cliente_id)
 
+    
+
     context ={
         'form': form,
         'vacante': vacante,

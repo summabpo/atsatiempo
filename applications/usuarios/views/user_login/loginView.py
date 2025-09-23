@@ -7,7 +7,7 @@ from applications.services.service_candidate import personal_information_calcula
 from applications.services.service_vacanty import query_vacanty_all, query_vacanty_with_skills_and_details
 from applications.usuarios.models import UsuarioBase, TokenAutorizacion, Grupo, Permiso
 from applications.usuarios.forms.CorreoForm import CorreoForm
-from applications.cliente.models import Cli051Cliente
+from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 from applications.candidato.models import Can101Candidato
 import random
 from django.utils.text import capfirst # type: ignore
@@ -115,6 +115,15 @@ def company_registration(request):
                             token=token_generado,  # Una función que genere un token único
                             fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
                         )
+
+                        # Crear la asignación del cliente (Cli064AsignacionCliente)
+                        asignacion_cliente = Cli064AsignacionCliente(
+                            id_cliente_maestro=Cli051Cliente.objects.get(id=1000),
+                            id_cliente_asignado=new_company,
+                            tipo_asignacion='1',
+                            estado=Cat001Estado.objects.get(id=1)
+                        )
+                        asignacion_cliente.save()
 
 
                         # Envio del correo electronico de confirmación del usuario y contraseña
