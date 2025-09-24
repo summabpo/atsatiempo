@@ -31,6 +31,8 @@ def create_internal_client(request):
         group_list = [5]
     elif cliente_type == '3':
         group_list = [3, 4]
+    else:
+        group_list = [3, 4, 5]
 
     #Obtener usuarios internos 
     usuarios_internos = UsuarioBase.objects.filter(group__in=group_list, is_active=True, cliente_id_051=cliente_id)
@@ -145,8 +147,17 @@ def detail_internal_client(request, pk):
                 usuarios_detalle.imagen_perfil = imagen_perfil
 
             if password:
-
-                usuarios_detalle.password = make_password(password)
+                is_current_user = usuarios_detalle.id == request.user.id
+    
+                if is_current_user:
+                    # Para el usuario actual, usar set_password pero mantener la sesión
+                    usuarios_detalle.set_password(password)
+                    messages.error(request, 'Tu contraseña ha sido actualizada. Te recomendamos cerrar sesión y volver a iniciar.')
+                    print("Contraseña actualizada")
+                else:
+                    usuarios_detalle.password = make_password(password)
+                
+                # usuarios_detalle.password = make_password(password)
             
             usuarios_detalle.save()
 

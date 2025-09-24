@@ -391,7 +391,7 @@ class ClienteFormEdit(forms.Form):
                 'class': 'form-select form-control',
                 'id': 'id_tipo_cliente',
             }
-        ), required=True)
+        ), required=False)
 
     PAGO_NOMINA = [
         ('1', 'Semanal'),
@@ -524,13 +524,13 @@ class ClienteFormEdit(forms.Form):
                 Div(
                     Div(
                         HTML("<h4 class='mb-3 text-primary'>Información Principal</h4>"),  
-                        Div('tipo_cliente', css_class='col-4'),
-                        Div('nit', css_class='col-4'),
-                        Div('razon_social', css_class='col-4'),
-                        Div('ciudad_id_004', css_class='col-6'),
-                        Div('logo', css_class='col-6'),
-                        Div('perfil_empresarial', css_class='col-12'),
-                        Div('actividad_economica', css_class='col-12'),
+                        # Div('tipo_cliente', css_class='col-4'),
+                        Div('nit', css_class='col-md-6'),
+                        Div('razon_social', css_class='col-md-6'),
+                        Div('ciudad_id_004', css_class='col-md-6'),
+                        Div('logo', css_class='col-md-6'),
+                        Div('perfil_empresarial', css_class='col-md-12'),
+                        Div('actividad_economica', css_class='col-md-12'),
                         css_class='row'
                     ),
                     css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  
@@ -539,10 +539,10 @@ class ClienteFormEdit(forms.Form):
                     Div(
                         HTML("<h4 class='mb-3 text-primary'>Información Contacto</h4>"),  
                         Div('contacto', css_class='col-12'),
-                        Div('contacto_cargo', css_class='col-12'),
-                        Div('direccion_cargo', css_class='col-4'),
-                        Div('email', css_class='col-4'),
-                        Div('telefono', css_class='col-4'),
+                        Div('contacto_cargo', css_class='col-md-12'),
+                        Div('direccion_cargo', css_class='col-md-4'),
+                        Div('email', css_class='col-md-4'),
+                        Div('telefono', css_class='col-md-4'),
                         css_class='row'
                     ),
                     css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  
@@ -550,9 +550,9 @@ class ClienteFormEdit(forms.Form):
                 Div(
                     Div(
                         HTML("<h4 class='mb-3 text-primary'>Información Adicional</h4>"),  
-                        Div('periodicidad_pago', css_class='col'),
-                        Div('referencias_laborales', css_class='col'),
-                        Div('cantidad_colaboradores', css_class='col'),
+                        Div('periodicidad_pago', css_class='col-md-4'),
+                        Div('referencias_laborales', css_class='col-md-4'),
+                        Div('cantidad_colaboradores', css_class='col-md-4'),
                         css_class='row'
                     ),
                     css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  
@@ -570,7 +570,7 @@ class ClienteFormEdit(forms.Form):
         email = cleaned_data.get('email')
         logo = cleaned_data.get('logo')
         actividad_economica = cleaned_data.get('actividad_economica')
-        tipo_cliente = cleaned_data.get('tipo_cliente')
+        # tipo_cliente = cleaned_data.get('tipo_cliente')
         periodicidad_pago = cleaned_data.get('periodicidad_pago')
         referencias_laborales = cleaned_data.get('referencias_laborales')
         cantidad_colaboradores = cleaned_data.get('cantidad_colaboradores')
@@ -587,8 +587,8 @@ class ClienteFormEdit(forms.Form):
         else:
             self.cleaned_data['direccion_cargo'] = direccion_cargo.upper()
 
-        if not tipo_cliente:
-            self.errors['tipo_cliente'] = self.error_class(['Debe seleccionar un tipo de cliente.'])
+        # if not tipo_cliente:
+        #     self.errors['tipo_cliente'] = self.error_class(['Debe seleccionar un tipo de cliente.'])
 
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', razon_social):
             self.add_error('razon_social', "El nombre solo puede contener letras.")
@@ -652,7 +652,7 @@ class ClienteFormEdit(forms.Form):
         cliente.perfil_empresarial = self.cleaned_data.get('perfil_empresarial', '')
         cliente.logo = self.cleaned_data.get('logo')
         cliente.actividad_economica = Cli065ActividadEconomica.objects.get(id=self.cleaned_data['actividad_economica'])
-        cliente.tipo_cliente = self.cleaned_data['tipo_cliente']
+        # cliente.tipo_cliente = self.cleaned_data['tipo_cliente']
         cliente.periodicidad_pago = self.cleaned_data['periodicidad_pago']
         cliente.referencias_laborales = self.cleaned_data['referencias_laborales']
         cliente.cantidad_colaboradores = self.cleaned_data['cantidad_colaboradores']
