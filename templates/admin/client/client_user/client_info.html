@@ -29,7 +29,7 @@
                         {% csrf_token %}
                         {% crispy form_cliente %}
                         <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_cliente">Actualizar</button>
-                        </form>
+                    </form>
 				</div>
 			</div>
 		</div>
@@ -66,6 +66,8 @@
         // Initialize select2 for specific fields
         initializeSelect2('#id_ciudad_id_004');
         initializeSelect2('#id_actividad_economica');
+
+        
     });
 </script>  
 {% endblock js %}

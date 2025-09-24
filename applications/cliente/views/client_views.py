@@ -84,6 +84,7 @@ def client_detail_info(request):
             return redirect('clientes:info_principal_cliente')
 
         else:
+            print("Errores en el formulario:", form_cliente.errors)
             messages.error(request, form_cliente.errors)  
     else:
         form_cliente = ClienteFormEdit(initial=initial_data)
