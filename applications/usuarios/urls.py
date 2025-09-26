@@ -21,6 +21,8 @@ urlpatterns = [
     path('validar_token/<str:token>', loginView.validar_token, name='validar_token'),
     path('enviar_token/', loginView.enviar_token, name='enviar_token'),
     path('acceso_denegado/', loginView.acceso_denegado, name='acceso_denegado'),
+    path('cambiar_password/', loginView.change_password_form, name='change_password'),
+    path('confirmar_password/<str:token>', loginView.confirm_password_form, name='confirm_password'),
     
     #candidate
     path('inicio/candidato', loginView.dashboard_candidato, name='inicio_candidato'),
