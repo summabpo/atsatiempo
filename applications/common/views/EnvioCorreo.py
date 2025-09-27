@@ -16,6 +16,7 @@ def enviar_correo(tipo_correo, contexto, asunto, lista_destinatarios, correo_rem
         'asignacion_entrevista_entrevista' : 'admin/mails/asignacion_entrevista_correo.html',
         'cancelacion_vacante_correo' : 'admin/mails/cancelacion_vacante_correo.html',
         'creacion_vacante' : 'admin/mails/creacion_vacante_correo.html',
+        'cambio_password' : 'admin/mails/cambio_password.html',
     }
 
     nombre_plantilla = plantilla_correo.get(tipo_correo)

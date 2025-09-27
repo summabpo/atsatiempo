@@ -5,6 +5,7 @@ from django.contrib import messages # type: ignore
 from django.http import HttpResponse # type: ignore
 from applications.services.service_candidate import personal_information_calculation
 from applications.services.service_vacanty import query_vacanty_all, query_vacanty_with_skills_and_details
+
 from applications.usuarios.models import UsuarioBase, TokenAutorizacion, Grupo, Permiso
 from applications.usuarios.forms.CorreoForm import CorreoForm
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
@@ -23,6 +24,7 @@ from django.conf import settings # type: ignore
 from applications.usuarios.forms.loginform import LoginForm
 from applications.usuarios.forms.UserForms import SignupForm
 from applications.usuarios.forms.CandidatoForm import SignupFormCandidato
+from applications.usuarios.forms.EmailUserForm import EmailForm, EmailUserForm
 
 # consultas
 from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante_candidato
@@ -517,3 +519,96 @@ def enviar_token(request):
 def acceso_denegado(request):
     url_actual = f"{request.scheme}://{request.get_host()}"
     return render(request, 'admin/login/access_denied.html')
+
+def change_password_form(request):
+    url_actual = f"{request.scheme}://{request.get_host()}"
+    if request.method == 'POST':
+        form = EmailForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+
+            if UsuarioBase.objects.filter(username=email).exists():
+                usuario_email = UsuarioBase.objects.get(username=email)
+
+                token_generado = generate_token(50);
+                TokenAutorizacion.objects.create(
+                    user_id=usuario_email.id,
+                    token=token_generado,  # Una función que genere un token único
+                    fecha_expiracion=timezone.now() + timedelta(days=2),  # Si tiene fecha de expiración
+                )
+
+                contexto = {
+                    'name': usuario_email.primer_nombre.capitalize(),
+                    'last_name': usuario_email.primer_apellido.capitalize(),
+                    'user': usuario_email.username,
+                    'email': email,
+                    'token': token_generado,
+                    'url' : url_actual
+                }
+
+                enviar_correo('cambio_password', contexto, 'Cambio contraseña ATS', [email], correo_remitente=None)
+
+                messages.success(request, 'Se ha enviado un correo electronico para su cambiar la contraseña')
+                return redirect('accesses:change_password')
+            else:
+                messages.error(request, 'El correo ingresado no se encuentra registrado')
+                return redirect('accesses:change_password')
+        else:
+            messages.error(request, '¡Oops! Hubo un error al procesar el correo.')
+            return redirect('accesses:change_password')
+    else:
+        form = EmailForm()
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'admin/login/change_password.html', context)
+
+def confirm_password_form(request, token):
+    form = EmailUserForm()
+
+    try:
+        token_obj = TokenAutorizacion.objects.get(token=token)
+        
+        if token_obj.fecha_expiracion < timezone.now():
+            messages.error(request, 'Token vencido, por favor ingrese nuevamente su correo para generar uno nuevo')
+            return redirect('accesses:change_password')
+        
+        if token_obj.fecha_validacion is not None:
+            messages.error(request, 'Token ya validado, por favor ingrese nuevamente su correo para generar uno nuevo')
+            return redirect('accesses:change_password')
+        
+        if request.method == 'POST':
+            form = EmailUserForm(request.POST)
+            if form.is_valid():
+                password = form.cleaned_data['password']
+                confirm_password = form.cleaned_data['confirm_password']
+                if password != confirm_password:
+                    messages.error(request, 'Las contraseñas no coinciden')
+                    return redirect('accesses:change_password')
+                
+                usuario = get_object_or_404(UsuarioBase, id=token_obj.user.id)
+                usuario.set_password(password)
+                usuario.save()
+
+                token_obj.fecha_validacion = timezone.now()
+                token_obj.save()
+
+                messages.success(request, 'Contraseña actualizada correctamente')
+                return redirect('accesses:login')
+            else:
+                messages.error(request, '¡Oops! Hubo un error al procesar la contraseña.')
+                return redirect('accesses:change_password')
+        else:
+            form = EmailUserForm()
+
+    except TokenAutorizacion.DoesNotExist:
+        messages.error(request, 'Token no válido')
+        return redirect('accesses:change_password')
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'admin/login/confirm_password.html', context)
