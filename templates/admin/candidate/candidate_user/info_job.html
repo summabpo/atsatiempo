@@ -125,9 +125,9 @@ Información Básica | Talent Tray
                                         <p class="fs-13 mb-1">
                                             Sector: <b>{{ exp.sector }}</b>
                                         </p>
-                                        <p class="fs-13 mb-1">
+                                        {% comment %} <p class="fs-13 mb-1">
                                             Modalidad: <b>{{ exp.get_modalidad_trabajo_display }}</b>
-                                        </p>
+                                        </p> {% endcomment %}
                                         <p class="fs-13 mb-1">
                                             {% if exp.activo %}
                                                 <span class="badge bg-success">Actualmente</span>

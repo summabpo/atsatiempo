@@ -486,18 +486,61 @@ class CandidateForm(forms.Form):
         required=False,
         queryset=Cli078MotivadoresCandidato.objects.filter(estado_id=1),
         widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'form-check-input'
+            'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
         }),
     )
 
-    fit_cultural = forms.ModelMultipleChoiceField(
-        label='Fit Cultural',
-        queryset=Cli077FitCultural.objects.filter(estado_id=1),
-        required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'form-check-input'
-        }),
-    )
+    
+
+    grupo_fit_1 = forms.ModelMultipleChoiceField(
+            queryset=Cli077FitCultural.objects.filter(estado=1, grupo=1).order_by('id'),
+            label='Estilo trabajo predominante en el área:',
+            to_field_name='id',
+            widget=forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            }),
+            required=False # Si quieres que la selección sea opcional
+        )
+    
+    grupo_fit_2 = forms.ModelMultipleChoiceField(
+            queryset=Cli077FitCultural.objects.filter(estado=1, grupo=2).order_by('id'),
+            label='Tipo de liderazgo presente:',
+            to_field_name='id',
+            widget=forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            }),
+            required=False # Si quieres que la selección sea opcional
+        )
+    
+    grupo_fit_3 = forms.ModelMultipleChoiceField(
+            queryset=Cli077FitCultural.objects.filter(estado=1, grupo=3).order_by('id'),
+            label='Comunicación organizacional:',
+            to_field_name='id',
+            widget=forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            }),
+            required=False # Si quieres que la selección sea opcional
+        )
+
+    grupo_fit_4 = forms.ModelMultipleChoiceField(
+            queryset=Cli077FitCultural.objects.filter(estado=1, grupo=4).order_by('id'),
+            label='Ritmo de trabajo:',
+            to_field_name='id',
+            widget=forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            }),
+            required=False # Si quieres que la selección sea opcional
+        )
+    
+    grupo_fit_5 = forms.ModelMultipleChoiceField(
+            queryset=Cli077FitCultural.objects.filter(estado=1, grupo=5).order_by('id'),
+            label='Estilo toma de decisiones:',
+            to_field_name='id',
+            widget=forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            }),
+            required=False # Si quieres que la selección sea opcional
+        )
     
 
 

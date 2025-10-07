@@ -221,69 +221,43 @@ Perfil Candidato | Talent Tray
 
 					<div class="card bg-white border-0 rounded-3 mb-4">
 						<div class="card-body p-4">
-							<h3 class="mb-3 mb-lg-4 text-primary">Habilidades Duras</h3>
-							<div class="card mb-4">
-								<div class="card-body">
-									<ul class="list-group list-group-flush">
-										{% for skill in skills %}
-											{% if skill.tipo_habilidad == 'D' %}
-												<li class="list-group-item py-3">
-													<div class="d-flex flex-column"> {# Main flex container for skill details #}
-														<div class="d-flex justify-content-between align-items-baseline mb-1">
-															<h6 class="fw-bold mb-0 me-3">{{ skill.skill_id_104.nombre }}</h6>
-															<span class="badge bg-opacity-10 bg-{{skill.color_nivel}} py-1 px-2 text-{{skill.color_nivel}} rounded-1 fw-medium fs-12">{{ skill.get_nivel_display }}</span>
-														</div>
-														{% if skill.certificado_habilidad %}
-															<div class="d-flex justify-content-end mt-2"> {# Container for the certificate button #}
-																<a href="{{ skill.certificado_habilidad.url }}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" target="_blank">
-																	<i class="bi bi-file-earmark-text"></i> Certificado
-																</a>
-															</div>
-														{% endif %}
+							<h3 class="mb-3 mb-lg-4 text-primary">Habilidades</h3>
+							
+							{% if skills_by_group %}
+								<div class="row">
+									{% for grupo_nombre, habilidades in skills_by_group.items %}
+										{% if habilidades %}
+											<div class="col-md-12 col-lg-12 mb-4">
+												<div class="card h-100 border-0 shadow-sm">
+													<div class="card-header bg-primary bg-opacity-10 border-0">
+														<h6 class="mb-0 text-primary fw-bold">{{ grupo_nombre }}</h6>
 													</div>
-												</li>
-											{% endif %}
-										{% empty %}
-											<li class="list-group-item">
-												<p class="text-muted mb-0">No hay habilidades registradas.</p>
-											</li>
-										{% endfor %}
-									</ul>
-								</div>
-							</div>
-						</div>
-
-						<div class="card-body p-4">
-							<h3 class="mb-3 mb-lg-4 text-primary">Habilidades Blandas</h3>
-							<div class="card mb-4">
-								<div class="card-body">
-									<ul class="list-group list-group-flush">
-										{% for skill in skills %}
-											{% if skill.tipo_habilidad == 'S' %}
-												<li class="list-group-item py-3">
-													<div class="d-flex flex-column"> {# Main flex container for skill details #}
-														<div class="d-flex justify-content-between align-items-baseline mb-1">
-															<h6 class="fw-bold mb-0 me-3">{{ skill.skill_id_104.nombre }}</h6>
-															<span class="badge bg-opacity-10 bg-{{skill.color_nivel}} py-1 px-2 text-{{skill.color_nivel}} rounded-1 fw-medium fs-12">{{ skill.get_nivel_display }}</span>
-														</div>
-														{% if skill.certificado_habilidad %}
-															<div class="d-flex justify-content-end mt-2"> {# Container for the certificate button #}
-																<a href="{{ skill.certificado_habilidad.url }}" class="btn btn-sm btn-outline-secondary" target="_blank">
-																	<i class="bi bi-file-earmark-text"></i> Certificado
-																</a>
+													<div class="card-body p-3">
+														{% for skill in habilidades %}
+															<div class="d-flex align-items-center mb-2">
+																<i class="bi bi-check-circle-fill text-success me-2"></i>
+																<span class="text-dark">{{ skill.skill_id_104.nombre }}</span>
+																{% if skill.certificado_habilidad %}
+																	<a href="{{ skill.certificado_habilidad.url }}" class="btn btn-sm btn-outline-primary ms-auto" target="_blank" title="Ver certificado">
+																		<i class="bi bi-file-earmark-text"></i>
+																	</a>
+																{% endif %}
 															</div>
-														{% endif %}
+														{% endfor %}
 													</div>
-												</li>
-											{% endif %}
-										{% empty %}
-											<li class="list-group-item">
-												<p class="text-muted mb-0">No hay habilidades registradas.</p>
-											</li>
-										{% endfor %}
-									</ul>
+												</div>
+											</div>
+										{% endif %}
+									{% endfor %}
 								</div>
-							</div>
+							{% else %}
+								<div class="card mb-4">
+									<div class="card-body text-center py-5">
+										<i class="bi bi-exclamation-circle text-muted fs-1 mb-3"></i>
+										<p class="text-muted mb-0">No hay habilidades registradas.</p>
+									</div>
+								</div>
+							{% endif %}
 						</div>
 					</div>
 				</div>

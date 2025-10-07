@@ -220,11 +220,11 @@ class candidateStudyForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'Carrera', 'class': 'form-control'})
     )
-    fortaleza_adquiridas = forms.CharField(
-        label='FORTALEZAS ADQUIRIDAS',
-        required=False,
-        widget=forms.Textarea(attrs={'placeholder': 'Descripción de las fortalezas', 'class': 'form-control'})
-    )
+    # fortaleza_adquiridas = forms.CharField(
+    #     label='FORTALEZAS ADQUIRIDAS',
+    #     required=False,
+    #     widget=forms.Textarea(attrs={'placeholder': 'Descripción de las fortalezas', 'class': 'form-control'})
+    # )
     ciudad_id_004 = forms.ModelChoiceField(
         label='CIUDAD',
         queryset=Cat004Ciudad.objects.all(),
@@ -299,9 +299,9 @@ class candidateStudyForm(forms.Form):
                     Div('fecha_inicial', css_class='col-6'),
                     Div('fecha_final', css_class='col-6 campo-graduado'),
                     Div('ciudad_id_004', css_class='col-12'),
-                    Div('carrera', css_class='col-12'),
+                    # Div('carrera', css_class='col-12'),
                     Div('certificacion', css_class='col-12'),
-                    Div('fortaleza_adquiridas', css_class='col-12'),
+                    # Div('fortaleza_adquiridas', css_class='col-12'),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -318,8 +318,8 @@ class candidateStudyForm(forms.Form):
         fecha_final = cleaned_data.get('fecha_final')
         grado_en = cleaned_data.get('grado_en')
         titulo = cleaned_data.get('titulo')
-        carrera = cleaned_data.get('carrera')
-        fortaleza_adquiridas = cleaned_data.get('fortaleza_adquiridas')
+        # carrera = cleaned_data.get('carrera')
+        # fortaleza_adquiridas = cleaned_data.get('fortaleza_adquiridas')
         tipo_estudio = cleaned_data.get('tipo_estudio')
         ciudad_id_004 = cleaned_data.get('ciudad_id_004')
         certificacion = cleaned_data.get('certificacion')
@@ -349,14 +349,14 @@ class candidateStudyForm(forms.Form):
             else:
                 self.cleaned_data['titulo'] = titulo.upper()
 
-        if carrera and not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', carrera):
-            self.add_error('carrera', "La Carrera solo puede contener letras.")
-        elif carrera:
-            self.cleaned_data['carrera'] = carrera.upper()
+        # if carrera and not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', carrera):
+        #     self.add_error('carrera', "La Carrera solo puede contener letras.")
+        # elif carrera:
+        #     self.cleaned_data['carrera'] = carrera.upper()
         
-        if fortaleza_adquiridas:
-            if len(fortaleza_adquiridas.split()) < 5:
-                self.add_error('fortaleza_adquiridas', 'La descripción debe contener al menos 5 palabras')
+        # if fortaleza_adquiridas:
+        #     if len(fortaleza_adquiridas.split()) < 5:
+        #         self.add_error('fortaleza_adquiridas', 'La descripción debe contener al menos 5 palabras')
 
         # Validar archivo de certificación (opcional)
         if certificacion:

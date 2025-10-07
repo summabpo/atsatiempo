@@ -216,6 +216,7 @@ class CandidateHabilityFormList(forms.Form):
             Div(
                 Div(
                     HTML("<h4 class='mb-3 text-primary'>Relacionales</h4>"),
+                    HTML("<p class='text-muted'>Selecciona máximo 2 competencias por cada categoría (Relacionales, Personales, Cognitivas, Liderazgo, Digitales). Elige con honestidad las que más te representen: así lograremos un match auténtico entre tu estilo y la cultura de la empresa.</p>"),
                     Div('skill_relacionales', css_class='col-md-2'),
                     Div('skill_personales', css_class='col-md-2'),
                     Div('skill_cognitivas', css_class='col-md-3'),

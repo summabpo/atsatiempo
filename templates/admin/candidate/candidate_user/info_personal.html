@@ -71,7 +71,196 @@ Información Básica | Talent Tray
 				<div class="card-body p-4">
                     <form method="post" id="form_info_personal"enctype="multipart/form-data">
                         {% csrf_token %}
-                        {% crispy form %}
+                        {% comment %} {% crispy form %} {% endcomment %}
+                        <!-- INSERT_YOUR_CODE -->
+                        <div class="mb-4 p-3 border rounded bg-primary bg-opacity-10">
+                            <div class="row">
+                                <div class="d-flex align-items-center my-4">
+									<h6 class="mb-0 pe-3 text-primary fw-bold">DATOS PERSONALES</h6>
+									<hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+								</div>
+                                <div class="col-md-3 mb-3">
+                                    {{ form.primer_nombre.label_tag }} {{ form.primer_nombre }}
+                                    {% if form.primer_nombre.errors %}
+                                        <div class="text-danger small">{{ form.primer_nombre.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    {{ form.segundo_nombre.label_tag }} {{ form.segundo_nombre }}
+                                    {% if form.segundo_nombre.errors %}
+                                        <div class="text-danger small">{{ form.segundo_nombre.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    {{ form.primer_apellido.label_tag }} {{ form.primer_apellido }}
+                                    {% if form.primer_apellido.errors %}
+                                        <div class="text-danger small">{{ form.primer_apellido.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    {{ form.segundo_apellido.label_tag }} {{ form.segundo_apellido }}
+                                    {% if form.segundo_apellido.errors %}
+                                        <div class="text-danger small">{{ form.segundo_apellido.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    {{ form.numero_documento.label_tag }} {{ form.numero_documento }}
+                                    {% if form.numero_documento.errors %}
+                                        <div class="text-danger small">{{ form.numero_documento.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    {{ form.fecha_nacimiento.label_tag }} {{ form.fecha_nacimiento }}
+                                    {% if form.fecha_nacimiento.errors %}
+                                        <div class="text-danger small">{{ form.fecha_nacimiento.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    {{ form.sexo.label_tag }} {{ form.sexo }}
+                                    {% if form.sexo.errors %}
+                                        <div class="text-danger small">{{ form.sexo.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    {{ form.aspiracion_salarial.label_tag }} {{ form.aspiracion_salarial }}
+                                    {% if form.aspiracion_salarial.errors %}
+                                        <div class="text-danger small">{{ form.aspiracion_salarial.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4 p-3 border rounded bg-primary bg-opacity-10">
+                            <div class="row">
+                                <div class="d-flex align-items-center my-4">
+									<h6 class="mb-0 pe-3 text-primary fw-bold">CONTACTO</h6>
+									<hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+								</div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.email.label_tag }} {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger small">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.telefono.label_tag }} {{ form.telefono }}
+                                    {% if form.telefono.errors %}
+                                        <div class="text-danger small">{{ form.telefono.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.ciudad_id_004.label_tag }} {{ form.ciudad_id_004 }}
+                                    {% if form.ciudad_id_004.errors %}
+                                        <div class="text-danger small">{{ form.ciudad_id_004.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.direccion.label_tag }} {{ form.direccion }}
+                                    {% if form.direccion.errors %}
+                                        <div class="text-danger small">{{ form.direccion.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4 p-3 border rounded bg-primary bg-opacity-10">
+                            <div class="row">
+                                <div class="d-flex align-items-center my-4">
+									<h6 class="mb-0 pe-3 text-primary fw-bold">PERFIL</h6>
+									<hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+								</div>
+                                <div class="col-md-12 mb-3">
+                                    {{ form.perfil.label_tag }} {{ form.perfil }}
+                                    {% if form.perfil.errors %}
+                                        <div class="text-danger small">{{ form.perfil.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4 p-3 border rounded bg-primary bg-opacity-10">
+                            <div class="row">
+                                <div class="d-flex align-items-center my-4">
+									<h6 class="mb-0 pe-3 text-primary fw-bold">DOCUMENTOS</h6>
+									<hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+								</div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.imagen_perfil.label_tag }} {{ form.imagen_perfil }}
+                                    {% if form.imagen_perfil.errors %}
+                                        <div class="text-danger small">{{ form.imagen_perfil.errors }}</div>
+                                    {% endif %}
+                                    {% if form.imagen_perfil.value %}
+                                        <div class="mt-2">
+                                            <span class="text-secondary small">Archivo actual: {{ form.imagen_perfil.value }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.hoja_de_vida.label_tag }} {{ form.hoja_de_vida }}
+                                    {% if form.hoja_de_vida.errors %}
+                                        <div class="text-danger small">{{ form.hoja_de_vida.errors }}</div>
+                                    {% endif %}
+                                    {% if form.hoja_de_vida.value %}
+                                        <div class="mt-2">
+                                            <span class="text-secondary small">Archivo actual: {{ form.hoja_de_vida.value }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+						<div class="mb-4 p-3 border rounded bg-primary bg-opacity-10">
+							<div class="d-flex align-items-center my-4">
+								<h6 class="mb-0 pe-3 text-primary fw-bold">FIT CULTURAL</h6>
+								<hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+							</div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="alert alert-info" role="alert">
+                                        <h4 class="alert-heading">
+                                            <span class="material-symbols-outlined text-info me-2">psychology</span>
+                                            Selecciona tus habilidades blandas
+                                        </h4>
+                                        <p>
+                                            En esta sección podrás elegir el entorno y estilo de cultura donde te sientes más cómodo y das lo mejor de ti: cómo prefieres trabajar, el liderazgo que más te impulsa, tu ritmo ideal, la forma en que te comunicas y cómo tomas decisiones.
+Lo que selecciones nos permitirá ubicarte en una empresa donde no solo encajes por tu experiencia técnica, sino donde realmente puedas fluir, aportar valor y crecer.
+.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <p>Selecciona una opción por cada categoría (Estilo de trabajo, Liderazgo, Ritmo, Comunicación y Decisiones). Marca lo que más se ajusta a tu realidad: así lograremos un match auténtico entre tu estilo y la cultura de la empresa.</p>
+                                </div>
+                                <hr class="my-4">
+                                <div class="col-md-4">
+                                    {{ form.grupo_fit_1|as_crispy_field }}
+                                </div> 
+                                <div class="col-md-4">
+                                    {{ form.grupo_fit_2|as_crispy_field }}
+                                </div> 
+                                <div class="col-md-4">
+                                    {{ form.grupo_fit_3|as_crispy_field }}
+                                </div> 
+                                <div class="col-md-4">
+                                    {{ form.grupo_fit_4|as_crispy_field }}
+                                </div> 
+                                <div class="col-md-4">
+                                    {{ form.grupo_fit_5|as_crispy_field }}
+                                </div> 
+                            </div>
+						</div>
+
+                        
+                        <div class="mb-4 p-3 border rounded bg-primary bg-opacity-10">
+                            <div class="d-flex align-items-center my-4">
+                                <h6 class="mb-0 pe-3 text-primary fw-bold">MOTIVADORES</h6>
+                                <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            </div>
+                            <p class="text-gray-light mb-4">¿Qué tipo de motivación esperas encontrar en un candidato ideal?</p>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {{ form.motivadores|as_crispy_field }}
+                                </div> 
+                                
+                            </div>
+                        </div>
                         <button id="form_info_personal" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_info_personal">Guardar Cambios</button>
                     </form>
                 </div>

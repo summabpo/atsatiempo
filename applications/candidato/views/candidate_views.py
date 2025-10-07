@@ -124,8 +124,8 @@ def candidate_info_academy(request):
             fecha_inicial = form.cleaned_data['fecha_inicial']
             fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
             titulo = form.cleaned_data['titulo'] if form.cleaned_data['titulo'] else None
-            carrera = form.cleaned_data['carrera']
-            fortaleza_adquiridas = form.cleaned_data['fortaleza_adquiridas']
+            # carrera = form.cleaned_data['carrera']
+            # fortaleza_adquiridas = form.cleaned_data['fortaleza_adquiridas']
             candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
             ciudad_obj_004 = form.cleaned_data['ciudad_id_004']
             tipo_estudio = form.cleaned_data['tipo_estudio']
@@ -141,8 +141,8 @@ def candidate_info_academy(request):
                 fecha_inicial=fecha_inicial,
                 fecha_final=fecha_final,
                 titulo=titulo,
-                carrera=carrera,
-                fortaleza_adquiridas=fortaleza_adquiridas,
+                # carrera=carrera,
+                # fortaleza_adquiridas=fortaleza_adquiridas,
                 candidato_id_101=candidato_id_101,
                 ciudad_id_004=ciudad_obj_004,
                 tipo_estudio=tipo_estudio,
@@ -177,8 +177,8 @@ def candidate_info_academy_edit(request, pk):
         'fecha_final': study.fecha_final.strftime('%Y-%m-%d') if study.fecha_final else '',
         'grado_en': study.grado_en,
         'titulo': study.titulo,
-        'carrera': study.carrera,
-        'fortaleza_adquiridas': study.fortaleza_adquiridas,
+        # 'carrera': study.carrera,
+        # 'fortaleza_adquiridas': study.fortaleza_adquiridas,
         'ciudad_id_004': study.ciudad_id_004.id if study.ciudad_id_004 else None,
         'tipo_estudio': study.tipo_estudio,
         'certificacion': study.certificacion,
@@ -194,8 +194,8 @@ def candidate_info_academy_edit(request, pk):
             study.fecha_inicial = form.cleaned_data['fecha_inicial']
             study.fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
             study.titulo = form.cleaned_data['titulo'] if form.cleaned_data['titulo'] else None
-            study.carrera = form.cleaned_data['carrera']
-            study.fortaleza_adquiridas = form.cleaned_data['fortaleza_adquiridas']
+            # study.carrera = form.cleaned_data['carrera']
+            # study.fortaleza_adquiridas = form.cleaned_data['fortaleza_adquiridas']
             study.candidato_id_101 = Can101Candidato.objects.get(id=request.session.get('candidato_id'))
             study.ciudad_id_004 = form.cleaned_data['ciudad_id_004']
             study.tipo_estudio = form.cleaned_data['tipo_estudio']
@@ -454,6 +454,29 @@ def candidate_info_perfil(request):
     studies = Can103Educacion.objects.filter(candidato_id_101=candidato.id).order_by('-fecha_inicial')
     # Obtener las habilidades del candidato (ajusta según tu modelo)
     skills = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato.id).order_by('-id')
+    
+    # Agrupar habilidades según la lógica del formulario
+    skills_by_group = {
+        'Relacionales': [],
+        'Personales': [],
+        'Cognitivas': [],
+        'Digitales / Ágiles': [],
+        'Liderazgo / Dirección': []
+    }
+    
+    for skill in skills:
+        if skill.tipo_habilidad == 'S' and skill.skill_id_104.grupo:
+            grupo_id = skill.skill_id_104.grupo.id
+            if grupo_id == 1:
+                skills_by_group['Relacionales'].append(skill)
+            elif grupo_id == 2:
+                skills_by_group['Personales'].append(skill)
+            elif grupo_id == 3:
+                skills_by_group['Cognitivas'].append(skill)
+            elif grupo_id == 4:
+                skills_by_group['Liderazgo / Dirección'].append(skill)
+            elif grupo_id == 5:
+                skills_by_group['Digitales / Ágiles'].append(skill)
 
     socialNetwork = Can106CandidatoRed.objects.filter(candidato_id_101=candidato.id, estado_id_001=1).order_by('-id')
     
@@ -462,6 +485,7 @@ def candidate_info_perfil(request):
         'jobs': jobs,
         'studies': studies,
         'skills': skills,
+        'skills_by_group': skills_by_group,
         'socialNetwork': socialNetwork,
     }
 

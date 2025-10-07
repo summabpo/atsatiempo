@@ -65,6 +65,8 @@
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'vacante_candidato_aplicadas' %}open{% endif %}
     {% if request.resolver_match.url_name == 'vacante_candidato_disponibles' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'reclutados_confirmar_aplicar_candidato' %}open{% endif %}
+
     ">
     <a href="javascript:void(0);" class="menu-link menu-toggle active">
         <span class="material-symbols-outlined menu-icon red">work</span>
@@ -81,8 +83,9 @@
         <li class="menu-item">
             <a href="{% url 'vacantes:vacante_candidato_disponibles' %}"  class="menu-link  
             {% if request.resolver_match.url_name == 'vacante_candidato_disponibles' %}active{% endif %} 
+            {% if request.resolver_match.url_name == 'reclutados_confirmar_aplicar_candidato' %}active{% endif %} 
             ">
-                Vacantes
+                Buscar Vacantes
             </a>
         </li>
     </ul>
