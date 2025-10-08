@@ -492,52 +492,52 @@ class CandidateForm(forms.Form):
 
     
 
-    grupo_fit_1 = forms.ModelMultipleChoiceField(
+    grupo_fit_1 = forms.ModelChoiceField(
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=1).order_by('id'),
             label='Estilo trabajo predominante en el área:',
             to_field_name='id',
-            widget=forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            widget=forms.RadioSelect(attrs={
+                'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
         )
     
-    grupo_fit_2 = forms.ModelMultipleChoiceField(
+    grupo_fit_2 = forms.ModelChoiceField(
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=2).order_by('id'),
             label='Tipo de liderazgo presente:',
             to_field_name='id',
-            widget=forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            widget=forms.RadioSelect(attrs={
+                'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
         )
     
-    grupo_fit_3 = forms.ModelMultipleChoiceField(
+    grupo_fit_3 = forms.ModelChoiceField(
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=3).order_by('id'),
             label='Comunicación organizacional:',
             to_field_name='id',
-            widget=forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            widget=forms.RadioSelect(attrs={
+                'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
         )
 
-    grupo_fit_4 = forms.ModelMultipleChoiceField(
+    grupo_fit_4 = forms.ModelChoiceField(
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=4).order_by('id'),
             label='Ritmo de trabajo:',
             to_field_name='id',
-            widget=forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            widget=forms.RadioSelect(attrs={
+                'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
         )
     
-    grupo_fit_5 = forms.ModelMultipleChoiceField(
+    grupo_fit_5 = forms.ModelChoiceField(
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=5).order_by('id'),
             label='Estilo toma de decisiones:',
             to_field_name='id',
-            widget=forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            widget=forms.RadioSelect(attrs={
+                'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
         )
@@ -625,7 +625,14 @@ class CandidateForm(forms.Form):
         hoja_de_vida = cleaned_data.get('hoja_de_vida')
         perfil = cleaned_data.get('perfil')
         motivadores = cleaned_data.get('motivadores')
-        fit_cultural = cleaned_data.get('fit_cultural')
+        
+        # Combinar todos los campos de fit cultural de los diferentes grupos para validación
+        fit_cultural_combined = []
+        for i in range(1, 6):  # grupo_fit_1 a grupo_fit_5
+            grupo_field = f'grupo_fit_{i}'
+            if grupo_field in cleaned_data and cleaned_data[grupo_field]:
+                # Ahora cada campo es una selección única, no una lista
+                fit_cultural_combined.append(cleaned_data[grupo_field])
 
         # Validación de Perfil del Candidato
         if perfil:
@@ -734,7 +741,13 @@ class CandidateForm(forms.Form):
             if Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exists():
                 self.add_error('hoja_de_vida', 'Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
         else:
-            self.add_error('hoja_de_vida', 'La hoja de vida es un campo obligatorio.')
+            # Solo pedir hoja de vida si no hay una ya registrada en el candidato
+            candidato = getattr(self, 'candidato', None)
+            hoja_de_vida_actual = None
+            if candidato:
+                hoja_de_vida_actual = getattr(candidato, 'hoja_de_vida', None)
+            if not hoja_de_vida_actual:
+                self.add_error('hoja_de_vida', 'La hoja de vida es un campo obligatorio.')
 
 
         # validación motivadores
@@ -756,9 +769,17 @@ class CandidateForm(forms.Form):
         if motivadores_count > 2:
             self.add_error('motivadores', 'Solo puede seleccionar máximo dos opciones de motivadores.')
         
-        #validacion fit cultural
-        if fit_cultural and len(fit_cultural) > 2:
-            self.add_error('fit_cultural', 'Solo puede seleccionar máximo dos opciones de fit cultural.')
+        # Validación fit cultural - asegurar que no se escoja más de una opción por grupo
+        # Aunque ModelChoiceField solo permite una selección, validamos que no se envíe una lista accidentalmente
+        for i in range(1, 6):
+            grupo_field = f'grupo_fit_{i}'
+            value = cleaned_data.get(grupo_field)
+            if value and isinstance(value, list):
+                if len(value) > 1:
+                    self.add_error(grupo_field, 'Solo puede seleccionar una opción por grupo.')
+                elif len(value) == 1:
+                    # Si por alguna razón viene como lista de un solo elemento, lo convertimos al objeto
+                    cleaned_data[grupo_field] = value[0]
 
         return cleaned_data
 

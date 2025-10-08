@@ -253,12 +253,27 @@ Lo que selecciones nos permitirá ubicarte en una empresa donde no solo encajes 
                                 <h6 class="mb-0 pe-3 text-primary fw-bold">MOTIVADORES</h6>
                                 <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
                             </div>
-                            <p class="text-gray-light mb-4">¿Qué tipo de motivación esperas encontrar en un candidato ideal?</p>
                             <div class="row">
+                                <div class="col-md-12">
+                                    <div class="alert alert-info" role="alert">
+                                        <h4 class="alert-heading">
+                                            <span class="material-symbols-outlined text-info me-2">emoji_objects</span>
+                                            Selecciona tus motivadores
+                                        </h4>
+                                        <p>
+                                            En esta sección podrás seleccionar lo que más te motiva en un trabajo: estabilidad, desarrollo, propósito, impacto, remuneración u otro factor.
+Lo que elijas nos ayudará a ubicarte en una empresa donde encuentres no solo un cargo, sino un lugar en el que realmente te sientas inspirado y con ganas de dar lo mejor de ti.
+
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <p>Selecciona máximo 2 motivadores que sean más importantes para ti en tu vida laboral. Sé honesto: así lograremos un match real entre lo que buscas y lo que la empresa puede ofrecerte.</p>
+                                </div>
                                 <div class="col-md-12">
                                     {{ form.motivadores|as_crispy_field }}
                                 </div> 
-                                
                             </div>
                         </div>
                         <button id="form_info_personal" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_info_personal">Guardar Cambios</button>
