@@ -49,8 +49,16 @@ def candidate_info(request):
                 candidato.hoja_de_vida = form.cleaned_data['hoja_de_vida']
             candidato.email = form.cleaned_data['email']
             candidato.perfil = form.cleaned_data['perfil']
+            
+            # Combinar todos los campos de fit cultural de los diferentes grupos
+            fit_cultural_objs = []
+            for i in range(1, 6):  # grupo_fit_1 a grupo_fit_5
+                grupo_field = f'grupo_fit_{i}'
+                if grupo_field in form.cleaned_data and form.cleaned_data[grupo_field]:
+                    # Ahora cada campo es una selección única, no una lista
+                    fit_cultural_objs.append(form.cleaned_data[grupo_field])
+            
             # Guardar la estructura de fit_cultural como lista de diccionarios con id y nombre
-            fit_cultural_objs = form.cleaned_data['fit_cultural']
             if fit_cultural_objs:
                 fit_cultural_data = [
                     {"id": fc.id, "nombre": fc.nombre}
@@ -74,6 +82,7 @@ def candidate_info(request):
 
             return redirect('candidatos:candidato_info_personal')
         else:
+            print(form.errors)
             messages.error(request, 'Error al actualizar la información básica.')
     else:
         initial_data = {
@@ -91,13 +100,29 @@ def candidate_info(request):
             'numero_documento': candidato.numero_documento,
             'direccion': candidato.direccion,
             'perfil': candidato.perfil,
-            # fit_cultural y motivadores deben ser listas de ids para ModelMultipleChoiceField
-            'fit_cultural': [item['id'] for item in candidato.fit_cultural] if candidato.fit_cultural else [],
+            # Inicializar campos de fit cultural por grupo
+            'grupo_fit_1': None,
+            'grupo_fit_2': None,
+            'grupo_fit_3': None,
+            'grupo_fit_4': None,
+            'grupo_fit_5': None,
             'motivadores': [item['id'] for item in candidato.motivadores] if candidato.motivadores else [],
             'aspiracion_salarial': candidato.aspiracion_salarial,
             'imagen_perfil': candidato.imagen_perfil,
             'hoja_de_vida': candidato.hoja_de_vida,
         }
+        
+        # Distribuir los datos de fit_cultural en los campos correspondientes por grupo
+        if candidato.fit_cultural:
+            from applications.cliente.models import Cli077FitCultural
+            for item in candidato.fit_cultural:
+                try:
+                    fit_obj = Cli077FitCultural.objects.get(id=item['id'])
+                    grupo_field = f'grupo_fit_{fit_obj.grupo.id}'
+                    if grupo_field in initial_data:
+                        initial_data[grupo_field] = fit_obj.id
+                except Cli077FitCultural.DoesNotExist:
+                    continue
         
         form = CandidateForm(initial=initial_data, instance=candidato)
 
