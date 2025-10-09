@@ -94,17 +94,23 @@ def create_vacanty_from_client(request, pk):
                 "otro_motivo": form.cleaned_data.get('otro_motivo')
             }
 
-            # Horarios
-            horarios_data = []
+            # Horarios con estructura mejorada
+            tipo_horario = form.cleaned_data.get('tipo_horario')
+            horarios_data = {
+                "tipo": tipo_horario,
+                "bloques": []
+            }
+            
             for i in range(1, 4):
                 horario_inicio = form.cleaned_data.get(f'horario_inicio_{i}')
                 horario_final = form.cleaned_data.get(f'horario_final_{i}')
                 hora_inicio = form.cleaned_data.get(f'hora_inicio_{i}')
                 hora_final = form.cleaned_data.get(f'hora_final_{i}')
+                
                 if all([horario_inicio, horario_final, hora_inicio, hora_final]):
-                    horarios_data.append({
-                        "dia_inicio": horario_inicio, # Corregido para que coincida con la lectura
-                        "dia_final": horario_final,   # Corregido para que coincida con la lectura
+                    horarios_data["bloques"].append({
+                        "dia_inicio": horario_inicio,
+                        "dia_final": horario_final,
                         "hora_inicio": str(hora_inicio),
                         "hora_final": str(hora_final),
                         "bloque": i
@@ -189,6 +195,7 @@ def create_vacanty_from_client(request, pk):
                 barrio=form.cleaned_data['barrio'],
                 direccion=form.cleaned_data['direccion'],
                 termino_contrato=form.cleaned_data['termino_contrato'],
+                tipo_horario=tipo_horario,  # ✅ Agregado campo tipo_horario
                 # ✅ Pasa las listas de Python directamente
                 motivo_vacante=motivo_vacante_data,
                 horario=horarios_data,
@@ -358,6 +365,7 @@ def edit_vacanty_from_client(request, pk, vacante_id):
         'tipo_profesion': perfil_vacante.tipo_profesion if perfil_vacante else None,
         'grupo_profesion': perfil_vacante.grupo_profesion_id if perfil_vacante and perfil_vacante.grupo_profesion else None,
         'profesion_estudio_listado': procesar_profesion_listado(perfil_vacante.profesion_estudio_listado) if perfil_vacante else None,
+        'tipo_horario': perfil_vacante.tipo_horario if perfil_vacante else None,  # ✅ Cargar tipo_horario directamente del modelo
     }
 
     # Cargar skills correctamente por grupo
@@ -374,15 +382,31 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             initial['motivo_vacante'] = perfil_vacante.motivo_vacante.get('motivo', '')
             initial['otro_motivo'] = perfil_vacante.motivo_vacante.get('otro_motivo', '')
 
-        # Horarios
+        # Horarios - Cargar desde JSON si existe
         if perfil_vacante.horario:
-            for horario in perfil_vacante.horario:
-                if isinstance(horario, dict):  # <-- Verificación aplicada
-                    bloque = horario.get('bloque', 1)
-                    initial[f'horario_inicio_{bloque}'] = horario.get('dia_inicio', '')
-                    initial[f'horario_final_{bloque}'] = horario.get('dia_final', '')
-                    initial[f'hora_inicio_{bloque}'] = horario.get('hora_inicio', '')
-                    initial[f'hora_final_{bloque}'] = horario.get('hora_final', '')
+            horario_data = perfil_vacante.horario
+            if isinstance(horario_data, dict):
+                # Nueva estructura: {"tipo": "HF", "bloques": [...]}
+                # Solo usar tipo del JSON si no hay tipo_horario en el modelo
+                if not initial.get('tipo_horario'):
+                    initial['tipo_horario'] = horario_data.get('tipo', '')
+                bloques = horario_data.get('bloques', [])
+                for horario in bloques:
+                    if isinstance(horario, dict):
+                        bloque = horario.get('bloque', 1)
+                        initial[f'horario_inicio_{bloque}'] = horario.get('dia_inicio', '')
+                        initial[f'horario_final_{bloque}'] = horario.get('dia_final', '')
+                        initial[f'hora_inicio_{bloque}'] = horario.get('hora_inicio', '')
+                        initial[f'hora_final_{bloque}'] = horario.get('hora_final', '')
+            elif isinstance(horario_data, list):
+                # Estructura antigua: [{"bloque": 1, ...}, ...] - Compatibilidad hacia atrás
+                for horario in horario_data:
+                    if isinstance(horario, dict):
+                        bloque = horario.get('bloque', 1)
+                        initial[f'horario_inicio_{bloque}'] = horario.get('dia_inicio', '')
+                        initial[f'horario_final_{bloque}'] = horario.get('dia_final', '')
+                        initial[f'hora_inicio_{bloque}'] = horario.get('hora_inicio', '')
+                        initial[f'hora_final_{bloque}'] = horario.get('hora_final', '')
 
         # Experiencia laboral
         if perfil_vacante.experiencia_laboral:
@@ -459,6 +483,10 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             perfil_vacante.grupo_profesion = Cli075GrupoProfesion.objects.get(id=form.cleaned_data['grupo_profesion']) if form.cleaned_data['grupo_profesion'] else None
             perfil_vacante.profesion_estudio_listado = form.cleaned_data['profesion_estudio_listado']
             
+            # Obtener tipo_horario antes de usarlo
+            tipo_horario = form.cleaned_data.get('tipo_horario')
+            perfil_vacante.tipo_horario = tipo_horario  # ✅ Agregado campo tipo_horario
+            
             # Guardar datos JSON
             # Motivo de la vacante
             motivo_vacante_data = {
@@ -467,8 +495,12 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             }
             perfil_vacante.motivo_vacante = motivo_vacante_data
             
-            # Horarios (múltiples bloques)
-            horarios_data = []
+            # Horarios con nueva estructura (tipo y bloques)
+            horarios_data = {
+                "tipo": tipo_horario,
+                "bloques": []
+            }
+            
             for i in range(1, 4):
                 horario_inicio = form.cleaned_data.get(f'horario_inicio_{i}')
                 horario_final = form.cleaned_data.get(f'horario_final_{i}')
@@ -476,7 +508,7 @@ def edit_vacanty_from_client(request, pk, vacante_id):
                 hora_final = form.cleaned_data.get(f'hora_final_{i}')
                 
                 if all([horario_inicio, horario_final, hora_inicio, hora_final]):
-                    horarios_data.append({
+                    horarios_data["bloques"].append({
                         'bloque': i,
                         'dia_inicio': horario_inicio,
                         'dia_final': horario_final,

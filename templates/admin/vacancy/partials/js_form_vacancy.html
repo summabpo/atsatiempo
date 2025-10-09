@@ -119,6 +119,66 @@ $(document).ready(function() {
             }
         }, 200);
     }
+
+    // ===== LÓGICA DE HORARIOS DINÁMICOS =====
+    
+    // Función para mostrar/ocultar bloques según tipo de horario
+    function toggleBloquesHorarios() {
+        const tipoHorario = $('#id_tipo_horario').val();
+        
+        // Ocultar todos los bloques por defecto
+        $('#bloque_1, #bloque_2, #bloque_3, #boton_bloque_3').addClass('d-none');
+        
+        if (tipoHorario === 'HF') {
+            // Horario Fijo: Solo mostrar Bloque 1
+            $('#bloque_1').removeClass('d-none');
+        } else if (tipoHorario === 'HR' || tipoHorario === 'HX') {
+            // Horario Rotativo/Flexible: Mostrar Bloques 1 y 2, y botón para Bloque 3
+            $('#bloque_1, #bloque_2, #boton_bloque_3').removeClass('d-none');
+        }
+    }
+
+    // Event listener para cambio de tipo de horario
+    $('#id_tipo_horario').on('change', function() {
+        toggleBloquesHorarios();
+        
+        // Limpiar campos de bloques no visibles
+        const tipoHorario = $(this).val();
+        if (tipoHorario !== 'HF') {
+            // Si no es horario fijo, limpiar bloque 3 si está oculto
+            if ($('#bloque_3').hasClass('d-none')) {
+                $('#id_horario_inicio_3, #id_horario_final_3, #id_hora_inicio_3, #id_hora_final_3').val('');
+            }
+        }
+        if (tipoHorario !== 'HR' && tipoHorario !== 'HX') {
+            // Si no es rotativo/flexible, limpiar bloques 2 y 3
+            $('#id_horario_inicio_2, #id_horario_final_2, #id_hora_inicio_2, #id_hora_final_2').val('');
+            $('#id_horario_inicio_3, #id_horario_final_3, #id_hora_inicio_3, #id_hora_final_3').val('');
+        }
+    });
+
+    // Event listener para botón "Agregar Bloque 3"
+    $('#agregar_bloque_3').on('click', function() {
+        $('#bloque_3').removeClass('d-none');
+        $('#boton_bloque_3').addClass('d-none');
+    });
+
+    // Inicializar al cargar la página
+    toggleBloquesHorarios();
+    
+    // Si hay datos de horarios cargados (modo edición), mostrar los bloques correspondientes
+    const tipoHorarioCargado = $('#id_tipo_horario').val();
+    if (tipoHorarioCargado) {
+        // Verificar si hay datos en los bloques para mostrar el Bloque 3 si es necesario
+        if (tipoHorarioCargado === 'HR' || tipoHorarioCargado === 'HX') {
+            const hayDatosBloque3 = $('#id_horario_inicio_3').val() || $('#id_horario_final_3').val() || 
+                                   $('#id_hora_inicio_3').val() || $('#id_hora_final_3').val();
+            if (hayDatosBloque3) {
+                $('#bloque_3').removeClass('d-none');
+                $('#boton_bloque_3').addClass('d-none');
+            }
+        }
+    }
 });
 
     
@@ -159,6 +219,7 @@ initializeSelect2('#id_tiempo_experiencia_1');
 initializeSelect2('#id_tiempo_experiencia_2');
 initializeSelect2('#id_tiempo_experiencia_3');
 
+initializeSelect2('#id_tipo_horario');
 initializeSelect2('#id_horario_final_1');
 initializeSelect2('#id_horario_inicio_1');
 initializeSelect2('#id_horario_final_2');

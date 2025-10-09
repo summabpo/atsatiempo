@@ -14,7 +14,7 @@ from applications.vacante.models import Cli052Vacante
 
 
 #choices
-from applications.services.choices import EDAD_SELECT_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_CHOICHES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIPO_CLIENTE_STATIC, EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_PROFESION_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC, HORARIO_CHOICES_STATIC, MOTIVO_VACANTE_CHOICES_STATIC
+from applications.services.choices import EDAD_SELECT_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_CHOICHES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIPO_CLIENTE_STATIC, EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_HORARIO_CHOICES_STATIC, TIPO_PROFESION_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC, HORARIO_CHOICES_STATIC, MOTIVO_VACANTE_CHOICES_STATIC
 
 class VacanteForm(forms.Form):
     # EXPERIENCIA_TIEMPO = [
@@ -2387,6 +2387,8 @@ class VacancyFormAllV2(forms.Form):
                 'data-placeholder': 'Seleccione una opción',
             }
             ), required=False)
+
+    
     
     motivo_vacante = forms.ChoiceField(
             label='Motivo de la vacante',
@@ -2630,6 +2632,17 @@ class VacancyFormAllV2(forms.Form):
             ), required=False)
         
 
+        self.fields['tipo_horario'] = forms.ChoiceField(
+            label='Tipo de horario',
+            choices=TIPO_HORARIO_CHOICES_STATIC,
+            widget=forms.Select(attrs={
+                'class': 'form-select form-select-solid',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+            }),
+            required=True
+        )
+
         for i in range(1, 4):  # Para 3 bloques de horarios
             self.fields[f'horario_inicio_{i}'] = forms.ChoiceField(
                 label=f'Día inicio {i}',
@@ -2833,6 +2846,54 @@ class VacancyFormAllV2(forms.Form):
         grupo_choices = [('', 'Seleccione una opción...')] + [(g.id, g.nombre) for g in grupos]
         self.fields['grupo_profesion'].choices = grupo_choices
 
+    def _validar_bloque_horario(self, cleaned_data, bloque_num, tipo_horario):
+        """Valida que un bloque de horario esté completamente diligenciado"""
+        dia_inicio = cleaned_data.get(f'horario_inicio_{bloque_num}')
+        dia_final = cleaned_data.get(f'horario_final_{bloque_num}')
+        hora_inicio = cleaned_data.get(f'hora_inicio_{bloque_num}')
+        hora_final = cleaned_data.get(f'hora_final_{bloque_num}')
+
+        # Verificar que todos los campos estén completos
+        if not dia_inicio:
+            self.add_error(f'horario_inicio_{bloque_num}', f'El día de inicio del bloque {bloque_num} es obligatorio para horario {tipo_horario}.')
+        if not dia_final:
+            self.add_error(f'horario_final_{bloque_num}', f'El día final del bloque {bloque_num} es obligatorio para horario {tipo_horario}.')
+        if not hora_inicio:
+            self.add_error(f'hora_inicio_{bloque_num}', f'La hora de inicio del bloque {bloque_num} es obligatoria para horario {tipo_horario}.')
+        if not hora_final:
+            self.add_error(f'hora_final_{bloque_num}', f'La hora final del bloque {bloque_num} es obligatoria para horario {tipo_horario}.')
+
+        # Si todos están completos, validar lógica de horarios
+        if all([dia_inicio, dia_final, hora_inicio, hora_final]):
+            if dia_inicio == dia_final and hora_inicio >= hora_final:
+                self.add_error(f'hora_final_{bloque_num}', f'La hora final debe ser mayor que la inicial en el bloque {bloque_num}.')
+
+    def _validar_bloque_horario_opcional(self, cleaned_data, bloque_num, tipo_horario):
+        """Valida un bloque de horario opcional - si se llena parcialmente, debe estar completo"""
+        dia_inicio = cleaned_data.get(f'horario_inicio_{bloque_num}')
+        dia_final = cleaned_data.get(f'horario_final_{bloque_num}')
+        hora_inicio = cleaned_data.get(f'hora_inicio_{bloque_num}')
+        hora_final = cleaned_data.get(f'hora_final_{bloque_num}')
+
+        algun_dato = any([dia_inicio, dia_final, hora_inicio, hora_final])
+        todos_diligenciados = all([dia_inicio, dia_final, hora_inicio, hora_final])
+
+        if algun_dato and not todos_diligenciados:
+            # Si se llenó alguno, pero no todos, marcar los que falten
+            if not dia_inicio:
+                self.add_error(f'horario_inicio_{bloque_num}', f'Debe completar este campo en el bloque de horario {bloque_num}')
+            if not dia_final:
+                self.add_error(f'horario_final_{bloque_num}', f'Debe completar este campo en el bloque de horario {bloque_num}')
+            if not hora_inicio:
+                self.add_error(f'hora_inicio_{bloque_num}', f'Debe completar este campo en el bloque de horario {bloque_num}')
+            if not hora_final:
+                self.add_error(f'hora_final_{bloque_num}', f'Debe completar este campo en el bloque de horario {bloque_num}')
+        
+        elif todos_diligenciados:
+            # Si todos están diligenciados, validar que la hora final sea mayor
+            if dia_inicio == dia_final and hora_inicio >= hora_final:
+                self.add_error(f'hora_final_{bloque_num}', f'La hora final debe ser mayor que la inicial en el bloque {bloque_num}')
+
     def clean(self):
         cleaned_data = super().clean()
         
@@ -2899,30 +2960,19 @@ class VacancyFormAllV2(forms.Form):
             if not otro_motivo:
                 self.add_error('otro_motivo', 'El campo Otro motivo es obligatorio cuando se selecciona "Otro".')
         
-        for i in range(1, 4):
-            dia_inicio = cleaned_data.get(f'horario_inicio_{i}')
-            dia_final = cleaned_data.get(f'horario_final_{i}')
-            hora_inicio = cleaned_data.get(f'hora_inicio_{i}')
-            hora_final = cleaned_data.get(f'hora_final_{i}')
-
-            algun_dato = any([dia_inicio, dia_final, hora_inicio, hora_final])
-            todos_diligenciados = all([dia_inicio, dia_final, hora_inicio, hora_final])
-
-            if algun_dato and not todos_diligenciados:
-                # Si se llenó alguno, pero no todos, marcar los que falten
-                if not dia_inicio:
-                    self.add_error(f'horario_inicio_{i}', f'Debe completar este campo en el bloque de horario {i}')
-                if not dia_final:
-                    self.add_error(f'horario_final_{i}', f'Debe completar este campo en el bloque de horario {i}')
-                if not hora_inicio:
-                    self.add_error(f'hora_inicio_{i}', f'Debe completar este campo en el bloque de horario {i}')
-                if not hora_final:
-                    self.add_error(f'hora_final_{i}', f'Debe completar este campo en el bloque de horario {i}')
-            
-            elif todos_diligenciados:
-                # Si todos están diligenciados, validar que la hora final sea mayor
-                if dia_inicio == dia_final and hora_inicio >= hora_final:
-                    self.add_error(f'hora_final_{i}', f'La hora final debe ser mayor que la inicial en el bloque {i}')
+        # Validación condicional de horarios según tipo_horario
+        tipo_horario = cleaned_data.get('tipo_horario')
+        if not tipo_horario:
+            self.add_error('tipo_horario', 'Debe seleccionar un tipo de horario.')
+        else:
+            # Validar horarios según el tipo seleccionado
+            if tipo_horario == 'HF':  # Horario Fijo - Solo Bloque 1 obligatorio
+                self._validar_bloque_horario(cleaned_data, 1, 'HF')
+            elif tipo_horario in ['HR', 'HX']:  # Horario Rotativo/Flexible - Bloques 1 y 2 obligatorios
+                self._validar_bloque_horario(cleaned_data, 1, tipo_horario)
+                self._validar_bloque_horario(cleaned_data, 2, tipo_horario)
+                # Bloque 3 es opcional, pero si se llena debe estar completo
+                self._validar_bloque_horario_opcional(cleaned_data, 3, tipo_horario)
         
         funciones_responsabilidades_1 = cleaned_data.get('funciones_responsabilidades_1')
         if not funciones_responsabilidades_1:
