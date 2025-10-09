@@ -134,44 +134,87 @@
                     <h6 class="mb-0 pe-3 text-primary fw-bold">Horarios</h6>
                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
                 </div>
-                <div class="col-md-3">
-                    {{ form.horario_inicio_1|as_crispy_field }}
+
+                <div class="row justify-content-end align-center">
+                    <div class="col-md-12">
+                        {{ form.tipo_horario|as_crispy_field }}
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    {{ form.horario_final_1|as_crispy_field }}
+                <!-- Bloques de horarios - ocultos por defecto -->
+                <div class="row justify-content-end align-center d-none" id="bloque_1">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Bloque 1</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.horario_inicio_1|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.horario_final_1|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.hora_inicio_1|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.hora_final_1|as_crispy_field }}
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    {{ form.hora_inicio_1|as_crispy_field }}
+                <div class="row justify-content-end align-center d-none" id="bloque_2">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Bloque 2</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.horario_inicio_2|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.horario_final_2|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.hora_inicio_2|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.hora_final_2|as_crispy_field }}
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    {{ form.hora_final_1|as_crispy_field }}
+                <div class="row justify-content-end align-center d-none" id="bloque_3">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Bloque 3</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.horario_inicio_3|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.horario_final_3|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.hora_inicio_3|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.hora_final_3|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <!-- Botón para agregar Bloque 3 (solo visible para HR/HX) -->
+                <div class="row d-none" id="boton_bloque_3">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_bloque_3">
+                            <i class="fas fa-plus me-2"></i>Agregar Bloque 3 (Opcional)
+                        </button>
+                    </div>
                 </div>
 
-                <div class="col-md-3">
-                    {{ form.horario_inicio_2|as_crispy_field }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.horario_final_2|as_crispy_field }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.hora_inicio_2|as_crispy_field }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.hora_final_2|as_crispy_field }}
-                </div>
-
-                <div class="col-md-3">
-                    {{ form.horario_inicio_3|as_crispy_field }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.horario_final_3|as_crispy_field }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.hora_inicio_3|as_crispy_field }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.hora_final_3|as_crispy_field }}
-                </div>
+    
                 <div class="d-flex align-items-center my-4">
                     <h6 class="mb-0 pe-3 text-primary fw-bold">Funciones y responsabilides del cargo</h6>
                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
@@ -459,4 +502,3 @@
 <style>
 
 </style>
-

@@ -6,7 +6,7 @@ from applications.candidato.models import Can101Candidato, Can104Skill
 from applications.usuarios.models import UsuarioBase
 
 #choices
-from applications.services.choices import EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, HORARIO_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_PROFESION_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC , ESTADO_VACANTE_CHOICHES_STATIC
+from applications.services.choices import EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, HORARIO_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_PROFESION_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC , ESTADO_VACANTE_CHOICHES_STATIC, TIPO_HORARIO_CHOICES_STATIC
 
 # Create your models here.
 class Cli053SoftSkill(models.Model):
@@ -106,6 +106,7 @@ class Cli073PerfilVacante(models.Model):
     termino_contrato = models.CharField(max_length=1, choices=TERMINO_CONTRATO_CHOICES_STATIC)
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
     fecha_creacion = models.DateField(auto_now_add=True)
+    tipo_horario = models.CharField(max_length=2, choices=TIPO_HORARIO_CHOICES_STATIC, blank=True, null=True, help_text="Tipo de horario: Fijo, Rotativo o Flexible")
     horario_inicio = models.CharField(max_length=1, choices=HORARIO_CHOICES_STATIC, blank=True, null=True)
     horario_final = models.CharField(max_length=1, choices=HORARIO_CHOICES_STATIC, blank=True, null=True)
     hora_inicio = models.TimeField(blank=True, null=True)

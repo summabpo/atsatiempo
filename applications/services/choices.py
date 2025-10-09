@@ -104,6 +104,12 @@ NIVEL_ESTUDIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     
 ]
 
+TIPO_HORARIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('HF', 'Horario Fijo'),
+    ('HX', 'Horario Flexible'),
+    ('HR', 'Horario Rotativo'),
+]
+
 HORARIO_CHOICES_STATIC =  [('', 'Seleccione una opción...')] + [
     ('L', 'Lunes'),
     ('M', 'Martes'),
