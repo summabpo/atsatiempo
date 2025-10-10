@@ -2489,52 +2489,52 @@ class VacancyFormAllV2(forms.Form):
             required=False # Si quieres que la selección sea opcional
         )
     
-    grupo_fit_1 = forms.ModelMultipleChoiceField(
+    grupo_fit_1 = forms.ModelChoiceField(
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=1).order_by('id'),
             label='Estilo trabajo predominante en el área:',
             to_field_name='id',
-            widget=forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            widget=forms.RadioSelect(attrs={
+                'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
         )
     
-    grupo_fit_2 = forms.ModelMultipleChoiceField(
+    grupo_fit_2 = forms.ModelChoiceField(
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=2).order_by('id'),
             label='Tipo de liderazgo presente:',
             to_field_name='id',
-            widget=forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            widget=forms.RadioSelect(attrs={
+                'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
         )
     
-    grupo_fit_3 = forms.ModelMultipleChoiceField(
+    grupo_fit_3 = forms.ModelChoiceField(
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=3).order_by('id'),
             label='Comunicación organizacional:',
             to_field_name='id',
-            widget=forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            widget=forms.RadioSelect(attrs={
+                'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
         )
 
-    grupo_fit_4 = forms.ModelMultipleChoiceField(
+    grupo_fit_4 = forms.ModelChoiceField(
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=4).order_by('id'),
             label='Ritmo de trabajo:',
             to_field_name='id',
-            widget=forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            widget=forms.RadioSelect(attrs={
+                'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
         )
     
-    grupo_fit_5 = forms.ModelMultipleChoiceField(
+    grupo_fit_5 = forms.ModelChoiceField(
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=5).order_by('id'),
             label='Estilo toma de decisiones:',
             to_field_name='id',
-            widget=forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input d-flex flex-wrap', # Clase para el input del checkbox
+            widget=forms.RadioSelect(attrs={
+                'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
         )
@@ -3021,38 +3021,50 @@ class VacancyFormAllV2(forms.Form):
             elif not estudio_complementario and certificado:
                 self.add_error(f'estudios_complementarios_{i}', f'El campo Estudio Complementario {i} es obligatorio si se selecciona un certificado.')
 
+        # Validación de habilidades: máximo 2 por grupo
+        grupos_skills = {
+            'skill_relacionales': 'Habilidades Relacionales',
+            'skill_personales': 'Habilidades Personales', 
+            'skill_cognitivas': 'Habilidades Cognitivas',
+            'skill_digitales': 'Habilidades Digitales',
+            'skill_liderazgo': 'Habilidades de Liderazgo'
+        }
+
         total_skills = 0
-        grupos = [
-            'skill_relacionales',
-            'skill_personales',
-            'skill_cognitivas',
-            'skill_digitales',
-            'skill_liderazgo'
-        ]
+        grupos_con_errores = []
 
-        for grupo in grupos:
-            skills = cleaned_data.get(grupo)
+        for campo, nombre_grupo in grupos_skills.items():
+            skills = cleaned_data.get(campo)
             if skills:
-                total_skills += len(skills)
+                cantidad_skills = len(skills)
+                total_skills += cantidad_skills
+                
+                # Validar máximo 2 habilidades por grupo
+                if cantidad_skills > 2:
+                    grupos_con_errores.append(nombre_grupo)
+                    self.add_error(campo, f'Puede seleccionar máximo 2 habilidades en {nombre_grupo}. Ha seleccionado {cantidad_skills}.')
 
+        # Validar que haya al menos una habilidad seleccionada
         if total_skills < 1:
-            raise forms.ValidationError("Debe seleccionar al menos una habilidad.")
-        if total_skills > 5:
-            raise forms.ValidationError("Solo puede seleccionar un máximo de 5 habilidades en total.")
+            raise forms.ValidationError("Debe seleccionar al menos una habilidad en total.")
         
-        seleccionados = []
+        # Mostrar resumen de validación si hay errores
+        if grupos_con_errores:
+            grupos_texto = ", ".join(grupos_con_errores)
+            raise forms.ValidationError(f"Error en los siguientes grupos: {grupos_texto}. Recuerde que puede seleccionar máximo 2 habilidades por grupo.")
+        
+        # Validación de Grupo Fit: al menos uno debe estar seleccionado
+        grupos_fit_seleccionados = 0
 
         for i in range(1, 6):
             valor = cleaned_data.get(f'grupo_fit_{i}')
             if valor:
-                seleccionados.append(f'grupo_fit_{i}')
+                grupos_fit_seleccionados += 1
 
-        if len(seleccionados) == 0:
+        # Validar que haya al menos un Grupo Fit seleccionado
+        if grupos_fit_seleccionados < 1:
             for i in range(1, 6):
                 self.add_error(f'grupo_fit_{i}', 'Debe seleccionar al menos un Grupo Fit.')
-        elif len(seleccionados) > 1:
-            for campo in seleccionados:
-                self.add_error(campo, 'Solo puede seleccionar un único Grupo Fit.')
 
         motivadores_candidato = cleaned_data.get('motivadores_candidato')
         if not motivadores_candidato:

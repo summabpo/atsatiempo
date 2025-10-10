@@ -355,10 +355,23 @@
         <div class="tab-pane fade" id="pane-data3" role="tabpanel" aria-labelledby="tab-data3" tabindex="0">
             <h4 class="fs-18 fw-semibold">Competencias Clave (Soft Skills)</h4>
             <p class="text-gray-light mb-4">Selecciona hasta 5 habilidades clave para el éxito de este rol</p>
+            
             <div class="row mb-4 p-3 border rounded bg-primary bg-opacity-10">
                 <div class="d-flex align-items-center my-4">
                     <h6 class="mb-0 pe-3 text-primary fw-bold">Habilidades Blandas</h6>
                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                </div>
+                <div class="alert alert-info" role="alert">
+                    <h4 class="alert-heading">
+                        <span class="material-symbols-outlined text-info me-2">psychology</span>
+                        Selecciona tus habilidades blandas
+                    </h4>
+                    <p>
+                        Esta parte te permite identificar las habilidades blandas que realmente marcan la diferencia en el desempeño de un cargo.
+                        Aquí podrás seleccionar cuáles son esenciales para el rol que estás definiendo, asegurando que el talento no solo cumpla con los requisitos técnicos, sino que <b>también encaje con la forma en que tu empresa necesita que se hagan las cosas.</b>
+                        <hr>
+                        Selecciona máximo 2 competencias por cada categoría (Relacionales, Personales, Cognitivas, Liderazgo, Digitales). Esto asegura un perfil balanceado y enfocado.
+                    </p>
                 </div>
                 <div class="col-md-2">
                     {{ form.skill_relacionales|as_crispy_field }}
@@ -396,11 +409,22 @@
 
         <div class="tab-pane fade" id="pane-data4" role="tabpanel" aria-labelledby="tab-data4" tabindex="0">
             <h4 class="fs-18 fw-semibold">Fit cultural y de entorno</h4>
-            <p class="text-gray-light mb-4">Evalua el tipo de cultura donde debe encajar el talento. Elije 1, el que más predómine.</p>
             <div class="row mb-4 p-3 border rounded bg-primary bg-opacity-10">
                 <div class="d-flex align-items-center my-4">
                     <h6 class="mb-0 pe-3 text-primary fw-bold">Fit cultural</h6>
                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                </div>
+                <div class="alert alert-info" role="alert">
+                    <h4 class="alert-heading">
+                        <span class="material-symbols-outlined text-info me-2">psychology</span>
+                        Selecciona tus habilidades blandas
+                    </h4>
+                    <p>
+                        El módulo de <b>Fit Cultural y de Entorno</b> permite identificar el tipo de cultura y estilo de trabajo donde un candidato tendrá mayor éxito.
+                        Aquí podrás definir cómo se trabaja en tu empresa: estilo predominante, liderazgo presente, ritmo de trabajo, comunicación organizacional y forma de tomar decisiones. Esto asegura que el talento seleccionado no solo cumpla con lo técnico, sino que también encaje con la manera en que tu organización funciona día a día.
+                        <hr>
+                        Selecciona una opción por cada categoría (Estilo de trabajo, Liderazgo, Ritmo, Comunicación y Decisiones). Esto permite reflejar con precisión el entorno real de tu empresa.
+                    </p>
                 </div>
                 <div class="col-md-4">
                     {{ form.grupo_fit_1|as_crispy_field }}
