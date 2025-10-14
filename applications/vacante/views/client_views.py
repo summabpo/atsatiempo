@@ -356,7 +356,6 @@ def create_vacanty_v2(request):
 
             #motivadores
             motivadores_candidato = form.cleaned_data.get('motivadores_candidato')
-            otro_motivador = form.cleaned_data.get('otro_motivador')
 
             #Comentarios 
             comentarios= form.cleaned_data.get('comentarios')
@@ -400,14 +399,17 @@ def create_vacanty_v2(request):
                 numero_posiciones = numero_posiciones,
                 cantidad_presentar=cantidad_presentar,
                 titulo = f'Vacante para el cargo:{cargo_obj.nombre_cargo}',
-                motivadores = Cli078MotivadoresCandidato.objects.get(id=motivadores_candidato),
-                otro_motivador = otro_motivador,
                 fecha_presentacion = fecha_presentacion,
                 asignacion_cliente_id_064 = asignacion_cliente,
                 perfil_vacante = perfil_vacante,
                 descripcion_vacante = descripcion_vacante, 
                 comentarios = comentarios
             )
+            
+            # Asignar motivadores múltiples
+            if motivadores_candidato:
+                motivadores_objects = Cli078MotivadoresCandidato.objects.filter(id__in=motivadores_candidato)
+                vacante.motivadores.set(motivadores_objects)
 
             # 1. Elimina las relaciones existentes para esta vacante.
             # Esto es crucial para manejar actualizaciones y evitar errores por la restricción 'unique_together'.
@@ -547,8 +549,7 @@ def detail_vacancy(request, pk):
         'lugar_trabajo': perfil_vacante.lugar_trabajo_id if perfil_vacante and perfil_vacante.lugar_trabajo else None,
         'profesion_estudio': perfil_vacante.profesion_estudio_id if perfil_vacante and perfil_vacante.profesion_estudio else None,
         'nivel_estudio': perfil_vacante.nivel_estudio if perfil_vacante else None,
-        'motivadores_candidato': vacante.motivadores_id if vacante.motivadores else None,
-        'otro_motivador': vacante.otro_motivador,
+        'motivadores_candidato': list(vacante.motivadores.values_list('id', flat=True)) if vacante.motivadores.exists() else [],
         'comentarios': vacante.comentarios,
         'descripcion_vacante': vacante.descripcion_vacante,
         'tipo_profesion': perfil_vacante.tipo_profesion if perfil_vacante else None,
@@ -630,8 +631,13 @@ def detail_vacancy(request, pk):
             vacante.fecha_presentacion = form.cleaned_data['fecha_presentacion']
             vacante.descripcion_vacante = form.cleaned_data['descripcion_vacante']
             vacante.comentarios = form.cleaned_data['comentarios']
-            vacante.motivadores = Cli078MotivadoresCandidato.objects.get(id=form.cleaned_data['motivadores_candidato']) if form.cleaned_data['motivadores_candidato'] else None
-            vacante.otro_motivador = form.cleaned_data['otro_motivador']
+            # Actualizar motivadores múltiples
+            motivadores_ids = form.cleaned_data.get('motivadores_candidato', [])
+            if motivadores_ids:
+                motivadores_objects = Cli078MotivadoresCandidato.objects.filter(id__in=motivadores_ids)
+                vacante.motivadores.set(motivadores_objects)
+            else:
+                vacante.motivadores.clear()
 
             vacante.save()
 

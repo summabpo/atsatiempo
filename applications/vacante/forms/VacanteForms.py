@@ -2795,18 +2795,23 @@ class VacancyFormAllV2(forms.Form):
             )
 
         motivadores = Cli078MotivadoresCandidato.objects.filter(estado=1).order_by('id')
-        motivadores_choices = [('', '----------')] + [(motivador.id, f"{motivador.nombre}") for motivador in motivadores]
+        motivadores_choices = [(motivador.id, f"{motivador.nombre}") for motivador in motivadores]
 
-        self.fields['motivadores_candidato'] = forms.ChoiceField(
-            label='Motivadores del candidato',
+        self.fields['motivadores_candidato'] = forms.MultipleChoiceField(
+            label='Motivadores del candidato (máximo 2)',
             choices=motivadores_choices,
-            widget=forms.Select(
-            attrs={
-            'class': 'form-select form-select-solid',
-            'data-control': 'select2',
-            'data-placeholder': 'Seleccione una opción',
-            }
-            ), required=False)
+            widget=forms.SelectMultiple(
+                attrs={
+                    'class': 'form-select form-select-solid',
+                    'data-control': 'select2',
+                    'data-placeholder': 'Seleccione máximo 2 opciones',
+                    'multiple': 'multiple',
+                    'style': 'width: 100%; min-height: 38px;'
+                }
+            ), 
+            required=False,
+            help_text='Puede seleccionar máximo 2 motivadores'
+        )
         
         self.fields['comentarios'] = forms.CharField(
             label='Comentarios finales',
@@ -2962,8 +2967,8 @@ class VacancyFormAllV2(forms.Form):
         
         # Validación condicional de horarios según tipo_horario
         tipo_horario = cleaned_data.get('tipo_horario')
-        if not tipo_horario:
-            self.add_error('tipo_horario', 'Debe seleccionar un tipo de horario.')
+        if not tipo_horario or tipo_horario == '' or tipo_horario is None:
+            self.add_error('tipo_horario', 'El campo Tipo de horario es obligatorio.')
         else:
             # Validar horarios según el tipo seleccionado
             if tipo_horario == 'HF':  # Horario Fijo - Solo Bloque 1 obligatorio
@@ -3069,6 +3074,8 @@ class VacancyFormAllV2(forms.Form):
         motivadores_candidato = cleaned_data.get('motivadores_candidato')
         if not motivadores_candidato:
             self.add_error('motivadores_candidato', 'El campo Motivadores del candidato es obligatorio.')
+        elif len(motivadores_candidato) > 2:
+            self.add_error('motivadores_candidato', 'Solo puede seleccionar máximo 2 motivadores.')
         descripcion_vacante = cleaned_data.get('descripcion_vacante')
         if not descripcion_vacante:
             self.add_error('descripcion_vacante', 'El campo Descripción vacante es obligatorio.')

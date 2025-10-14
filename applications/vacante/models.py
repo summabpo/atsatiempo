@@ -136,7 +136,8 @@ class Cli052Vacante(models.Model):
     soft_skills_id_053 = models.ManyToManyField(Cli053SoftSkill)
     hard_skills_id_054 = models.ManyToManyField(Cli054HardSkill)
     fit_cultural = models.ManyToManyField(Cli077FitCultural)
-    motivadores = models.ForeignKey(Cli078MotivadoresCandidato, on_delete=models.CASCADE, blank=True, null=True)
+    # motivadores = models.ManyToManyField(Cli078MotivadoresCandidato, on_delete=models.CASCADE, blank=True, null=True)
+    motivadores = models.ManyToManyField(Cli078MotivadoresCandidato, related_name="motivadores_vacante")
     otro_motivador = models.CharField(max_length=100, blank=True, null=True)
     estudios_complementarios = models.CharField(max_length=100, blank=True, null=True)
     estudios_complementarios_certificado = models.BooleanField(default=False, blank=True, null=True)
@@ -152,6 +153,7 @@ class Cli052Vacante(models.Model):
     descripcion_vacante = models.TextField(null=True, blank=True)
     comentarios = models.TextField(null=True, blank=True)
     habilidades = models.ManyToManyField(Can104Skill, related_name="habilidades_vacante")
+    motivadores_multiple = models.ManyToManyField(Cli078MotivadoresCandidato, related_name="motivadores_multiple_vacante")
     
 
     def __str__(self):

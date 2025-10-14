@@ -21,22 +21,44 @@ $(document).ready(function() {
 
     $('#id_motivo_vacante').on('change', toggleOtroMotivo);
     toggleOtroMotivo();  // Ejecutar al cargar la página
+    
+    // Validación del formulario antes de enviar
+    $('form').on('submit', function(e) {
+        let isValid = true;
+        
+        // Validar tipo de horario
+        if (!validarTipoHorario()) {
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            // Hacer scroll al primer campo con error
+            $('.is-invalid').first().focus();
+        }
+    });
 
-    // Motivadores Candidato
-    function toggleOtroMotivador() {
-        const valorMotivador = $('#id_motivadores_candidato').val();
-
-        // Solo mostrar cuando el valor sea específicamente '5'
-        if (valorMotivador == 5) {
-            $('#id_otro_motivador').show();
-        } else {
-            $('#id_otro_motivador').hide();
-            $('#id_otro_motivador').val('');
+    // Motivadores Candidato - Selección múltiple con máximo 2
+    function validarMaximoMotivadores() {
+        const valoresMotivador = $('#id_motivadores_candidato').val();
+        
+        if (Array.isArray(valoresMotivador) && valoresMotivador.length > 2) {
+            // Remover la última selección
+            const valoresValidos = valoresMotivador.slice(0, 2);
+            $('#id_motivadores_candidato').val(valoresValidos).trigger('change');
+            
+            // Mostrar mensaje de advertencia
+            if (typeof toastr !== 'undefined') {
+                toastr.warning('Solo puede seleccionar máximo 2 motivadores');
+            } else {
+                alert('Solo puede seleccionar máximo 2 motivadores');
+            }
         }
     }
 
-    $('#id_motivadores_candidato').on('change', toggleOtroMotivador);
-    toggleOtroMotivador();  // Ejecutar al cargar la página
+    $('#id_motivadores_candidato').on('change', function() {
+        validarMaximoMotivadores();
+    });
 
     // Función para mostrar/ocultar campos según el tipo seleccionado
     function toggleCamposProfesion() {
@@ -138,9 +160,28 @@ $(document).ready(function() {
         }
     }
 
+    // Función para validar tipo de horario
+    function validarTipoHorario() {
+        const tipoHorario = $('#id_tipo_horario').val();
+        const errorElement = $('#id_tipo_horario').closest('.form-group').find('.invalid-feedback');
+        
+        if (!tipoHorario || tipoHorario === '') {
+            if (errorElement.length === 0) {
+                $('#id_tipo_horario').addClass('is-invalid');
+                $('#id_tipo_horario').after('<div class="invalid-feedback">El campo Tipo de horario es obligatorio.</div>');
+            }
+            return false;
+        } else {
+            $('#id_tipo_horario').removeClass('is-invalid');
+            $('#id_tipo_horario').closest('.form-group').find('.invalid-feedback').remove();
+            return true;
+        }
+    }
+
     // Event listener para cambio de tipo de horario
     $('#id_tipo_horario').on('change', function() {
         toggleBloquesHorarios();
+        validarTipoHorario(); // Validar cuando cambie
         
         // Limpiar campos de bloques no visibles
         const tipoHorario = $(this).val();
@@ -198,7 +239,28 @@ initializeSelect2('#id_profesion_estudio');
 initializeSelect2('#id_frecuencia_pago');
 initializeSelect2('#id_nivel_idioma');
 initializeSelect2('#id_motivo_vacante');
-initializeSelect2('#id_motivadores_candidato');
+// Inicializar Select2 para motivadores con selección múltiple
+$('#id_motivadores_candidato').select2({
+    placeholder: 'Seleccione máximo 2 opciones',
+    allowClear: true,
+    maximumSelectionLength: 2,
+    width: '100%',
+    language: {
+        maximumSelected: function (e) {
+            return "Solo puede seleccionar máximo " + e.maximum + " opciones";
+        }
+    }
+}).on('select2:open select2:close', function() {
+    // Asegurar ancho y altura correctos después de abrir/cerrar
+    $('.motivadores-field-wrapper .select2-container').css({
+        'width': '100%',
+        'min-height': '38px'
+    });
+    $('.motivadores-field-wrapper .select2-selection').css({
+        'width': '100%',
+        'min-height': '38px'
+    });
+});
 
 initializeSelect2('#id_estudios_complementarios_certificado_1');
 initializeSelect2('#id_estudios_complementarios_certificado_2');
@@ -352,5 +414,30 @@ document.addEventListener('DOMContentLoaded', function() {
         // --- 3. Unir las oraciones y mostrar el texto en el campo ---
         targetTextarea.value = sentences.join(' ');
     }
+});
+
+// CSS personalizado para el campo de motivadores
+$(document).ready(function() {
+    // Asegurar que el campo de motivadores tenga el ancho y altura correctos
+    $('.motivadores-field-wrapper .select2-container').css({
+        'width': '100%',
+        'min-height': '38px'
+    });
+    $('.motivadores-field-wrapper .select2-selection').css({
+        'width': '100%',
+        'min-height': '38px'
+    });
+    
+    // Re-aplicar después de que Select2 se inicialice
+    setTimeout(function() {
+        $('.motivadores-field-wrapper .select2-container').css({
+            'width': '100%',
+            'min-height': '38px'
+        });
+        $('.motivadores-field-wrapper .select2-selection').css({
+            'width': '100%',
+            'min-height': '38px'
+        });
+    }, 100);
 });
 </script>
