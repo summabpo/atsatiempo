@@ -238,14 +238,20 @@ def create_vacanty_from_client(request, pk):
             if skills_seleccionadas:
                 vacante.habilidades.set(skills_seleccionadas)
 
-            # Fit Cultural (El método .set() SÍ funciona aquí, asumiendo que su tabla intermedia es manejada por Django)
-            fit_cultural_objects = (
-                list(form.cleaned_data.get('grupo_fit_1', [])) +
-                list(form.cleaned_data.get('grupo_fit_2', [])) +
-                list(form.cleaned_data.get('grupo_fit_3', [])) +
-                list(form.cleaned_data.get('grupo_fit_4', [])) +
-                list(form.cleaned_data.get('grupo_fit_5', []))
-            )
+            # Fit Cultural (Los campos son ModelChoiceField, no ModelMultipleChoiceField)
+            fit_cultural_objects = []
+            
+            # Agregar cada selección individual si existe
+            if form.cleaned_data.get('grupo_fit_1'):
+                fit_cultural_objects.append(form.cleaned_data['grupo_fit_1'])
+            if form.cleaned_data.get('grupo_fit_2'):
+                fit_cultural_objects.append(form.cleaned_data['grupo_fit_2'])
+            if form.cleaned_data.get('grupo_fit_3'):
+                fit_cultural_objects.append(form.cleaned_data['grupo_fit_3'])
+            if form.cleaned_data.get('grupo_fit_4'):
+                fit_cultural_objects.append(form.cleaned_data['grupo_fit_4'])
+            if form.cleaned_data.get('grupo_fit_5'):
+                fit_cultural_objects.append(form.cleaned_data['grupo_fit_5'])
 
             if fit_cultural_objects:
                 # .set() espera una lista de objetos o de IDs. Ambas funcionan.
@@ -586,18 +592,24 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             # Esto borra las habilidades viejas y agrega las nuevas automáticamente.
             vacante.habilidades.set(skills_seleccionadas)
             
-            # Fit cultural
+            # Fit Cultural (Los campos son ModelChoiceField, no ModelMultipleChoiceField)
             vacante.fit_cultural.clear()
-            grupo_fit_1 = form.cleaned_data.get('grupo_fit_1', [])
-            grupo_fit_2 = form.cleaned_data.get('grupo_fit_2', [])
-            grupo_fit_3 = form.cleaned_data.get('grupo_fit_3', [])
-            grupo_fit_4 = form.cleaned_data.get('grupo_fit_4', [])
-            grupo_fit_5 = form.cleaned_data.get('grupo_fit_5', [])
+            fit_cultural_objects = []
             
-            # Solo debe haber un grupo fit seleccionado, pero por si acaso tomamos el primero que encuentre
-            todos_fit = list(grupo_fit_1) + list(grupo_fit_2) + list(grupo_fit_3) + list(grupo_fit_4) + list(grupo_fit_5)
-            if todos_fit:
-                vacante.fit_cultural.add(*todos_fit)
+            # Agregar cada selección individual si existe
+            if form.cleaned_data.get('grupo_fit_1'):
+                fit_cultural_objects.append(form.cleaned_data['grupo_fit_1'])
+            if form.cleaned_data.get('grupo_fit_2'):
+                fit_cultural_objects.append(form.cleaned_data['grupo_fit_2'])
+            if form.cleaned_data.get('grupo_fit_3'):
+                fit_cultural_objects.append(form.cleaned_data['grupo_fit_3'])
+            if form.cleaned_data.get('grupo_fit_4'):
+                fit_cultural_objects.append(form.cleaned_data['grupo_fit_4'])
+            if form.cleaned_data.get('grupo_fit_5'):
+                fit_cultural_objects.append(form.cleaned_data['grupo_fit_5'])
+            
+            if fit_cultural_objects:
+                vacante.fit_cultural.add(*fit_cultural_objects)
             
             messages.success(request, 'Vacante editada correctamente')
             return redirect('vacantes:vacantes_propias', pk=pk)
