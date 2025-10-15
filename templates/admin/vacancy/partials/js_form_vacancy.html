@@ -21,20 +21,76 @@ $(document).ready(function() {
 
     $('#id_motivo_vacante').on('change', toggleOtroMotivo);
     toggleOtroMotivo();  // Ejecutar al cargar la página
-    
+
+    // Función para validar cantidad de semestres
+    function validarCantidadSemestres() {
+        const estadoEstudio = $('#id_estado_estudio').val();
+        const cantidadSemestres = $('#id_cantidad_semestres').val();
+        const errorElement = $('#id_cantidad_semestres').closest('.form-group').find('.invalid-feedback');
+        
+        if (estadoEstudio === 'False' || estadoEstudio === false) {
+            // Limpiar errores previos
+            $('#id_cantidad_semestres').removeClass('is-invalid');
+            errorElement.remove();
+            
+            if (!cantidadSemestres || cantidadSemestres === '' || cantidadSemestres === null) {
+                $('#id_cantidad_semestres').addClass('is-invalid');
+                $('#id_cantidad_semestres').after('<div class="invalid-feedback d-block">Debe ingresar la cantidad de semestres cursados (1-20)</div>');
+                return false;
+            } else if (cantidadSemestres < 1 || cantidadSemestres > 20) {
+                $('#id_cantidad_semestres').addClass('is-invalid');
+                $('#id_cantidad_semestres').after('<div class="invalid-feedback d-block">La cantidad debe estar entre 1 y 20 semestres</div>');
+                return false;
+            } else {
+                // Validación exitosa
+                $('#id_cantidad_semestres').removeClass('is-invalid');
+                $('#id_cantidad_semestres').addClass('is-valid');
+                errorElement.remove();
+                return true;
+            }
+        } else {
+            // Si está graduado, limpiar validaciones
+            $('#id_cantidad_semestres').removeClass('is-invalid is-valid');
+            errorElement.remove();
+            return true;
+        }
+    }
+
     // Validación del formulario antes de enviar
     $('form').on('submit', function(e) {
         let isValid = true;
+        let errorMessages = [];
         
         // Validar tipo de horario
         if (!validarTipoHorario()) {
             isValid = false;
+            errorMessages.push('Tipo de horario');
+        }
+        
+        // Validar cantidad de semestres
+        if (!validarCantidadSemestres()) {
+            isValid = false;
+            errorMessages.push('Cantidad de semestres');
         }
         
         if (!isValid) {
             e.preventDefault();
+            
+            // Mostrar mensaje de error general
+            if (typeof toastr !== 'undefined') {
+                toastr.error(`Por favor corrija los siguientes campos: ${errorMessages.join(', ')}`, 'Formulario incompleto');
+            } else {
+                alert(`Por favor corrija los siguientes campos: ${errorMessages.join(', ')}`);
+            }
+            
             // Hacer scroll al primer campo con error
-            $('.is-invalid').first().focus();
+            const firstErrorField = $('.is-invalid').first();
+            if (firstErrorField.length > 0) {
+                firstErrorField.focus();
+                $('html, body').animate({
+                    scrollTop: firstErrorField.offset().top - 100
+                }, 500);
+            }
         }
     });
 
@@ -59,6 +115,293 @@ $(document).ready(function() {
     $('#id_motivadores_candidato').on('change', function() {
         validarMaximoMotivadores();
     });
+
+    // Función para mostrar/ocultar campo cantidad_semestres
+    function toggleCantidadSemestres() {
+        const estadoEstudio = $('#id_estado_estudio').val();
+        const cantidadSemestresContainer = $('#cantidad_semestres_container');
+        const cantidadSemestresField = $('#id_cantidad_semestres');
+        
+        if (estadoEstudio === 'False' || estadoEstudio === false) {
+            // Mostrar campo si no está graduado
+            cantidadSemestresContainer.show();
+            cantidadSemestresField.prop('required', true);
+            
+            // Limpiar validaciones previas
+            cantidadSemestresField.removeClass('is-invalid is-valid');
+            cantidadSemestresField.closest('.form-group').find('.invalid-feedback').remove();
+            
+        } else {
+            // Ocultar campo si está graduado
+            cantidadSemestresContainer.hide();
+            cantidadSemestresField.prop('required', false);
+            cantidadSemestresField.val(''); // Limpiar el valor
+            
+            // Limpiar validaciones
+            cantidadSemestresField.removeClass('is-invalid is-valid');
+            cantidadSemestresField.closest('.form-group').find('.invalid-feedback').remove();
+        }
+    }
+
+    // Event listener para cambio de estado de estudio
+    $('#id_estado_estudio').on('change', function() {
+        toggleCantidadSemestres();
+        validarCantidadSemestres(); // Validar cuando cambie
+    });
+    
+    // Event listener para cambio de cantidad de semestres
+    $('#id_cantidad_semestres').on('input change blur', function() {
+        const valor = $(this).val();
+        const estadoEstudio = $('#id_estado_estudio').val();
+        
+        // Solo validar si no está graduado
+        if (estadoEstudio === 'False' || estadoEstudio === false) {
+            // Si el valor está fuera del rango, limpiarlo inmediatamente
+            if (valor && (valor < 1 || valor > 20)) {
+                $(this).val('');
+            }
+        }
+        
+        validarCantidadSemestres();
+    });
+    
+    // Prevenir que se ingresen valores fuera del rango
+    $('#id_cantidad_semestres').on('keypress', function(e) {
+        const char = String.fromCharCode(e.which);
+        const currentValue = $(this).val();
+        const newValue = currentValue + char;
+        
+        // Solo permitir números
+        if (!/[0-9]/.test(char)) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Si el nuevo valor sería mayor a 20, prevenir la entrada
+        if (parseInt(newValue) > 20) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // Ejecutar al cargar la página
+    toggleCantidadSemestres();
+
+    // Funcionalidad para bloques de experiencia laboral
+    function toggleBloquesExperiencia() {
+        // El bloque 1 siempre está visible
+        $('#experiencia_bloque_1').removeClass('d-none');
+        
+        // Verificar si hay datos en los bloques para mostrar automáticamente
+        const tieneExperiencia2 = ($('#id_tiempo_experiencia_2').val() && $('#id_tiempo_experiencia_2').val().trim() !== '') || 
+                                 ($('#id_experiencia_especifica_en_2').val() && $('#id_experiencia_especifica_en_2').val().trim() !== '');
+        const tieneExperiencia3 = ($('#id_tiempo_experiencia_3').val() && $('#id_tiempo_experiencia_3').val().trim() !== '') || 
+                                 ($('#id_experiencia_especifica_en_3').val() && $('#id_experiencia_especifica_en_3').val().trim() !== '');
+        
+        if (tieneExperiencia2) {
+            $('#experiencia_bloque_2').removeClass('d-none');
+            $('#boton_experiencia_2').addClass('d-none');
+            
+            // Si hay experiencia 2, mostrar botón para agregar experiencia 3 si no hay experiencia 3
+            if (!tieneExperiencia3) {
+                $('#boton_experiencia_3').removeClass('d-none');
+            } else {
+                $('#boton_experiencia_3').addClass('d-none');
+            }
+        } else {
+            $('#experiencia_bloque_2').addClass('d-none');
+            $('#boton_experiencia_2').removeClass('d-none');
+            $('#boton_experiencia_3').addClass('d-none');
+        }
+        
+        if (tieneExperiencia3) {
+            $('#experiencia_bloque_3').removeClass('d-none');
+            $('#boton_experiencia_3').addClass('d-none');
+        } else {
+            $('#experiencia_bloque_3').addClass('d-none');
+        }
+    }
+
+    // Event listener para agregar experiencia 2
+    $('#agregar_experiencia_2').on('click', function() {
+        $('#experiencia_bloque_2').removeClass('d-none');
+        $('#boton_experiencia_2').addClass('d-none');
+        $('#boton_experiencia_3').removeClass('d-none');
+        
+        // Hacer focus al primer campo del bloque 2
+        setTimeout(function() {
+            $('#id_tiempo_experiencia_2').focus();
+        }, 100);
+    });
+
+    // Event listener para agregar experiencia 3
+    $('#agregar_experiencia_3').on('click', function() {
+        $('#experiencia_bloque_3').removeClass('d-none');
+        $('#boton_experiencia_3').addClass('d-none');
+        
+        // Hacer focus al primer campo del bloque 3
+        setTimeout(function() {
+            $('#id_tiempo_experiencia_3').focus();
+        }, 100);
+    });
+
+    // Ejecutar al cargar la página
+    toggleBloquesExperiencia();
+
+    // Funcionalidad para bloques de funciones y responsabilidades
+    function toggleBloquesFunciones() {
+        // El bloque 1 siempre está visible
+        $('#funciones_bloque_1').removeClass('d-none');
+        
+        // Verificar si hay datos en los bloques para mostrar automáticamente
+        const tieneFuncion2 = $('#id_funciones_responsabilidades_2').val() && $('#id_funciones_responsabilidades_2').val().trim() !== '';
+        const tieneFuncion3 = $('#id_funciones_responsabilidades_3').val() && $('#id_funciones_responsabilidades_3').val().trim() !== '';
+        
+        if (tieneFuncion2) {
+            $('#funciones_bloque_2').removeClass('d-none');
+            $('#boton_funciones_2').addClass('d-none');
+            
+            // Si hay función 2, mostrar botón para agregar función 3 si no hay función 3
+            if (!tieneFuncion3) {
+                $('#boton_funciones_3').removeClass('d-none');
+            } else {
+                $('#boton_funciones_3').addClass('d-none');
+            }
+        } else {
+            $('#funciones_bloque_2').addClass('d-none');
+            $('#boton_funciones_2').removeClass('d-none');
+            $('#boton_funciones_3').addClass('d-none');
+        }
+        
+        if (tieneFuncion3) {
+            $('#funciones_bloque_3').removeClass('d-none');
+            $('#boton_funciones_3').addClass('d-none');
+        } else {
+            $('#funciones_bloque_3').addClass('d-none');
+        }
+    }
+
+    // Event listener para agregar función 2
+    $('#agregar_funciones_2').on('click', function() {
+        $('#funciones_bloque_2').removeClass('d-none');
+        $('#boton_funciones_2').addClass('d-none');
+        $('#boton_funciones_3').removeClass('d-none');
+        
+        // Hacer focus al campo del bloque 2
+        setTimeout(function() {
+            $('#id_funciones_responsabilidades_2').focus();
+        }, 100);
+        
+        // Debug: verificar que el botón se muestra
+        console.log('Botón función 3 visible:', $('#boton_funciones_3').is(':visible'));
+    });
+
+    // Event listener para agregar función 3
+    $('#agregar_funciones_3').on('click', function() {
+        $('#funciones_bloque_3').removeClass('d-none');
+        $('#boton_funciones_3').addClass('d-none');
+        
+        // Hacer focus al campo del bloque 3
+        setTimeout(function() {
+            $('#id_funciones_responsabilidades_3').focus();
+        }, 100);
+    });
+
+    // Ejecutar al cargar la página
+    toggleBloquesFunciones();
+
+    // Funcionalidad para bloques de idiomas
+    function toggleBloquesIdiomas() {
+        // El bloque 1 siempre está visible
+        $('#idiomas_bloque_1').removeClass('d-none');
+        
+        // Verificar si hay datos en el bloque 2 para mostrar automáticamente
+        const tieneIdioma2 = ($('#id_idioma_2').val() && $('#id_idioma_2').val().trim() !== '') || 
+                           ($('#id_nivel_idioma_2').val() && $('#id_nivel_idioma_2').val().trim() !== '');
+        
+        if (tieneIdioma2) {
+            $('#idiomas_bloque_2').removeClass('d-none');
+            $('#boton_idiomas_2').addClass('d-none');
+        } else {
+            $('#idiomas_bloque_2').addClass('d-none');
+            $('#boton_idiomas_2').removeClass('d-none');
+        }
+    }
+
+    // Event listener para agregar idioma 2
+    $('#agregar_idiomas_2').on('click', function() {
+        $('#idiomas_bloque_2').removeClass('d-none');
+        $('#boton_idiomas_2').addClass('d-none');
+        
+        // Hacer focus al primer campo del bloque 2
+        setTimeout(function() {
+            $('#id_idioma_2').focus();
+        }, 100);
+    });
+
+    // Ejecutar al cargar la página
+    toggleBloquesIdiomas();
+
+    // Funcionalidad para bloques de estudios complementarios
+    function toggleBloquesEstudiosComp() {
+        // El bloque 1 siempre está visible
+        $('#estudios_comp_bloque_1').removeClass('d-none');
+        
+        // Verificar si hay datos en los bloques para mostrar automáticamente
+        const tieneEstudio2 = ($('#id_estudios_complementarios_2').val() && $('#id_estudios_complementarios_2').val().trim() !== '') || 
+                            ($('#id_estudios_complementarios_certificado_2').val() && $('#id_estudios_complementarios_certificado_2').val().trim() !== '');
+        const tieneEstudio3 = ($('#id_estudios_complementarios_3').val() && $('#id_estudios_complementarios_3').val().trim() !== '') || 
+                            ($('#id_estudios_complementarios_certificado_3').val() && $('#id_estudios_complementarios_certificado_3').val().trim() !== '');
+        
+        if (tieneEstudio2) {
+            $('#estudios_comp_bloque_2').removeClass('d-none');
+            $('#boton_estudios_comp_2').addClass('d-none');
+            
+            // Si hay estudio 2, mostrar botón para agregar estudio 3 si no hay estudio 3
+            if (!tieneEstudio3) {
+                $('#boton_estudios_comp_3').removeClass('d-none');
+            } else {
+                $('#boton_estudios_comp_3').addClass('d-none');
+            }
+        } else {
+            $('#estudios_comp_bloque_2').addClass('d-none');
+            $('#boton_estudios_comp_2').removeClass('d-none');
+            $('#boton_estudios_comp_3').addClass('d-none');
+        }
+        
+        if (tieneEstudio3) {
+            $('#estudios_comp_bloque_3').removeClass('d-none');
+            $('#boton_estudios_comp_3').addClass('d-none');
+        } else {
+            $('#estudios_comp_bloque_3').addClass('d-none');
+        }
+    }
+
+    // Event listener para agregar estudio complementario 2
+    $('#agregar_estudios_comp_2').on('click', function() {
+        $('#estudios_comp_bloque_2').removeClass('d-none');
+        $('#boton_estudios_comp_2').addClass('d-none');
+        $('#boton_estudios_comp_3').removeClass('d-none');
+        
+        // Hacer focus al primer campo del bloque 2
+        setTimeout(function() {
+            $('#id_estudios_complementarios_2').focus();
+        }, 100);
+    });
+
+    // Event listener para agregar estudio complementario 3
+    $('#agregar_estudios_comp_3').on('click', function() {
+        $('#estudios_comp_bloque_3').removeClass('d-none');
+        $('#boton_estudios_comp_3').addClass('d-none');
+        
+        // Hacer focus al primer campo del bloque 3
+        setTimeout(function() {
+            $('#id_estudios_complementarios_3').focus();
+        }, 100);
+    });
+
+    // Ejecutar al cargar la página
+    toggleBloquesEstudiosComp();
 
     // Función para mostrar/ocultar campos según el tipo seleccionado
     function toggleCamposProfesion() {
@@ -338,81 +681,328 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /**
         * Función principal que se ejecuta al hacer clic (focus) en el campo.
-        * Redacta el párrafo de la descripción de la vacante.
+        * Redacta el párrafo de la descripción de la vacante con todos los datos del perfil.
         */
     function generateVacancyParagraph() {
-        // --- 1. Recopilar todos los datos del formulario ---
+        // --- 1. Recopilar TODOS los datos del formulario ---
+        
+        // Información básica del cargo
         const cargo = getFieldValue('id_cargo');
         const modalidad = getFieldValue('id_modalidad');
         const lugar_trabajo = getFieldValue('id_lugar_trabajo');
+        const barrio = getFieldValue('id_barrio');
+        const direccion = getFieldValue('id_direccion');
         const termino_contrato = getFieldValue('id_termino_contrato');
+        const numero_posiciones = getFieldValue('id_numero_posiciones');
+        const cantidad_presentar = getFieldValue('id_cantidad_presentar');
+        const fecha_presentacion = getFieldValue('id_fecha_presentacion');
+        
+        // Información salarial
         const salario = getFieldValue('id_salario');
         const tipo_salario = getFieldValue('id_tipo_salario');
-        const profesion = getFieldValue('id_profesion_estudio');
-        const nivelEstudio = getFieldValue('id_nivel_estudio');
-        const tiempoExp1 = getFieldValue('id_tiempo_experiencia_1');
-        const exp1 = getFieldValue('id_experiencia_especifica_en_1');
-        const idioma1 = getFieldValue('id_idioma_1');
-        const nivelIdioma1 = getFieldValue('id_nivel_idioma_1');
-
+        const frecuencia_pago = getFieldValue('id_frecuencia_pago');
+        const salario_adicional = getFieldValue('id_salario_adicional');
+        
+        // Edad y género (removidos de la descripción)
+        // const edad_inicial = getFieldValue('id_edad_inicial');
+        // const edad_final = getFieldValue('id_edad_final');
+        // const genero = getFieldValue('id_genero');
+        
+        // Motivo de la vacante (removido de la descripción)
+        // const motivo_vacante = getFieldValue('id_motivo_vacante');
+        // const otro_motivo = getFieldValue('id_otro_motivo');
+        
+        // Horarios
+        const tipo_horario = getFieldValue('id_tipo_horario');
+        const horario_inicio_1 = getFieldValue('id_horario_inicio_1');
+        const horario_final_1 = getFieldValue('id_horario_final_1');
+        const hora_inicio_1 = getFieldValue('id_hora_inicio_1');
+        const hora_final_1 = getFieldValue('id_hora_final_1');
+        
+        // Funciones y responsabilidades
         const funciones = [
             getFieldValue('id_funciones_responsabilidades_1'),
             getFieldValue('id_funciones_responsabilidades_2'),
             getFieldValue('id_funciones_responsabilidades_3')
-        ].filter(Boolean).map(f => f && typeof f === 'string' ? f.toLowerCase() : f);
-
-        const allSkills = [
-            getMultiSelectValues('id_skill_relacionales'),
-            getMultiSelectValues('id_skill_personales'),
-            getMultiSelectValues('id_skill_cognitivas'),
-            getMultiSelectValues('id_skill_digitales'),
-            getMultiSelectValues('id_skill_liderazgo')
-        ].map(s => s && typeof s === 'string' ? s.toLowerCase() : s);
-
-        // --- 2. Construir el párrafo oración por oración ---
-        const sentences = [];
-
+        ].filter(Boolean);
+        
+        // Experiencia laboral
+        const tiempoExp1 = getFieldValue('id_tiempo_experiencia_1');
+        const exp1 = getFieldValue('id_experiencia_especifica_en_1');
+        const tiempoExp2 = getFieldValue('id_tiempo_experiencia_2');
+        const exp2 = getFieldValue('id_experiencia_especifica_en_2');
+        const tiempoExp3 = getFieldValue('id_tiempo_experiencia_3');
+        const exp3 = getFieldValue('id_experiencia_especifica_en_3');
+        
+        // Idiomas
+        const idioma1 = getFieldValue('id_idioma_1');
+        const nivelIdioma1 = getFieldValue('id_nivel_idioma_1');
+        const idioma2 = getFieldValue('id_idioma_2');
+        const nivelIdioma2 = getFieldValue('id_nivel_idioma_2');
+        
+        // Estudios
+        const tipo_profesion = getFieldValue('id_tipo_profesion');
+        const profesion = getFieldValue('id_profesion_estudio');
+        const grupo_profesion = getFieldValue('id_grupo_profesion');
+        const profesion_listado = getFieldValue('id_profesion_estudio_listado');
+        const nivelEstudio = getFieldValue('id_nivel_estudio');
+        const estado_estudio = getFieldValue('id_estado_estudio');
+        const cantidad_semestres = getFieldValue('id_cantidad_semestres');
+        
+        // Estudios complementarios
+        const estudios_comp1 = getFieldValue('id_estudios_complementarios_1');
+        const certificado1 = getFieldValue('id_estudios_complementarios_certificado_1');
+        const estudios_comp2 = getFieldValue('id_estudios_complementarios_2');
+        const certificado2 = getFieldValue('id_estudios_complementarios_certificado_2');
+        const estudios_comp3 = getFieldValue('id_estudios_complementarios_3');
+        const certificado3 = getFieldValue('id_estudios_complementarios_certificado_3');
+        
+        // Habilidades (Skills)
+        const skill_relacionales = getMultiSelectValues('id_skill_relacionales');
+        const skill_personales = getMultiSelectValues('id_skill_personales');
+        const skill_cognitivas = getMultiSelectValues('id_skill_cognitivas');
+        const skill_digitales = getMultiSelectValues('id_skill_digitales');
+        const skill_liderazgo = getMultiSelectValues('id_skill_liderazgo');
+        
+        // Fit cultural
+        const grupo_fit_1 = getFieldValue('id_grupo_fit_1');
+        const grupo_fit_2 = getFieldValue('id_grupo_fit_2');
+        const grupo_fit_3 = getFieldValue('id_grupo_fit_3');
+        const grupo_fit_4 = getFieldValue('id_grupo_fit_4');
+        const grupo_fit_5 = getFieldValue('id_grupo_fit_5');
+        
+        // Motivadores (removidos de la descripción)
+        // const motivadores = getMultiSelectValues('id_motivadores_candidato');
+        
+        // --- 2. Construir la descripción completa y atractiva con formato de texto plano ---
+        const sections = [];
+        
+        // INTRODUCCIÓN ATRACTIVA
         if (cargo) {
-            sentences.push(`Nos encontramos en la búsqueda de un(a) ${cargo} para unirse a nuestro equipo.`);
-        }
-
-        let roleDetails = [];
-        if (lugar_trabajo) roleDetails.push(`en ${lugar_trabajo}`);
-        if (modalidad) roleDetails.push(`bajo una modalidad ${modalidad && typeof modalidad === 'string' ? modalidad.toLowerCase() : modalidad}`);
-        if (termino_contrato) roleDetails.push(`con un contrato a término ${termino_contrato && typeof termino_contrato === 'string' ? termino_contrato.toLowerCase() : termino_contrato}`);
-        if (roleDetails.length > 0) {
-            sentences.push(`La posición se desarrollará ${roleDetails.join(', ')}.`);
-        }
-
-        if (funciones.length > 0) {
-            sentences.push(`Dentro de sus principales responsabilidades se encontrarán ${formatListToText(funciones)}.`);
-        }
-
-        let requirements = [];
-        if (profesion && nivelEstudio) {
-            requirements.push(`formación como ${nivelEstudio} en ${profesion}`);
-        }
-        if (exp1 && tiempoExp1) {
-            requirements.push(`una experiencia mínima de ${tiempoExp1} en ${exp1}`);
-        }
-        if (idioma1 && nivelIdioma1) {
-            requirements.push(`dominio del idioma ${idioma1} a un nivel ${nivelIdioma1 && typeof nivelIdioma1 === 'string' ? nivelIdioma1.toLowerCase() : nivelIdioma1}`);
-        }
-        if (requirements.length > 0) {
-            sentences.push(`Para esta vacante, el perfil ideal deberá contar con ${formatListToText(requirements)}.`);
-        }
-
-        if (allSkills.length > 0) {
-            sentences.push(`Adicionalmente, valoramos un alto desarrollo de competencias como ${formatListToText(allSkills)}.`);
+            sections.push(`🏢 OPORTUNIDAD LABORAL: ${cargo.toUpperCase()}`);
+            sections.push('');
+            sections.push(`Estamos en la búsqueda de un(a) profesional talentoso(a) para ocupar el cargo de ${cargo} en nuestro equipo. Esta es una excelente oportunidad para formar parte de una organización comprometida con el crecimiento y desarrollo profesional de sus colaboradores.`);
+            sections.push('');
         }
         
-        if (salario) {
-            const tipoSalarioText = tipo_salario && typeof tipo_salario === 'string' ? tipo_salario.toLowerCase() : '';
-            sentences.push(`La oferta salarial para este cargo es de $${salario} ${tipoSalarioText}.`);
+        // INFORMACIÓN DEL CARGO
+        if (lugar_trabajo || modalidad || termino_contrato) {
+            sections.push(`📋 INFORMACIÓN DEL CARGO:`);
+            sections.push('');
+            if (lugar_trabajo) sections.push(`📍 Ubicación: ${lugar_trabajo}`);
+            if (barrio) sections.push(`🏘️ Barrio: ${barrio}`);
+            if (direccion) sections.push(`📍 Dirección: ${direccion}`);
+            if (modalidad) sections.push(`💼 Modalidad: ${modalidad}`);
+            if (termino_contrato) sections.push(`📅 Contrato: ${termino_contrato}`);
+            if (numero_posiciones) sections.push(`👥 Posiciones disponibles: ${numero_posiciones}`);
+            if (cantidad_presentar) sections.push(`📊 Cantidad a presentar: ${cantidad_presentar}`);
+            if (fecha_presentacion) sections.push(`📅 Fecha de presentación: ${fecha_presentacion}`);
+            sections.push('');
         }
+        
+        // FUNCIONES Y RESPONSABILIDADES
+        if (funciones.length > 0) {
+            sections.push(`🎯 FUNCIONES Y RESPONSABILIDADES:`);
+            sections.push('');
+            sections.push(`El(la) candidato(a) seleccionado(a) tendrá a su cargo las siguientes responsabilidades:`);
+            sections.push('');
+            funciones.forEach((funcion, index) => {
+                if (funcion) {
+                    sections.push(`• ${funcion}`);
+                }
+            });
+            sections.push('');
+        }
+        
+        // EXPERIENCIA REQUERIDA
+        const experiencias = [];
+        if (tiempoExp1 && exp1) experiencias.push(`${tiempoExp1} en ${exp1}`);
+        if (tiempoExp2 && exp2) experiencias.push(`${tiempoExp2} en ${exp2}`);
+        if (tiempoExp3 && exp3) experiencias.push(`${tiempoExp3} en ${exp3}`);
+        
+        if (experiencias.length > 0) {
+            sections.push(`💼 EXPERIENCIA REQUERIDA:`);
+            sections.push('');
+            sections.push(`Se requiere experiencia en:`);
+            sections.push('');
+            experiencias.forEach(exp => {
+                sections.push(`• ${exp}`);
+            });
+            sections.push('');
+        }
+        
+        // PERFIL ACADÉMICO
+        const perfilAcademico = [];
+        if (nivelEstudio && profesion) {
+            perfilAcademico.push(`${nivelEstudio} en ${profesion}`);
+        } else if (nivelEstudio && grupo_profesion) {
+            perfilAcademico.push(`${nivelEstudio} en ${grupo_profesion}`);
+        } else if (nivelEstudio && profesion_listado) {
+            perfilAcademico.push(`${nivelEstudio} en ${profesion_listado}`);
+        }
+        
+        if (estado_estudio === 'False' && cantidad_semestres) {
+            perfilAcademico.push(`Estudiante con ${cantidad_semestres} semestres cursados`);
+        }
+        
+        if (perfilAcademico.length > 0) {
+            sections.push(`🎓 PERFIL ACADÉMICO:`);
+            sections.push('');
+            perfilAcademico.forEach(perfil => {
+                sections.push(`• ${perfil}`);
+            });
+            sections.push('');
+        }
+        
+        // ESTUDIOS COMPLEMENTARIOS
+        const estudiosComplementarios = [];
+        if (estudios_comp1) {
+            let estudio1 = estudios_comp1;
+            if (certificado1 === 'True') estudio1 += ' (con certificado)';
+            estudiosComplementarios.push(estudio1);
+        }
+        if (estudios_comp2) {
+            let estudio2 = estudios_comp2;
+            if (certificado2 === 'True') estudio2 += ' (con certificado)';
+            estudiosComplementarios.push(estudio2);
+        }
+        if (estudios_comp3) {
+            let estudio3 = estudios_comp3;
+            if (certificado3 === 'True') estudio3 += ' (con certificado)';
+            estudiosComplementarios.push(estudio3);
+        }
+        
+        if (estudiosComplementarios.length > 0) {
+            sections.push(`📚 ESTUDIOS COMPLEMENTARIOS:`);
+            sections.push('');
+            estudiosComplementarios.forEach(estudio => {
+                sections.push(`• ${estudio}`);
+            });
+            sections.push('');
+        }
+        
+        // IDIOMAS
+        const idiomas = [];
+        if (idioma1 && nivelIdioma1) idiomas.push(`${idioma1} (${nivelIdioma1})`);
+        if (idioma2 && nivelIdioma2) idiomas.push(`${idioma2} (${nivelIdioma2})`);
+        
+        if (idiomas.length > 0) {
+            sections.push(`🌍 IDIOMAS:`);
+            sections.push('');
+            idiomas.forEach(idioma => {
+                sections.push(`• ${idioma}`);
+            });
+            sections.push('');
+        }
+        
+        // HORARIOS
+        if (tipo_horario) {
+            sections.push(`⏰ HORARIO DE TRABAJO:`);
+            sections.push('');
+            sections.push(`• Tipo de horario: ${tipo_horario}`);
+            if (horario_inicio_1 && horario_final_1) {
+                sections.push(`• Horario: ${horario_inicio_1} a ${horario_final_1}`);
+            }
+            if (hora_inicio_1 && hora_final_1) {
+                sections.push(`• Jornada: ${hora_inicio_1} a ${hora_final_1}`);
+            }
+            sections.push('');
+        }
+        
+        // HABILIDADES Y COMPETENCIAS
+        const todasLasHabilidades = [
+            ...skill_relacionales,
+            ...skill_personales,
+            ...skill_cognitivas,
+            ...skill_digitales,
+            ...skill_liderazgo
+        ];
+        
+        if (todasLasHabilidades.length > 0) {
+            sections.push(`🚀 COMPETENCIAS Y HABILIDADES:`);
+            sections.push('');
+            sections.push(`Valoramos especialmente candidatos con las siguientes competencias:`);
+            sections.push('');
+            todasLasHabilidades.forEach(habilidad => {
+                sections.push(`• ${habilidad}`);
+            });
+            sections.push('');
+        }
+        
+        // FIT CULTURAL
+        const fitCultural = [grupo_fit_1, grupo_fit_2, grupo_fit_3, grupo_fit_4, grupo_fit_5].filter(Boolean);
+        if (fitCultural.length > 0) {
+            sections.push(`🤝 FIT CULTURAL:`);
+            sections.push('');
+            sections.push(`Buscamos profesionales que se identifiquen con:`);
+            sections.push('');
+            fitCultural.forEach(fit => {
+                sections.push(`• ${fit}`);
+            });
+            sections.push('');
+        }
+        
+        // MOTIVADORES (removido de la descripción)
+        // if (motivadores.length > 0) {
+        //     sections.push(`💡 MOTIVADORES:`);
+        //     sections.push('');
+        //     sections.push(`El perfil ideal se motiva por:`);
+        //     sections.push('');
+        //     motivadores.forEach(motivador => {
+        //         sections.push(`• ${motivador}`);
+        //     });
+        //     sections.push('');
+        // }
+        
+        // PERFIL DEMOGRÁFICO (removido de la descripción)
+        // const perfilDemo = [];
+        // if (edad_inicial && edad_final) {
+        //     perfilDemo.push(`Edad: entre ${edad_inicial} y ${edad_final} años`);
+        // }
+        // if (genero) {
+        //     perfilDemo.push(`Género: ${genero}`);
+        // }
+        
+        // if (perfilDemo.length > 0) {
+        //     sections.push(`👤 PERFIL DEMOGRÁFICO:`);
+        //     sections.push('');
+        //     perfilDemo.forEach(perfil => {
+        //         sections.push(`• ${perfil}`);
+        //     });
+        //     sections.push('');
+        // }
+        
+        // OFERTA SALARIAL
+        if (salario) {
+            sections.push(`💰 OFERTA SALARIAL:`);
+            sections.push('');
+            let salarioText = `$${salario}`;
+            if (tipo_salario) salarioText += ` ${tipo_salario}`;
+            if (frecuencia_pago) salarioText += ` (${frecuencia_pago})`;
+            if (salario_adicional) salarioText += ` + ${salario_adicional}`;
+            sections.push(`• ${salarioText}`);
+            sections.push('');
+        }
+        
+        // MOTIVO DE LA VACANTE (removido de la descripción)
+        // if (motivo_vacante) {
+        //     sections.push(`📈 MOTIVO DE LA VACANTE:`);
+        //     sections.push('');
+        //     let motivoText = motivo_vacante;
+        //     if (otro_motivo) motivoText += ` - ${otro_motivo}`;
+        //     sections.push(`• ${motivoText}`);
+        //     sections.push('');
+        // }
+        
+        // CIERRE ATRACTIVO
+        sections.push(`🎉 ¡ÚNETE A NUESTRO EQUIPO!`);
+        sections.push('');
+        sections.push(`Si cumples con el perfil descrito y estás interesado(a) en formar parte de nuestro equipo, te invitamos a postularte. Ofrecemos un ambiente de trabajo dinámico, oportunidades de crecimiento profesional y un equipo comprometido con la excelencia.`);
+        sections.push('');
+        sections.push(`📧 ¡Esperamos tu postulación!`);
 
-        // --- 3. Unir las oraciones y mostrar el texto en el campo ---
-        targetTextarea.value = sentences.join(' ');
+        // --- 3. Unir todas las secciones con saltos de línea y mostrar el texto en el campo ---
+        targetTextarea.value = sections.join('\n');
     }
 });
 

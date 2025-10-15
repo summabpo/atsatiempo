@@ -98,6 +98,7 @@ class Cli073PerfilVacante(models.Model):
     grupo_profesion = models.ForeignKey(Cli075GrupoProfesion, on_delete=models.CASCADE, blank=True, null=True)
     profesion_estudio_listado = models.TextField(blank=True, null=True)
     nivel_estudio = models.CharField(max_length=1, choices=NIVEL_ESTUDIO_CHOICES_STATIC, blank=True, null=True)
+    cantidad_semestres = models.IntegerField(blank=True, null=True)
     estado_estudio = models.BooleanField(default=False, blank=True, null=True)
     lugar_trabajo = models.ForeignKey(Cat004Ciudad, on_delete=models.CASCADE)
     barrio  = models.CharField(max_length=100, blank=True, null=True)

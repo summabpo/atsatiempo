@@ -50,7 +50,7 @@ const sectionFields = {
         // Idiomas
         'idioma_1', 'nivel_idioma_1', 'idioma_2', 'nivel_idioma_2',
         // Estudios
-        'tipo_profesion', 'profesion_estudio', 'grupo_profesion', 'profesion_estudio_listado', 'nivel_estudio', 'estado_estudio',
+        'tipo_profesion', 'profesion_estudio', 'grupo_profesion', 'profesion_estudio_listado', 'nivel_estudio', 'estado_estudio', 'cantidad_semestres',
         // Estudios complementarios
         'estudios_complementarios_1', 'estudios_complementarios_certificado_1',
         'estudios_complementarios_2', 'estudios_complementarios_certificado_2',
@@ -429,14 +429,65 @@ window.debugErrors = function() {
                     <h6 class="mb-0 pe-3 text-primary fw-bold">Funciones y responsabilides del cargo</h6>
                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
                 </div>
-                <div class="col-md-12">
-                    {{ form.funciones_responsabilidades_1|as_crispy_field }}
+                
+                <!-- Bloque 1 de funciones - siempre visible -->
+                <div class="row" id="funciones_bloque_1">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Función 1</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        {{ form.funciones_responsabilidades_1|as_crispy_field }}
+                    </div>
                 </div>
-                <div class="col-md-12">
-                    {{ form.funciones_responsabilidades_2|as_crispy_field }}
+                
+                <!-- Bloque 2 de funciones - oculto por defecto -->
+                <div class="row d-none" id="funciones_bloque_2">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Función 2</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        {{ form.funciones_responsabilidades_2|as_crispy_field }}
+                    </div>
                 </div>
-                <div class="col-md-12">
-                    {{ form.funciones_responsabilidades_3|as_crispy_field }}
+                
+                <!-- Bloque 3 de funciones - oculto por defecto -->
+                <div class="row d-none" id="funciones_bloque_3">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Función 3</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        {{ form.funciones_responsabilidades_3|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <!-- Botón para agregar Función 2 -->
+                <div class="row" id="boton_funciones_2">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_funciones_2">
+                            <i class="fas fa-plus me-2"></i>Agregar Función 2
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Botón para agregar Función 3 (solo visible cuando hay 2) -->
+                <div class="row d-none" id="boton_funciones_3">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_funciones_3">
+                            <i class="fas fa-plus me-2"></i>Agregar Función 3 (Opcional)
+                        </button>
+                    </div>
                 </div>
                 <div class="col-md-12">
                     <div class="form-group d-flex gap-3">
@@ -459,54 +510,135 @@ window.debugErrors = function() {
                     <h6 class="mb-0 pe-3 text-primary fw-bold">Experiencia Laborales</h6>
                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
                 </div>
-                <div class="col-md-4">
-                    {{ form.tiempo_experiencia_1|as_crispy_field }}
-                </div> 
-                <div class="col-md-8">
-                    {{ form.experiencia_especifica_en_1|as_crispy_field }}
-                </div> 
-                <div class="col-md-4">
-                    {{ form.tiempo_experiencia_2|as_crispy_field }}
-                </div> 
-                <div class="col-md-8">
-                    {{ form.experiencia_especifica_en_2|as_crispy_field }}
-                </div> 
-                <div class="col-md-4">
-                    {{ form.tiempo_experiencia_3|as_crispy_field }}
-                </div> 
-                <div class="col-md-8">
-                    {{ form.experiencia_especifica_en_3|as_crispy_field }}
+                <!-- Bloque 1 de experiencia - siempre visible -->
+                <div class="row" id="experiencia_bloque_1">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Experiencia 1</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.tiempo_experiencia_1|as_crispy_field }}
+                    </div> 
+                    <div class="col-md-8">
+                        {{ form.experiencia_especifica_en_1|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <!-- Bloque 2 de experiencia - oculto por defecto -->
+                <div class="row d-none" id="experiencia_bloque_2">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Experiencia 2</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.tiempo_experiencia_2|as_crispy_field }}
+                    </div> 
+                    <div class="col-md-8">
+                        {{ form.experiencia_especifica_en_2|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <!-- Bloque 3 de experiencia - oculto por defecto -->
+                <div class="row d-none" id="experiencia_bloque_3">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Experiencia 3</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.tiempo_experiencia_3|as_crispy_field }}
+                    </div> 
+                    <div class="col-md-8">
+                        {{ form.experiencia_especifica_en_3|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <!-- Botón para agregar Experiencia 2 -->
+                <div class="row" id="boton_experiencia_2">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_experiencia_2">
+                            <i class="fas fa-plus me-2"></i>Agregar Experiencia 2
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Botón para agregar Experiencia 3 (solo visible cuando hay 2) -->
+                <div class="row d-none" id="boton_experiencia_3">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_experiencia_3">
+                            <i class="fas fa-plus me-2"></i>Agregar Experiencia 3 (Opcional)
+                        </button>
+                    </div>
                 </div> 
                 <div class="d-flex align-items-center my-4">
                     <h6 class="mb-0 pe-3 text-primary fw-bold">Idiomas</h6>
                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
                 </div>
-                <div class="col-md-4">
-                    {{ form.idioma_1|as_crispy_field }}
-                </div> 
-                <div class="col-md-8">
-                    {{ form.nivel_idioma_1|as_crispy_field }}
-                </div> 
-                <div class="col-md-4">
-                    {{ form.idioma_2|as_crispy_field }}
-                </div> 
-                <div class="col-md-8">
-                    {{ form.nivel_idioma_2|as_crispy_field }}
+                
+                <!-- Bloque 1 de idiomas - siempre visible -->
+                <div class="row" id="idiomas_bloque_1">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Idioma 1</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.idioma_1|as_crispy_field }}
+                    </div> 
+                    <div class="col-md-8">
+                        {{ form.nivel_idioma_1|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <!-- Bloque 2 de idiomas - oculto por defecto -->
+                <div class="row d-none" id="idiomas_bloque_2">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Idioma 2</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.idioma_2|as_crispy_field }}
+                    </div> 
+                    <div class="col-md-8">
+                        {{ form.nivel_idioma_2|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <!-- Botón para agregar Idioma 2 -->
+                <div class="row" id="boton_idiomas_2">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_idiomas_2">
+                            <i class="fas fa-plus me-2"></i>Agregar Idioma 2 (Opcional)
+                        </button>
+                    </div>
                 </div> 
                 <div class="d-flex align-items-center my-4">
                     <h6 class="mb-0 pe-3 text-primary fw-bold">Estudios o profesión</h6>
                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-2 mb-3">
                     {{ form.tipo_profesion|as_crispy_field }}
                 </div>
                 
                 <!-- Campos condicionales -->
-                <div id="campo_especifica" class="col-md-6" style="display:none;">
+                <div id="campo_especifica" class="col-md-4" style="display:none;">
                     {{ form.profesion_estudio|as_crispy_field }}
                 </div>
                 
-                <div id="campo_grupo" class="col-md-6" style="display:none;">
+                <div id="campo_grupo" class="col-md-4" style="display:none;">
                     {{ form.grupo_profesion|as_crispy_field }}
                 </div>
                 
@@ -518,30 +650,87 @@ window.debugErrors = function() {
                     {{ form.nivel_estudio|as_crispy_field }}
                 </div>
                 
-                <div class="col-md-2">
+                <div class="col-md-1">
                     {{ form.estado_estudio|as_crispy_field }}
                 </div> 
+                <div class="col-md-1" id="cantidad_semestres_container" style="display: none;">
+                    {{ form.cantidad_semestres|as_crispy_field }}
+                    <small class="text-muted d-block mt-1">
+                        <i class="fas fa-info-circle"></i> Obligatorio si no está graduado
+                    </small>
+                </div>
                 <div class="d-flex align-items-center my-4">
                     <h6 class="mb-0 pe-3 text-primary fw-bold">Estudios complementarios</h6>
                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
                 </div>
-                <div class="col-md-8">
-                    {{ form.estudios_complementarios_1|as_crispy_field }}
-                </div> 
-                <div class="col-md-4">
-                    {{ form.estudios_complementarios_certificado_1|as_crispy_field }}
-                </div> 
-                <div class="col-md-8">
-                    {{ form.estudios_complementarios_2|as_crispy_field }}
-                </div> 
-                <div class="col-md-4">
-                    {{ form.estudios_complementarios_certificado_2|as_crispy_field }}
-                </div> 
-                <div class="col-md-8">
-                    {{ form.estudios_complementarios_3|as_crispy_field }}
-                </div> 
-                <div class="col-md-4">
-                    {{ form.estudios_complementarios_certificado_3|as_crispy_field }}
+                
+                <!-- Bloque 1 de estudios complementarios - siempre visible -->
+                <div class="row" id="estudios_comp_bloque_1">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Estudio Complementario 1</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        {{ form.estudios_complementarios_1|as_crispy_field }}
+                    </div> 
+                    <div class="col-md-4">
+                        {{ form.estudios_complementarios_certificado_1|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <!-- Bloque 2 de estudios complementarios - oculto por defecto -->
+                <div class="row d-none" id="estudios_comp_bloque_2">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Estudio Complementario 2</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        {{ form.estudios_complementarios_2|as_crispy_field }}
+                    </div> 
+                    <div class="col-md-4">
+                        {{ form.estudios_complementarios_certificado_2|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <!-- Bloque 3 de estudios complementarios - oculto por defecto -->
+                <div class="row d-none" id="estudios_comp_bloque_3">
+                    <div class="d-flex align-items-center my-4">
+                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Estudio Complementario 3</p>
+                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        {{ form.estudios_complementarios_3|as_crispy_field }}
+                    </div> 
+                    <div class="col-md-4">
+                        {{ form.estudios_complementarios_certificado_3|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <!-- Botón para agregar Estudio Complementario 2 -->
+                <div class="row" id="boton_estudios_comp_2">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_estudios_comp_2">
+                            <i class="fas fa-plus me-2"></i>Agregar Estudio Complementario 2
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Botón para agregar Estudio Complementario 3 (solo visible cuando hay 2) -->
+                <div class="row d-none" id="boton_estudios_comp_3">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_estudios_comp_3">
+                            <i class="fas fa-plus me-2"></i>Agregar Estudio Complementario 3 (Opcional)
+                        </button>
+                    </div>
                 </div> 
                 <div class="col-md-12">
                     <div class="form-group d-flex gap-3">

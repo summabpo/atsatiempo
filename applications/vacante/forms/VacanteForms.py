@@ -2274,7 +2274,7 @@ class VacancyFormAllV2(forms.Form):
     )
 
     fecha_presentacion = forms.DateField(
-            label='Fecha de presentación',
+            label='Fecha de presentación de hoja de vida',
             widget=forms.DateInput(
             attrs= {
                 'class': 'form-control form-control-solid',
@@ -2567,7 +2567,7 @@ class VacancyFormAllV2(forms.Form):
         widget=forms.Select(attrs={
             'class': 'form-select form-select-solid',
             'data-control': 'select2',
-            'data-placeholder': 'Seleccione el tipo de profesión',
+            'data-placeholder': 'Seleccione el tipo',
         }),
         required=False
     )
@@ -2747,7 +2747,7 @@ class VacancyFormAllV2(forms.Form):
             ), required=False)
         
         self.fields['nivel_estudio'] = forms.ChoiceField(
-            label='NIVEL DE ESTUDIO',
+            label='Nivel de estudio',
             choices=NIVEL_ESTUDIO_CHOICES_STATIC,
             widget=forms.Select(
             attrs={
@@ -2758,7 +2758,7 @@ class VacancyFormAllV2(forms.Form):
             ), required=False)
         
         self.fields['estado_estudio'] = forms.ChoiceField(
-            label='¿GRADUADO?',
+            label='¿Graduado?',
             choices=[(True, 'Sí'), (False, 'No')],
             widget=forms.Select(
             attrs={
@@ -2768,6 +2768,20 @@ class VacancyFormAllV2(forms.Form):
             }
             ),
             required=False
+        )
+        
+        self.fields['cantidad_semestres'] = forms.IntegerField(
+            label='Semestres',
+            widget=forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'min': '1',
+                    'max': '20',
+                    'placeholder': ''
+                }
+            ),
+            required=False,
+            help_text='Solo se requiere si no está graduado'
         )
         
         for i in range(1, 4): # Bucle para crear 3 registros
@@ -3119,5 +3133,15 @@ class VacancyFormAllV2(forms.Form):
         # Validación: solo una opción debe estar seleccionada
         if campos_llenos > 1:
             self.add_error(None, 'Solo puede seleccionar una opción: profesión específica, grupo de profesiones, o listado personalizado.')
+        
+        # Validación condicional para cantidad_semestres
+        estado_estudio = cleaned_data.get('estado_estudio')
+        cantidad_semestres = cleaned_data.get('cantidad_semestres')
+        
+        if estado_estudio == 'False' or estado_estudio is False:  # No graduado
+            if not cantidad_semestres:
+                self.add_error('cantidad_semestres', 'El campo Cantidad de semestres es obligatorio cuando no está graduado.')
+            elif cantidad_semestres < 1 or cantidad_semestres > 20:
+                self.add_error('cantidad_semestres', 'La cantidad de semestres debe estar entre 1 y 20.')
         
         return cleaned_data

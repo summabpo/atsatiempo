@@ -368,6 +368,8 @@ def edit_vacanty_from_client(request, pk, vacante_id):
         'lugar_trabajo': perfil_vacante.lugar_trabajo_id if perfil_vacante and perfil_vacante.lugar_trabajo else None,
         'profesion_estudio': perfil_vacante.profesion_estudio_id if perfil_vacante and perfil_vacante.profesion_estudio else None,
         'nivel_estudio': perfil_vacante.nivel_estudio if perfil_vacante else None,
+        'estado_estudio': perfil_vacante.estado_estudio if perfil_vacante else None,
+        'cantidad_semestres': perfil_vacante.cantidad_semestres if perfil_vacante else None,
         'motivadores_candidato': list(vacante.motivadores.values_list('id', flat=True)) if vacante.motivadores.exists() else [],
         'comentarios': vacante.comentarios,
         'descripcion_vacante': vacante.descripcion_vacante,
@@ -489,6 +491,8 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             perfil_vacante.salario_adicional = form.cleaned_data['salario_adicional']
             perfil_vacante.profesion_estudio = Cli055ProfesionEstudio.objects.get(id=form.cleaned_data['profesion_estudio']) if form.cleaned_data['profesion_estudio'] else None
             perfil_vacante.nivel_estudio = form.cleaned_data['nivel_estudio']
+            perfil_vacante.estado_estudio = form.cleaned_data['estado_estudio']
+            perfil_vacante.cantidad_semestres = form.cleaned_data['cantidad_semestres']
             perfil_vacante.lugar_trabajo = Cat004Ciudad.objects.get(id=form.cleaned_data['lugar_trabajo']) if form.cleaned_data['lugar_trabajo'] else None
             perfil_vacante.termino_contrato = form.cleaned_data['termino_contrato']
             perfil_vacante.barrio = form.cleaned_data['barrio']
