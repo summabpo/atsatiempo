@@ -47,7 +47,7 @@ def client_detail_info(request):
         'tipo_cliente': cliente.tipo_cliente,
         'actividad_economica': cliente.actividad_economica.id if cliente.actividad_economica else '',
         'periodicidad_pago': cliente.periodicidad_pago,
-        'referencias_laborales': cliente.referencias_laborales,
+        # 'referencias_laborales': cliente.referencias_laborales,
         'cantidad_colaboradores': cliente.cantidad_colaboradores,
         'contacto_cargo': cliente.contacto_cargo,
         'direccion_cargo': cliente.direccion_cargo,
@@ -69,7 +69,7 @@ def client_detail_info(request):
             cliente.tipo_cliente = form_cliente.cleaned_data['tipo_cliente']
             cliente.actividad_economica = Cli065ActividadEconomica.objects.get(id=form_cliente.cleaned_data['actividad_economica'])
             cliente.periodicidad_pago = form_cliente.cleaned_data['periodicidad_pago']
-            cliente.referencias_laborales = form_cliente.cleaned_data['referencias_laborales']
+            # cliente.referencias_laborales = form_cliente.cleaned_data['referencias_laborales']
             cliente.cantidad_colaboradores = form_cliente.cleaned_data['cantidad_colaboradores']
             cliente.contacto_cargo = form_cliente.cleaned_data['contacto_cargo']
             cliente.direccion_cargo = form_cliente.cleaned_data['direccion_cargo']
@@ -367,7 +367,7 @@ def client_headhunter_assigned(request):
                     actividad_economica=Cli065ActividadEconomica.objects.get(id=form.cleaned_data['actividad_economica']),
                     tipo_cliente=3,
                     periodicidad_pago=form.cleaned_data['periodicidad_pago'],
-                    referencias_laborales=form.cleaned_data['referencias_laborales'],
+                    # referencias_laborales=form.cleaned_data['referencias_laborales'],
                     cantidad_colaboradores=form.cleaned_data['cantidad_colaboradores'],
                     contacto_cargo=form.cleaned_data['contacto_cargo'],
                     direccion_cargo=form.cleaned_data['direccion_cargo'],

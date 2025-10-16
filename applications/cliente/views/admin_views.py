@@ -119,7 +119,7 @@ def client_detail_assigned(request, pk):
                     'actividad_economica': Cli065ActividadEconomica.objects.get(id=form.cleaned_data['actividad_economica']),
                     'tipo_cliente': 1,
                     'periodicidad_pago': form.cleaned_data['periodicidad_pago'],
-                    'referencias_laborales': form.cleaned_data['referencias_laborales'],
+                    # 'referencias_laborales': form.cleaned_data['referencias_laborales'],
                     'cantidad_colaboradores': form.cleaned_data['cantidad_colaboradores'],
                     'contacto_cargo': form.cleaned_data['contacto_cargo'],
                     'direccion_cargo': form.cleaned_data['direccion_cargo'],
@@ -177,7 +177,7 @@ def client_detail_info(request, pk):
         'tipo_cliente': cliente.tipo_cliente,
         'actividad_economica': cliente.actividad_economica.id if cliente.actividad_economica else '',
         'periodicidad_pago': cliente.periodicidad_pago,
-        'referencias_laborales': cliente.referencias_laborales,
+        # 'referencias_laborales': cliente.referencias_laborales,
         'cantidad_colaboradores': cliente.cantidad_colaboradores,
         'contacto_cargo': cliente.contacto_cargo,
         'direccion_cargo': cliente.direccion_cargo,
@@ -199,7 +199,7 @@ def client_detail_info(request, pk):
             cliente.tipo_cliente = form_cliente.cleaned_data['tipo_cliente']
             cliente.actividad_economica = Cli065ActividadEconomica.objects.get(id=form_cliente.cleaned_data['actividad_economica'])
             cliente.periodicidad_pago = form_cliente.cleaned_data['periodicidad_pago']
-            cliente.referencias_laborales = form_cliente.cleaned_data['referencias_laborales']
+            # cliente.referencias_laborales = form_cliente.cleaned_data['referencias_laborales']
             cliente.cantidad_colaboradores = form_cliente.cleaned_data['cantidad_colaboradores']
             cliente.contacto_cargo = form_cliente.cleaned_data['contacto_cargo']
             cliente.direccion_cargo = form_cliente.cleaned_data['direccion_cargo']
@@ -359,48 +359,57 @@ def client_detail_position_config(request, pk, cargo_id):
         cliente_prueba__cliente__id=pk
     )
 
-    form = ClienteFormAsignacionRequisito(cliente_id=pk, cargo_id=cargo_id)
-    form1 = ClienteFormAsignacionPrueba(cliente_id=pk, cargo_id=cargo_id)
+    # Formularios para editar cargo, asignar requisitos y pruebas
+    form_cargo = ClienteFormCargos(cliente_id=pk, cargo_id=cargo_id)
+    form_requisitos = ClienteFormAsignacionRequisito(cliente_id=pk, cargo_id=cargo_id)
+    form_pruebas = ClienteFormAsignacionPrueba(cliente_id=pk, cargo_id=cargo_id)
 
     if request.method == 'POST':
-        form = ClienteFormAsignacionRequisito(request.POST, cliente_id=pk, cargo_id=cargo_id)
-        form1 = ClienteFormAsignacionPrueba(request.POST, cliente_id=pk, cargo_id=cargo_id)
+        # Determinar qué formulario se está enviando
+        if 'edit_cargo' in request.POST:
+            form_cargo = ClienteFormCargos(request.POST, cliente_id=pk, cargo_id=cargo_id)
+            if form_cargo.is_valid():
+                form_cargo.save()
+                messages.success(request, 'El cargo ha sido actualizado con éxito.')
+                return redirect('clientes:cliente_cargos_configuracion', pk=pk, cargo_id=cargo_id)
         
-        if form.is_valid():
-            requisito = form.cleaned_data['requisito']
-            Cli070AsignacionRequisito.objects.create(
-                cargo=Cli068Cargo.objects.get(id=cargo_id), 
-                requisito=Cli069Requisito.objects.get(id=requisito),
-                estado=Cat001Estado.objects.get(id=1)
-            )
-            messages.success(request, 'El requisito ha sido asignado con éxito.')
+        elif 'assign_requisito' in request.POST:
+            form_requisitos = ClienteFormAsignacionRequisito(request.POST, cliente_id=pk, cargo_id=cargo_id)
+            if form_requisitos.is_valid():
+                requisito = form_requisitos.cleaned_data['requisito']
+                Cli070AsignacionRequisito.objects.create(
+                    cargo=Cli068Cargo.objects.get(id=cargo_id), 
+                    requisito=Cli069Requisito.objects.get(id=requisito),
+                    estado=Cat001Estado.objects.get(id=1)
+                )
+                messages.success(request, 'El requisito ha sido asignado con éxito.')
+                return redirect('clientes:cliente_cargos_configuracion', pk=pk, cargo_id=cargo_id)
         
-        if form1.is_valid():
-            prueba = form1.cleaned_data['prueba']
-            asignacion_prueba = Cli051ClientePruebas.objects.get(prueba_psicologica=prueba, cliente=pk)
-            Cli071AsignacionPrueba.objects.create(
-                cargo=Cli068Cargo.objects.get(id=cargo_id),
-                cliente_prueba=Cli051ClientePruebas.objects.get(id=asignacion_prueba.id),
-                estado=Cat001Estado.objects.get(id=1)
-            )
-            messages.success(request, 'La prueba ha sido asignada con éxito.')
-        
-        if form.is_valid() or form1.is_valid():
-            return redirect('clientes:cliente_cargos_configuracion', pk=pk, cargo_id=cargo_id)
-        else:
-            messages.error(request, form.errors)
-            print("Errores en el formulario:", form.errors)
+        elif 'assign_prueba' in request.POST:
+            form_pruebas = ClienteFormAsignacionPrueba(request.POST, cliente_id=pk, cargo_id=cargo_id)
+            if form_pruebas.is_valid():
+                prueba = form_pruebas.cleaned_data['prueba']
+                asignacion_prueba = Cli051ClientePruebas.objects.get(prueba_psicologica=prueba, cliente=pk)
+                Cli071AsignacionPrueba.objects.create(
+                    cargo=Cli068Cargo.objects.get(id=cargo_id),
+                    cliente_prueba=Cli051ClientePruebas.objects.get(id=asignacion_prueba.id),
+                    estado=Cat001Estado.objects.get(id=1)
+                )
+                messages.success(request, 'La prueba ha sido asignada con éxito.')
+                return redirect('clientes:cliente_cargos_configuracion', pk=pk, cargo_id=cargo_id)
     else:
-        form = ClienteFormAsignacionRequisito(cliente_id=pk, cargo_id=cargo_id)
-        form1 = ClienteFormAsignacionPrueba(cliente_id=pk, cargo_id=cargo_id)
+        form_cargo = ClienteFormCargos(cliente_id=pk, cargo_id=cargo_id)
+        form_requisitos = ClienteFormAsignacionRequisito(cliente_id=pk, cargo_id=cargo_id)
+        form_pruebas = ClienteFormAsignacionPrueba(cliente_id=pk, cargo_id=cargo_id)
 
     contexto = {
         'data': data,
         'cargo_cliente': cargo_cliente,
         'asignaciones_requisitos': asignaciones_requisitos,
         'asignaciones_pruebas': asignaciones_pruebas,
-        'form': form,
-        'form1': form1,
+        'form_cargo': form_cargo,
+        'form_requisitos': form_requisitos,
+        'form_pruebas': form_pruebas,
     }
 
     return render(request, 'admin/client/admin_user/client_detail_position_config.html', contexto)

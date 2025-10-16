@@ -44,7 +44,7 @@ Cliente
 					</a>
 				</li>
 				<li class="breadcrumb-item active" aria-current="page">
-					<span class="fw-medium">Congiuración Cargo</span>
+					<span class="fw-medium">Configuración Cargo</span>
 				</li>
 			</ol>
 		</nav>
@@ -58,11 +58,22 @@ Cliente
     
 	<div class="row">
 		<div class="col-12">
-			<div class="row">
+            <!-- Formulario de Edición de Cargo -->
+            <div class="row">
                 <div class="col-12">
                     <div class="card bg-white border-0 rounded-3 mb-4">
-                        <div class="card-body p-4 text-center">
-                            <h3 class="mb-0" style="color: #B10022;">{{cargo_cliente.nombre_cargo}}</h3>
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Editar Información del Cargo</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="post" id="form_cliente_cargos">
+                                {% csrf_token %}
+                                <input type="hidden" name="edit_cargo" value="1">
+                                {% crispy form_cargo %}
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">Actualizar Cargo</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -76,8 +87,9 @@ Cliente
                         <div class="card-body p-4">
                             <form method="post" id="form_cliente_asignacion_requisitos">
                                 {% csrf_token %}
-                                {% crispy form %}
-                                <button id="form_cliente_asignacion_requisitos" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_cliente_asignacion_requisitos">Guardar</button>
+                                <input type="hidden" name="assign_requisito" value="1">
+                                {% crispy form_requisitos %}
+                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">Asignar Requisito</button>
                             </form>
                             <hr>
                             <div class="default-table-area all-products">
@@ -119,8 +131,9 @@ Cliente
                         <div class="card-body p-4">
                             <form method="post" id="form_cliente_asignacion_prueba">
                                 {% csrf_token %}
-                                {% crispy form1 %}
-                                <button id="form_cliente_asignacion_prueba" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_cliente_asignacion_prueba">Guardar</button>
+                                <input type="hidden" name="assign_prueba" value="1">
+                                {% crispy form_pruebas %}
+                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">Asignar Prueba</button>
                             </form>
                             <hr>
                             <div class="default-table-area all-products">

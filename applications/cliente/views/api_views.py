@@ -55,7 +55,7 @@ def buscar_cliente_por_nit(request):
                     'direccion_cargo': cliente.direccion_cargo or '',
                     'perfil_empresarial': cliente.perfil_empresarial or '',
                     'cantidad_colaboradores': cliente.cantidad_colaboradores or 0,
-                    'referencias_laborales': cliente.referencias_laborales or 0,
+                    # 'referencias_laborales': cliente.referencias_laborales or 0,
                     'tipo_cliente': cliente.tipo_cliente or '',
                     'actividad_economica_id': cliente.actividad_economica.id if cliente.actividad_economica else None,
                     'actividad_economica_nombre': cliente.actividad_economica.descripcion if cliente.actividad_economica else '',
