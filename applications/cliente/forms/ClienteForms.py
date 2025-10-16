@@ -57,15 +57,15 @@ class ClienteForm(forms.Form):
             }
         ), required=False)
 
-    referencias_laborales = forms.IntegerField(
-        label='REFERENCIAS LABORALES',
-        required=False,
-        widget=forms.NumberInput(
-            attrs={
-                'class': 'form-control form-control-solid mb-3 mb-lg-0',
-                'placeholder': 'Referencias Laborales'
-            }
-        ))
+    # referencias_laborales = forms.IntegerField(
+    #     label='REFERENCIAS LABORALES',
+    #     required=False,
+    #     widget=forms.NumberInput(
+    #         attrs={
+    #             'class': 'form-control form-control-solid mb-3 mb-lg-0',
+    #             'placeholder': 'Referencias Laborales'
+    #         }
+    #     ))
 
     cantidad_colaboradores = forms.IntegerField(
         label='CANTIDAD DE COLABORADORES',
@@ -205,7 +205,7 @@ class ClienteForm(forms.Form):
                     Div(
                         HTML("<h4 class='mb-3 text-primary'>Información Adicional</h4>"),  #  Agregar título con color y margen
                         Div('periodicidad_pago', css_class='col'),
-                        Div('referencias_laborales', css_class='col'),
+                        # Div('referencias_laborales', css_class='col'),
                         Div('cantidad_colaboradores', css_class='col'),
                         css_class='row'
                     ),
@@ -226,7 +226,7 @@ class ClienteForm(forms.Form):
         actividad_economica = cleaned_data.get('actividad_economica')
         tipo_cliente = cleaned_data.get('tipo_cliente')
         periodicidad_pago = cleaned_data.get('periodicidad_pago')
-        referencias_laborales = cleaned_data.get('referencias_laborales')
+        # referencias_laborales = cleaned_data.get('referencias_laborales')
         cantidad_colaboradores = cleaned_data.get('cantidad_colaboradores')
         contacto_cargo = cleaned_data.get('contacto_cargo')
         direccion_cargo = cleaned_data.get('direccion_cargo')
@@ -295,10 +295,10 @@ class ClienteForm(forms.Form):
         if not periodicidad_pago:
             self.add_error('periodicidad_pago', 'Debe seleccionar una periodicidad de pago.')
 
-        if referencias_laborales is None:
-            self.add_error('referencias_laborales', 'Debe ingresar el número de referencias laborales.')
-        elif referencias_laborales < 0:
-            self.add_error('referencias_laborales', 'El número de referencias laborales no puede ser negativo.')
+        # if referencias_laborales is None:
+        #     self.add_error('referencias_laborales', 'Debe ingresar el número de referencias laborales.')
+        # elif referencias_laborales < 0:
+        #     self.add_error('referencias_laborales', 'El número de referencias laborales no puede ser negativo.')
 
         if cantidad_colaboradores is None:
             self.add_error('cantidad_colaboradores', 'Debe ingresar la cantidad de colaboradores.')
@@ -321,7 +321,7 @@ class ClienteForm(forms.Form):
         actividad_economica = self.cleaned_data['actividad_economica']
         tipo_cliente = self.cleaned_data['tipo_cliente']
         periodicidad_pago = self.cleaned_data['periodicidad_pago']
-        referencias_laborales = self.cleaned_data['referencias_laborales']
+        # referencias_laborales = self.cleaned_data['referencias_laborales']
         cantidad_colaboradores = self.cleaned_data['cantidad_colaboradores']
         contacto_cargo = self.cleaned_data['contacto_cargo']
         direccion_cargo = self.cleaned_data['direccion_cargo']
@@ -341,7 +341,7 @@ class ClienteForm(forms.Form):
             actividad_economica=Cli065ActividadEconomica.objects.get(id=actividad_economica),
             tipo_cliente=tipo_cliente,
             periodicidad_pago=periodicidad_pago,
-            referencias_laborales=referencias_laborales,
+            # referencias_laborales=referencias_laborales,
             cantidad_colaboradores=cantidad_colaboradores,
             contacto_cargo=contacto_cargo,
             direccion_cargo=direccion_cargo
@@ -408,15 +408,15 @@ class ClienteFormEdit(forms.Form):
             }
         ), required=False)
 
-    referencias_laborales = forms.IntegerField(
-        label='REFERENCIAS LABORALES',
-        required=False,
-        widget=forms.NumberInput(
-            attrs={
-                'class': 'form-control form-control-solid mb-3 mb-lg-0',
-                'placeholder': 'Referencias Laborales'
-            }
-        ))
+    # referencias_laborales = forms.IntegerField(
+    #     label='REFERENCIAS LABORALES',
+    #     required=False,
+    #     widget=forms.NumberInput(
+    #         attrs={
+    #             'class': 'form-control form-control-solid mb-3 mb-lg-0',
+    #             'placeholder': 'Referencias Laborales'
+    #         }
+    #     ))
 
     cantidad_colaboradores = forms.IntegerField(
         label='CANTIDAD DE COLABORADORES',
@@ -551,7 +551,7 @@ class ClienteFormEdit(forms.Form):
                     Div(
                         HTML("<h4 class='mb-3 text-primary'>Información Adicional</h4>"),  
                         Div('periodicidad_pago', css_class='col-md-4'),
-                        Div('referencias_laborales', css_class='col-md-4'),
+                        # Div('referencias_laborales', css_class='col-md-4'),
                         Div('cantidad_colaboradores', css_class='col-md-4'),
                         css_class='row'
                     ),
@@ -572,7 +572,7 @@ class ClienteFormEdit(forms.Form):
         actividad_economica = cleaned_data.get('actividad_economica')
         # tipo_cliente = cleaned_data.get('tipo_cliente')
         periodicidad_pago = cleaned_data.get('periodicidad_pago')
-        referencias_laborales = cleaned_data.get('referencias_laborales')
+        # referencias_laborales = cleaned_data.get('referencias_laborales')
         cantidad_colaboradores = cleaned_data.get('cantidad_colaboradores')
         contacto_cargo = cleaned_data.get('contacto_cargo')
         direccion_cargo = cleaned_data.get('direccion_cargo')
@@ -633,8 +633,8 @@ class ClienteFormEdit(forms.Form):
         if not periodicidad_pago:
             self.add_error('periodicidad_pago', 'Debe seleccionar una periodicidad de pago.')
 
-        if referencias_laborales is None:
-            self.add_error('referencias_laborales', 'Debe ingresar el número de referencias laborales.')
+        # if referencias_laborales is None:
+        #     self.add_error('referencias_laborales', 'Debe ingresar el número de referencias laborales.')
 
         if cantidad_colaboradores is None:
             self.add_error('cantidad_colaboradores', 'Debe ingresar la cantidad de colaboradores.')
@@ -654,7 +654,7 @@ class ClienteFormEdit(forms.Form):
         cliente.actividad_economica = Cli065ActividadEconomica.objects.get(id=self.cleaned_data['actividad_economica'])
         # cliente.tipo_cliente = self.cleaned_data['tipo_cliente']
         cliente.periodicidad_pago = self.cleaned_data['periodicidad_pago']
-        cliente.referencias_laborales = self.cleaned_data['referencias_laborales']
+        # cliente.referencias_laborales = self.cleaned_data['referencias_laborales']
         cliente.cantidad_colaboradores = self.cleaned_data['cantidad_colaboradores']
         cliente.contacto_cargo = self.cleaned_data['contacto_cargo']
         cliente.direccion_cargo = self.cleaned_data['direccion_cargo']
@@ -757,9 +757,10 @@ class ClienteFormPruebas(forms.Form):
     
 class ClienteFormCargos(forms.Form):
     
-    def __init__(self, *args, cliente_id=None, **kwargs):
+    def __init__(self, *args, cliente_id=None, cargo_id=None, **kwargs):
         super(ClienteFormCargos, self).__init__(*args, **kwargs)
         self.cliente_id = cliente_id
+        self.cargo_id = cargo_id
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -776,11 +777,36 @@ class ClienteFormCargos(forms.Form):
             )
         )
 
+        self.fields['referencias_laborales'] = forms.IntegerField(
+            label='CANTIDAD DE REFERENCIAS A PRESENTAR',
+            required=False,
+            min_value=0,
+            max_value=10,
+            widget=forms.NumberInput(
+                attrs={
+                    'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                    'placeholder': 'Cantidad de referencias laborales',
+                    'min': '0',
+                    'max': '10'
+                }
+            )
+        )
+
+        # Si es edición, cargar datos existentes
+        if cargo_id:
+            try:
+                cargo_obj = Cli068Cargo.objects.get(id=cargo_id)
+                self.fields['cargo'].initial = cargo_obj.nombre_cargo
+                self.fields['referencias_laborales'].initial = cargo_obj.referencias_laborales
+            except Cli068Cargo.DoesNotExist:
+                pass
+
         self.helper.layout = Layout(
             Div(
                 Div(
                     HTML("<h4 class='mb-3 text-primary'>Cargos</h4>"),
                     Div('cargo', css_class='col-12'),
+                    Div('referencias_laborales', css_class='col-12'),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -790,16 +816,50 @@ class ClienteFormCargos(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         cargo = cleaned_data.get('cargo')
+        referencias_laborales = cleaned_data.get('referencias_laborales')
         
         if not cargo:
             self.add_error('cargo', 'Debe ingresar un cargo.')
         else:
             # Verifica si el cargo ya está registrado para el mismo cliente
             cargo = cargo.upper()
-            if Cli068Cargo.objects.filter(nombre_cargo=cargo, cliente_id=self.cliente_id).exists():
+            queryset = Cli068Cargo.objects.filter(nombre_cargo=cargo, cliente_id=self.cliente_id)
+            
+            # Si es edición, excluir el cargo actual
+            if self.cargo_id:
+                queryset = queryset.exclude(id=self.cargo_id)
+                
+            if queryset.exists():
                 self.add_error('cargo', 'El cargo ya está registrado para este cliente.')
 
+        # Validar referencias laborales
+        if referencias_laborales is not None and (referencias_laborales < 0 or referencias_laborales > 10):
+            self.add_error('referencias_laborales', 'La cantidad de referencias debe estar entre 0 y 10.')
+
         return cleaned_data
+    
+    def save(self):
+        cleaned_data = self.cleaned_data
+        cargo = cleaned_data.get('cargo').upper()
+        referencias_laborales = cleaned_data.get('referencias_laborales')
+        
+        if self.cargo_id:
+            # Actualizar cargo existente
+            cargo_obj = Cli068Cargo.objects.get(id=self.cargo_id)
+            cargo_obj.nombre_cargo = cargo
+            cargo_obj.referencias_laborales = referencias_laborales
+            cargo_obj.save()
+            return cargo_obj
+        else:
+            # Crear nuevo cargo
+            from applications.common.models import Cat001Estado
+            cargo_obj = Cli068Cargo.objects.create(
+                nombre_cargo=cargo,
+                referencias_laborales=referencias_laborales,
+                cliente_id=self.cliente_id,
+                estado=Cat001Estado.objects.get(id=1)
+            )
+            return cargo_obj
     
 class ClienteFormRequisitos(forms.Form):
 
@@ -1014,15 +1074,15 @@ class ClienteFormAsignacionCliente(forms.Form):
             }
         ), required=False)
 
-    referencias_laborales = forms.IntegerField(
-        label='REFERENCIAS LABORALES',
-        required=False,
-        widget=forms.NumberInput(
-            attrs={
-                'class': 'form-control form-control-solid mb-3 mb-lg-0',
-                'placeholder': 'Referencias Laborales'
-            }
-        ))
+    # referencias_laborales = forms.IntegerField(
+    #     label='REFERENCIAS LABORALES',
+    #     required=False,
+    #     widget=forms.NumberInput(
+    #         attrs={
+    #             'class': 'form-control form-control-solid mb-3 mb-lg-0',
+    #             'placeholder': 'Referencias Laborales'
+    #         }
+    #     ))
 
     cantidad_colaboradores = forms.IntegerField(
         label='CANTIDAD DE COLABORADORES',
@@ -1169,7 +1229,7 @@ class ClienteFormAsignacionCliente(forms.Form):
                     Div(
                         HTML("<h4 class='mb-3 text-primary'>Información Adicional</h4>"),  #  Agregar título con color y margen
                         Div('periodicidad_pago', css_class='col-md-4'),
-                        Div('referencias_laborales', css_class='col-md-4'),
+                        # Div('referencias_laborales', css_class='col-md-4'),
                         Div('cantidad_colaboradores', css_class='col-md-4'),    
                         css_class='row'
                     ),
@@ -1190,7 +1250,7 @@ class ClienteFormAsignacionCliente(forms.Form):
         actividad_economica = cleaned_data.get('actividad_economica')
         tipo_cliente = cleaned_data.get('tipo_cliente')
         periodicidad_pago = cleaned_data.get('periodicidad_pago')
-        referencias_laborales = cleaned_data.get('referencias_laborales')
+        # referencias_laborales = cleaned_data.get('referencias_laborales')
         cantidad_colaboradores = cleaned_data.get('cantidad_colaboradores')
         contacto_cargo = cleaned_data.get('contacto_cargo')
         direccion_cargo = cleaned_data.get('direccion_cargo')
@@ -1263,10 +1323,10 @@ class ClienteFormAsignacionCliente(forms.Form):
         if not periodicidad_pago:
             self.add_error('periodicidad_pago', 'Debe seleccionar una periodicidad de pago.')
 
-        if referencias_laborales is None:
-            self.add_error('referencias_laborales', 'Debe ingresar el número de referencias laborales.')
-        elif referencias_laborales < 0:
-            self.add_error('referencias_laborales', 'El número de referencias laborales no puede ser negativo.')
+        # if referencias_laborales is None:
+        #     self.add_error('referencias_laborales', 'Debe ingresar el número de referencias laborales.')
+        # elif referencias_laborales < 0:
+        #     self.add_error('referencias_laborales', 'El número de referencias laborales no puede ser negativo.')
 
         if cantidad_colaboradores is None:
             self.add_error('cantidad_colaboradores', 'Debe ingresar la cantidad de colaboradores.')
@@ -1287,7 +1347,7 @@ class ClienteFormAsignacionCliente(forms.Form):
         actividad_economica = self.cleaned_data['actividad_economica']
         tipo_cliente = self.cleaned_data['tipo_cliente']
         periodicidad_pago = self.cleaned_data['periodicidad_pago']
-        referencias_laborales = self.cleaned_data['referencias_laborales']
+        # referencias_laborales = self.cleaned_data['referencias_laborales']
         cantidad_colaboradores = self.cleaned_data['cantidad_colaboradores']
         contacto_cargo = self.cleaned_data['contacto_cargo']
         direccion_cargo = self.cleaned_data['direccion_cargo']
@@ -1307,7 +1367,7 @@ class ClienteFormAsignacionCliente(forms.Form):
             actividad_economica=Cli065ActividadEconomica.objects.get(id=actividad_economica),
             tipo_cliente=tipo_cliente,
             periodicidad_pago=periodicidad_pago,
-            referencias_laborales=referencias_laborales,
+            # referencias_laborales=referencias_laborales,
             cantidad_colaboradores=cantidad_colaboradores,
             contacto_cargo=contacto_cargo,
             direccion_cargo=direccion_cargo

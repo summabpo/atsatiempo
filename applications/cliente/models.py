@@ -36,7 +36,6 @@ class Cli051Cliente(models.Model):
     tipo_cliente = models.CharField(max_length=1, choices=TIPO_CLIENTE_STATIC, default='1')
     actividad_economica = models.ForeignKey(Cli065ActividadEconomica, on_delete=models.CASCADE, null=True, blank=True)
     periodicidad_pago = models.CharField(max_length=1, choices=PAGO_NOMINA_STATIC, default='1', blank=True, null=True)
-    referencias_laborales = models.IntegerField(blank=True, null=True)
     cantidad_colaboradores = models.IntegerField(blank=True, null=True)
     contacto_cargo = models.CharField(max_length=100, blank=True, null=True)
     direccion_cargo = models.CharField(max_length=100, blank=True, null=True)
@@ -211,6 +210,7 @@ class Cli068Cargo(models.Model):
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
     fecha_creado = models.DateField(auto_now_add=True)
     cliente = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE)
+    referencias_laborales = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.nombre_cargo

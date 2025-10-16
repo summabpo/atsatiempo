@@ -68,26 +68,30 @@ Cliente
                 <div class="card-body p-4">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="default-table-area all-products">
-                                <div class="table-responsive">
-                                    <table class="table align-center" id="tabla-cargos">
+                            <div class="default-table-area all-products d-flex justify-content-center align-items-center" style="height: 100%;">
+                                <div class="table-responsive w-100">
+                                    <table class="table text-center align-middle" id="tabla-cargos" style="margin-left:auto; margin-right:auto;">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Id</th>
-                                                <th scope="col">Cargo</th>
-                                                <th scope="col">Acciones</th>
+                                                <th scope="col" class="text-center align-middle">Id</th>
+                                                <th scope="col" class="text-center align-middle">Cargo</th>
+                                                <th scope="col" class="text-center align-middle"># Referencias</th>
+                                                <th scope="col" class="text-center align-middle">Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for e in position_client %}
-                                            <tr>
-                                                <td class="text-body"  style="text-align: center; vertical-align: middle;">{{ e.id }}</td>
-                                                <td class="text-body"  style="text-align: center; vertical-align: middle;">{{ e.nombre_cargo }}</td>
-                                                <td>
+                                            <tr class="align-middle text-center">
+                                                <td class="text-body text-center align-middle">{{ e.id }}</td>
+                                                <td class="text-body text-center align-middle">{{ e.nombre_cargo }}</td>
+                                                <td class="text-body text-center align-middle">
+                                                    {{ e.referencias_laborales|default:"No especificado" }}
+                                                </td>
+                                                <td class="text-center align-middle">
                                                     <div class="d-flex justify-content-center align-items-center gap-1">
-                                                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
-                                                            <a href="{% url 'clientes:cliente_cargos_configuracion' e.cliente.id e.id %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 ">
-                                                                <i class="material-symbols-outlined fs-16 text-danger">visibility</i>
+                                                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Configurar" title="Configurar Cargo">
+                                                            <a href="{% url 'clientes:cliente_cargos_configuracion' e.cliente.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16">settings</i>
                                                             </a>
                                                         </div>
                                                         {% comment %} <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Asignar Candidatos">

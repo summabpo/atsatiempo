@@ -34,7 +34,7 @@ def query_client_detail(id):
             "logo": cliente.logo.url if cliente.logo else None,
             "cargo": cliente.contacto_cargo,
             "direccion": cliente.direccion_cargo,
-            "referencias_laborales": cliente.referencias_laborales,
+            # "referencias_laborales": cliente.referencias_laborales,
             "cantidad_colaboradores": cliente.cantidad_colaboradores,
         },
         "asignaciones": [
