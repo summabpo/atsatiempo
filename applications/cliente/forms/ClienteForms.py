@@ -764,7 +764,11 @@ class ClienteFormCargos(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.form_id = 'form_cliente_cargos'
+        # Usar ID dinámico basado en si es edición o creación
+        if cargo_id:
+            self.helper.form_id = 'form_edit_cargo'
+        else:
+            self.helper.form_id = 'form_cliente_cargos'
 
         self.fields['cargo'] = forms.CharField(
             label='CARGOS',
@@ -837,29 +841,6 @@ class ClienteFormCargos(forms.Form):
             self.add_error('referencias_laborales', 'La cantidad de referencias debe estar entre 0 y 10.')
 
         return cleaned_data
-    
-    def save(self):
-        cleaned_data = self.cleaned_data
-        cargo = cleaned_data.get('cargo').upper()
-        referencias_laborales = cleaned_data.get('referencias_laborales')
-        
-        if self.cargo_id:
-            # Actualizar cargo existente
-            cargo_obj = Cli068Cargo.objects.get(id=self.cargo_id)
-            cargo_obj.nombre_cargo = cargo
-            cargo_obj.referencias_laborales = referencias_laborales
-            cargo_obj.save()
-            return cargo_obj
-        else:
-            # Crear nuevo cargo
-            from applications.common.models import Cat001Estado
-            cargo_obj = Cli068Cargo.objects.create(
-                nombre_cargo=cargo,
-                referencias_laborales=referencias_laborales,
-                cliente_id=self.cliente_id,
-                estado=Cat001Estado.objects.get(id=1)
-            )
-            return cargo_obj
     
 class ClienteFormRequisitos(forms.Form):
 
