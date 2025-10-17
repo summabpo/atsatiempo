@@ -66,12 +66,12 @@ Cliente
                             <h5 class="card-title mb-0">Editar Información del Cargo</h5>
                         </div>
                         <div class="card-body p-4">
-                            <form method="post" id="form_cliente_cargos">
+                            <form method="post" id="form_edit_cargo">
                                 {% csrf_token %}
                                 <input type="hidden" name="edit_cargo" value="1">
                                 {% crispy form_cargo %}
                                 <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">Actualizar Cargo</button>
+                                    <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" form="form_edit_cargo">Actualizar Cargo</button>
                                 </div>
                             </form>
                         </div>
@@ -85,39 +85,43 @@ Cliente
                             <h5 class="card-title mb-0">Requisitos</h5>
                         </div>
                         <div class="card-body p-4">
-                            <form method="post" id="form_cliente_asignacion_requisitos">
+                            <form method="post" id="form_assign_requisito">
                                 {% csrf_token %}
                                 <input type="hidden" name="assign_requisito" value="1">
                                 {% crispy form_requisitos %}
-                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">Asignar Requisito</button>
+                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_assign_requisito">Asignar Requisito</button>
                             </form>
                             <hr>
                             <div class="default-table-area all-products">
-                                <div class="table-responsive">
-                                    <table class="table align-middle" id="requisitos">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Id</th>
-                                                <th scope="col">Fecha</th>
-                                                <th scope="col">Cargo</th>
-                                                <th scope="col">Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for e in asignaciones_requisitos %}
-                                            <tr>
-                                                <td class="text-body">{{ e.id }}</td>
-                                                <td class="text-body">{{ e.fecha_asignacion|date:"Y-m-d" }}</td>
-                                                <td class="text-body">{{ e.requisito }}</td>
-                                                <td>
-                                                    <a href="#" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
-                                                        <i class="material-symbols-outlined fs-16">delete</i>
-                                                    </a>
-                                                </td> 
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
+                                <div class="table-responsive" style="min-height: 300px;">
+                                    <div class="d-flex justify-content-center align-items-center h-100" style="min-height: 300px;">
+                                        <div class="w-100">
+                                            <table class="table align-middle m-0 mx-auto" id="requisitos" style="width: auto;">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col" class="text-center align-middle">Id</th>
+                                                        <th scope="col" class="text-center align-middle">Fecha</th>
+                                                        <th scope="col" class="text-center align-middle">Cargo</th>
+                                                        <th scope="col" class="text-center align-middle">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for e in asignaciones_requisitos %}
+                                                    <tr class="text-center align-middle">
+                                                        <td class="text-body text-center align-middle">{{ e.id }}</td>
+                                                        <td class="text-body text-center align-middle">{{ e.fecha_asignacion|date:"Y-m-d" }}</td>
+                                                        <td class="text-body text-center align-middle">{{ e.requisito }}</td>
+                                                        <td class="text-center align-middle">
+                                                            <a href="{% url 'clientes:cliente_cargos_requisito_eliminar' e.id e.cargo.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16">delete</i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -129,39 +133,43 @@ Cliente
                             <h5 class="card-title mb-0">Pruebas</h5>
                         </div>
                         <div class="card-body p-4">
-                            <form method="post" id="form_cliente_asignacion_prueba">
+                            <form method="post" id="form_assign_prueba">
                                 {% csrf_token %}
                                 <input type="hidden" name="assign_prueba" value="1">
                                 {% crispy form_pruebas %}
-                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">Asignar Prueba</button>
+                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_assign_prueba">Asignar Prueba</button>
                             </form>
                             <hr>
                             <div class="default-table-area all-products">
                                 <div class="table-responsive">
-                                    <table class="table align-middle" id="pruebas">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Id</th>
-                                                <th scope="col">Fecha</th>
-                                                <th scope="col">Prueba</th>
-                                                <th scope="col">Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for e in asignaciones_pruebas %}
-                                            <tr>
-                                                <td class="text-body">{{ e.id }}</td>
-                                                <td class="text-body">{{ e.fecha_asignacion|date:"Y-m-d" }}</td>
-                                                <td class="text-body">{{ e.cliente_prueba.prueba_psicologica.nombre }}</td>
-                                                <td>
-                                                    <a href="#" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
-                                                        <i class="material-symbols-outlined fs-16">delete</i>
-                                                    </a>
-                                                </td> 
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
+                                    <div class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
+                                        <div class="w-100">
+                                            <table class="table align-middle m-0" id="pruebas" style="width: auto; margin: 0 auto;">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Id</th>
+                                                        <th scope="col">Fecha</th>
+                                                        <th scope="col">Prueba</th>
+                                                        <th scope="col">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for e in asignaciones_pruebas %}
+                                                    <tr>
+                                                        <td class="text-body text-center align-middle">{{ e.id }}</td>
+                                                        <td class="text-body text-center align-middle">{{ e.fecha_asignacion|date:"Y-m-d" }}</td>
+                                                        <td class="text-body text-center align-middle">{{ e.cliente_prueba.prueba_psicologica.nombre }}</td>
+                                                        <td class="text-center align-middle">
+                                                            <a href="{% url 'clientes:cliente_cargos_prueba_eliminar' e.id e.cargo.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16">delete</i>
+                                                            </a>
+                                                        </td> 
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

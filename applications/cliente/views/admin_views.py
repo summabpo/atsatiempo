@@ -317,19 +317,26 @@ def client_detail_position(request, pk):
     if request.method == 'POST':
         form = ClienteFormCargos(request.POST, cliente_id=pk)
         if form.is_valid():
-            cargo = form.cleaned_data['cargo']
-            cargo_cliente = Cli068Cargo(
-                cliente=Cli051Cliente.objects.get(id=pk),
-                nombre_cargo=cargo.upper(),
-                estado=Cat001Estado.objects.get(id=1)
-            )
-            cargo_cliente.save()
+            try:
+                cargo = form.cleaned_data['cargo'].upper()
+                referencias_laborales = form.cleaned_data['referencias_laborales']
+                
+                cargo_cliente = Cli068Cargo.objects.create(
+                    cliente=Cli051Cliente.objects.get(id=pk),
+                    nombre_cargo=cargo,
+                    referencias_laborales=referencias_laborales,
+                    estado=Cat001Estado.objects.get(id=1)
+                )
 
-            messages.success(request, 'Los cargos han sido asignados con éxito.')
-            return redirect('clientes:cliente_cargos', pk=pk)
-
+                messages.success(request, 'El cargo ha sido creado con éxito.')
+                return redirect('clientes:cliente_cargos', pk=pk)
+            except Exception as e:
+                messages.error(request, f'Error al crear el cargo: {str(e)}')
         else:
-            messages.error(request, form.errors)
+            # Mostrar errores de validación específicos
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
             print("Errores en el formulario:", form.errors)
     else:
         form = ClienteFormCargos(cliente_id=pk)
@@ -363,15 +370,32 @@ def client_detail_position_config(request, pk, cargo_id):
     form_cargo = ClienteFormCargos(cliente_id=pk, cargo_id=cargo_id)
     form_requisitos = ClienteFormAsignacionRequisito(cliente_id=pk, cargo_id=cargo_id)
     form_pruebas = ClienteFormAsignacionPrueba(cliente_id=pk, cargo_id=cargo_id)
-
+    
     if request.method == 'POST':
         # Determinar qué formulario se está enviando
         if 'edit_cargo' in request.POST:
             form_cargo = ClienteFormCargos(request.POST, cliente_id=pk, cargo_id=cargo_id)
             if form_cargo.is_valid():
-                form_cargo.save()
-                messages.success(request, 'El cargo ha sido actualizado con éxito.')
-                return redirect('clientes:cliente_cargos_configuracion', pk=pk, cargo_id=cargo_id)
+                try:
+                    cargo = form_cargo.cleaned_data['cargo'].upper()
+                    referencias_laborales = form_cargo.cleaned_data['referencias_laborales']
+                    
+                    # Actualizar cargo existente
+                    cargo_obj = Cli068Cargo.objects.get(id=cargo_id)
+                    cargo_obj.nombre_cargo = cargo
+                    cargo_obj.referencias_laborales = referencias_laborales
+                    cargo_obj.save()
+                    
+                    messages.success(request, 'El cargo ha sido actualizado con éxito.')
+                    return redirect('clientes:cliente_cargos_configuracion', pk=pk, cargo_id=cargo_id)
+                except Exception as e:
+                    messages.error(request, f'Error al actualizar el cargo: {str(e)}')
+            else:
+                # Mostrar errores de validación específicos
+                for field, errors in form_cargo.errors.items():
+                    for error in errors:
+                        messages.error(request, f'{field}: {error}')
+                print("Errores en el formulario de cargo:", form_cargo.errors)
         
         elif 'assign_requisito' in request.POST:
             form_requisitos = ClienteFormAsignacionRequisito(request.POST, cliente_id=pk, cargo_id=cargo_id)
@@ -414,6 +438,33 @@ def client_detail_position_config(request, pk, cargo_id):
 
     return render(request, 'admin/client/admin_user/client_detail_position_config.html', contexto)
 
+@login_required
+@validar_permisos('acceso_admin', 'acceso_cliente')
+def client_detail_position_required_delete(request, pk, cargo_id):
+
+    # Obtener la asignación de requisito individual por su id
+    asignacion_requisito = Cli070AsignacionRequisito.objects.get(id=pk)
+    cliente_id = asignacion_requisito.cargo.cliente.id
+    
+    # Eliminar la asignación específica
+    asignacion_requisito.delete()
+
+    messages.success(request, 'El requisito ha sido eliminado con éxito.')
+    return redirect('clientes:cliente_cargos_configuracion', pk=cliente_id, cargo_id=cargo_id)
+
+@login_required
+@validar_permisos('acceso_admin', 'acceso_cliente')
+def client_detail_position_test_delete(request, pk, cargo_id):
+    
+    # Obtener la asignación de prueba individual por su id
+    asignacion_prueba = Cli071AsignacionPrueba.objects.get(id=pk)
+    cliente_id = asignacion_prueba.cargo.cliente.id
+    
+    # Eliminar la asignación específica
+    asignacion_prueba.delete()
+    messages.success(request, 'La prueba ha sido eliminada con éxito.')
+    return redirect('clientes:cliente_cargos_configuracion', pk=cliente_id, cargo_id=cargo_id)
+
 #mostrar información de los requisitos del clinete
 @login_required
 @validar_permisos('acceso_admin', 'acceso_cliente')
@@ -455,6 +506,7 @@ def client_detail_required(request, pk):
     }
 
     return render(request, 'admin/client/admin_user/client_detail_required.html', contexto)
+
 
 @login_required
 @validar_permisos('acceso_admin', 'acceso_cliente')

@@ -111,19 +111,26 @@ def client_position(request):
     if request.method == 'POST':
         form = ClienteFormCargos(request.POST, cliente_id=cliente_id)
         if form.is_valid():
-            cargo = form.cleaned_data['cargo']
-            cargo_cliente = Cli068Cargo(
-                cliente=Cli051Cliente.objects.get(id=cliente_id),
-                nombre_cargo=cargo.upper(),
-                estado=Cat001Estado.objects.get(id=1)
-            )
-            cargo_cliente.save()
+            try:
+                cargo = form.cleaned_data['cargo'].upper()
+                referencias_laborales = form.cleaned_data['referencias_laborales']
+                
+                cargo_cliente = Cli068Cargo.objects.create(
+                    cliente=Cli051Cliente.objects.get(id=cliente_id),
+                    nombre_cargo=cargo,
+                    referencias_laborales=referencias_laborales,
+                    estado=Cat001Estado.objects.get(id=1)
+                )
 
-            messages.success(request, 'Los cargos han sido asignados con éxito.')
-            return redirect('clientes:cargos_cliente')
-
+                messages.success(request, 'El cargo ha sido creado con éxito.')
+                return redirect('clientes:cargos_cliente')
+            except Exception as e:
+                messages.error(request, f'Error al crear el cargo: {str(e)}')
         else:
-            messages.error(request, form.errors)
+            # Mostrar errores de validación específicos
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
             print("Errores en el formulario:", form.errors)
     else:
         form = ClienteFormCargos(cliente_id=cliente_id)
