@@ -51,23 +51,3 @@ MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media_uploads/'
 # Configuración de caché
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_FILE_OVERWRITE = True
-
-# Configuración local para desarrollo
-
-# Almacenar archivos estáticos y de medios localmente en desarrollo
-if SETTINGS_ENV == 'development':
-    import os
-
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-    STATIC_URL = '/static/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, 'static'),
-    ]
-
-    MEDIA_URL = '/media_uploads/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media_uploads')
-
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'

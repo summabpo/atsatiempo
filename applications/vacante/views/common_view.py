@@ -638,10 +638,10 @@ def match(request, candidato_id, vacante_id):
 
     # Obtener motivadores requeridos por la vacante
     motivadores_vacante = []
-    if vacante.motivadores:
-        # La vacante tiene un solo motivador (ForeignKey)
-        motivadores_vacante = [vacante.motivadores.id]
-        motivador_vacante_nombre = vacante.motivadores.nombre
+    if vacante.motivadores.exists():
+        # La vacante tiene múltiples motivadores (ManyToMany)
+        motivadores_vacante = list(vacante.motivadores.values_list('id', flat=True))
+        motivador_vacante_nombre = ", ".join(vacante.motivadores.values_list('nombre', flat=True))
     else:
         motivador_vacante_nombre = "No especificado"
 
@@ -1557,10 +1557,10 @@ def get_match(candidato_id, vacante_id):
 
     # Obtener motivadores requeridos por la vacante
     motivadores_vacante = []
-    if vacante.motivadores:
-        # La vacante tiene un solo motivador (ForeignKey)
-        motivadores_vacante = [vacante.motivadores.id]
-        motivador_vacante_nombre = vacante.motivadores.nombre
+    if vacante.motivadores.exists():
+        # La vacante tiene múltiples motivadores (ManyToMany)
+        motivadores_vacante = list(vacante.motivadores.values_list('id', flat=True))
+        motivador_vacante_nombre = ", ".join(vacante.motivadores.values_list('nombre', flat=True))
     else:
         motivador_vacante_nombre = "No especificado"
 

@@ -459,11 +459,23 @@ def edit_vacanty_from_client(request, pk, vacante_id):
 
     if request.method == 'POST':
         form = VacancyFormAllV2(request.POST, cliente_id=pk)
+        print("Formulario válido:", form.is_valid())
         if form.is_valid():
 
             # Update existing data
             vacante.titulo = form.cleaned_data['titulo']
-            vacante.cargo = Cli068Cargo.objects.get(id=form.cleaned_data['cargo'])
+            
+            # Validar que cargo no esté vacío antes de hacer la consulta
+            cargo = form.cleaned_data['cargo']
+            if not cargo:
+                messages.error(request, 'Debe seleccionar un cargo válido.')
+                context = {
+                    'data': data,
+                    'form': form
+                }
+                return render(request, 'admin/vacancy/admin_user/client_detail_vacancy_edit.html', context)
+            
+            vacante.cargo = Cli068Cargo.objects.get(id=cargo)
             vacante.numero_posiciones = form.cleaned_data['numero_posiciones']
             vacante.cantidad_presentar = form.cleaned_data['cantidad_presentar']
             vacante.fecha_presentacion = form.cleaned_data['fecha_presentacion']
@@ -489,11 +501,21 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             perfil_vacante.tipo_salario = form.cleaned_data['tipo_salario']
             perfil_vacante.frecuencia_pago = form.cleaned_data['frecuencia_pago']
             perfil_vacante.salario_adicional = form.cleaned_data['salario_adicional']
-            perfil_vacante.profesion_estudio = Cli055ProfesionEstudio.objects.get(id=form.cleaned_data['profesion_estudio']) if form.cleaned_data['profesion_estudio'] else None
+            # Validar profesion_estudio
+            profesion_estudio = form.cleaned_data['profesion_estudio']
+            if profesion_estudio:
+                perfil_vacante.profesion_estudio = Cli055ProfesionEstudio.objects.get(id=profesion_estudio)
+            else:
+                perfil_vacante.profesion_estudio = None
             perfil_vacante.nivel_estudio = form.cleaned_data['nivel_estudio']
             perfil_vacante.estado_estudio = form.cleaned_data['estado_estudio']
             perfil_vacante.cantidad_semestres = form.cleaned_data['cantidad_semestres']
-            perfil_vacante.lugar_trabajo = Cat004Ciudad.objects.get(id=form.cleaned_data['lugar_trabajo']) if form.cleaned_data['lugar_trabajo'] else None
+            # Validar lugar_trabajo
+            lugar_trabajo = form.cleaned_data['lugar_trabajo']
+            if lugar_trabajo:
+                perfil_vacante.lugar_trabajo = Cat004Ciudad.objects.get(id=lugar_trabajo)
+            else:
+                perfil_vacante.lugar_trabajo = None
             perfil_vacante.termino_contrato = form.cleaned_data['termino_contrato']
             perfil_vacante.barrio = form.cleaned_data['barrio']
             perfil_vacante.direccion = form.cleaned_data['direccion']
@@ -604,6 +626,23 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             # Esto borra las habilidades viejas y agrega las nuevas automáticamente.
             vacante.habilidades.set(skills_seleccionadas)
             
+            # 3. Actualizar Soft Skills usando tabla intermedia (igual que en create_vacanty_v2)
+            # 1. Elimina las relaciones existentes para esta vacante.
+            Cli052VacanteSoftSkillsId053.objects.filter(cli052vacante=vacante).delete()
+
+            # 2. Prepara una lista de los nuevos objetos a crear.
+            objetos_a_crear = [
+                Cli052VacanteSoftSkillsId053(
+                    cli052vacante=vacante,
+                    cli053softskill_id=skill_obj.id 
+                )
+                for skill_obj in skills_seleccionadas 
+            ]
+
+            # 3. Inserta todos los nuevos registros en una sola consulta (si la lista no está vacía).
+            if objetos_a_crear:
+                Cli052VacanteSoftSkillsId053.objects.bulk_create(objetos_a_crear)
+            
             # Fit Cultural (Los campos son ModelChoiceField, no ModelMultipleChoiceField)
             vacante.fit_cultural.clear()
             fit_cultural_objects = []
@@ -624,9 +663,16 @@ def edit_vacanty_from_client(request, pk, vacante_id):
                 vacante.fit_cultural.add(*fit_cultural_objects)
             
             messages.success(request, 'Vacante editada correctamente')
-            return redirect('vacantes:vacantes_propias', pk=pk)
+
+            if request.session.get('tipo_cliente') == 'Standard':
+                return redirect('vacantes:vacantes_propias', pk=pk)
+            elif request.session.get('tipo_cliente') == 'Headhunter':
+                return redirect('vacantes:vacantes_gestion_propias', pk=pk, vacante_id=vacante.id)
+            else:
+                return redirect('vacantes:vacantes_listado_cliente')
         else:
-            messages.error(request, 'Por favor revise el formulario, errores encontrados.')
+            print("Errores del formulario:", form.errors)
+            messages.error(request, f'Por favor revise el formulario, errores encontrados: {form.errors}')
 
     else:
         form = VacancyFormAllV2(initial=initial, cliente_id=pk)
