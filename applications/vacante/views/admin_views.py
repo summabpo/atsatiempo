@@ -294,6 +294,7 @@ def create_vacanty_from_client(request, pk):
 @login_required
 @validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion')
 def edit_vacanty_from_client(request, pk, vacante_id):
+
     # Data cliente a mostrar
     data = query_client_detail(pk)
 

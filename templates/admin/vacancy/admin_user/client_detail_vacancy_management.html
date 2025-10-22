@@ -28,6 +28,13 @@ Vacantes Propias
 					</a>
 				</li>
 				{% endif %}
+				{% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '1' %}
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+					</a>
+				</li>
+				{% endif %}
 				{% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
 				<li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
@@ -123,7 +130,7 @@ Vacantes Propias
                                                 <td>
                                                     <div class="d-flex align-items-center justify-content-center">
                                                         {% if e.candidato_imagen_perfil %}
-                                                            <img src="/media_uploads/{{ e.candidato_imagen_perfil}}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
+                                                            <img src="{{ e.candidato_imagen_perfil }}" class="wh-40 rounded-3" alt="{{ e.candidato_imagen_perfil }}">
                                                         {% else %}
                                                             <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
                                                         {% endif %}
@@ -191,7 +198,7 @@ Vacantes Propias
                                                 <td>
                                                     <div class="d-flex align-items-center justify-content-center">
                                                         {% if e.imagen_candidato %}
-                                                            <img src="/media_uploads/{{ e.imagen_candidato}}" class="wh-40 rounded-3" alt="{{ e.imagen_candidato }}">
+                                                            <img src="{{ e.imagen_candidato.url }}" class="wh-40 rounded-3" alt="{{ e.imagen_candidato }}">
                                                         {% else %}
                                                             <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
                                                         {% endif %}

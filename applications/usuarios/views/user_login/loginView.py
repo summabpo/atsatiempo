@@ -94,7 +94,8 @@ def company_registration(request):
                             nit= nit,                        
                             ciudad_id_004= city ,
                             email= form.cleaned_data['email'],
-                            contacto= nombre_completo,    
+                            contacto= nombre_completo,
+                            tipo_cliente='1',
                         )
 
                         new_company.save()
@@ -252,23 +253,22 @@ def dashboard_begin(request):
     # Obtener todas las variables de sesión
     session_variables = dict(request.session)
 
+    print(session_variables)
+
     # Accedemos a los permisos guardados en el request
     permisos_usuario = getattr(request, 'permisos_usuario', [])
-    
+
     # valida 
     #ats portal interno
     if session_variables['grupo_id'] == 1:
         print('Sesion Admin')
-        
     #candidato información panel
     if session_variables['grupo_id'] == 2:
-        
         return redirect('accesses:inicio_candidato')
-        
     else:
         entrevistas_pendiente_candidato = None
         asignacion_vacante = None
-        
+
     #cliente informacion panel
     if session_variables['grupo_id'] == 3:
         print('Sesion Cliente')
@@ -281,7 +281,7 @@ def dashboard_begin(request):
     context = {
         'session_variables': session_variables,
         'permisos' : permisos_usuario,
-        
+
     }
     
     return render(request, 'admin/dashboard.html', context)
@@ -363,7 +363,8 @@ def login_view(request):
                                 request.session['imagen_url'] = usuario.imagen_perfil.url
                             else:
                                 request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
-                            
+                        
+                        # varaibles de cliente
                         if usuario.group.id == 3:
                             cliente_id = usuario.cliente_id_051.id
                             cliente = Cli051Cliente.objects.get(id = cliente_id)
@@ -374,10 +375,13 @@ def login_view(request):
                                 request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
 
                             if cliente.tipo_cliente == '1':
+                                print('Standard')
                                 request.session['tipo_cliente'] = 'Standard'
                             elif cliente.tipo_cliente == '2':
+                                print('Headhunter')
                                 request.session['tipo_cliente'] = 'Headhunter'
                             elif cliente.tipo_cliente == '3':
+                                print('Asignado')
                                 request.session['tipo_cliente'] = 'Asignado'
                             
                             request.session['tipo_usuario'] = 'Cliente'

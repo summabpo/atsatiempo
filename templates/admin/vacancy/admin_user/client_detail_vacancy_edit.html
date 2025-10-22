@@ -8,6 +8,7 @@ Vacantes Propias
 {% endblock %}
 
 {% block content %}
+
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
 		<h3 class="mb-0" style="color: #B10022;">CLIENTE: {{data.cliente.razon_social}}</h3>
@@ -28,7 +29,7 @@ Vacantes Propias
 				{% endif %}
 				{% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '1' %}
 				<li class="breadcrumb-item active" aria-current="page">
-					<a href="{% url 'vacantes:vacantes_propias' data.cliente.id %}" class="d-flex align-items-center text-decoration-none">
+					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
 					</a>
 				</li>
