@@ -4,10 +4,17 @@ from django.db.models import Value, F
 #consulta de entrevista general
 
 def query_interview_all():
+    """
+    Consulta optimizada para obtener entrevistas con información relacionada.
+    IMPORTANTE: Las imágenes se obtienen directamente desde los objetos relacionados
+    accediendo a los campos del modelo, no desde annotations.
+    """
     return Cli057AsignacionEntrevista.objects.select_related(
         'asignacion_vacante__vacante_id_052__asignacion_cliente_id_064__id_cliente_asignado',
         'asignacion_vacante__vacante_id_052__perfil_vacante',
-        'asignacion_vacante__candidato_101'
+        'asignacion_vacante__candidato_101',
+        'asignacion_vacante__vacante_id_052__asignacion_cliente_id_064',
+        'asignacion_vacante__vacante_id_052__cargo'
     ).annotate(
         nombre_candidato=Concat(
             'asignacion_vacante__candidato_101__primer_nombre',
@@ -18,7 +25,6 @@ def query_interview_all():
             Value(' '),
             'asignacion_vacante__candidato_101__segundo_apellido', 
         ),
-        imagen_candidato=F('asignacion_vacante__candidato_101__imagen_perfil'),
         nombre_asignado=Concat(
             'usuario_asignado__primer_nombre',
             Value(' '),
@@ -29,7 +35,6 @@ def query_interview_all():
             'usuario_asignado__segundo_apellido', 
         ),
         nombre_cliente=F('asignacion_vacante__vacante_id_052__asignacion_cliente_id_064__id_cliente_asignado__razon_social'),
-        logo_cliente=F('asignacion_vacante__vacante_id_052__asignacion_cliente_id_064__id_cliente_asignado__logo'),
         titulo_vacante=F('asignacion_vacante__vacante_id_052__titulo'),
         cargo_vacante=F('asignacion_vacante__vacante_id_052__cargo__nombre_cargo'),
         reclutado_id=F('asignacion_vacante__id'),

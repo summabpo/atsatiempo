@@ -34,6 +34,49 @@ Detalle vacante
 						<span class="text-secondary fw-medium hover" >Detalle Persona Reclutada</span>
 					</a>
 				</li> {% endcomment %}
+
+                {% if request.session.grupo_id == 3 %}
+                    {% if request.session.user_login.cliente_tipo == '1' %}
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_gestion_propias' vacante.asignacion_cliente_id_064.id_cliente_asignado.id vacante.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Gestión Vacante</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% if request.session.user_login.cliente_tipo == '2' %}
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'clientes:client_headhunter_asignados' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Clientes Asignados</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Listado de Vacantes</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'reclutados:vacantes_reclutados_cliente' vacante.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Personal Reclutado</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'reclutados:reclutados_detalle_cliente' vacante.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Reclutado Detalle</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% if request.session.user_login.cliente_tipo == '3' %}
+                    
+                    {% endif %}
+                    
+                {% endif %}
 				
 
                 {% if request.session.grupo_id == 4 %}

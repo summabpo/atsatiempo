@@ -45,6 +45,7 @@ Detalle vacante
                                         <th scope="col">TIPO ASIGNACION</th>
                                         <th scope="col">CANDIDATO</th>
                                         <th scope="col">ESTADO</th>
+                                        <th scope="col">ACCIONES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -54,8 +55,8 @@ Detalle vacante
                                         <td class="text-body">
                                             <div class="d-flex align-items-center justify-content-center gap-2">
                                                 <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width:48px; height:48px;">
-                                                    {% if e.logo_cliente %}
-                                                        <img src="/media_uploads/{{ e.logo_cliente }}" class="rounded-circle" style="width:40px; height:40px; object-fit:cover;" alt="{{ e.nombre_cliente }}">
+                                                    {% if e.asignacion_vacante.vacante_id_052.asignacion_cliente_id_064.id_cliente_asignado.logo %}
+                                                        <img src="{{ e.asignacion_vacante.vacante_id_052.asignacion_cliente_id_064.id_cliente_asignado.logo.url }}" class="rounded-circle" style="width:40px; height:40px; object-fit:cover;" alt="{{ e.nombre_cliente }}">
                                                     {% else %}
                                                         <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle" style="width:40px; height:40px; object-fit:cover;" alt="Sin logo">
                                                     {% endif %}
@@ -72,8 +73,8 @@ Detalle vacante
                                         <td class="text-body">{{e.obtener_tipo_entrevista}}</td>
                                         <td>
                                             <div class="d-flex align-items-center justify-content-center">
-                                                {% if e.imagen_candidato %}
-                                                    <img src="/media_uploads/{{ e.imagen_candidato}}" class="wh-40 rounded-3" alt="{{ e.imagen_candidato }}">
+                                                {% if e.asignacion_vacante.candidato_101.imagen_perfil %}
+                                                    <img src="{{ e.asignacion_vacante.candidato_101.imagen_perfil.url }}" class="wh-40 rounded-3" alt="{{ e.nombre_candidato }}">
                                                 {% else %}
                                                     <img src="{% static 'admin/images/blank.png' %}" class="wh-40 rounded-3" alt="user">
                                                 {% endif %}
@@ -89,6 +90,14 @@ Detalle vacante
                                         <td class="text-body">
 											<span class="badge bg-opacity-10 bg-{{e.obtener_nombre_estado_color.color}} py-1 px-2 text-{{e.obtener_nombre_estado_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_nombre_estado_color.estado}}</span>
 										</td>
+
+                                        <td>
+                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                <a href="{% url 'reclutados:reclutados_detalle_cliente' e.reclutado_id %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
+                                                    <i class="material-symbols-outlined fs-16 text-danger">manage_accounts</i>
+                                                </a>
+                                            </div>
+                                        </td>
 
                                         {% comment %} <td>
                                             <div class="d-flex align-items-center justify-content-center">
