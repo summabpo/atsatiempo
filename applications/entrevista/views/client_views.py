@@ -31,7 +31,7 @@ from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
 #detalle de la vacante
 @login_required
-@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_cliente_entrevistador')
+@validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_cliente_entrevistador', 'acceso_analista_seleccion')
 def management_interview(request, pk):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')

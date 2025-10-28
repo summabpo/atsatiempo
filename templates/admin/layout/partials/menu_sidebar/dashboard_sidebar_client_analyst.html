@@ -7,6 +7,9 @@
     {% if request.resolver_match.url_name == 'vacantes_crear_cliente' %}open{% endif %}
     {% if request.resolver_match.url_name == 'vacantes_listado_cliente' %}open{% endif %}
     {% if request.resolver_match.url_name|is_active_url_cliente_vacante %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_asignadas' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_gestion_propias' %}open{% endif %}
+
     
     ">
     <a href="javascript:void(0);" class="menu-link menu-toggle active">
@@ -18,6 +21,8 @@
             <a href="{% url 'vacantes:vacantes_asignadas' %}"  class="menu-link  
             {% if request.resolver_match.url_name == 'vacantes_listado_cliente' %}active{% endif %} 
             {% if request.resolver_match.url_name|is_active_url_cliente_vacante %}active{% endif %}
+            {% if request.resolver_match.url_name == 'vacantes_asignadas' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'vacantes_gestion_propias' %}active{% endif %}
             ">
                 Mis Vacantes
             </a>
