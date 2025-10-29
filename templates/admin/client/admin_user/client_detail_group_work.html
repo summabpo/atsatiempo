@@ -93,11 +93,7 @@ Grupos de Trabajo
                                                         title="Editar Usuario">
                                                     <i class="material-symbols-outlined fs-16">edit</i>
                                                 </button>
-                                                <button class="btn bg-info bg-opacity-10 fw-medium text-info py-2 px-4" 
-                                                        onclick="usuarioModalManager.verUsuario({{ user.id }})"
-                                                        title="Ver Usuario">
-                                                    <i class="material-symbols-outlined fs-16">visibility</i>
-                                                </button>
+                                                
                                                 {% if user.is_active %}
                                                 <button class="btn bg-warning bg-opacity-10 fw-medium text-warning py-2 px-4" 
                                                         onclick="usuarioModalManager.abrirModalConfirmarCambioEstado({{ user.id }}, '{{ user.primer_nombre }} {{ user.primer_apellido }}', true)"

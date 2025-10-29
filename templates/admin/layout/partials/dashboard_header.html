@@ -303,15 +303,33 @@
                                     <div class="flex-grow-1 ms-2">
                                         <h3 class="fw-medium">{{request.session.primer_nombre}}</h3>
                                         <span class="fs-12">{{request.session.tipo_cliente}}</span>
+                                        {% if request.session.grupo_id == 5 %}
+                                        <span class="fs-12">Analista Seleccion</span>
+                                        {% endif %}
+                                        {% if request.session.grupo_id == 6 %}
+                                        <span class="fs-12">Analista Seleccion Interno</span>
+                                        {% endif %}
+                                        {% if request.session.grupo_id == 3 %}
+                                        <span class="fs-12">Cliente</span>
+                                        {% endif %}
+                                        {% if request.session.grupo_id == 4 %}
+                                        <span class="fs-12">Cliente Entrevistador</span>
+                                        {% endif %}
+                                        {% if request.session.grupo_id == 2 %}
+                                        <span class="fs-12">Candidato</span>
+                                        {% endif %}
+                                        {% if request.session.grupo_id == 1 %}
+                                        <span class="fs-12">Administrador</span>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <ul class="admin-link ps-0 mb-0 list-unstyled">
-                                    <li>
+                                    {% comment %} <li>
                                         <a class="dropdown-item d-flex align-items-center text-body" href="my-profile.html">
                                             <i class="material-symbols-outlined">account_circle</i>
                                             <span class="ms-2">Mi Perfil</span>
                                         </a>
-                                    </li>
+                                    </li> {% endcomment %}
                                     {% comment %} <li>
                                         <a class="dropdown-item d-flex align-items-center text-body" href="chat.html">
                                             <i class="material-symbols-outlined">chat</i>
@@ -332,12 +350,12 @@
                                     </li> {% endcomment %}
                                 </ul>
                                 <ul class="admin-link ps-0 mb-0 list-unstyled">
-                                    <li>
+                                    {% comment %} <li>
                                         <a class="dropdown-item d-flex align-items-center text-body" href="settings.html">
                                             <i class="material-symbols-outlined">settings </i>
                                             <span class="ms-2">Configuraciones</span>
                                         </a>
-                                    </li>
+                                    </li> {% endcomment %}
                                     {% comment %} <li>
                                         <a class="dropdown-item d-flex align-items-center text-body" href="tickets.html">
                                             <i class="material-symbols-outlined">support</i>
