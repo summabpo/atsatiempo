@@ -100,7 +100,8 @@ Vacantes Propias
                             <button class="nav-link" id="nav-entrevista-tab" data-bs-toggle="tab" data-bs-target="#nav-entrevista" type="button" role="tab" aria-controls="nav-entrevista" aria-selected="false">Entrevista</button>
                             <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Preguntas Vacante</button>
                             {% if request.session.grupo_id != 5  %}
-                            <button class="nav-link" id="nav-analista-tab" data-bs-toggle="tab" data-bs-target="#nav-analista" type="button" role="tab" aria-controls="nav-analista" aria-selected="false">Analista</button>
+                            <button class="nav-link" id="nav-analista-tab" data-bs-toggle="tab" data-bs-target="#nav-analista" type="button" role="tab" aria-controls="nav-analista" aria-selected="false">Analista Selección</button>
+                            <button class="nav-link" id="nav-reclutador-tab" data-bs-toggle="tab" data-bs-target="#nav-reclutador" type="button" role="tab" aria-controls="nav-reclutador" aria-selected="false">Reclutador</button>
                             {% endif %}
                         </div>
                     </nav>
@@ -335,6 +336,129 @@ Vacantes Propias
                                         </div>
                                     </div>
                                     
+                                    <!-- Historial de Asignaciones de Analistas -->
+                                    {% if vacante.data_asignacion_usuario %}
+                                    <div class="row mt-4">
+                                        <div class="col-12">
+                                            <h4 class="mb-3 fs-16 fw-semibold">Historial de Asignaciones</h4>
+                                            <div class="default-table-area all-projects">
+                                                <div class="table-responsive">
+                                                    <table class="table align-middle text-center">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Consecutivo</th>
+                                                                <th scope="col">ID Analista</th>
+                                                                <th scope="col">Nombre</th>
+                                                                <th scope="col">Fecha Asignación</th>
+                                                                <th scope="col">Hora Asignación</th>
+                                                                <th scope="col">Usuario que Asignó</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for asignacion in vacante.data_asignacion_usuario %}
+                                                            <tr>
+                                                                <td class="text-body">{{ asignacion.consecutivo }}</td>
+                                                                <td class="text-body">{{ asignacion.id_analista }}</td>
+                                                                <td class="text-body">{{ asignacion.nombre }}</td>
+                                                                <td class="text-body">{{ asignacion.fecha_asignacion }}</td>
+                                                                <td class="text-body">{{ asignacion.hora_asignacion }}</td>
+                                                                <td class="text-body">{{ asignacion.nombre_usuario_asigno|default:asignacion.usuario_asigno }}</td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-reclutador" role="tabpanel" aria-labelledby="nav-reclutador-tab" tabindex="0">
+                            <div class="card bg-white border-0 rounded-3 mb-4">
+                                <div class="card-body p-4">
+                                    <div class="row">
+                                        
+                                        {% if reclutador_asignado.id %}
+                                        <div class="col-6">
+                                            <h3 class="mb-3 fs-16 fw-semibold">Reclutador Actual</h3>
+                                            <div class="vcard p-3 border rounded">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    
+                                                    {% if reclutador_asignado.imagen_perfil %}
+                                                        <img src="{{reclutador_asignado.imagen_perfil.url}}" alt="Foto del Reclutador" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                                                    {% else %}
+                                                        <img src="{% static 'admin/images/blank.png' %}" alt="Foto del Reclutador" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                                                    {% endif %}
+                                                        
+                                                    
+                                                    <div> 
+                                                        <h5 class="mb-0 fw-bold">{{reclutador_asignado.primer_nombre}} {{reclutador_asignado.segundo_nombre}} {{reclutador_asignado.primer_apellido}} {{reclutador_asignado.segundo_apellido}}</h5>
+                                                        <small class="text-muted">{{reclutador_asignado.group.name}}</small>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <strong>Email:</strong> <a href="mailto:{{reclutador_asignado.email}}" class="text-decoration-none">{{reclutador_asignado.email}}</a>
+                                                </div>
+                                                <a href="{% url 'accesses:users_client_detail' reclutador_asignado.id %}" class="btn btn-primary py-2 px-4 bg-primary bg-opacity-10 fw-semibold text-primary border-0 hover-bg">
+                                                    Ver Perfil Completo
+                                                </a>
+                                            </div>
+
+                                            
+                                        </div>
+                                        <div class="col-6">
+                
+                                        {% else %}    
+                                        <div class="col-12">
+                                        {% endif %}
+                                            <form method="post" id="form_vacante_asignar_reclutador">
+                                                {% csrf_token %}
+                                                {% crispy form_reclutador %}
+                                                <button id="form_vacante_asignar_reclutador" name="submit_reclutador" type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_vacante_asignar_reclutador">Guardar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Historial de Asignaciones de Reclutadores -->
+                                    {% if vacante.data_asignacion_reclutador %}
+                                    <div class="row mt-4">
+                                        <div class="col-12">
+                                            <h4 class="mb-3 fs-16 fw-semibold">Historial de Asignaciones</h4>
+                                            <div class="default-table-area all-projects">
+                                                <div class="table-responsive">
+                                                    <table class="table align-middle text-center">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Consecutivo</th>
+                                                                <th scope="col">ID Reclutador</th>
+                                                                <th scope="col">Nombre</th>
+                                                                <th scope="col">Fecha Asignación</th>
+                                                                <th scope="col">Hora Asignación</th>
+                                                                <th scope="col">Usuario que Asignó</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for asignacion in vacante.data_asignacion_reclutador %}
+                                                            <tr>
+                                                                <td class="text-body">{{ asignacion.consecutivo }}</td>
+                                                                <td class="text-body">{{ asignacion.id_reclutador }}</td>
+                                                                <td class="text-body">{{ asignacion.nombre }}</td>
+                                                                <td class="text-body">{{ asignacion.fecha_asignacion }}</td>
+                                                                <td class="text-body">{{ asignacion.hora_asignacion }}</td>
+                                                                <td class="text-body">{{ asignacion.nombre_usuario_asigno|default:asignacion.usuario_asigno }}</td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
                                 </div>
                             </div>
                         </div>
@@ -432,6 +556,7 @@ Vacantes Propias
 
 
 initializeSelect2('#id_analista_asignado');
+initializeSelect2('#id_reclutador_asignado');
 
 
 

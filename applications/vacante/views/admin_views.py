@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q, Value, Case, When, CharField
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli078MotivadoresCandidato
@@ -19,7 +20,7 @@ from applications.usuarios.decorators  import validar_permisos
 from django.db.models.functions import Concat
 
 #forms
-from applications.vacante.forms.VacanteForms import VacancyAssingForm, VacancyFormAllV2, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll
+from applications.vacante.forms.VacanteForms import VacancyAssignRecruiterForm, VacancyAssingForm, VacancyFormAllV2, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll
 
 #views
 from applications.services.service_vacanty import get_vacanty_questions, query_vacanty_all
@@ -757,13 +758,16 @@ def vacanty_management_from_client(request, pk, vacante_id):
     # Formularios para reclutar candidato y asignar analista a la vacante
     form_reclutados = ReclutadoCrearForm()
     form = VacancyAssingForm(cliente_id=cliente_id)
+    form_reclutador = VacancyAssignRecruiterForm(cliente_id=cliente_id)
     analista_asignado = UsuarioBase.objects.filter(id=vacante.usuario_asignado_id).first()
+    reclutador_asignado = UsuarioBase.objects.filter(id=vacante.asignacion_reclutador_id).first()
 
     if request.method == 'POST':
         # Determinar qué formulario fue enviado
         if 'submit_reclutado' in request.POST:
             form_reclutados = ReclutadoCrearForm(request.POST)
             form = VacancyAssingForm(cliente_id=cliente_id)  # Mantener el otro formulario vacío
+            form_reclutador = VacancyAssignRecruiterForm(cliente_id=cliente_id)  # Mantener el otro formulario vacío
             if form_reclutados.is_valid():
                 
                 numero_documento = form_reclutados.cleaned_data['numero_documento']
@@ -820,10 +824,47 @@ def vacanty_management_from_client(request, pk, vacante_id):
         elif 'submit_analista' in request.POST:
             form = VacancyAssingForm(request.POST, cliente_id=cliente_id)
             form_reclutados = ReclutadoCrearForm()  # Mantener el otro formulario vacío
+            form_reclutador = VacancyAssignRecruiterForm(cliente_id=cliente_id)  # Mantener el otro formulario vacío
             if form.is_valid():
                 print(form.cleaned_data)
                 analista_asignado_id = form.cleaned_data['analista_asignado']
-                vacante.usuario_asignado = get_object_or_404(UsuarioBase, id=analista_asignado_id)
+                analista_asignado = get_object_or_404(UsuarioBase, id=analista_asignado_id)
+                vacante.usuario_asignado = analista_asignado
+                
+                # Obtener o inicializar la lista de asignaciones de analistas
+                asignaciones_analistas = vacante.data_asignacion_usuario if vacante.data_asignacion_usuario else []
+                if not isinstance(asignaciones_analistas, list):
+                    asignaciones_analistas = []
+                
+                # Calcular el consecutivo (máximo actual + 1, o 1 si no hay registros)
+                consecutivo = 1
+                if asignaciones_analistas:
+                    consecutivos_existentes = [item.get('consecutivo', 0) for item in asignaciones_analistas if isinstance(item, dict)]
+                    if consecutivos_existentes:
+                        consecutivo = max(consecutivos_existentes) + 1
+                
+                # Crear nueva asignación
+                ahora = datetime.datetime.now()
+                nombre_completo = f"{analista_asignado.primer_nombre} {analista_asignado.segundo_nombre} {analista_asignado.primer_apellido} {analista_asignado.segundo_apellido}".strip()
+                nombre_usuario_asigno = f"{request.user.primer_nombre} {request.user.segundo_nombre} {request.user.primer_apellido} {request.user.segundo_apellido}".strip()
+                nueva_asignacion = {
+                    'consecutivo': consecutivo,
+                    'id_analista': analista_asignado_id,
+                    'nombre': nombre_completo,
+                    'fecha_asignacion': ahora.strftime('%Y-%m-%d'),
+                    'hora_asignacion': ahora.strftime('%H:%M:%S'),
+                    'usuario_asigno': request.user.id,
+                    'nombre_usuario_asigno': nombre_usuario_asigno
+                }
+                
+                # Agregar a la lista
+                asignaciones_analistas.append(nueva_asignacion)
+                
+                # Ordenar en orden descendente por fecha_asignacion y hora_asignacion
+                asignaciones_analistas.sort(key=lambda x: (x.get('fecha_asignacion', ''), x.get('hora_asignacion', '')), reverse=True)
+                
+                # Guardar en el campo JSON
+                vacante.data_asignacion_usuario = asignaciones_analistas
                 vacante.save()
 
                 messages.success(request, 'Analista asignado correctamente')
@@ -831,13 +872,65 @@ def vacanty_management_from_client(request, pk, vacante_id):
             else:
                 form_errors = True  
                 messages.error(request, 'Error al asignar el analista. Verifique los datos.')
+        elif 'submit_reclutador' in request.POST:
+            form_reclutador = VacancyAssignRecruiterForm(request.POST, cliente_id=cliente_id)
+            form_reclutados = ReclutadoCrearForm()  # Mantener el otro formulario vacío
+            form = VacancyAssingForm(cliente_id=cliente_id)  # Mantener el otro formulario vacío
+            if form_reclutador.is_valid():
+                reclutador_asignado_id = form_reclutador.cleaned_data['reclutador_asignado']
+                reclutador_asignado = get_object_or_404(UsuarioBase, id=reclutador_asignado_id)
+                vacante.asignacion_reclutador = reclutador_asignado
+                
+                # Obtener o inicializar la lista de asignaciones de reclutadores
+                asignaciones_reclutadores = vacante.data_asignacion_reclutador if vacante.data_asignacion_reclutador else []
+                if not isinstance(asignaciones_reclutadores, list):
+                    asignaciones_reclutadores = []
+                
+                # Calcular el consecutivo (máximo actual + 1, o 1 si no hay registros)
+                consecutivo = 1
+                if asignaciones_reclutadores:
+                    consecutivos_existentes = [item.get('consecutivo', 0) for item in asignaciones_reclutadores if isinstance(item, dict)]
+                    if consecutivos_existentes:
+                        consecutivo = max(consecutivos_existentes) + 1
+                
+                # Crear nueva asignación
+                ahora = datetime.datetime.now()
+                nombre_completo = f"{reclutador_asignado.primer_nombre} {reclutador_asignado.segundo_nombre} {reclutador_asignado.primer_apellido} {reclutador_asignado.segundo_apellido}".strip()
+                nombre_usuario_asigno = f"{request.user.primer_nombre} {request.user.segundo_nombre} {request.user.primer_apellido} {request.user.segundo_apellido}".strip()
+                nueva_asignacion = {
+                    'consecutivo': consecutivo,
+                    'id_reclutador': reclutador_asignado_id,
+                    'nombre': nombre_completo,
+                    'fecha_asignacion': ahora.strftime('%Y-%m-%d'),
+                    'hora_asignacion': ahora.strftime('%H:%M:%S'),
+                    'usuario_asigno': request.user.id,
+                    'nombre_usuario_asigno': nombre_usuario_asigno
+                }
+                
+                # Agregar a la lista
+                asignaciones_reclutadores.append(nueva_asignacion)
+                
+                # Ordenar en orden descendente por fecha_asignacion y hora_asignacion
+                asignaciones_reclutadores.sort(key=lambda x: (x.get('fecha_asignacion', ''), x.get('hora_asignacion', '')), reverse=True)
+                
+                # Guardar en el campo JSON
+                vacante.data_asignacion_reclutador = asignaciones_reclutadores
+                vacante.save()
+
+                messages.success(request, 'Reclutador asignado correctamente')
+                return redirect('vacantes:vacantes_gestion_propias', pk=pk, vacante_id=vacante_id)
+            else:
+                form_errors = True  
+                messages.error(request, 'Error al asignar el reclutador. Verifique los datos.')
         else:
             # Si no se reconoce el submit, mantener ambos formularios vacíos
             form_reclutados = ReclutadoCrearForm()
             form = VacancyAssingForm(cliente_id=cliente_id)
+            form_reclutador = VacancyAssignRecruiterForm(cliente_id=cliente_id)
     else:
         form_reclutados = ReclutadoCrearForm()
         form = VacancyAssingForm(cliente_id=cliente_id)
+        form_reclutador = VacancyAssignRecruiterForm(cliente_id=cliente_id)
 
     context = {
         'data': data,
@@ -847,7 +940,9 @@ def vacanty_management_from_client(request, pk, vacante_id):
         'form_reclutados' : form_reclutados,
         'preguntas': preguntas,
         'form': form,
+        'form_reclutador': form_reclutador,
         'analista_asignado': analista_asignado,
+        'reclutador_asignado': reclutador_asignado,
         'form_errors': form_errors,
     }
 

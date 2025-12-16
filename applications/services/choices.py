@@ -208,3 +208,17 @@ ESTADO_APLICACION_COLOR_STATIC = {
     11: ('Desiste', 'secondary'),
     12: ('No Apto', 'danger'),
 }
+
+ESTADO_RECLUTADO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    (1, 'Recibido'),
+    (2, 'Seleccionado'),
+    (3, 'Finalizalista'),
+    (4, 'Descartado'),
+]
+
+ESTADO_RECLUTADO_COLOR_STATIC = {
+    1: ('Recibido', 'warning'),
+    2: ('Seleccionado', 'success'),
+    3: ('Finalizalista', 'primary'),
+    4: ('Descartado', 'danger'),
+}

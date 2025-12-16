@@ -147,7 +147,7 @@ class Cli052Vacante(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_presentacion = models.DateTimeField(null=True, blank=True)
     fecha_cierre = models.DateTimeField(null=True, blank=True)
-    usuario_asignado = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True)
+    usuario_asignado = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True, related_name='vacantes_usuario_asignado')
     asignacion_cliente_id_064 = models.ForeignKey(Cli064AsignacionCliente, on_delete=models.CASCADE, null=True, blank=True)
     cargo = models.ForeignKey(Cli068Cargo, on_delete=models.CASCADE, null=True, blank=True)
     perfil_vacante = models.ForeignKey(Cli073PerfilVacante, on_delete=models.CASCADE, null=True, blank=True)
@@ -155,7 +155,9 @@ class Cli052Vacante(models.Model):
     comentarios = models.TextField(null=True, blank=True)
     habilidades = models.ManyToManyField(Can104Skill, related_name="habilidades_vacante")
     motivadores_multiple = models.ManyToManyField(Cli078MotivadoresCandidato, related_name="motivadores_multiple_vacante")
-    
+    data_asignacion_usuario = models.JSONField(null=True, blank=True)
+    asignacion_reclutador = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True, related_name='vacantes_asignacion_reclutador')
+    data_asignacion_reclutador = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.titulo

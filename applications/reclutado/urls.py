@@ -1,5 +1,5 @@
 from django.urls import path
-from applications.reclutado.views import client_views, client_analyst_internal_views, candidate_views, api_views
+from applications.reclutado.views import client_views, client_analyst_internal_views, candidate_views, api_views, client_recruiter_views
 
 
 
@@ -21,5 +21,8 @@ urlpatterns = [
 
     #api
     path( url_principal+'api/buscar_candidato/', api_views.api_candidate_document, name='api_canidate_document'),
+
+    #reclutador
+    path( url_principal+'vacantes_asignadas/', client_recruiter_views.vacancies_assigned_recruiter, name='vacantes_asignadas_reclutador'),
 
 ]

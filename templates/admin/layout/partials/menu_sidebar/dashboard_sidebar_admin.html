@@ -6,6 +6,7 @@
 <li class="menu-item 
     {% if request.resolver_match.url_name|is_active_url_cliente_all %}open{% endif %}
     {% if request.resolver_match.url_name == 'cliente_crear' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'client_detail_group_work' %}open{% endif %}
     ">
     <a href="javascript:void(0);" class="menu-link menu-toggle active">
         <span class="material-symbols-outlined menu-icon red">crowdsource</span>
@@ -24,6 +25,8 @@
             <a href="{% url 'clientes:cliente_ver' %}" 
             class="menu-link 
                 {% if request.resolver_match.url_name|is_active_url_cliente_all %}active{% endif %}
+                {% if request.resolver_match.url_name == 'client_detail_group_work' %}active{% endif %}
+                
             ">
                 Ver Todos Clientes
             </a>

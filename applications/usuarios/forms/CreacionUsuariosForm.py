@@ -83,11 +83,13 @@ class CrearUsuarioInternoForm(forms.Form):
                 ('3', 'Cliente'),
                 ('4', 'Entrevistador'),
                 ('5', 'Analista de selección'),
+                ('7', 'Reclutador'),
             ]
         elif tipo_cliente == '2':
             choices_rol=[
                 ('', 'Seleccione un rol'),
                 ('5', 'Analista de selección'),
+                ('7', 'Reclutador'),
             ]
         elif tipo_cliente == '3':
             choices_rol=[
@@ -102,6 +104,7 @@ class CrearUsuarioInternoForm(forms.Form):
                 ('3', 'Cliente'),
                 ('4', 'Entrevistador'),
                 ('5', 'Analista de selección'),
+                ('7', 'Reclutador'),
             ]
 
         self.fields['rol'] = forms.ChoiceField(
@@ -307,6 +310,7 @@ class EditUsuarioInternoForm(forms.Form):
             choices_rol=[
                 ('', 'Seleccione un rol'),
                 ('5', 'Analista de selección'),
+                ('7', 'Reclutador'),
             ]
         elif tipo_cliente == '3':
             choices_rol=[

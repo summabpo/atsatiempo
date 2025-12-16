@@ -1,0 +1,22 @@
+{% load custom_tags %}
+
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">RECLUTAMIENTO</span>
+</li>
+<li class="menu-item 
+    {% if request.resolver_match.url_name == 'vacantes_asignadas_reclutador' %}open{% endif %}
+    ">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon red">group_add</span>
+            <span class="title">Vacantes Asignadas</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="{% url 'reclutados:vacantes_asignadas_reclutador' %}"  class="menu-link  
+                {% if request.resolver_match.url_name == 'vacantes_asignadas_reclutador' %}active{% endif %}
+            ">
+                Vacantes Asignadas
+            </a>
+        </li>
+    </ul>
+</li>

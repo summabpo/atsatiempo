@@ -34,7 +34,7 @@ def usuario_interno(request):
     cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
 
     usuarios_internos = UsuarioBase.objects.filter(group__in=[6], cliente_id_051=cliente)
-
+    print(usuarios_internos)
     form_errores = False
 
     if request.method == 'POST':
@@ -52,8 +52,7 @@ def usuario_interno(request):
 
             passwordoriginal = generate_random_password()
             
-
-            user = UsuarioBase.objects.create_user(
+            UsuarioBase.objects.create_user(
                 username= correo, 
                 email= correo, 
                 primer_nombre = primer_nombre.capitalize(), 

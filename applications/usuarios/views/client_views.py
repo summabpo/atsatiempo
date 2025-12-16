@@ -28,9 +28,10 @@ def create_internal_client(request):
     if cliente_type == '1':
         group_list = [3, 4, 5]
     elif cliente_type == '2':
-        group_list = [5]
+        group_list = [5, 7]
     elif cliente_type == '3':
         group_list = [3, 4]
+        
     else:
         group_list = [3, 4, 5]
 

@@ -2214,6 +2214,56 @@ class VacancyAssingForm(forms.Form):
 
         return cleaned_data
 
+class VacancyAssignRecruiterForm(forms.Form):
+
+    
+    def __init__(self, *args, cliente_id=None, **kwargs):
+        super(VacancyAssignRecruiterForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_vacante_asignar'
+
+        analistas = UsuarioBase.objects.filter(group=7, cliente_id_051=cliente_id).order_by('primer_apellido')
+        analista_choices = [('', '----------')] + [(analista.id, f"{analista.primer_nombre} {analista.segundo_nombre} {analista.primer_apellido} {analista.segundo_apellido}") for analista in analistas]
+
+
+        self.fields['reclutador_asignado'] = forms.ChoiceField(
+            label='RECLUTADOR RESPONSABLE',
+            choices=analista_choices,
+            widget=forms.Select(
+                attrs={
+                    'class': 'form-select form-select-solid',
+                    'data-control': 'select2',
+                    'data-placeholder': 'Seleccione una opción',
+                }
+            ),
+            required=True
+        )
+
+        self.helper.layout = Layout(
+            # 🏗️ DATOS GENERALES
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Datos Principales</h4>"),
+                    Div('reclutador_asignado', css_class='col-12'),  # Título
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+        )
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Validate reclutador_asignado
+        reclutador_asignado = cleaned_data.get('reclutador_asignado')
+        if not reclutador_asignado:
+            self.add_error('reclutador_asignado', 'El reclutador asignado es obligatorio.')
+
+        return cleaned_data
+
 class VacancyFormAllV2(forms.Form):
     
     titulo = forms.CharField(

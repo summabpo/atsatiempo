@@ -20,6 +20,8 @@ from applications.candidato.forms.SocialForms import SocialNetworkForm
 
 from collections import Counter
 
+from applications.usuarios.models import UsuarioBase
+
 #views
 @login_required
 @validar_permisos('acceso_candidato')
@@ -76,6 +78,14 @@ def candidate_info(request):
                 candidato.motivadores = motivadores_data
             else:
                 candidato.motivadores = []
+            
+            UsuarioBase.objects.get(id=request.session.get('user_login')['id']).candidato_id_101 = candidato
+            usuario = UsuarioBase.objects.get(id=request.session.get('user_login')['id'])
+            # Actualizar la imagen de perfil en el usuario si hay una nueva
+            if candidato.imagen_perfil:
+                usuario.imagen_perfil = candidato.imagen_perfil
+            usuario.save()
+            
             candidato.save()
 
             messages.success(request, 'Información básica actualizada exitosamente.')

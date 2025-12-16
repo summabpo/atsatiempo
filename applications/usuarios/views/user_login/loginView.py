@@ -277,6 +277,12 @@ def dashboard_begin(request):
     else:
         vacantes_pendiente_cliente = None  
 
+    if session_variables['grupo_id'] == 7:
+        cliente_id = request.session.get('cliente_id')
+        print('Sesion Reclutador')
+    else:
+        reclutador_pendiente = None
+
     # Si quieres pasar las variables de sesión al template
     context = {
         'session_variables': session_variables,
@@ -353,18 +359,27 @@ def login_view(request):
                             'cliente_nombre': usuario.cliente_id_051.razon_social if usuario.cliente_id_051 else None,
                             'cliente_tipo': usuario.cliente_id_051.tipo_cliente if usuario.cliente_id_051 else None,
                         }
-                        
-                        # Valida el usuario es de grupo cliente para mostrar el id cliente. 
-                        if usuario.group.id == 4:
-                            request.session['cliente_id'] = usuario.cliente_id_051.id
-                            request.session['tipo_usuario'] = 'Cliente'
 
-                            if usuario.imagen_perfil:
-                                request.session['imagen_url'] = usuario.imagen_perfil.url
-                            else:
-                                request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
+                        #validar imagen de perfil
+                        if usuario.imagen_perfil:
+                            request.session['imagen_url'] = usuario.imagen_perfil.url
+                        else:
+                            request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
+
+                        #Tipo de usuario
+                        request.session['tipo_usuario'] = usuario.group.name
+
+                        #validar Grupo 1 Administrador
+                        if usuario.group.id == 1:
+                            request.session['imagen_url'] = f'{settings.MEDIA_URL}ats/logo_talenttray.jpg'
+
+                        #validar Grupo 2 Candidato
+                        if usuario.group.id == 2:
+                            candidato_id = usuario.candidato_id_101.id
+                            candidato = Can101Candidato.objects.get(id = candidato_id)
+                            request.session['candidato_id'] = candidato.id
                         
-                        # varaibles de cliente
+                        # Validar Grupo 3 Cliente
                         if usuario.group.id == 3:
                             cliente_id = usuario.cliente_id_051.id
                             cliente = Cli051Cliente.objects.get(id = cliente_id)
@@ -383,33 +398,25 @@ def login_view(request):
                             elif cliente.tipo_cliente == '3':
                                 print('Asignado')
                                 request.session['tipo_cliente'] = 'Asignado'
+
+                        # Grupo 4 Cliente Entrevistador
+                        if usuario.group.id == 4:
+                            request.session['cliente_id'] = usuario.cliente_id_051.id
                             
-                            request.session['tipo_usuario'] = 'Cliente'
-                            
-                        
+                        # Grupo 5 Analista Selección
                         if usuario.group.id == 5:
                             request.session['imagen_url'] = usuario.imagen_perfil.url
-                            request.session['tipo_usuario'] = 'Analista Selección'
                             request.session['cliente_id'] = usuario.cliente_id_051.id
                         
+                        # Grupo 6 Analista Selección ATS
                         if usuario.group.id == 6:
                             request.session['imagen_url'] = usuario.imagen_perfil.url
-                            request.session['tipo_usuario'] = 'Analista Selección ATS'
 
-                        if usuario.group.id == 2:
-                            candidato_id = usuario.candidato_id_101.id
-                            candidato = Can101Candidato.objects.get(id = candidato_id)
-                            request.session['candidato_id'] = candidato.id
-                            if candidato.imagen_perfil:
-                                request.session['imagen_url'] = candidato.imagen_perfil.url
-                            else:
-                                request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
-                            
-                            request.session['tipo_usuario'] = 'Candidato'
-
-                        if usuario.group.id == 1:
-                            request.session['imagen_url'] = f'{settings.MEDIA_URL}ats/logo_talenttray.jpg'
-                            request.session['tipo_usuario'] = 'Administrador'
+                        # Grupo 7 Analista Selección ATS (Interno)
+                        if usuario.group.id == 7:
+                            cliente_id = usuario.cliente_id_051.id
+                            cliente = Cli051Cliente.objects.get(id = cliente_id)
+                            request.session['cliente_id'] = cliente.id
 
                         request.session['grupo_id'] = usuario.group.id
                         return redirect('accesses:inicio')  

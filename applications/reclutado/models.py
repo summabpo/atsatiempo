@@ -3,7 +3,7 @@ from django.db.models import Count
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.cliente.models import Cli051Cliente
 from applications.candidato.models import Can101Candidato
-from applications.services.choices import ESTADO_APLICACION_CHOICES_STATIC, ESTADO_APLICACION_COLOR_STATIC
+from applications.services.choices import ESTADO_APLICACION_CHOICES_STATIC, ESTADO_APLICACION_COLOR_STATIC, ESTADO_RECLUTADO_CHOICES_STATIC
 from applications.usuarios.models import UsuarioBase
 from applications.vacante.models import Cli052Vacante
 
@@ -18,6 +18,7 @@ class Cli056AplicacionVacante(models.Model):
     estado = models.ForeignKey(Cat001Estado, on_delete=models.SET_NULL, null=True, blank=True, related_name='aplicaciones_vacante')
     preguntas_reclutamiento = models.JSONField(null=True, blank=True)
     json_match = models.JSONField(null=True, blank=True)
+    estado_reclutamiento = models.IntegerField(choices=ESTADO_RECLUTADO_CHOICES_STATIC, default=1)
 
     def __str__(self):
         return str(self.id)

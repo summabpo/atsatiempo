@@ -738,15 +738,25 @@ class CandidateForm(forms.Form):
             if extension_hoja not in listado_extensiones_hoja:
                 self.add_error('hoja_de_vida', 'El archivo no es válido. Debe ser un archivo PDF.')
 
-            if Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exists():
-                self.add_error('hoja_de_vida', 'Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
+            # Verificar duplicados excluyendo el candidato actual si existe
+            candidato = getattr(self, 'candidato', None)
+            if candidato:
+                if Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exclude(id=candidato.id).exists():
+                    self.add_error('hoja_de_vida', 'Ya existe un archivo con este nombre en otro registro. Por favor renombre el archivo y vuelva a intentarlo.')
+            else:
+                if Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exists():
+                    self.add_error('hoja_de_vida', 'Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
         else:
             # Solo pedir hoja de vida si no hay una ya registrada en el candidato
             candidato = getattr(self, 'candidato', None)
-            hoja_de_vida_actual = None
+            tiene_hoja_de_vida = False
             if candidato:
-                hoja_de_vida_actual = getattr(candidato, 'hoja_de_vida', None)
-            if not hoja_de_vida_actual:
+                # Verificar si el candidato ya tiene una hoja de vida registrada
+                hoja_de_vida_actual = candidato.hoja_de_vida
+                if hoja_de_vida_actual and hoja_de_vida_actual.name:
+                    tiene_hoja_de_vida = True
+            
+            if not tiene_hoja_de_vida:
                 self.add_error('hoja_de_vida', 'La hoja de vida es un campo obligatorio.')
 
 
