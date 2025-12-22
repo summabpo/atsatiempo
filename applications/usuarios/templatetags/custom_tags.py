@@ -157,4 +157,30 @@ def parse_horarios_json(value):
         
         return []
     except (json.JSONDecodeError, TypeError, AttributeError):
-        return [] 
+        return []
+
+@register.filter(name='get_match_porcentaje')
+def get_match_porcentaje(json_match):
+    """
+    Filtro para obtener el porcentaje_total del match desde json_match
+    Maneja tanto si es un diccionario como si es un string JSON
+    """
+    if not json_match:
+        return None
+    
+    try:
+        # Si es un string JSON, parsearlo
+        if isinstance(json_match, str):
+            data = json.loads(json_match)
+        else:
+            data = json_match
+        
+        # Acceder al porcentaje_total
+        if isinstance(data, dict) and 'resumen' in data:
+            resumen = data.get('resumen', {})
+            if isinstance(resumen, dict) and 'porcentaje_total' in resumen:
+                return resumen.get('porcentaje_total')
+        
+        return None
+    except (json.JSONDecodeError, TypeError, AttributeError):
+        return None 

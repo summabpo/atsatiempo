@@ -10,6 +10,7 @@ from applications.vacante.models import Cli052Vacante
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 from django.contrib import messages
 from applications.vacante.views.common_view import get_match
+from applications.usuarios.models import UsuarioBase
 
 def confirm_apply_vacancy_recruited(request, pk):
     """
@@ -29,12 +30,22 @@ def confirm_apply_vacancy_recruited(request, pk):
         if form.is_valid():
             print(form.cleaned_data)
 
+            # Obtener la instancia del usuario reclutador si existe
+            usuario_reclutador_id = request.session.get('_auth_user_id')
+            usuario_reclutador = None
+            if usuario_reclutador_id:
+                try:
+                    usuario_reclutador = UsuarioBase.objects.get(id=usuario_reclutador_id)
+                except UsuarioBase.DoesNotExist:
+                    usuario_reclutador = None
+            
             asignacion_vacante = Cli056AplicacionVacante.objects.create(
                 candidato_101_id=candidate_id,
                 vacante_id_052_id=pk,
                 estado_aplicacion=1,
                 preguntas_reclutamiento=form.cleaned_data,
-                estado= get_object_or_404(Cat001Estado, pk=1)  # Estado activo por defecto
+                estado= get_object_or_404(Cat001Estado, pk=1),  # Estado activo por defecto
+                usuario_reclutador=usuario_reclutador
             )
             
             match_candidato_vacante = get_match(candidato.id, pk)
