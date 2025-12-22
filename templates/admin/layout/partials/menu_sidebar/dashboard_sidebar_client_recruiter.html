@@ -5,8 +5,12 @@
 </li>
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'vacantes_asignadas_reclutador' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_gestion_reclutador' %}open{% endif %}
     ">
-    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+    <a href="javascript:void(0);" class="menu-link menu-toggle 
+        {% if request.resolver_match.url_name == 'vacantes_asignadas_reclutador' %}active{% endif %}
+        {% if request.resolver_match.url_name == 'vacantes_gestion_reclutador' %}active{% endif %}
+    ">
         <span class="material-symbols-outlined menu-icon red">group_add</span>
             <span class="title">Vacantes Asignadas</span>
     </a>
@@ -14,6 +18,7 @@
         <li class="menu-item">
             <a href="{% url 'reclutados:vacantes_asignadas_reclutador' %}"  class="menu-link  
                 {% if request.resolver_match.url_name == 'vacantes_asignadas_reclutador' %}active{% endif %}
+                {% if request.resolver_match.url_name == 'vacantes_gestion_reclutador' %}active{% endif %}
             ">
                 Vacantes Asignadas
             </a>

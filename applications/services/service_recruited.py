@@ -40,6 +40,8 @@ def query_recruited_vacancy_id(vacante_id):
         candidato_id=F('candidato_101__id'),
         candidato_documento=F('candidato_101__numero_documento'),
         candidato_imagen_perfil=F('candidato_101__imagen_perfil'),
+        candidato_email=F('candidato_101__email'),
+        candidato_telefono=F('candidato_101__telefono'),
         candidato_nombre=Concat(
             F('candidato_101__primer_nombre'), Value(' '),
             F('candidato_101__segundo_nombre'), Value(' '),
