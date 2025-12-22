@@ -68,7 +68,7 @@ Gestión de Vacante - Reclutador
                                         Seleccionado <span class="badge bg-success text-white ms-2">{{ reclutados_seleccionado|length }}</span>
                                     </button>
                                     <button class="nav-link" id="nav-finalizalista-tab" data-bs-toggle="tab" data-bs-target="#nav-finalizalista" type="button" role="tab" aria-controls="nav-finalizalista" aria-selected="false">
-                                        Finalizalista <span class="badge bg-primary text-white ms-2">{{ reclutados_finalizalista|length }}</span>
+                                        Finalista <span class="badge bg-primary text-white ms-2">{{ reclutados_finalizalista|length }}</span>
                                     </button>
                                     <button class="nav-link" id="nav-descartado-tab" data-bs-toggle="tab" data-bs-target="#nav-descartado" type="button" role="tab" aria-controls="nav-descartado" aria-selected="false">
                                         Descartado <span class="badge bg-danger text-white ms-2">{{ reclutados_descartado|length }}</span>
@@ -103,7 +103,7 @@ Gestión de Vacante - Reclutador
                                                             {% endif %}
                                                         </td>
                                                         <td class="text-start">
-                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
+                                                            <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
                                                             <small class="text-muted">{{ e.candidato_email|default:"-" }}</small>
                                                         </td>
                                                         <td class="text-secondary">{{ e.fecha_aplicacion|date:"d/m/Y"|default:"-" }}</td>
@@ -145,7 +145,7 @@ Gestión de Vacante - Reclutador
                                                             {% endwith %}
                                                         </td>
                                                         <td class="text-center">
-                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="btn btn-sm bg-warning bg-opacity-10 text-warning border-0">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                                                                 <i class="material-symbols-outlined fs-14">visibility</i> Ver
                                                             </a>
                                                         </td>
@@ -184,7 +184,7 @@ Gestión de Vacante - Reclutador
                                                             {% endif %}
                                                         </td>
                                                         <td class="text-start">
-                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
+                                                            <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
                                                             <small class="text-muted">{{ e.candidato_email|default:"-" }}</small>
                                                         </td>
                                                         <td class="text-secondary">{{ e.fecha_aplicacion|date:"d/m/Y"|default:"-" }}</td>
@@ -226,7 +226,7 @@ Gestión de Vacante - Reclutador
                                                             {% endwith %}
                                                         </td>
                                                         <td class="text-center">
-                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="btn btn-sm bg-success bg-opacity-10 text-success border-0">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                                                                 <i class="material-symbols-outlined fs-14">visibility</i> Ver
                                                             </a>
                                                         </td>
@@ -238,11 +238,11 @@ Gestión de Vacante - Reclutador
                                     </div>
                                 </div>
                                 
-                                <!-- Tab: Finalizalista -->
+                                <!-- Tab: finalista -->
                                 <div class="tab-pane fade" id="nav-finalizalista" role="tabpanel" aria-labelledby="nav-finalizalista-tab" tabindex="0">
                                     <div class="default-table-area all-projects">
                                         <div class="table-responsive">
-                                            <table class="table align-middle text-center" id="tableFinalizalista">
+                                            <table class="table align-middle text-center" id="tablefinalista">
                                                 <thead>
                                                     <tr>
                                                         <th scope="col" class="text-center">Imagen</th>
@@ -265,7 +265,7 @@ Gestión de Vacante - Reclutador
                                                             {% endif %}
                                                         </td>
                                                         <td class="text-start">
-                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
+                                                            <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
                                                             <small class="text-muted">{{ e.candidato_email|default:"-" }}</small>
                                                         </td>
                                                         <td class="text-secondary">{{ e.fecha_aplicacion|date:"d/m/Y"|default:"-" }}</td>
@@ -307,7 +307,7 @@ Gestión de Vacante - Reclutador
                                                             {% endwith %}
                                                         </td>
                                                         <td class="text-center">
-                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                                                                 <i class="material-symbols-outlined fs-14">visibility</i> Ver
                                                             </a>
                                                         </td>
@@ -346,7 +346,7 @@ Gestión de Vacante - Reclutador
                                                             {% endif %}
                                                         </td>
                                                         <td class="text-start">
-                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
+                                                            <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
                                                             <small class="text-muted">{{ e.candidato_email|default:"-" }}</small>
                                                         </td>
                                                         <td class="text-secondary">{{ e.fecha_aplicacion|date:"d/m/Y"|default:"-" }}</td>
@@ -388,7 +388,7 @@ Gestión de Vacante - Reclutador
                                                             {% endwith %}
                                                         </td>
                                                         <td class="text-center">
-                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="btn btn-sm bg-danger bg-opacity-10 text-danger border-0">
+                                                            <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                                                                 <i class="material-symbols-outlined fs-14">visibility</i> Ver
                                                             </a>
                                                         </td>
@@ -502,7 +502,7 @@ $(document).ready(function() {
     // Variables para almacenar las instancias de DataTable
     var tableRecibido = null;
     var tableSeleccionado = null;
-    var tableFinalizalista = null;
+    var tablefinalista = null;
     var tableDescartado = null;
 
     // Función para inicializar DataTable solo si no existe
@@ -570,10 +570,10 @@ $(document).ready(function() {
 
     $('#nav-finalizalista-tab').on('shown.bs.tab', function (e) {
         setTimeout(function() {
-            if (!tableFinalizalista) {
-                tableFinalizalista = initDataTable('tableFinalizalista');
+            if (!tablefinalista) {
+                tablefinalista = initDataTable('tablefinalista');
             } else {
-                tableFinalizalista.columns.adjust().draw();
+                tablefinalista.columns.adjust().draw();
             }
         }, 200);
     });
@@ -626,7 +626,7 @@ $(document).ready(function() {
                 if (nivel > nivelMax) {
                     nivelMax = nivel;
                     textoMax = $(this).data('texto');
-                }
+        }
             });
             
             if (textoMax) {

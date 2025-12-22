@@ -753,7 +753,8 @@ def vacanty_management_from_client(request, pk, vacante_id):
     preguntas = get_vacanty_questions(vacante.id)
 
     # Obtener los reclutados asociados a la vacante
-    reclutados = query_recruited_vacancy_id(vacante.id)
+    reclutados = query_recruited_vacancy_id(vacante.id).filter(estado_reclutamiento=3)
+    
 
     # Formularios para reclutar candidato y asignar analista a la vacante
     form_reclutados = ReclutadoCrearForm()

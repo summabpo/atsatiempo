@@ -9,7 +9,7 @@ from applications.vacante.models import Cli052Vacante
 
 # Create your models here.
 class Cli056AplicacionVacante(models.Model):
-
+    
     candidato_101 = models.ForeignKey(Can101Candidato, on_delete=models.CASCADE, related_name='aplicaciones')
     vacante_id_052 = models.ForeignKey(Cli052Vacante, on_delete=models.CASCADE, related_name='aplicaciones')
     fecha_aplicacion = models.DateTimeField(auto_now_add=True)
@@ -20,7 +20,7 @@ class Cli056AplicacionVacante(models.Model):
     json_match = models.JSONField(null=True, blank=True)
     estado_reclutamiento = models.IntegerField(choices=ESTADO_RECLUTADO_CHOICES_STATIC, default=1)
     usuario_reclutador = models.ForeignKey(UsuarioBase, on_delete=models.SET_NULL, null=True, blank=True, related_name='aplicaciones_reclutador')
-
+    registro_reclutamiento = models.JSONField(null=True, blank=True)
     def __str__(self):
         return str(self.id)
 

@@ -7,9 +7,10 @@
 Vacantes Propias
 {% endblock %}
 
-
-
 {% block content %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
 		<h3 class="mb-0" style="color: #B10022;">CLIENTE: {{data.cliente.razon_social}}</h3>
@@ -547,6 +548,10 @@ Vacantes Propias
 {% endblock %}
 
 {% block js %} 
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
 <script>
 
 {% if form.errors %}
@@ -558,9 +563,101 @@ Vacantes Propias
 initializeSelect2('#id_analista_asignado');
 initializeSelect2('#id_reclutador_asignado');
 
-
-
+// Inicializar DataTables para las tablas
 $(document).ready(function () {
+    // Verificar que DataTables esté disponible
+    if (typeof $.fn.DataTable !== 'undefined') {
+        // Configuración común para DataTables
+        var dataTableConfig = {
+            "dom": '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar:",
+                "searchPlaceholder": "Buscar...",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "emptyTable": "No hay datos disponibles en la tabla",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "infoThousands": ","
+            },
+            "responsive": true,
+            "autoWidth": false,
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "paging": true
+        };
+
+        // Variables para almacenar las instancias de DataTable
+        var tableReclutados = null;
+        var tableEntrevistas = null;
+
+        // Función para inicializar DataTable de reclutados
+        function initTableReclutados() {
+            if (!tableReclutados && $('#reclutamiento-tabla').length) {
+                tableReclutados = $('#reclutamiento-tabla').DataTable($.extend({}, dataTableConfig, {
+                    "columnDefs": [
+                        {
+                            "targets": [4], // Columna de Acciones
+                            "orderable": false,
+                            "searchable": false
+                        }
+                    ],
+                    "order": [[0, "desc"]] // Ordenar por ID descendente
+                }));
+            }
+        }
+
+        // Función para inicializar DataTable de entrevistas
+        function initTableEntrevistas() {
+            if (!tableEntrevistas && $('#entrevista-tabla').length) {
+                tableEntrevistas = $('#entrevista-tabla').DataTable($.extend({}, dataTableConfig, {
+                    "order": [[0, "desc"]] // Ordenar por ID descendente
+                }));
+            }
+        }
+
+        // Inicializar la tabla de reclutados si el tab está activo
+        if ($('#nav-reclutado').hasClass('active')) {
+            initTableReclutados();
+        }
+
+        // Inicializar la tabla de entrevistas si el tab está activo
+        if ($('#nav-entrevista').hasClass('active')) {
+            initTableEntrevistas();
+        }
+
+        // Inicializar DataTables cuando se cambia de tab
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            var target = $(e.target).attr("data-bs-target");
+            if (target === '#nav-reclutado') {
+                initTableReclutados();
+                if (tableReclutados) {
+                    tableReclutados.columns.adjust().draw();
+                }
+            } else if (target === '#nav-entrevista') {
+                initTableEntrevistas();
+                if (tableEntrevistas) {
+                    tableEntrevistas.columns.adjust().draw();
+                }
+            }
+        });
+    } else {
+        console.error('DataTables no está cargado');
+    }
+
+    // Código para buscar candidato por documento
         const inputDocumento = $('#id_numero_documento');
         const apiUrl = "{% url 'reclutados:api_canidate_document' %}";
 
