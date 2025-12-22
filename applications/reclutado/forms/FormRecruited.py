@@ -102,4 +102,56 @@ class ReclutadoCrearForm(forms.Form):
                 self.add_error('telefono', 'El número de teléfono ya está registrado con otro candidato.')
 
 
-        return cleaned_data   
+        return cleaned_data
+
+class ActualizarEstadoReclutadoForm(forms.Form):
+    estado_reclutamiento = forms.ChoiceField(
+        label="Nuevo Estado",
+        choices=[('', 'Seleccione una opción...')] + [
+            (1, 'Recibido'),
+            (2, 'Seleccionado'),
+            (3, 'Finalista'),
+            (4, 'Descartado'),
+        ],
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select select2'})
+    )
+    comentario = forms.CharField(
+        label="Comentario",
+        required=True,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': 'Ingrese un comentario sobre el cambio de estado...'
+        })
+    )
+
+    def __init__(self, *args, **kwargs):
+        estado_actual = kwargs.pop('estado_actual', None)
+        super().__init__(*args, **kwargs)
+        
+        # Configuración de Crispy Forms
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_actualizar_estado'
+        self.helper.form_class = 'w-100'
+        
+        self.helper.layout = Layout(
+            Div(
+                HTML("<h5 class='mb-3 text-primary'>Cambiar Estado del Candidato</h5>"),
+                Div('estado_reclutamiento', css_class='col-12 mb-3'),
+                Div('comentario', css_class='col-12 mb-3'),
+                Div(
+                    Submit('submit', 'Actualizar Estado', css_class='btn btn-primary w-100'),
+                    css_class='col-12'
+                ),
+                css_class='row'
+            ),
+        )
+        
+        # Si hay un estado actual, excluirlo de las opciones (opcional)
+        if estado_actual:
+            choices = self.fields['estado_reclutamiento'].choices
+            self.fields['estado_reclutamiento'].choices = [
+                choice for choice in choices if choice[0] != estado_actual
+            ]

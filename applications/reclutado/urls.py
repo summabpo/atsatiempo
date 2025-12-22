@@ -25,5 +25,6 @@ urlpatterns = [
     #reclutador
     path( url_principal+'vacantes_asignadas/', client_recruiter_views.vacancies_assigned_recruiter, name='vacantes_asignadas_reclutador'),
     path( url_principal+'vacantes_asignadas/gestionar/<int:pk>/<int:vacante_id>/', client_recruiter_views.vacancies_assigned_recruiter_detail, name='vacantes_gestion_reclutador'),
+    path( url_principal+'detalle/reclutado/<int:pk>/', client_recruiter_views.detail_recruited, name='reclutados_detalle_reclutador'),
 
 ]

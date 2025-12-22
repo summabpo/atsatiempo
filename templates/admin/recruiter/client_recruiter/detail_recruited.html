@@ -1,0 +1,314 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+
+{% block title %}
+Detalle Candidato - Reclutador
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">DETALLE CANDIDATO</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover">Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'reclutados:vacantes_asignadas_reclutador' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover">Vacantes Asignadas</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'reclutados:vacantes_gestion_reclutador' vacante.asignacion_cliente_id_064.id_cliente_asignado.id vacante.id %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover">Gestión de Vacante</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Detalle Candidato</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<div class="row">
+		<!-- Columna principal con información del candidato -->
+		<div class="col-md-9">
+			<!-- Card de información básica -->
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+					<p class="text-primary my-2 fs-4 fw-semibold">Información del Candidato</p>
+				</div>
+				<div class="card-body p-4">
+					<div class="row">
+						<div class="col-4">
+							<div class="d-flex align-items-center">
+								<div class="flex-shrink-0">
+									{% if candidato.imagen_perfil %}
+										<img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2" style="width: 100px; height: 100px; object-fit: cover;" alt="{{ candidato.nombre_completo }}">
+									{% else %}
+										<img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2" style="width: 100px; height: 100px; object-fit: cover;" alt="user">
+									{% endif %}
+								</div>
+								<div class="flex-grow-1 ms-3">
+									<h4 class="fs-17 mb-1 fw-semibold">{{ candidato.nombre_completo }}</h4>
+									<span class="fs-14 text-muted">Candidato</span>
+								</div>
+							</div>
+						</div>
+						<div class="col-8">
+							<div class="row">
+								<div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+									<div class="d-flex align-items-center mb-4">
+										<div class="flex-shrink-0">
+											<i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-primary bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
+										</div>
+										<div class="flex-grow-1 ms-3">
+											<h4 class="fs-14 fw-semibold mb-1">Fecha Aplicó</h4>
+											<span>{{ reclutado.fecha_aplicacion|date:"d/m/Y" }}</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+									<div class="d-flex align-items-center mb-4">
+										<div class="flex-shrink-0">
+											<i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-warning bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
+										</div>
+										<div class="flex-grow-1 ms-3">
+											<h4 class="fs-14 fw-semibold mb-1">Fecha Actualización</h4>
+											<span>{{ reclutado.fecha_actualizacion|date:"d/m/Y" }}</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+									<div class="d-flex align-items-center mb-4">
+										<div class="flex-shrink-0">
+											<i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-info bg-gary-light rounded-circle bg-for-dark-mode">person_alert</i>
+										</div>
+										<div class="flex-grow-1 ms-3">
+											<h4 class="fs-14 fw-semibold mb-1">Estado Actual</h4>
+											{% if reclutado.estado_reclutamiento == 1 %}
+												<span class="badge bg-warning text-dark py-1 px-2 rounded-1 fw-medium fs-12">Recibido</span>
+											{% elif reclutado.estado_reclutamiento == 2 %}
+												<span class="badge bg-success text-white py-1 px-2 rounded-1 fw-medium fs-12">Seleccionado</span>
+											{% elif reclutado.estado_reclutamiento == 3 %}
+												<span class="badge bg-primary text-white py-1 px-2 rounded-1 fw-medium fs-12">Finalista</span>
+											{% elif reclutado.estado_reclutamiento == 4 %}
+												<span class="badge bg-danger text-white py-1 px-2 rounded-1 fw-medium fs-12">Descartado</span>
+											{% endif %}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Card de información detallada del candidato -->
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+					<ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+						<li class="nav-item" role="presentation">
+							<button class="nav-link active" id="perfil-tab" data-bs-toggle="tab" data-bs-target="#perfil-tab-pane" type="button" role="tab" aria-controls="perfil-tab-pane" aria-selected="true">Perfil Candidato</button>
+						</li>
+						<li class="nav-item" role="presentation">
+							<button class="nav-link" id="match-tab" data-bs-toggle="tab" data-bs-target="#match-tab-pane" type="button" role="tab" aria-controls="match-tab-pane" aria-selected="false">Match Candidato Vacante</button>
+						</li>
+					</ul>
+					<div class="tab-content" id="myTabContent">
+						<!-- Tab Perfil -->
+						<div class="tab-pane fade show active" id="perfil-tab-pane" role="tabpanel" aria-labelledby="perfil-tab" tabindex="0">
+							<div class="row">
+								<div class="col-md-4">
+									<div class="card bg-white border rounded-3 mb-4">
+										<div class="card-body p-4">
+											<div class="text-center mb-4">
+												{% if candidato.imagen_perfil %}
+													<img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2" style="width: 120px; height: 120px; object-fit: cover; margin-bottom: 1rem;" alt="{{ candidato.nombre_completo }}">
+												{% else %}
+													<img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2" style="width: 120px; height: 120px; object-fit: cover; margin-bottom: 1rem;" alt="user">
+												{% endif %}
+												<h4 class="fs-18 mb-1 fw-semibold">{{ candidato.nombre_completo }}</h4>
+											</div>
+											<h5 class="fs-14 fw-semibold mb-3 text-primary">Información de Contacto</h5>
+											<ul class="list-unstyled mb-0">
+												<li class="d-flex align-items-center mb-3">
+													<span class="material-symbols-outlined text-primary me-2">badge</span>
+													<div>
+														<small class="text-muted d-block">Documento</small>
+														<span class="fw-medium">{{ info_detalle_candidato.numero_documento|default:"-" }}</span>
+													</div>
+												</li>
+												<li class="d-flex align-items-center mb-3">
+													<span class="material-symbols-outlined text-primary me-2">email</span>
+													<div>
+														<small class="text-muted d-block">Email</small>
+														<span class="fw-medium">{{ info_detalle_candidato.email|default:"-" }}</span>
+													</div>
+												</li>
+												<li class="d-flex align-items-center mb-3">
+													<span class="material-symbols-outlined text-primary me-2">phone</span>
+													<div>
+														<small class="text-muted d-block">Teléfono</small>
+														<span class="fw-medium">{{ info_detalle_candidato.telefono|default:"-" }}</span>
+													</div>
+												</li>
+												<li class="d-flex align-items-center mb-3">
+													<span class="material-symbols-outlined text-primary me-2">location_on</span>
+													<div>
+														<small class="text-muted d-block">Ubicación</small>
+														<span class="fw-medium">{{ info_detalle_candidato.ciudad|default:"-" }}</span>
+													</div>
+												</li>
+												<li class="d-flex align-items-center mb-3">
+													<span class="material-symbols-outlined text-primary me-2">wc</span>
+													<div>
+														<small class="text-muted d-block">Género</small>
+														<span class="fw-medium">{{ info_detalle_candidato.sexo|default:"-" }}</span>
+													</div>
+												</li>
+												<li class="d-flex align-items-center mb-3">
+													<span class="material-symbols-outlined text-primary me-2">calendar_month</span>
+													<div>
+														<small class="text-muted d-block">Fecha Nacimiento</small>
+														<span class="fw-medium">{{ info_detalle_candidato.fecha_nacimiento|date:"d/m/Y"|default:"-" }}</span>
+													</div>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-8">
+									<!-- Formación Académica -->
+									<div class="card bg-white border rounded-3 mb-4">
+										<div class="card-body p-4">
+											<h5 class="fs-16 fw-semibold mb-3 text-primary">
+												<span class="material-symbols-outlined text-primary me-2">school</span>
+												Formación Académica
+											</h5>
+											{% if info_detalle_candidato.educacion %}
+												{% for edu in info_detalle_candidato.educacion %}
+												<div class="position-relative ps-4 pb-4 mb-3">
+													<div class="position-absolute start-0 top-0 h-100" style="width: 2px; background-color: #dee2e6;"></div>
+													<div class="position-absolute start-0 top-0" style="width: 14px; height: 14px; background-color: #B10022; border-radius: 50%; transform: translateX(-6px); border: 2px solid #ffffff;"></div>
+													<p class="fw-semibold mb-1">{{ edu.institucion }}</p>
+													<p class="text-muted mb-1">{{ edu.titulo }} ({{ edu.tipo_estudio }})</p>
+													<p class="text-muted small mb-0">{{ edu.fecha_inicial|date:"Y" }} - {{ edu.fecha_final|date:"Y"|default:"Actual" }}</p>
+												</div>
+												{% endfor %}
+											{% else %}
+												<p class="text-muted">No se registran estudios.</p>
+											{% endif %}
+										</div>
+									</div>
+
+									<!-- Experiencia Laboral -->
+									<div class="card bg-white border rounded-3 mb-4">
+										<div class="card-body p-4">
+											<h5 class="fs-16 fw-semibold mb-3 text-primary">
+												<span class="material-symbols-outlined text-primary me-2">work</span>
+												Experiencia Laboral
+											</h5>
+											{% if info_detalle_candidato.experiencia %}
+												{% for exp in info_detalle_candidato.experiencia %}
+												<div class="position-relative ps-4 pb-4 mb-3">
+													<div class="position-absolute start-0 top-0 h-100" style="width: 2px; background-color: #dee2e6;"></div>
+													<div class="position-absolute start-0 top-0" style="width: 14px; height: 14px; background-color: #B10022; border-radius: 50%; transform: translateX(-6px); border: 2px solid #ffffff;"></div>
+													<p class="fw-semibold mb-1">{{ exp.entidad }} ({{ exp.sector }})</p>
+													<p class="text-muted mb-1">{{ exp.cargo }}</p>
+													<p class="text-muted small mb-0">{{ exp.fecha_inicial|date:"Y" }} - {{ exp.fecha_final|date:"Y"|default:"Actual" }}</p>
+												</div>
+												{% endfor %}
+											{% else %}
+												<p class="text-muted">No se registra experiencia laboral.</p>
+											{% endif %}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- Tab Match -->
+						<div class="tab-pane fade" id="match-tab-pane" role="tabpanel" aria-labelledby="match-tab" tabindex="0">
+							{% if json_match %}
+								{% include "admin/vacancy/partials/match_candidate_vacancy.html" %}
+							{% else %}
+								<div class="alert alert-info">
+									<p class="mb-0">No hay información de match disponible.</p>
+								</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Columna lateral con formulario de cambio de estado -->
+		<div class="col-md-3">
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+					<p class="text-primary my-2 fs-5 fw-semibold">Cambiar Estado</p>
+				</div>
+				<div class="card-body p-4">
+					{% crispy form %}
+				</div>
+			</div>
+
+			<!-- Historial de cambios de estado -->
+			{% if historial_estados %}
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+					<p class="text-primary my-2 fs-5 fw-semibold">Historial de Estados</p>
+				</div>
+				<div class="card-body p-4">
+					<div class="timeline">
+						{% for registro in historial_estados reversed %}
+						<div class="position-relative ps-4 pb-4 mb-3">
+							<div class="position-absolute start-0 top-0 h-100" style="width: 2px; background-color: #dee2e6;"></div>
+							<div class="position-absolute start-0 top-0" style="width: 12px; height: 12px; background-color: #B10022; border-radius: 50%; transform: translateX(-5px); border: 2px solid #ffffff;"></div>
+							<div class="small text-muted mb-1">
+								{% if registro.fecha_hora_actualizacion %}
+									{% if "T" in registro.fecha_hora_actualizacion %}
+										{{ registro.fecha_hora_actualizacion|slice:":10"|date:"d/m/Y" }} {{ registro.fecha_hora_actualizacion|slice:"11:16" }}
+									{% else %}
+										{{ registro.fecha_hora_actualizacion }}
+									{% endif %}
+								{% else %}
+									-
+								{% endif %}
+							</div>
+							<div class="mb-1">
+								<span class="badge bg-secondary">{{ registro.estado_anterior.nombre }}</span>
+								<span class="mx-1">→</span>
+								<span class="badge bg-primary">{{ registro.estado_nuevo.nombre }}</span>
+							</div>
+							{% if registro.comentario %}
+							<p class="small text-muted mb-0">{{ registro.comentario }}</p>
+							{% endif %}
+						</div>
+						{% empty %}
+						<p class="text-muted small">No hay historial de cambios de estado.</p>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+    // Inicializar Select2 para el campo de estado
+    initializeSelect2('#id_estado_reclutamiento');
+});
+</script>
+{% endblock js %}
