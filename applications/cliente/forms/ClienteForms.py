@@ -251,6 +251,8 @@ class ClienteForm(forms.Form):
         
         if not re.match(r'^\d{9}$', nit):
             self.add_error('nit','El NIT debe contener solo números y tener  9 dígitos.')
+        elif Cli051Cliente.objects.filter(nit=nit).exists():
+            self.add_error('nit', 'El NIT ya está registrado.')
 
         if not re.match(r'^\d{10}$', telefono):
             self.add_error('telefono','El teléfono debe contener solo números y tener 10 dígitos.')
@@ -450,7 +452,8 @@ class ClienteFormEdit(forms.Form):
         )
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, cliente_id=None, **kwargs):
+        self.cliente_id = cliente_id
         super(ClienteFormEdit, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
@@ -597,6 +600,12 @@ class ClienteFormEdit(forms.Form):
         
         if not re.match(r'^\d{9}$', nit):
             self.add_error('nit','El NIT debe contener solo números y tener  9 dígitos.')
+        else:
+            qs = Cli051Cliente.objects.filter(nit=nit)
+            if self.cliente_id:
+                qs = qs.exclude(id=self.cliente_id)
+            if qs.exists():
+                self.add_error('nit','El NIT ya está registrado.')
 
         if not re.match(r'^\d{10}$', telefono):
             self.add_error('telefono','El teléfono debe contener solo números y tener 10 dígitos.')
@@ -1255,6 +1264,8 @@ class ClienteFormAsignacionCliente(forms.Form):
         
         if not re.match(r'^\d{9}$', str(nit)):
             self.add_error('nit','El NIT debe contener solo números y tener  9 dígitos.')
+        elif Cli051Cliente.objects.filter(nit=nit).exists():
+            self.add_error('nit','El NIT ya está registrado.')
 
         # Validación: si existe el NIT, no filtrar por email ni teléfono
         # Si existe el NIT, no mostrar alerta, solo procesar los datos sin actualizar.

@@ -53,11 +53,11 @@ def client_detail_info(request):
         'direccion_cargo': cliente.direccion_cargo,
     }
 
-    form_cliente = ClienteFormEdit(initial=initial_data)
+    form_cliente = ClienteFormEdit(initial=initial_data, cliente_id=cliente_id)
 
     #logica para mostrar el form
     if request.method == 'POST':
-        form_cliente = ClienteFormEdit(request.POST, request.FILES)
+        form_cliente = ClienteFormEdit(request.POST, request.FILES, cliente_id=cliente_id)
         if form_cliente.is_valid():
             cliente.razon_social = form_cliente.cleaned_data['razon_social']
             cliente.nit = form_cliente.cleaned_data['nit']
@@ -87,7 +87,7 @@ def client_detail_info(request):
             print("Errores en el formulario:", form_cliente.errors)
             messages.error(request, form_cliente.errors)  
     else:
-        form_cliente = ClienteFormEdit(initial=initial_data)
+        form_cliente = ClienteFormEdit(initial=initial_data, cliente_id=cliente_id)
     
     contexto = {
         'data' : data,

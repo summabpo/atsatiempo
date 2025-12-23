@@ -20,6 +20,8 @@ class Cli057AsignacionEntrevista(models.Model):
         (3, 'No Apto'),
         (4, 'Seleccionado'),
         (5, 'Cancelado'),
+        (6, 'Rechazado'),
+        (7, 'No Asistió')
     ]
 
     asignacion_vacante = models.ForeignKey(Cli056AplicacionVacante, on_delete=models.CASCADE, related_name='asignaciones_entrevista')
@@ -32,6 +34,7 @@ class Cli057AsignacionEntrevista(models.Model):
     lugar_enlace = models.CharField(max_length=255)
     estado_asignacion = models.IntegerField(choices=ESTADO_ASIGNACION, default=1)
     estado = models.ForeignKey(Cat001Estado, models.DO_NOTHING, default=1)
+    resultado_entrevista = models.JSONField(null=True, blank=True)
 
     # campos post asignacion
     observacion = models.TextField(null=True, blank=True, verbose_name="Observación")

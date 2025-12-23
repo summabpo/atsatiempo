@@ -64,6 +64,7 @@ class EntrevistaCrearForm(forms.Form):
     def __init__(self, *args, **kwargs):
         grupo_id = kwargs.pop('grupo_id', None)
         cliente_id = kwargs.pop('cliente_id', None)
+        vacante = kwargs.pop('vacante', None)
         super().__init__(*args, **kwargs)
 
         # Configuración de Crispy Forms
@@ -72,12 +73,47 @@ class EntrevistaCrearForm(forms.Form):
         self.helper.form_id = 'form_crear_entrevista'
         self.helper.form_class = 'w-200'
 
+        usuario_choices = [('', '----------')]
         
-
-        usuarios =  UsuarioBase.objects.filter(group=grupo_id, cliente_id_051=cliente_id, is_active=True).order_by('primer_apellido')
-        usuario_choices = [('', '----------')] + [(usuario.id, f" {usuario.primer_apellido} {usuario.primer_nombre}") for usuario in usuarios]
+        # Obtener analistas asignados a la vacante (grupo 5)
+        analistas_ids = set()
         
-        # Añadir el campo city al formulario con las opciones obtenidas
+        # Analista principal asignado
+        if vacante and vacante.usuario_asignado_id:
+            analistas_ids.add(vacante.usuario_asignado_id)
+        
+        # Analistas del JSON data_asignacion_usuario
+        if vacante and vacante.data_asignacion_usuario:
+            if isinstance(vacante.data_asignacion_usuario, list):
+                for asignacion in vacante.data_asignacion_usuario:
+                    if isinstance(asignacion, dict) and 'usuario_id' in asignacion:
+                        analistas_ids.add(asignacion['usuario_id'])
+        
+        # Obtener los analistas asignados
+        if analistas_ids:
+            analistas = UsuarioBase.objects.filter(
+                id__in=analistas_ids,
+                is_active=True
+            ).order_by('primer_apellido')
+            
+            if analistas.exists():
+                usuario_choices.append(('', '--- ANALISTAS ASIGNADOS ---'))
+                for analista in analistas:
+                    usuario_choices.append((analista.id, f" {analista.primer_apellido} {analista.primer_nombre} (Analista)"))
+        
+        # Obtener entrevistadores del grupo 4
+        entrevistadores = UsuarioBase.objects.filter(
+            group=4,
+            cliente_id_051=cliente_id,
+            is_active=True
+        ).order_by('primer_apellido')
+        
+        if entrevistadores.exists():
+            usuario_choices.append(('', '--- ENTREVISTADORES ---'))
+            for entrevistador in entrevistadores:
+                usuario_choices.append((entrevistador.id, f" {entrevistador.primer_apellido} {entrevistador.primer_nombre}"))
+        
+        # Añadir el campo entrevistador al formulario con las opciones obtenidas
         self.fields['entrevistador'] = forms.ChoiceField(
             choices=usuario_choices,
             label='Entrevistador',

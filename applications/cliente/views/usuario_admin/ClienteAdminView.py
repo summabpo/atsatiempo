@@ -148,11 +148,11 @@ def  cliente_detalle(request, pk):
         'logo': cliente.logo.url if cliente.logo else '',
     }
 
-    form_cliente = ClienteFormEdit(initial=initial_data)
+    form_cliente = ClienteFormEdit(initial=initial_data, cliente_id=pk)
 
     #logica para mostrar el form
     if request.method == 'POST':
-        form_cliente = ClienteFormEdit(request.POST, request.FILES)
+        form_cliente = ClienteFormEdit(request.POST, request.FILES, cliente_id=pk)
         if form_cliente.is_valid():
 
             cliente.razon_social = form_cliente.cleaned_data['razon_social']
@@ -176,7 +176,7 @@ def  cliente_detalle(request, pk):
         else:
             messages.error(request, form_cliente.errors)  
     else:
-        form_cliente = ClienteFormEdit(initial=initial_data)
+        form_cliente = ClienteFormEdit(initial=initial_data, cliente_id=pk)
     contexto = {
         'cliente' : cliente,
         'form_cliente' : form_cliente,

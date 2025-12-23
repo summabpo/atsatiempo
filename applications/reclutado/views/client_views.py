@@ -165,11 +165,14 @@ def detail_recruited(request, pk):
     
     # Obtener información de la vacante
     vacante = query_vacanty_detail().get(id=asignacion_vacante.vacante_id_052.id)
+    
+    # Obtener el grupo_id de la sesión
+    grupo_id = request.session.get('grupo_id', 4)
 
     # Obtener los reclutados asociados a la vacante
     reclutados = query_recruited_vacancy_id(vacante.id)
 
-    form = EntrevistaCrearForm(request.POST, grupo_id=4, cliente_id=cliente_id)
+    form = EntrevistaCrearForm(request.POST, grupo_id=grupo_id, cliente_id=cliente_id, vacante=vacante)
     
     if request.method == 'POST':
         if form.is_valid():
@@ -226,7 +229,7 @@ def detail_recruited(request, pk):
         else:
             messages.error(request, 'Error al crear la asignación')
     else:
-        form = EntrevistaCrearForm(grupo_id=4, cliente_id=cliente_id)
+        form = EntrevistaCrearForm(grupo_id=grupo_id, cliente_id=cliente_id, vacante=vacante)
 
     
 
