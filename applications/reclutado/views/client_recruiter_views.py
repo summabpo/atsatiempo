@@ -157,6 +157,23 @@ def detail_recruited(request, pk):
         except (json.JSONDecodeError, TypeError):
             historial_estados = []
     
+    # Obtener respuestas de la aplicación
+    preguntas_reclutamiento_raw = asignacion_vacante.preguntas_reclutamiento
+    preguntas_reclutamiento = {}
+    if preguntas_reclutamiento_raw:
+        try:
+            if isinstance(preguntas_reclutamiento_raw, str):
+                preguntas_reclutamiento = json.loads(preguntas_reclutamiento_raw)
+            else:
+                preguntas_reclutamiento = preguntas_reclutamiento_raw
+            if not isinstance(preguntas_reclutamiento, dict):
+                preguntas_reclutamiento = {}
+        except (json.JSONDecodeError, TypeError):
+            preguntas_reclutamiento = {}
+    
+    # Obtener las preguntas originales de la vacante para mostrar el contexto
+    preguntas_vacante = get_vacanty_questions(vacante.id)
+    
     # Inicializar formulario
     form = ActualizarEstadoReclutadoForm(estado_actual=asignacion_vacante.estado_reclutamiento)
     
@@ -206,6 +223,8 @@ def detail_recruited(request, pk):
         'json_match': json_match,
         'form': form,
         'historial_estados': historial_estados,
+        'preguntas_reclutamiento': preguntas_reclutamiento,
+        'preguntas_vacante': preguntas_vacante,
     }
     
     return render(request, 'admin/recruiter/client_recruiter/detail_recruited.html', context)
