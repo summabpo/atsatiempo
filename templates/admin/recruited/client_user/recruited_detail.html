@@ -386,13 +386,13 @@ Detalle vacante
                                                             <span class="badge bg-opacity-10 bg-{{e.obtener_nombre_estado_color.color}} py-1 px-2 text-{{e.obtener_nombre_estado_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_nombre_estado_color.estado}}</span>
                                                         </td>
                                                         <td>
-                                                            {% if e.estado_asignacion == 1 %}
+                                                            
                                                             <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
                                                                 <a href="{% url 'entrevistas:entrevistar_gestionar_cliente' e.id  %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
                                                                     <i class="material-symbols-outlined fs-16 text-danger">edit_document</i>
                                                                 </a>
                                                             </div>
-                                                            {% endif %}
+                                                            
                                                         </td> 
                                                     </tr>
                                                     {% endfor %}

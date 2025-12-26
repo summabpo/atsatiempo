@@ -56,6 +56,32 @@ def management_interview(request, pk):
             observacion = form.cleaned_data['observacion']
             estado_asignacion = int(form.cleaned_data['estado_asignacion'])
 
+            # Construir el JSON con los resultados de la entrevista
+            resultado_json = {
+                'id_usuario': request.user.id,
+                'fecha_entrevista': asignacion_entrevista.fecha_entrevista.strftime('%Y-%m-%d') if asignacion_entrevista.fecha_entrevista else None,
+                '1. IDENTIDAD MÁS ALLÁ DEL CV': {
+                    'calificacion': int(form.cleaned_data['identidad_calificacion']),
+                    'observacion': form.cleaned_data['identidad_descripcion']
+                },
+                '2. ANÁLISIS CORPORAL – Lenguaje no verbal': {
+                    'calificacion': int(form.cleaned_data['analisis_corporal_calificacion']),
+                    'observacion': form.cleaned_data['analisis_corporal_observaciones']
+                },
+                '3. PROPÓSITO Y CRECIMIENTO PERSONAL': {
+                    'calificacion': int(form.cleaned_data['proposito_calificacion']),
+                    'observacion': form.cleaned_data['proposito_descripcion']
+                },
+                '4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL': {
+                    'calificacion': int(form.cleaned_data['encaje_360_calificacion']),
+                    'observacion': form.cleaned_data['encaje_360_observaciones']
+                },
+                '5. INDICE DE CONFIABILIDAD Y RIESGO': {
+                    'calificacion': int(form.cleaned_data['confiabilidad_riesgo_calificacion']),
+                    'observacion': ''
+                }
+            }
+
             estado_vacante = None
             observacion_historial = None
 
@@ -82,6 +108,7 @@ def management_interview(request, pk):
             asignacion_entrevista.observacion = observacion
             asignacion_entrevista.estado_asignacion = estado_asignacion
             asignacion_entrevista.fecha_gestion = now()
+            asignacion_entrevista.resultado_entrevista = resultado_json
             asignacion_entrevista.save()
 
             messages.success(request, 'Se ha actualizado la entrevista.')
@@ -91,14 +118,58 @@ def management_interview(request, pk):
             messages.error(request, form.errors)
     else:
         # Formulario Entrevista
-        form = EntrevistaGestionForm()
         entrevista = get_object_or_404(Cli057AsignacionEntrevista, pk=pk)
+        
+        # Si existe resultado JSON, cargar los datos en el formulario
+        initial_data = {}
+        if entrevista.resultado_entrevista:
+            resultado = entrevista.resultado_entrevista
+            initial_data = {
+                'identidad_descripcion': resultado.get('1. IDENTIDAD MÁS ALLÁ DEL CV', {}).get('observacion', ''),
+                'identidad_calificacion': str(resultado.get('1. IDENTIDAD MÁS ALLÁ DEL CV', {}).get('calificacion', '')),
+                'analisis_corporal_observaciones': resultado.get('2. ANÁLISIS CORPORAL – Lenguaje no verbal', {}).get('observacion', ''),
+                'analisis_corporal_calificacion': str(resultado.get('2. ANÁLISIS CORPORAL – Lenguaje no verbal', {}).get('calificacion', '')),
+                'proposito_descripcion': resultado.get('3. PROPÓSITO Y CRECIMIENTO PERSONAL', {}).get('observacion', ''),
+                'proposito_calificacion': str(resultado.get('3. PROPÓSITO Y CRECIMIENTO PERSONAL', {}).get('calificacion', '')),
+                'encaje_360_observaciones': resultado.get('4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL', {}).get('observacion', ''),
+                'encaje_360_calificacion': str(resultado.get('4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL', {}).get('calificacion', '')),
+                'confiabilidad_riesgo_calificacion': str(resultado.get('5. INDICE DE CONFIABILIDAD Y RIESGO', {}).get('calificacion', '')),
+            }
+        
+        # Cargar también los campos existentes
+        if entrevista.observacion:
+            initial_data['observacion'] = entrevista.observacion
+        if entrevista.estado_asignacion:
+            initial_data['estado_asignacion'] = str(entrevista.estado_asignacion)
+        
+        form = EntrevistaGestionForm(initial=initial_data)
 
+    # Verificar si existe resultado JSON
+    tiene_resultado = asignacion_entrevista.resultado_entrevista is not None and bool(asignacion_entrevista.resultado_entrevista)
+    
+    # Preparar datos del resultado para el template
+    resultado_data = None
+    if tiene_resultado:
+        resultado_json = asignacion_entrevista.resultado_entrevista
+        resultado_data = {
+            'fecha_entrevista': resultado_json.get('fecha_entrevista'),
+            'id_usuario': resultado_json.get('id_usuario'),
+            'identidad': resultado_json.get('1. IDENTIDAD MÁS ALLÁ DEL CV', {}),
+            'analisis_corporal': resultado_json.get('2. ANÁLISIS CORPORAL – Lenguaje no verbal', {}),
+            'proposito': resultado_json.get('3. PROPÓSITO Y CRECIMIENTO PERSONAL', {}),
+            'encaje_360': resultado_json.get('4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL', {}),
+            'confiabilidad': resultado_json.get('5. INDICE DE CONFIABILIDAD Y RIESGO', {}),
+        }
+    
     context ={
         'vacante': vacante,
         'candidato': info_candidato,
         'reclutado': asignacion_vacante,
         'form': form,
+        'entrevista': asignacion_entrevista,
+        'resultado_json': asignacion_entrevista.resultado_entrevista if asignacion_entrevista.resultado_entrevista else None,
+        'resultado_data': resultado_data,
+        'tiene_resultado': tiene_resultado,
     }
 
     return render(request, 'admin/interview/client_user/interview_management.html', context)
