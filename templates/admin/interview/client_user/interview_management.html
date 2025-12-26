@@ -10,7 +10,7 @@ Detalle vacante
 {% block content %}
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-		<h3 class="mb-0" style="color: #B10022;">DETALLE VACANTE: </h3>
+		<h3 class="mb-0 text-primary">Resultado de Entrevista</h3>
 		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
 			<ol class="breadcrumb align-items-center mb-0 lh-1">
 				<li class="breadcrumb-item">
@@ -180,20 +180,215 @@ Detalle vacante
                             <h5 class="card-title mb-0">Gestión de la entrevista</h5>
                         </div>
                         <div class="card-body p-4">
-                            <div class="row">
-                                <div class="col-3">
-                                </div>    
-                                <div class="col-6">
-                                    <form method="post" id="form_gestion_entrevista">
-                                        <div class="modal-body">
-                                            {% csrf_token %}
-                                            {% crispy form %}
+                            {% if tiene_resultado %}
+                                {# Dashboard de resultados #}
+                                <div class="resultado-entrevista-dashboard">
+                                    {# Información del Candidato #}
+                                    <div class="card border-0 shadow-sm mb-4">
+                                        <div class="card-header bg-white border-bottom">
+                                            <h5 class="card-title mb-0 text-primary">
+                                                <i class="ri-user-line me-2"></i>Información del Candidato
+                                            </h5>
                                         </div>
-                                        <button type="submit" id="form_gestion_entrevista" class="btn btn-primary text-white"  form="form_gestion_entrevista">Gestionar</button>
-                                    </form>
-                                </div>    
-                                <div class="col-3">
-                                </div>    
+                                        <div class="card-body">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-3 text-center mb-3 mb-md-0">
+                                                    {% if candidato.imagen_perfil %}
+                                                        <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-3 wh-100" alt="{{ candidato.nombre_completo }}">
+                                                    {% else %}
+                                                        <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-3 wh-100" alt="user">
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <h4 class="mb-2 fw-bold">{{ candidato.nombre_completo }}</h4>
+                                                    <div class="row g-3">
+                                                        <div class="col-md-6">
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="ri-calendar-line text-primary me-2 fs-18"></i>
+                                                                <div>
+                                                                    <small class="text-muted d-block">Fecha de Entrevista</small>
+                                                                    <strong>{{ resultado_data.fecha_entrevista|default:"No especificada" }}</strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="ri-checkbox-circle-line text-success me-2 fs-18"></i>
+                                                                <div>
+                                                                    <small class="text-muted d-block">Estado</small>
+                                                                    <span class="badge bg-opacity-10 bg-{{ entrevista.obtener_nombre_estado_color.color }} py-2 px-3 text-{{ entrevista.obtener_nombre_estado_color.color }} rounded-1 fw-medium">
+                                                                        {{ entrevista.obtener_nombre_estado_color.estado }}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% if entrevista.observacion %}
+                                                        <div class="col-12">
+                                                            <div class="d-flex align-items-start">
+                                                                <i class="ri-file-text-line text-info me-2 fs-18 mt-1"></i>
+                                                                <div class="flex-grow-1">
+                                                                    <small class="text-muted d-block">Observación General</small>
+                                                                    <p class="mb-0 mt-1">{{ entrevista.observacion }}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {# Resultados de Evaluación #}
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-white border-bottom">
+                                            <h5 class="card-title mb-0 text-primary">
+                                                <i class="ri-file-list-3-line me-2"></i>Resultados de Evaluación
+                                            </h5>
+                                        </div>
+                                        <div class="card-body">
+                                            {# 1. IDENTIDAD MÁS ALLÁ DEL CV #}
+                                            {% if resultado_data.identidad %}
+                                            <div class="mb-4 pb-4 border-bottom">
+                                                <div class="d-flex align-items-start mb-3">
+                                                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">1</span>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-2 fw-bold">IDENTIDAD MÁS ALLÁ DEL CV</h6>
+                                                        <div class="row g-3">
+                                                            <div class="col-md-3">
+                                                                <small class="text-muted d-block mb-1">Calificación</small>
+                                                                <span class="badge bg-primary fs-16 px-3 py-2">
+                                                                    {{ resultado_data.identidad.calificacion|default:"-" }}/10
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-md-9">
+                                                                <small class="text-muted d-block mb-1">Observación</small>
+                                                                <p class="mb-0">{{ resultado_data.identidad.observacion|default:"Sin observaciones" }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            {# 2. ANÁLISIS CORPORAL #}
+                                            {% if resultado_data.analisis_corporal %}
+                                            <div class="mb-4 pb-4 border-bottom">
+                                                <div class="d-flex align-items-start mb-3">
+                                                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">2</span>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-2 fw-bold">ANÁLISIS CORPORAL – Lenguaje no verbal</h6>
+                                                        <div class="row g-3">
+                                                            <div class="col-md-3">
+                                                                <small class="text-muted d-block mb-1">Calificación</small>
+                                                                <span class="badge bg-primary fs-16 px-3 py-2">
+                                                                    {{ resultado_data.analisis_corporal.calificacion|default:"-" }}/10
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-md-9">
+                                                                <small class="text-muted d-block mb-1">Observación</small>
+                                                                <p class="mb-0">{{ resultado_data.analisis_corporal.observacion|default:"Sin observaciones" }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            {# 3. PROPÓSITO Y CRECIMIENTO PERSONAL #}
+                                            {% if resultado_data.proposito %}
+                                            <div class="mb-4 pb-4 border-bottom">
+                                                <div class="d-flex align-items-start mb-3">
+                                                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">3</span>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-2 fw-bold">PROPÓSITO Y CRECIMIENTO PERSONAL</h6>
+                                                        <div class="row g-3">
+                                                            <div class="col-md-3">
+                                                                <small class="text-muted d-block mb-1">Calificación</small>
+                                                                <span class="badge bg-primary fs-16 px-3 py-2">
+                                                                    {{ resultado_data.proposito.calificacion|default:"-" }}/10
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-md-9">
+                                                                <small class="text-muted d-block mb-1">Observación</small>
+                                                                <p class="mb-0">{{ resultado_data.proposito.observacion|default:"Sin observaciones" }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            {# 4. ANÁLISIS 360° #}
+                                            {% if resultado_data.encaje_360 %}
+                                            <div class="mb-4 pb-4 border-bottom">
+                                                <div class="d-flex align-items-start mb-3">
+                                                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">4</span>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-2 fw-bold">ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL</h6>
+                                                        <div class="row g-3">
+                                                            <div class="col-md-3">
+                                                                <small class="text-muted d-block mb-1">Calificación</small>
+                                                                <span class="badge bg-primary fs-16 px-3 py-2">
+                                                                    {{ resultado_data.encaje_360.calificacion|default:"-" }}/10
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-md-9">
+                                                                <small class="text-muted d-block mb-1">Observación</small>
+                                                                <p class="mb-0">{{ resultado_data.encaje_360.observacion|default:"Sin observaciones" }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            {# 5. INDICE DE CONFIABILIDAD Y RIESGO #}
+                                            {% if resultado_data.confiabilidad %}
+                                            <div class="mb-0">
+                                                <div class="d-flex align-items-start mb-3">
+                                                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">5</span>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-2 fw-bold">INDICE DE CONFIABILIDAD Y RIESGO</h6>
+                                                        <div class="row g-3">
+                                                            <div class="col-md-3">
+                                                                <small class="text-muted d-block mb-1">Calificación</small>
+                                                                <span class="badge bg-primary fs-16 px-3 py-2">
+                                                                    {{ resultado_data.confiabilidad.calificacion|default:"-" }}/10
+                                                                </span>
+                                                            </div>
+                                                            {% if resultado_data.confiabilidad.observacion %}
+                                                            <div class="col-md-9">
+                                                                <small class="text-muted d-block mb-1">Observación</small>
+                                                                <p class="mb-0">{{ resultado_data.confiabilidad.observacion }}</p>
+                                                            </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                {# Formulario de gestión #}
+                                <div class="row">
+                                    <div class="col-3">
+                                    </div>    
+                                    <div class="col-6">
+                                        <form method="post" id="form_gestion_entrevista">
+                                            <div class="modal-body">
+                                                {% csrf_token %}
+                                                {% crispy form %}
+                                            </div>
+                                            <button type="submit" id="form_gestion_entrevista" class="btn btn-primary text-white"  form="form_gestion_entrevista">Gestionar</button>
+                                        </form>
+                                    </div>    
+                                    <div class="col-3">
+                                    </div>    
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -207,5 +402,12 @@ Detalle vacante
 <script>
     // Initialize select2 for specific fields
     initializeSelect2('#id_estado_asignacion');
+    
+    // Initialize select2 for calification fields
+    initializeSelect2('#id_identidad_calificacion');
+    initializeSelect2('#id_analisis_corporal_calificacion');
+    initializeSelect2('#id_proposito_calificacion');
+    initializeSelect2('#id_encaje_360_calificacion');
+    initializeSelect2('#id_confiabilidad_riesgo_calificacion');
 </script>  
 {% endblock js %}

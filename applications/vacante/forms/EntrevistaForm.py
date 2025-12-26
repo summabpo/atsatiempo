@@ -1,6 +1,6 @@
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset
+from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset, Div, HTML
 from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import UsuarioBase
 from django.utils import timezone
@@ -193,6 +193,118 @@ class EntrevistaGestionForm(forms.Form):
         })
     )
 
+    identidad_descripcion = forms.CharField(
+        label='¿Quién es esta persona más allá de su hoja de vida?',
+        required=True,
+        help_text='Enfoque: esencia humana, valores visibles, forma de relacionarse, nivel de autenticidad y coherencia interna.',
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Describa quién es esta persona más allá de su hoja de vida...',
+                'rows': 5,
+                'cols': 30,
+                'class': 'form-control form-control-solid'
+            }
+        )
+    )
+
+    identidad_calificacion = forms.ChoiceField(
+        choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+        label='Calificación',
+        required=True,
+        help_text='Escala del 1 al 10',
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+        })
+    )
+
+    # 2. ANÁLISIS CORPORAL – Lenguaje no verbal
+    analisis_corporal_observaciones = forms.CharField(
+        label='Observaciones breves',
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Ingrese observaciones breves sobre el lenguaje no verbal...',
+                'rows': 4,
+                'cols': 30,
+                'class': 'form-control form-control-solid'
+            }
+        )
+    )
+
+    analisis_corporal_calificacion = forms.ChoiceField(
+        choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+        label='Calificación',
+        required=True,
+        help_text='Escala del 1 al 10',
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+        })
+    )
+
+    # 3. PROPÓSITO Y CRECIMIENTO PERSONAL
+    proposito_descripcion = forms.CharField(
+        label='Descripción breve del propósito y evolución personal',
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Describa el propósito y evolución personal...',
+                'rows': 4,
+                'cols': 30,
+                'class': 'form-control form-control-solid'
+            }
+        )
+    )
+
+    proposito_calificacion = forms.ChoiceField(
+        choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+        label='Calificación',
+        required=True,
+        help_text='Escala del 1 al 10',
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+        })
+    )
+
+    # 4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL
+    encaje_360_observaciones = forms.CharField(
+        label='Observaciones',
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Ingrese observaciones sobre el encaje personal y profesional...',
+                'rows': 4,
+                'cols': 30,
+                'class': 'form-control form-control-solid'
+            }
+        )
+    )
+
+    encaje_360_calificacion = forms.ChoiceField(
+        choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+        label='Calificación',
+        required=True,
+        help_text='Escala del 1 al 10',
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+        })
+    )
+
+    # 5. INDICE DE CONFIABILIDAD Y RIESGO
+    confiabilidad_riesgo_calificacion = forms.ChoiceField(
+        choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+        label='Calificación',
+        required=True,
+        help_text='Escala del 1 al 10',
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+        })
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -203,15 +315,68 @@ class EntrevistaGestionForm(forms.Form):
         self.helper.form_class = 'w-200'
     
         self.helper.layout = Layout(
-            Row(
-                Column('estado_asignacion', css_class='form-group mb-0'),
-                css_class='fw-semibold fs-6 mb-2'
+            # 1. IDENTIDAD MÁS ALLÁ DEL CV
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>1. IDENTIDAD MÁS ALLÁ DEL CV </h4>"),
+                    Div('identidad_descripcion', css_class='col-12 mb-3'),
+                    Div('identidad_calificacion', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             ),
-            Row(
-                Column('observacion', css_class='form-group mb-0'),
-                css_class='fw-semibold fs-6 mb-2'
+            # 2. ANÁLISIS CORPORAL – Lenguaje no verbal
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>2. ANÁLISIS CORPORAL – Lenguaje no verbal</h4>"),
+                    Div('analisis_corporal_observaciones', css_class='col-12 mb-3'),
+                    Div('analisis_corporal_calificacion', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+            # 3. PROPÓSITO Y CRECIMIENTO PERSONAL
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>3. PROPÓSITO Y CRECIMIENTO PERSONAL</h4>"),
+                    Div('proposito_descripcion', css_class='col-12 mb-3'),
+                    Div('proposito_calificacion', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+            # 4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL</h4>"),
+                    Div('encaje_360_observaciones', css_class='col-12 mb-3'),
+                    Div('encaje_360_calificacion', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+            # 5. INDICE DE CONFIABILIDAD Y RIESGO
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>5. INDICE DE CONFIABILIDAD Y RIESGO</h4>"),
+                    Div('confiabilidad_riesgo_calificacion', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+            # CALIFICACIÓN GENERAL
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Calificación General</h4>"),
+                    Div('estado_asignacion', css_class='col-12 mb-3'),
+                    Div('observacion', css_class='col-12'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             ),
         )
+
+        
 
     def clean(self):
         cleaned_data = super().clean()
