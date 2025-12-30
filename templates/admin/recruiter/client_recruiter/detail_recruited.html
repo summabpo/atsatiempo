@@ -20,6 +20,46 @@ Detalle Candidato - Reclutador
 						<span class="text-secondary fw-medium hover">Inicio</span>
 					</a>
 				</li>
+				{% if request.session.grupo_id == 3 %}
+                    {% if request.session.user_login.cliente_tipo == '1' %}
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_gestion_propias' vacante.asignacion_cliente_id_064.id_cliente_asignado.id vacante.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Gestión Vacante</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% if request.session.user_login.cliente_tipo == '2' %}
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'clientes:client_headhunter_asignados' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Clientes Asignados</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_propias' vacante.asignacion_cliente_id_064.id_cliente_asignado.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Vacantes Cliente</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_gestion_propias' vacante.asignacion_cliente_id_064.id_cliente_asignado.id vacante.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Gestión Vacante</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% if request.session.user_login.cliente_tipo == '3' %}
+                    
+                    {% endif %}
+                    
+                {% endif %}
+				{% if request.session.grupo_id == 7 %}
+
+				
 				<li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'reclutados:vacantes_asignadas_reclutador' %}" class="d-flex align-items-center text-decoration-none">
 						<span class="text-secondary fw-medium hover">Vacantes Asignadas</span>
@@ -30,6 +70,7 @@ Detalle Candidato - Reclutador
 						<span class="text-secondary fw-medium hover">Gestión de Vacante</span>
 					</a>
 				</li>
+				{% endif %}
 				<li class="breadcrumb-item active" aria-current="page">
 					<span class="fw-medium">Detalle Candidato</span>
 				</li>

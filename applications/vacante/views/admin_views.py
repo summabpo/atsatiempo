@@ -753,7 +753,13 @@ def vacanty_management_from_client(request, pk, vacante_id):
     preguntas = get_vacanty_questions(vacante.id)
 
     # Obtener los reclutados asociados a la vacante
-    reclutados = query_recruited_vacancy_id(vacante.id).filter(estado_reclutamiento=3)
+    reclutados = query_recruited_vacancy_id(vacante.id)
+    
+    # Agrupar reclutados por estado de reclutamiento
+    reclutados_recibido = [r for r in reclutados if r.estado_reclutamiento == 1]
+    reclutados_seleccionado = [r for r in reclutados if r.estado_reclutamiento == 2]
+    reclutados_finalizalista = [r for r in reclutados if r.estado_reclutamiento == 3]
+    reclutados_descartado = [r for r in reclutados if r.estado_reclutamiento == 4]
     
 
     # Formularios para reclutar candidato y asignar analista a la vacante
@@ -937,6 +943,10 @@ def vacanty_management_from_client(request, pk, vacante_id):
         'data': data,
         'vacante': vacante,
         'reclutados': reclutados,
+        'reclutados_recibido': reclutados_recibido,
+        'reclutados_seleccionado': reclutados_seleccionado,
+        'reclutados_finalizalista': reclutados_finalizalista,
+        'reclutados_descartado': reclutados_descartado,
         'entrevistas': entrevistas,
         'form_reclutados' : form_reclutados,
         'preguntas': preguntas,

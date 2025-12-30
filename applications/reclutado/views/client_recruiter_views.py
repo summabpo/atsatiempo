@@ -113,15 +113,16 @@ def vacancies_assigned_recruiter_detail(request, pk, vacante_id):
     return render(request, 'admin/recruiter/client_recruiter/vacancies_assigned_recruiter_detail.html', context)
 
 @login_required
-@validar_permisos('acceso_reclutador')
+@validar_permisos('acceso_reclutador', 'acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats', 'acceso_analista_seleccion')
 def detail_recruited(request, pk):
     # Obtener la aplicación de vacante
     asignacion_vacante = get_object_or_404(Cli056AplicacionVacante, id=pk)
     
-    # Verificar que la vacante esté asignada al reclutador actual
-    if asignacion_vacante.vacante_id_052.asignacion_reclutador != request.user:
-        messages.error(request, 'No tiene permisos para acceder a este candidato.')
-        return redirect('reclutados:vacantes_asignadas_reclutador')
+    if request.session.get('grupo_id') != 3 and request.session.get('grupo_id') != 5 and request.session.get('grupo_id') != 6:
+        # Verificar que la vacante esté asignada al reclutador actual
+        if asignacion_vacante.vacante_id_052.asignacion_reclutador != request.user:
+            messages.error(request, 'No tiene permisos para acceder a este candidato.')
+            return redirect('reclutados:vacantes_asignadas_reclutador')
     
     # Obtener información del candidato
     candidato = get_object_or_404(Can101Candidato, id=asignacion_vacante.candidato_101.id)
