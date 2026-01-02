@@ -4,6 +4,7 @@ from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset, Div, HTML
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.candidato.models import Can101Candidato
 from applications.usuarios.models import UsuarioBase
+from applications.services.choices import NIVEL_ESTUDIO_CHOICES_STATIC
 from django.utils import timezone
 from datetime import datetime, time
 
@@ -155,3 +156,103 @@ class ActualizarEstadoReclutadoForm(forms.Form):
             self.fields['estado_reclutamiento'].choices = [
                 choice for choice in choices if choice[0] != estado_actual
             ]
+
+class BusquedaRecibidosForm(forms.Form):
+    nombre_candidato = forms.CharField(
+        label="Nombre del Candidato",
+        max_length=200,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-solid',
+            'placeholder': 'Buscar por nombre...'
+        })
+    )
+    fecha_inicio = forms.DateField(
+        label="Fecha Inicio",
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control form-control-solid',
+            'type': 'date'
+        })
+    )
+    fecha_fin = forms.DateField(
+        label="Fecha Fin",
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control form-control-solid',
+            'type': 'date'
+        })
+    )
+    edad_minima = forms.IntegerField(
+        label="Edad Mínima",
+        required=False,
+        min_value=0,
+        max_value=120,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control form-control-solid',
+            'placeholder': 'Edad mínima'
+        })
+    )
+    edad_maxima = forms.IntegerField(
+        label="Edad Máxima",
+        required=False,
+        min_value=0,
+        max_value=120,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control form-control-solid',
+            'placeholder': 'Edad máxima'
+        })
+    )
+    nivel_estudio = forms.ChoiceField(
+        label="Nivel de Estudio",
+        choices=NIVEL_ESTUDIO_CHOICES_STATIC,
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+            'data-placeholder': 'Seleccione nivel de estudio'
+        })
+    )
+    puntaje_match_minimo = forms.FloatField(
+        label="Puntaje Match Mínimo",
+        required=False,
+        min_value=0,
+        max_value=100,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control form-control-solid',
+            'placeholder': 'Puntaje mínimo (0-100)',
+            'step': '0.1'
+        })
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Configuración de Crispy Forms
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+        self.helper.form_id = 'form_busqueda_recibidos'
+        self.helper.form_class = 'w-100'
+        
+        self.helper.layout = Layout(
+            # FILTROS DE BÚSQUEDA
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Filtros de Búsqueda</h4>"),
+                    Div('nombre_candidato', css_class='col-12 mb-3'),
+                    Div('fecha_inicio', css_class='col-6 mb-3'),
+                    Div('fecha_fin', css_class='col-6 mb-3'),
+                    Div('edad_minima', css_class='col-6 mb-3'),
+                    Div('edad_maxima', css_class='col-6 mb-3'),
+                    Div('nivel_estudio', css_class='col-12 mb-3'),
+                    Div('puntaje_match_minimo', css_class='col-12 mb-3'),
+                    Div(
+                        Submit('submit', 'Buscar', css_class='btn btn-primary me-2'),
+                        HTML('<a href="." class="btn btn-secondary">Limpiar</a>'),
+                        css_class='col-12 d-flex justify-content-end'
+                    ),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+        )

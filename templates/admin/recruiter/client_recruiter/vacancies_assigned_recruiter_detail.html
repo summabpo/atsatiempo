@@ -78,83 +78,97 @@ Gestión de Vacante - Reclutador
                             <div class="tab-content" id="nav-estados-tabContent">
                                 <!-- Tab: Recibido -->
                                 <div class="tab-pane fade show active" id="nav-recibido" role="tabpanel" aria-labelledby="nav-recibido-tab" tabindex="0">
-                                    <div class="default-table-area all-projects">
-                                        <div class="table-responsive">
-                                            <table class="table align-middle text-center" id="tableRecibido">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col" class="text-center">Imagen</th>
-                                                        <th scope="col" class="text-center">Candidato</th>
-                                                        <th scope="col" class="text-center">Fecha Registro</th>
-                                                        <th scope="col" class="text-center">Edad</th>
-                                                        <th scope="col" class="text-center">Nivel de Estudio</th>
-                                                        <th scope="col" class="text-center">Puntaje Match</th>
-                                                        <th scope="col" class="text-center">Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for e in reclutados_recibido %}
-                                                    <tr>
-                                                        <td class="text-center">
-                                                            {% if e.candidato_101.imagen_perfil %}
-                                                                <img src="{{ e.candidato_101.imagen_perfil.url }}" alt="{{ e.candidato_nombre }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
-                                                            {% else %}
-                                                                <img src="{% static 'admin/images/blank.png' %}" alt="Sin imagen" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
-                                                            {% endif %}
-                                                        </td>
-                                                        <td class="text-start">
-                                                            <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
-                                                            <small class="text-muted">{{ e.candidato_email|default:"-" }}</small>
-                                                        </td>
-                                                        <td class="text-secondary">{{ e.fecha_aplicacion|date:"d/m/Y"|default:"-" }}</td>
-                                                        <td class="text-secondary">
-                                                            {% if e.candidato_101.fecha_nacimiento %}
-                                                                <span class="edad-candidato" data-fecha-nacimiento="{{ e.candidato_101.fecha_nacimiento|date:'Y-m-d' }}">-</span>
-                                                            {% else %}
-                                                                -
-                                                            {% endif %}
-                                                        </td>
-                                                        <td class="text-secondary nivel-estudio" data-candidato-id="{{ e.candidato_id }}">
-                                                            {% with educaciones=e.candidato_101.can103educacion_set.all %}
-                                                                {% if educaciones %}
-                                                                    {% for educacion in educaciones %}
-                                                                        {% if educacion.tipo_estudio %}
-                                                                            <span class="nivel-estudio-valor" data-nivel="{{ educacion.tipo_estudio }}" data-texto="{{ educacion.mostrar_tipo_estudio }}"></span>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="card bg-white border-0 rounded-3 mb-4">
+                                                <div class="card-body p-3">
+                                                    {% crispy form_busqueda %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="card bg-white border-0 rounded-3 mb-4">
+                                                <div class="default-table-area all-projects">
+                                                    <div class="table-responsive">
+                                                        <table class="table align-middle text-center" id="tableRecibido">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th scope="col" class="text-center">Imagen</th>
+                                                                    <th scope="col" class="text-center">Candidato</th>
+                                                                    <th scope="col" class="text-center">Fecha Registro</th>
+                                                                    <th scope="col" class="text-center">Edad</th>
+                                                                    <th scope="col" class="text-center">Nivel de Estudio</th>
+                                                                    <th scope="col" class="text-center">Puntaje Match</th>
+                                                                    <th scope="col" class="text-center">Acciones</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for e in reclutados_recibido %}
+                                                                <tr>
+                                                                    <td class="text-center">
+                                                                        {% if e.candidato_101.imagen_perfil %}
+                                                                            <img src="{{ e.candidato_101.imagen_perfil.url }}" alt="{{ e.candidato_nombre }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                                                        {% else %}
+                                                                            <img src="{% static 'admin/images/blank.png' %}" alt="Sin imagen" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                                                                         {% endif %}
-                                                                    {% endfor %}
-                                                                {% else %}
-                                                                    -
-                                                                {% endif %}
-                                                            {% endwith %}
-                                                        </td>
-                                                        <td class="text-center">
-                                                            {% with porcentaje=e.json_match|get_match_porcentaje %}
-                                                                {% if porcentaje %}
-                                                                    {% if porcentaje >= 80 %}
-                                                                        <span class="badge bg-success text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% elif porcentaje >= 60 %}
-                                                                        <span class="badge bg-warning text-dark p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% elif porcentaje >= 40 %}
-                                                                        <span class="badge bg-info text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% else %}
-                                                                        <span class="badge bg-secondary text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% endif %}
-                                                                {% else %}
-                                                                    <span class="text-muted">-</span>
-                                                                {% endif %}
-                                                            {% endwith %}
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
-                                                                <i class="material-symbols-outlined fs-14">visibility</i> Ver
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
+                                                                    </td>
+                                                                    <td class="text-start">
+                                                                        <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
+                                                                        <small class="text-muted">{{ e.candidato_email|default:"-" }}</small>
+                                                                    </td>
+                                                                    <td class="text-secondary">{{ e.fecha_aplicacion|date:"d/m/Y"|default:"-" }}</td>
+                                                                    <td class="text-secondary">
+                                                                        {% if e.candidato_101.fecha_nacimiento %}
+                                                                            <span class="edad-candidato" data-fecha-nacimiento="{{ e.candidato_101.fecha_nacimiento|date:'Y-m-d' }}">-</span>
+                                                                        {% else %}
+                                                                            -
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td class="text-secondary nivel-estudio" data-candidato-id="{{ e.candidato_id }}">
+                                                                        {% with educaciones=e.candidato_101.can103educacion_set.all %}
+                                                                            {% if educaciones %}
+                                                                                {% for educacion in educaciones %}
+                                                                                    {% if educacion.tipo_estudio %}
+                                                                                        <span class="nivel-estudio-valor" data-nivel="{{ educacion.tipo_estudio }}" data-texto="{{ educacion.mostrar_tipo_estudio }}"></span>
+                                                                                    {% endif %}
+                                                                                {% endfor %}
+                                                                            {% else %}
+                                                                                -
+                                                                            {% endif %}
+                                                                        {% endwith %}
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        {% with porcentaje=e.json_match|get_match_porcentaje %}
+                                                                            {% if porcentaje %}
+                                                                                {% if porcentaje >= 80 %}
+                                                                                    <span class="badge bg-success text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
+                                                                                {% elif porcentaje >= 60 %}
+                                                                                    <span class="badge bg-warning text-dark p-2">{{ porcentaje|floatformat:1 }}%</span>
+                                                                                {% elif porcentaje >= 40 %}
+                                                                                    <span class="badge bg-info text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
+                                                                                {% else %}
+                                                                                    <span class="badge bg-secondary text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
+                                                                                {% endif %}
+                                                                            {% else %}
+                                                                                <span class="text-muted">-</span>
+                                                                            {% endif %}
+                                                                        {% endwith %}
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
+                                                                            <i class="material-symbols-outlined fs-14">visibility</i> Ver
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+                                                
                                 </div>
                                 
                                 <!-- Tab: Seleccionado -->
@@ -240,11 +254,20 @@ Gestión de Vacante - Reclutador
                                 
                                 <!-- Tab: finalista -->
                                 <div class="tab-pane fade" id="nav-finalizalista" role="tabpanel" aria-labelledby="nav-finalizalista-tab" tabindex="0">
+                                    <div class="mb-3 d-flex justify-content-start align-items-center">
+                                        <button type="button" id="btnAsignarEntrevistas" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" disabled>
+                                            <i class="material-symbols-outlined me-2">group_add</i>
+                                            Asignar Entrevistas (<span id="contadorSeleccionados">0</span>)
+                                        </button>
+                                    </div>
                                     <div class="default-table-area all-projects">
                                         <div class="table-responsive">
                                             <table class="table align-middle text-center" id="tablefinalista">
                                                 <thead>
                                                     <tr>
+                                                        <th scope="col" class="text-center" style="width: 40px;">
+                                                            <input type="checkbox" id="selectAllFinalistas" class="form-check-input">
+                                                        </th>
                                                         <th scope="col" class="text-center">Imagen</th>
                                                         <th scope="col" class="text-center">Candidato</th>
                                                         <th scope="col" class="text-center">Fecha Registro</th>
@@ -257,6 +280,9 @@ Gestión de Vacante - Reclutador
                                                 <tbody>
                                                     {% for e in reclutados_finalizalista %}
                                                     <tr>
+                                                        <td class="text-center">
+                                                            <input type="checkbox" class="form-check-input checkbox-finalista" data-id="{{ e.id }}" data-nombre="{{ e.candidato_nombre }}" data-email="{{ e.candidato_email }}" data-imagen="{% if e.candidato_101.imagen_perfil %}{{ e.candidato_101.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}">
+                                                        </td>
                                                         <td class="text-center">
                                                             {% if e.candidato_101.imagen_perfil %}
                                                                 <img src="{{ e.candidato_101.imagen_perfil.url }}" alt="{{ e.candidato_nombre }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
@@ -438,6 +464,47 @@ Gestión de Vacante - Reclutador
 		</div>
 	</div>
 
+</div>
+
+<!-- Modal para Asignar Entrevistas Múltiples -->
+<div class="modal fade" id="modalAsignarEntrevistas" tabindex="-1" aria-labelledby="modalAsignarEntrevistasLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary bg-opacity-10 text-primary">
+                <h5 class="modal-title d-flex align-items-center" id="modalAsignarEntrevistasLabel">
+                    <i class="material-symbols-outlined me-2">event</i>
+                    Asignar Entrevistas a Candidatos Seleccionados
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formAsignarEntrevistas" method="post" action="{% url 'reclutados:crear_entrevistas_multiples' pk vacante.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="aplicaciones_ids" id="aplicacionesIdsInput">
+                <div class="modal-body">
+                    <!-- Listado de candidatos seleccionados -->
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3">Candidatos Seleccionados (<span id="contadorModal">0</span>)</h6>
+                        <div id="listadoCandidatos" class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                            <div class="text-muted text-center">No hay candidatos seleccionados</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Formulario de entrevista -->
+                    {% crispy form_entrevista_multiples %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-secondary bg-opacity-10 fw-medium text-secondary py-2 px-4" data-bs-dismiss="modal">
+                        <i class="material-symbols-outlined me-2">close</i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                        <i class="material-symbols-outlined me-2">save</i>
+                        Asignar Entrevistas
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
@@ -635,6 +702,133 @@ $(document).ready(function() {
                 $td.text('-');
             }
         }
+    });
+
+    // Inicializar Select2 para el campo de nivel de estudio en el formulario de búsqueda
+    if ($('#id_nivel_estudio').length) {
+        initializeSelect2('#id_nivel_estudio');
+    }
+
+    // ============================================
+    // MANEJO DE SELECCIÓN MÚLTIPLE PARA ENTREVISTAS
+    // ============================================
+    
+    // Función para actualizar el contador y el botón
+    function actualizarSeleccion() {
+        var checkboxes = $('.checkbox-finalista:checked');
+        var cantidad = checkboxes.length;
+        
+        $('#contadorSeleccionados').text(cantidad);
+        $('#contadorModal').text(cantidad);
+        
+        var $btn = $('#btnAsignarEntrevistas');
+        if (cantidad > 0) {
+            $btn.prop('disabled', false);
+            $btn.css('opacity', '1');
+            $btn.css('cursor', 'pointer');
+        } else {
+            $btn.prop('disabled', true);
+            $btn.css('opacity', '0.6');
+            $btn.css('cursor', 'not-allowed');
+        }
+        
+        // Actualizar listado en el modal
+        actualizarListadoCandidatos();
+    }
+    
+    // Función para actualizar el listado de candidatos en el modal
+    function actualizarListadoCandidatos() {
+        var checkboxes = $('.checkbox-finalista:checked');
+        var listado = $('#listadoCandidatos');
+        listado.empty();
+        
+        if (checkboxes.length === 0) {
+            listado.html('<div class="text-muted text-center">No hay candidatos seleccionados</div>');
+            return;
+        }
+        
+        var html = '<div class="row g-2">';
+        checkboxes.each(function() {
+            var nombre = $(this).data('nombre');
+            var email = $(this).data('email');
+            var imagen = $(this).data('imagen');
+            var id = $(this).data('id');
+            
+            html += '<div class="col-12">';
+            html += '<div class="d-flex align-items-center p-2 border rounded mb-2">';
+            html += '<img src="' + imagen + '" alt="' + nombre + '" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">';
+            html += '<div class="flex-grow-1">';
+            html += '<div class="fw-semibold">' + nombre + '</div>';
+            html += '<small class="text-muted">' + email + '</small>';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+        listado.html(html);
+    }
+    
+    // Checkbox "Seleccionar todos"
+    $('#selectAllFinalistas').on('change', function() {
+        var isChecked = $(this).is(':checked');
+        $('.checkbox-finalista').prop('checked', isChecked);
+        actualizarSeleccion();
+    });
+    
+    // Checkboxes individuales
+    $(document).on('change', '.checkbox-finalista', function() {
+        // Si se desmarca uno, desmarcar "seleccionar todos"
+        if (!$(this).is(':checked')) {
+            $('#selectAllFinalistas').prop('checked', false);
+        } else {
+            // Si todos están marcados, marcar "seleccionar todos"
+            var total = $('.checkbox-finalista').length;
+            var checked = $('.checkbox-finalista:checked').length;
+            if (total === checked) {
+                $('#selectAllFinalistas').prop('checked', true);
+            }
+        }
+        actualizarSeleccion();
+    });
+    
+    // Botón para abrir modal
+    $('#btnAsignarEntrevistas').on('click', function() {
+        var checkboxes = $('.checkbox-finalista:checked');
+        if (checkboxes.length === 0) {
+            alert('Por favor seleccione al menos un candidato');
+            return;
+        }
+        
+        // Recopilar IDs de las aplicaciones seleccionadas
+        var ids = [];
+        checkboxes.each(function() {
+            ids.push($(this).data('id'));
+        });
+        
+        // Actualizar input hidden con los IDs
+        $('#aplicacionesIdsInput').val(ids.join(','));
+        
+        // Actualizar listado en el modal
+        actualizarListadoCandidatos();
+        
+        // Abrir modal
+        var modal = new bootstrap.Modal(document.getElementById('modalAsignarEntrevistas'));
+        modal.show();
+        
+        // Inicializar Select2 en los campos del formulario dentro del modal
+        setTimeout(function() {
+            if ($('#id_entrevistador').length) {
+                initializeSelect2('#id_entrevistador');
+            }
+            if ($('#id_tipo_entrevista').length) {
+                initializeSelect2('#id_tipo_entrevista');
+            }
+        }, 300);
+    });
+    
+    // Limpiar selección al cerrar el modal
+    $('#modalAsignarEntrevistas').on('hidden.bs.modal', function() {
+        // No limpiar los checkboxes, solo resetear el formulario si es necesario
     });
 });
 </script>  

@@ -36,7 +36,6 @@ class EntrevistaCrearForm(forms.Form):
         widget=forms.Select(attrs={
             'class': 'form-select form-select-solid',
             'data-control': 'select2',
-            'data-dropdown-parent': '#modalEntrevista',
             'placeholder': 'Seleccione el tipo de entrevista',
         })
     )
@@ -65,6 +64,7 @@ class EntrevistaCrearForm(forms.Form):
         grupo_id = kwargs.pop('grupo_id', None)
         cliente_id = kwargs.pop('cliente_id', None)
         vacante = kwargs.pop('vacante', None)
+        modal_id = kwargs.pop('modal_id', None)  # ID del modal para dropdown-parent
         super().__init__(*args, **kwargs)
 
         # Configuración de Crispy Forms
@@ -72,6 +72,8 @@ class EntrevistaCrearForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_id = 'form_crear_entrevista'
         self.helper.form_class = 'w-200'
+        self.helper.form_tag = False  # No generar el tag <form> ya que está en el modal
+        self.helper.disable_csrf = True  # El CSRF ya está en el form del modal
 
         usuario_choices = [('', '----------')]
         
@@ -114,34 +116,37 @@ class EntrevistaCrearForm(forms.Form):
                 usuario_choices.append((entrevistador.id, f" {entrevistador.primer_apellido} {entrevistador.primer_nombre}"))
         
         # Añadir el campo entrevistador al formulario con las opciones obtenidas
+        # Configurar dropdown-parent según el modal proporcionado o usar el default
+        dropdown_parent = f'#{modal_id}' if modal_id else '#modalEntrevista'
         self.fields['entrevistador'] = forms.ChoiceField(
             choices=usuario_choices,
             label='Entrevistador',
             widget=forms.Select(attrs={
                 'class': 'form-select form-select-solid',
                 'data-control': 'select2',
-                'data-dropdown-parent': '#modalEntrevista',
+                'data-dropdown-parent': dropdown_parent,
             })
         )
         
+        # Actualizar también el campo tipo_entrevista si hay modal_id
+        if modal_id:
+            self.fields['tipo_entrevista'].widget.attrs['data-dropdown-parent'] = dropdown_parent
+        
         self.helper.layout = Layout(
-                Row(
-                    Column('fecha_entrevista', css_class='form-group mb-0'),
-                    Column('hora_entrevista', css_class='form-group mb-0'),
+            # DATOS DE LA ENTREVISTA
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Datos de la Entrevista</h4>"),
+                    Div('fecha_entrevista', css_class='col-6 mb-3'),
+                    Div('hora_entrevista', css_class='col-6 mb-3'),
+                    Div('entrevistador', css_class='col-12 mb-3'),
+                    Div('tipo_entrevista', css_class='col-12 mb-3'),
+                    Div('lugar_enlace', css_class='col-12 mb-3'),
+                    css_class='row'
                 ),
-                Row(
-                    Column('entrevistador', css_class='form-group mb-0'),
-                    css_class='fw-semibold fs-6 mb-2'
-                ),
-                Row(
-                    Column('tipo_entrevista', css_class='form-group mb-0'),
-                    css_class='fw-semibold fs-6 mb-2'
-                ),
-                Row(
-                    Column('lugar_enlace', css_class='form-group mb-0'),
-                    css_class='fw-semibold fs-6 mb-2'
-                ),
-            )
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+        )
 
     def clean(self):
         cleaned_data = super().clean()
