@@ -3,23 +3,30 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q, Value, Case, When, CharField
 from django.contrib import messages
 from django.utils import timezone
+from datetime import date, timedelta
 from applications.common.models import Cat001Estado
 from applications.usuarios.decorators  import validar_permisos
+from applications.candidato.models import Can103Educacion
 import json
 
 #models
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.vacante.models import Cli052Vacante
 from applications.candidato.models import Can101Candidato
+from applications.entrevista.models import Cli057AsignacionEntrevista
+from applications.usuarios.models import UsuarioBase
 from applications.services.service_vacanty import query_vacanty_all, get_vacanty_questions
 from applications.services.service_interview import query_interview_all
 from applications.services.service_recruited import query_recruited_vacancy_id
 from applications.services.service_client import query_client_detail
 from applications.services.service_candidate import buscar_candidato
 from applications.services.choices import ESTADO_RECLUTADO_CHOICES_STATIC
+from applications.common.views.EnvioCorreo import enviar_correo
+from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
 #forms
-from applications.reclutado.forms.FormRecruited import ActualizarEstadoReclutadoForm
+from applications.reclutado.forms.FormRecruited import ActualizarEstadoReclutadoForm, BusquedaRecibidosForm
+from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm
 
 
 @login_required
@@ -92,11 +99,113 @@ def vacancies_assigned_recruiter_detail(request, pk, vacante_id):
     # Obtener los reclutados asociados a la vacante
     reclutados = query_recruited_vacancy_id(vacante.id)
     
+    # Formulario de entrevista para múltiples candidatos
+    grupo_id = request.session.get('grupo_id', 2)  # Default grupo reclutador
+    form_entrevista_multiples = EntrevistaCrearForm(
+        grupo_id=grupo_id, 
+        cliente_id=cliente_id, 
+        vacante=vacante,
+        modal_id='modalAsignarEntrevistas'  # ID del modal para el dropdown-parent
+    )
+    
     # Agrupar reclutados por estado de reclutamiento
     reclutados_recibido = [r for r in reclutados if r.estado_reclutamiento == 1]
     reclutados_seleccionado = [r for r in reclutados if r.estado_reclutamiento == 2]
     reclutados_finalizalista = [r for r in reclutados if r.estado_reclutamiento == 3]
     reclutados_descartado = [r for r in reclutados if r.estado_reclutamiento == 4]
+    
+    # Procesar formulario de búsqueda para Recibidos
+    form_busqueda = BusquedaRecibidosForm(request.GET)
+    if form_busqueda.is_valid():
+        nombre_candidato = form_busqueda.cleaned_data.get('nombre_candidato')
+        fecha_inicio = form_busqueda.cleaned_data.get('fecha_inicio')
+        fecha_fin = form_busqueda.cleaned_data.get('fecha_fin')
+        edad_minima = form_busqueda.cleaned_data.get('edad_minima')
+        edad_maxima = form_busqueda.cleaned_data.get('edad_maxima')
+        nivel_estudio = form_busqueda.cleaned_data.get('nivel_estudio')
+        puntaje_match_minimo = form_busqueda.cleaned_data.get('puntaje_match_minimo')
+        
+        # Aplicar filtros
+        reclutados_recibido_filtrados = reclutados_recibido.copy()
+        
+        if nombre_candidato:
+            nombre_lower = nombre_candidato.lower()
+            reclutados_recibido_filtrados = [
+                r for r in reclutados_recibido_filtrados
+                if nombre_lower in r.candidato_nombre.lower()
+            ]
+        
+        if fecha_inicio:
+            reclutados_recibido_filtrados = [
+                r for r in reclutados_recibido_filtrados
+                if r.fecha_aplicacion and r.fecha_aplicacion >= fecha_inicio
+            ]
+        
+        if fecha_fin:
+            reclutados_recibido_filtrados = [
+                r for r in reclutados_recibido_filtrados
+                if r.fecha_aplicacion and r.fecha_aplicacion <= fecha_fin
+            ]
+        
+        if edad_minima or edad_maxima:
+            hoy = date.today()
+            reclutados_recibido_filtrados_edad = []
+            for r in reclutados_recibido_filtrados:
+                if r.candidato_101 and r.candidato_101.fecha_nacimiento:
+                    edad = hoy.year - r.candidato_101.fecha_nacimiento.year
+                    if (hoy.month, hoy.day) < (r.candidato_101.fecha_nacimiento.month, r.candidato_101.fecha_nacimiento.day):
+                        edad -= 1
+                    
+                    cumple_edad = True
+                    if edad_minima and edad < edad_minima:
+                        cumple_edad = False
+                    if edad_maxima and edad > edad_maxima:
+                        cumple_edad = False
+                    
+                    if cumple_edad:
+                        reclutados_recibido_filtrados_edad.append(r)
+                else:
+                    # Si no tiene fecha de nacimiento, incluir solo si no hay filtro de edad mínima
+                    if not edad_minima:
+                        reclutados_recibido_filtrados_edad.append(r)
+            reclutados_recibido_filtrados = reclutados_recibido_filtrados_edad
+        
+        if nivel_estudio:
+            reclutados_recibido_filtrados_nivel = []
+            for r in reclutados_recibido_filtrados:
+                if r.candidato_101:
+                    educaciones = Can103Educacion.objects.filter(
+                        candidato_id_101=r.candidato_101.id,
+                        tipo_estudio=nivel_estudio
+                    )
+                    if educaciones.exists():
+                        reclutados_recibido_filtrados_nivel.append(r)
+            reclutados_recibido_filtrados = reclutados_recibido_filtrados_nivel
+        
+        if puntaje_match_minimo:
+            reclutados_recibido_filtrados_puntaje = []
+            for r in reclutados_recibido_filtrados:
+                porcentaje = None
+                if r.json_match:
+                    try:
+                        if isinstance(r.json_match, str):
+                            json_match_dict = json.loads(r.json_match)
+                        else:
+                            json_match_dict = r.json_match
+                        
+                        # Acceder al porcentaje_total siguiendo la misma lógica del template tag
+                        if isinstance(json_match_dict, dict) and 'resumen' in json_match_dict:
+                            resumen = json_match_dict.get('resumen', {})
+                            if isinstance(resumen, dict) and 'porcentaje_total' in resumen:
+                                porcentaje = resumen.get('porcentaje_total')
+                    except (json.JSONDecodeError, TypeError, AttributeError):
+                        porcentaje = None
+                
+                if porcentaje and float(porcentaje) >= float(puntaje_match_minimo):
+                    reclutados_recibido_filtrados_puntaje.append(r)
+            reclutados_recibido_filtrados = reclutados_recibido_filtrados_puntaje
+        
+        reclutados_recibido = reclutados_recibido_filtrados
     
     context = {
         'data': data,
@@ -108,6 +217,9 @@ def vacancies_assigned_recruiter_detail(request, pk, vacante_id):
         'reclutados_descartado': reclutados_descartado,
         'entrevistas': entrevistas,
         'preguntas': preguntas,
+        'form_busqueda': form_busqueda,
+        'form_entrevista_multiples': form_entrevista_multiples,
+        'pk': pk,  # ID del cliente para usar en las URLs
     }
     
     return render(request, 'admin/recruiter/client_recruiter/vacancies_assigned_recruiter_detail.html', context)
@@ -229,3 +341,150 @@ def detail_recruited(request, pk):
     }
     
     return render(request, 'admin/recruiter/client_recruiter/detail_recruited.html', context)
+
+
+@login_required
+@validar_permisos('acceso_reclutador', 'acceso_admin')
+def crear_entrevistas_multiples(request, pk, vacante_id):
+    """
+    Vista para crear múltiples entrevistas a la vez para varios candidatos seleccionados
+    """
+    # Verificar que la vacante esté asignada al reclutador actual
+    vacante = get_object_or_404(
+        Cli052Vacante.objects.prefetch_related('habilidades'),
+        id=vacante_id,
+        asignacion_reclutador=request.user,
+        estado_id_001=1
+    )
+    
+    # Obtener el cliente asignado
+    cliente_id = None
+    cliente = None
+    if vacante.asignacion_cliente_id_064 and vacante.asignacion_cliente_id_064.id_cliente_asignado:
+        cliente_id = vacante.asignacion_cliente_id_064.id_cliente_asignado.id
+        cliente = vacante.asignacion_cliente_id_064.id_cliente_asignado
+    
+    if request.method == 'POST':
+        # Obtener IDs de aplicaciones desde el formulario
+        aplicaciones_ids_str = request.POST.get('aplicaciones_ids', '')
+        if not aplicaciones_ids_str:
+            messages.error(request, 'No se seleccionaron candidatos.')
+            return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
+        
+        aplicaciones_ids = [int(id.strip()) for id in aplicaciones_ids_str.split(',') if id.strip().isdigit()]
+        
+        if not aplicaciones_ids:
+            messages.error(request, 'No se seleccionaron candidatos válidos.')
+            return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
+        
+        # Validar que todas las aplicaciones pertenezcan a la vacante
+        aplicaciones = Cli056AplicacionVacante.objects.filter(
+            id__in=aplicaciones_ids,
+            vacante_id_052=vacante
+        )
+        
+        if aplicaciones.count() != len(aplicaciones_ids):
+            messages.error(request, 'Algunos candidatos seleccionados no pertenecen a esta vacante.')
+            return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
+        
+        # Procesar formulario de entrevista
+        grupo_id = request.session.get('grupo_id', 2)
+        form = EntrevistaCrearForm(request.POST, grupo_id=grupo_id, cliente_id=cliente_id, vacante=vacante)
+        
+        if form.is_valid():
+            fecha_entrevista = form.cleaned_data['fecha_entrevista']
+            hora_entrevista = form.cleaned_data['hora_entrevista']
+            entrevistador_id = form.cleaned_data['entrevistador']
+            tipo_entrevista = form.cleaned_data['tipo_entrevista']
+            lugar_enlace = form.cleaned_data['lugar_enlace']
+            
+            usuario_asignado = get_object_or_404(UsuarioBase, id=entrevistador_id)
+            usuario_asigno = request.user
+            estado_default = Cat001Estado.objects.get(id=1)
+            
+            url_actual = f"{request.scheme}://{request.get_host()}"
+            
+            # Crear entrevista para cada aplicación
+            entrevistas_creadas = []
+            errores = []
+            
+            for aplicacion in aplicaciones:
+                try:
+                    # Crear la asignación de entrevista
+                    asignacion_entrevista = Cli057AsignacionEntrevista.objects.create(
+                        asignacion_vacante=aplicacion,
+                        usuario_asigno=usuario_asigno,
+                        usuario_asignado=usuario_asignado,
+                        fecha_entrevista=fecha_entrevista,
+                        hora_entrevista=hora_entrevista,
+                        tipo_entrevista=tipo_entrevista,
+                        lugar_enlace=lugar_enlace,
+                        estado_asignacion=1,  # Pendiente por defecto
+                        estado=estado_default,
+                    )
+                    
+                    entrevistas_creadas.append(asignacion_entrevista)
+                    
+                    # Crear historial
+                    crear_historial_aplicacion(
+                        aplicacion, 
+                        2, 
+                        request.session.get('_auth_user_id'), 
+                        'Entrevista Asignada'
+                    )
+                    
+                    # Obtener información del candidato
+                    candidato = aplicacion.candidato_101
+                    
+                    # Preparar contexto para el correo
+                    contexto_email = {
+                        'entrevistador': f'{usuario_asignado.primer_nombre} {usuario_asignado.segundo_nombre} {usuario_asignado.primer_apellido}',
+                        'nombre_candidato': candidato.nombre_completo(),
+                        'fecha_entrevista': fecha_entrevista,
+                        'hora_entrevista': hora_entrevista,
+                        'lugar_enlace': lugar_enlace,
+                        'vacante': vacante.titulo,
+                        'cliente': cliente.razon_social if cliente else 'N/A',
+                        'url': url_actual
+                    }
+                    
+                    # Lista de correos
+                    lista_correos = [
+                        usuario_asignado.email,
+                        candidato.email
+                    ]
+                    
+                    # Enviar correo
+                    try:
+                        enviar_correo(
+                            'asignacion_entrevista_entrevista', 
+                            contexto_email, 
+                            f'Asignación de Entrevista ID: {asignacion_entrevista.id}', 
+                            lista_correos, 
+                            correo_remitente=None
+                        )
+                    except Exception as e:
+                        # No fallar si el correo no se puede enviar
+                        print(f"Error al enviar correo: {e}")
+                    
+                except Exception as e:
+                    errores.append(f"Error al crear entrevista para {aplicacion.candidato_nombre}: {str(e)}")
+            
+            # Mensajes de resultado
+            if entrevistas_creadas:
+                messages.success(
+                    request, 
+                    f'Se han asignado {len(entrevistas_creadas)} entrevista(s) correctamente.'
+                )
+            
+            if errores:
+                for error in errores:
+                    messages.warning(request, error)
+            
+            return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
+        else:
+            messages.error(request, 'Error en el formulario. Verifique los datos.')
+            return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
+    
+    # Si es GET, redirigir
+    return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)

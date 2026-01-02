@@ -1,4 +1,4 @@
-{% extends 'admin/layout/dashboard_base.html' %}
+{% extends 'admin/layout/dashboard_base.html' %} 
 
 {% load static %}
 {% load crispy_forms_tags %}
@@ -132,11 +132,11 @@ Vacantes Propias
                             <div class="tab-content" id="nav-estados-tabContent">
                                 <!-- Tab: Recibido -->
                                 <div class="tab-pane fade show active" id="nav-recibido" role="tabpanel" aria-labelledby="nav-recibido-tab" tabindex="0">
-                                    <div class="default-table-area all-projects">
-                                        <div class="table-responsive">
+                            <div class="default-table-area all-projects">
+                                <div class="table-responsive">
                                             <table class="table align-middle text-center" id="tableRecibido">
-                                                <thead>
-                                                    <tr>
+                                        <thead>
+                                            <tr>
                                                         <th scope="col" class="text-center">Imagen</th>
                                                         <th scope="col" class="text-center">Candidato</th>
                                                         <th scope="col" class="text-center">Fecha Registro</th>
@@ -144,15 +144,15 @@ Vacantes Propias
                                                         <th scope="col" class="text-center">Nivel de Estudio</th>
                                                         <th scope="col" class="text-center">Puntaje Match</th>
                                                         <th scope="col" class="text-center">Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
                                                     {% for e in reclutados_recibido %}
                                                     <tr>
                                                         <td class="text-center">
                                                             {% if e.candidato_101.imagen_perfil %}
                                                                 <img src="{{ e.candidato_101.imagen_perfil.url }}" alt="{{ e.candidato_nombre }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
-                                                            {% else %}
+                                                        {% else %}
                                                                 <img src="{% static 'admin/images/blank.png' %}" alt="Sin imagen" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                                                             {% endif %}
                                                         </td>
@@ -305,9 +305,9 @@ Vacantes Propias
                                                 </tbody>
                                             </table>
                                         </div>
-                                    </div>
-                                </div>
-                                
+                                                        </div>
+                                                    </div>
+                                                    
                                 <!-- Tab: Finalista -->
                                 <div class="tab-pane fade" id="nav-finalizalista" role="tabpanel" aria-labelledby="nav-finalizalista-tab" tabindex="0">
                                     <div class="default-table-area all-projects">
@@ -333,7 +333,7 @@ Vacantes Propias
                                                             {% else %}
                                                                 <img src="{% static 'admin/images/blank.png' %}" alt="Sin imagen" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                                                             {% endif %}
-                                                        </td>
+                                                </td>
                                                         <td class="text-start">
                                                             {% if request.session.grupo_id == 5 %}
                                                                 <a href="{% url 'reclutados:reclutados_detalle_analista_interno' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
@@ -341,7 +341,7 @@ Vacantes Propias
                                                                 <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
                                                             {% endif %}
                                                             <small class="text-muted">{{ e.candidato_email|default:"-" }}</small>
-                                                        </td>
+                                                </td>
                                                         <td class="text-secondary">{{ e.fecha_aplicacion|date:"d/m/Y"|default:"-" }}</td>
                                                         <td class="text-secondary">
                                                             {% if e.candidato_101.fecha_nacimiento %}
@@ -406,8 +406,8 @@ Vacantes Propias
                                             </table>
                                         </div>
                                     </div>
-                                </div>
-                                
+                                                        </div>
+                                                        
                                 <!-- Tab: Descartado -->
                                 <div class="tab-pane fade" id="nav-descartado" role="tabpanel" aria-labelledby="nav-descartado-tab" tabindex="0">
                                     <div class="default-table-area all-projects">
@@ -484,15 +484,15 @@ Vacantes Propias
                                                             <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                                                                 <i class="material-symbols-outlined fs-14">visibility</i> Ver
                                                             </a>
-                                                        </td>
-                                                    </tr>
+                                                </td> 
+                                            </tr>
                                                     {% empty %}
                                                     <tr>
                                                         <td colspan="7" class="text-center text-muted">No hay candidatos en este estado</td>
                                                     </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
                                         </div>
                                     </div>
                                 </div>
@@ -897,27 +897,27 @@ $(document).ready(function() {
     }
 
     // Configuración común para todos los DataTables con todas las funcionalidades
-    var dataTableConfig = {
-        "dom": '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
-        "language": {
-            "lengthMenu": "Mostrar _MENU_ registros por página",
-            "zeroRecords": "No se encontraron registros",
-            "info": "Mostrando página _PAGE_ de _PAGES_",
-            "infoEmpty": "No hay registros disponibles",
-            "infoFiltered": "(filtrado de _MAX_ registros totales)",
-            "search": "Buscar:",
+        var dataTableConfig = {
+            "dom": '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar:",
             "searchPlaceholder": "Buscar",
-            "paginate": {
-                "first": "Primero",
-                "last": "Último",
-                "next": "Siguiente",
-                "previous": "Anterior"
-            },
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
             "emptyTable": "No hay candidatos en este estado",
-            "loadingRecords": "Cargando...",
-            "processing": "Procesando...",
-            "infoThousands": ","
-        },
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "infoThousands": ","
+            },
         "columnDefs": [
             {
                 "targets": [0, 6], // Columna de Imagen y Acciones
@@ -926,13 +926,13 @@ $(document).ready(function() {
             }
         ],
         "order": [[0, "desc"]], // Ordenar por ID descendente
-        "responsive": true,
-        "autoWidth": false,
+            "responsive": true,
+            "autoWidth": false,
         "pageLength": 10,
         "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
-        "searching": true,
-        "ordering": true,
-        "info": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
         "paging": true,
         "processing": false,
         "deferRender": false,
@@ -975,14 +975,14 @@ $(document).ready(function() {
         "deferRender": false,
         "destroy": false,
         "retrieve": true
-    };
+        };
 
-    // Variables para almacenar las instancias de DataTable
+        // Variables para almacenar las instancias de DataTable
     var tableRecibido = null;
     var tableSeleccionado = null;
     var tableFinalista = null;
     var tableDescartado = null;
-    var tableEntrevistas = null;
+        var tableEntrevistas = null;
 
     // Función para inicializar DataTable solo si no existe
     function initDataTable(tableId, config) {
@@ -1074,8 +1074,8 @@ $(document).ready(function() {
             if (!tableEntrevistas) {
                 tableEntrevistas = initDataTable('entrevista-tabla', dataTableConfigEntrevistas);
             } else {
-                tableEntrevistas.columns.adjust().draw();
-            }
+                    tableEntrevistas.columns.adjust().draw();
+                }
         }, 200);
     });
 
@@ -1131,9 +1131,9 @@ $(document).ready(function() {
             
             if (textoMax) {
                 $td.text(textoMax);
-            } else {
+    } else {
                 $td.text('-');
-            }
+    }
         }
     });
 
