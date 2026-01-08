@@ -74,7 +74,21 @@ Detalle vacante
                     {% endif %}
 
                     {% if request.session.user_login.cliente_tipo == '3' %}
-                    
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_gestion_propias_cliente' vacante.asignacion_cliente_id_064.id_cliente_asignado.id vacante.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Gestión Vacante</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'reclutados:reclutados_detalle_cliente' reclutado.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Detalle reclutado</span>
+                        </a>
+                    </li>
                     {% endif %}
                     
                 {% endif %}
@@ -409,5 +423,32 @@ Detalle vacante
     initializeSelect2('#id_proposito_calificacion');
     initializeSelect2('#id_encaje_360_calificacion');
     initializeSelect2('#id_confiabilidad_riesgo_calificacion');
-</script>  
+</script>
+<style>
+    /* Ajustar alineación de la X en select2 para todos los campos */
+    .select2-container .select2-selection--single .select2-selection__clear {
+        position: absolute !important;
+        right: 30px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        line-height: 1 !important;
+        height: 20px !important;
+        width: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 18px !important;
+        font-weight: bold !important;
+        color: #6c757d !important;
+        cursor: pointer !important;
+        z-index: 1 !important;
+    }
+    
+    .select2-container .select2-selection--single .select2-selection__rendered {
+        padding-right: 50px !important;
+        line-height: 48px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+</style>
 {% endblock js %}

@@ -20776,15 +20776,33 @@ Swiper Slider Style
   color: #495057 !important;
 }
 
-/* 🡆 Si quieres mover la "X" junto a la flecha, usa esto en lugar de ocultarla */
-.select2-container--default .select2-selection__clear {
-  position: absolute;
+/* 🡆 Ajustar alineación de la X (clear button) en select2 */
+.select2-container--default .select2-selection__clear,
+.select2-container .select2-selection--single .select2-selection__clear {
+  position: absolute !important;
   right: 30px !important;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #ffffff !important;
-  font-size: 15px !important;
-  cursor: pointer;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  line-height: 1 !important;
+  height: 20px !important;
+  width: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  color: #6c757d !important;
+  cursor: pointer !important;
+  z-index: 1 !important;
+}
+
+/* Ajustar alineación del texto seleccionado */
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container .select2-selection--single .select2-selection__rendered {
+  padding-right: 50px !important;
+  line-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
 .asteriskField {

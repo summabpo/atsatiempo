@@ -192,6 +192,7 @@ ESTADO_APLICACION_CHOICES_STATIC = [
     (10, 'Cancelada'),
     (11, 'Desiste'),
     (12, 'No Apto'),
+    (13, 'Seleccionado por Headhunter'),
 ]
 
 ESTADO_APLICACION_COLOR_STATIC = {

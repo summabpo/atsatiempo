@@ -256,3 +256,53 @@ class BusquedaRecibidosForm(forms.Form):
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             ),
         )
+
+class RespuestaClienteForm(forms.Form):
+    estado_respuesta = forms.ChoiceField(
+        label="Respuesta",
+        choices=[
+            ('', 'Seleccione una opción...'),
+            ('13', 'Apto'),
+            ('12', 'No Apto'),
+        ],
+        required=True,
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+            'data-placeholder': 'Seleccione una opción'
+        })
+    )
+    descripcion = forms.CharField(
+        label="Descripción",
+        required=True,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control form-control-solid',
+            'rows': 4,
+            'placeholder': 'Ingrese la descripción de la respuesta...'
+        })
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Configuración de Crispy Forms
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'form_respuesta_cliente'
+        self.helper.form_class = 'w-100'
+        
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML("<h4 class='mb-3 text-primary'>Respuesta del Cliente</h4>"),
+                    Div('estado_respuesta', css_class='col-12 mb-3'),
+                    Div('descripcion', css_class='col-12 mb-3'),
+                    Div(
+                        Submit('submit', 'Guardar Respuesta', css_class='btn btn-primary w-100'),
+                        css_class='col-12'
+                    ),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+        )

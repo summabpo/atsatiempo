@@ -4,7 +4,7 @@ from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 
 
 from applications.common.views.EnvioCorreo import enviar_correo
-from applications.reclutado.forms.FormRecruited import ReclutadoCrearForm
+from applications.reclutado.forms.FormRecruited import ReclutadoCrearForm, RespuestaClienteForm
 from applications.services.service_candidate import buscar_candidato
 from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones
@@ -231,10 +231,64 @@ def detail_recruited(request, pk):
     else:
         form = EntrevistaCrearForm(grupo_id=grupo_id, cliente_id=cliente_id, vacante=vacante)
 
+    # Formulario de respuesta del cliente (solo para grupo_id=3 y cliente_tipo=3)
+    form_respuesta_cliente = RespuestaClienteForm()
+    tiene_respuesta_cliente = False
+    respuesta_cliente_data = None
+    
+    # Verificar si ya existe una respuesta del cliente
+    if asignacion_vacante.estado_aplicacion in [12, 13] and asignacion_vacante.registro_reclutamiento:
+        if isinstance(asignacion_vacante.registro_reclutamiento, dict):
+            descripcion_respuesta = asignacion_vacante.registro_reclutamiento.get('descripcion_respuesta_cliente', '')
+            if descripcion_respuesta:
+                tiene_respuesta_cliente = True
+                respuesta_cliente_data = {
+                    'estado': 'Apto' if asignacion_vacante.estado_aplicacion == 13 else 'No Apto',
+                    'estado_codigo': asignacion_vacante.estado_aplicacion,
+                    'descripcion': descripcion_respuesta,
+                    'color_badge': 'success' if asignacion_vacante.estado_aplicacion == 13 else 'danger'
+                }
+    
+    if request.method == 'POST' and 'submit' in request.POST and request.POST.get('submit') == 'Guardar Respuesta':
+        form_respuesta_cliente = RespuestaClienteForm(request.POST)
+        if form_respuesta_cliente.is_valid():
+            estado_respuesta = int(form_respuesta_cliente.cleaned_data['estado_respuesta'])
+            descripcion = form_respuesta_cliente.cleaned_data['descripcion']
+            
+            # Actualizar estado_aplicacion
+            asignacion_vacante.estado_aplicacion = estado_respuesta
+            
+            # Obtener o inicializar registro_reclutamiento
+            registro_reclutamiento = asignacion_vacante.registro_reclutamiento if asignacion_vacante.registro_reclutamiento else {}
+            if not isinstance(registro_reclutamiento, dict):
+                registro_reclutamiento = {}
+            
+            # Guardar descripción en el JSON
+            registro_reclutamiento['descripcion_respuesta_cliente'] = descripcion
+            
+            # Guardar cambios
+            asignacion_vacante.registro_reclutamiento = registro_reclutamiento
+            asignacion_vacante.save()
+            
+            # Crear historial
+            crear_historial_aplicacion(asignacion_vacante, estado_respuesta, request.session.get('_auth_user_id'), f'Respuesta del cliente: {"Apto" if estado_respuesta == 13 else "No Apto"}')
+            
+            messages.success(request, 'Respuesta guardada exitosamente.')
+            return redirect('reclutados:reclutados_detalle_cliente', pk=pk)
+        else:
+            messages.error(request, 'Error al guardar la respuesta. Verifique los datos.')
+    else:
+        # Si no hay respuesta existente, inicializar el formulario vacío
+        if not tiene_respuesta_cliente:
+            form_respuesta_cliente = RespuestaClienteForm()
+
     
 
     context ={
         'form': form,
+        'form_respuesta_cliente': form_respuesta_cliente,
+        'tiene_respuesta_cliente': tiene_respuesta_cliente,
+        'respuesta_cliente_data': respuesta_cliente_data,
         'vacante': vacante,
         'reclutados': reclutados,
         'candidato': info_candidato,

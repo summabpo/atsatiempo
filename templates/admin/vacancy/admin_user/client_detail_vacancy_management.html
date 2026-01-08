@@ -333,7 +333,7 @@ Vacantes Propias
                                                             {% else %}
                                                                 <img src="{% static 'admin/images/blank.png' %}" alt="Sin imagen" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                                                             {% endif %}
-                                                </td>
+                                                        </td>
                                                         <td class="text-start">
                                                             {% if request.session.grupo_id == 5 %}
                                                                 <a href="{% url 'reclutados:reclutados_detalle_analista_interno' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
@@ -341,7 +341,7 @@ Vacantes Propias
                                                                 <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
                                                             {% endif %}
                                                             <small class="text-muted">{{ e.candidato_email|default:"-" }}</small>
-                                                </td>
+                                                    </td>
                                                         <td class="text-secondary">{{ e.fecha_aplicacion|date:"d/m/Y"|default:"-" }}</td>
                                                         <td class="text-secondary">
                                                             {% if e.candidato_101.fecha_nacimiento %}
@@ -383,7 +383,7 @@ Vacantes Propias
                                                         <td class="text-center">
                                                             <div class="d-flex gap-2 justify-content-center">
                                                                 {% if request.session.grupo_id == 5 %}
-                                                                    <a href="{% url 'reclutados:reclutados_detalle_analista_interno' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
+                                                                    <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
                                                                         <i class="material-symbols-outlined fs-14">manage_accounts</i> Gestionar
                                                                     </a>
                                                                 {% else %}
@@ -406,8 +406,8 @@ Vacantes Propias
                                             </table>
                                         </div>
                                     </div>
-                                                        </div>
-                                                        
+                                </div>
+
                                 <!-- Tab: Descartado -->
                                 <div class="tab-pane fade" id="nav-descartado" role="tabpanel" aria-labelledby="nav-descartado-tab" tabindex="0">
                                     <div class="default-table-area all-projects">

@@ -67,10 +67,15 @@ Listado de vacantes
                                                             <a href="{% url 'vacantes:vacantes_editar_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
                                                                 <i class="material-symbols-outlined fs-16">edit</i>
                                                             </a>
+                                                            {% if request.session.grupo_id != 3 or request.session.user_login.cliente_tipo != '3' %}
                                                             <a href="{% url 'vacantes:vacantes_gestion_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
                                                                 <i class="material-symbols-outlined fs-16">inbox_customize</i>
                                                             </a>
-                                                            
+                                                            {% else %}
+                                                            <a href="{% url 'vacantes:vacantes_gestion_propias_cliente' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                                <i class="material-symbols-outlined fs-16">inbox_customize</i>
+                                                            </a>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
                                                 </td> 
