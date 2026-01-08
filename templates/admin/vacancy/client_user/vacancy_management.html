@@ -1,0 +1,620 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+
+{% block title %}
+Vacantes Propias
+{% endblock %}
+
+{% block content %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">CLIENTE: {{data.cliente.razon_social}}</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="#" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+                <li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+					</a>
+				</li>
+				
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Gestión de Vacante</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+    
+    
+    {% if request.session.grupo_id == 1 %}
+    <!-- Contenido para admin -->
+    <div class="row">
+		<div class="col-md-12">
+			{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_vacancy=True %}
+		</div>
+	</div>
+    {% else %}
+        {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '2' %}
+        <div class="row">
+            <div class="col-md-12">
+                {% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_vacancy=True %}
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+
+	<div class="row">
+        <div class="col-md-12">
+			<div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+                    <p class="text-primary my-2 fs-4 fw-semibold">Gestión Vacante: {{vacante.titulo}}</p>
+                </div>
+                <div class="card-body p-4">
+                    <nav>
+                        <div class="nav nav-tabs mb-4" id="nav-tab" role="tablist">
+                            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Información</button>
+                            <button class="nav-link" id="nav-reclutado-tab" data-bs-toggle="tab" data-bs-target="#nav-reclutado" type="button" role="tab" aria-controls="nav-reclutado" aria-selected="false">Reclutados</button>
+                            <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Preguntas Vacante</button>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+                            {% include 'admin/vacancy/partials/presentation_vacancy.html' %}
+                        </div>
+                        <div class="tab-pane fade" id="nav-reclutado" role="tabpanel" aria-labelledby="nav-reclutado-tab" tabindex="0">
+                            <!-- Solo mostrar candidatos finalistas -->
+                            <div class="default-table-area all-projects">
+                                <div class="table-responsive">
+                                    <table class="table align-middle text-center" id="tableFinalista">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="text-center">Imagen</th>
+                                                <th scope="col" class="text-center">Candidato</th>
+                                                <th scope="col" class="text-center">Fecha Registro</th>
+                                                <th scope="col" class="text-center">Edad</th>
+                                                <th scope="col" class="text-center">Nivel de Estudio</th>
+                                                <th scope="col" class="text-center">Puntaje Match</th>
+                                                <th scope="col" class="text-center">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for e in reclutados_finalizalista %}
+                                            <tr>
+                                                <td class="text-center">
+                                                    {% if e.candidato_101.imagen_perfil %}
+                                                        <img src="{{ e.candidato_101.imagen_perfil.url }}" alt="{{ e.candidato_nombre }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    {% else %}
+                                                        <img src="{% static 'admin/images/blank.png' %}" alt="Sin imagen" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-start">
+                                                    {% if request.session.grupo_id == 5 %}
+                                                        <a href="{% url 'reclutados:reclutados_detalle_analista_interno' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
+                                                    {% else %}
+                                                        <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="fw-semibold text-decoration-none text-dark d-block">{{ e.candidato_nombre }}</a>
+                                                    {% endif %}
+                                                    <small class="text-muted">{{ e.candidato_email|default:"-" }}</small>
+                                                </td>
+                                                <td class="text-secondary">{{ e.fecha_aplicacion|date:"d/m/Y"|default:"-" }}</td>
+                                                <td class="text-secondary">
+                                                    {% if e.candidato_101.fecha_nacimiento %}
+                                                        <span class="edad-candidato" data-fecha-nacimiento="{{ e.candidato_101.fecha_nacimiento|date:'Y-m-d' }}">-</span>
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-secondary nivel-estudio" data-candidato-id="{{ e.candidato_id }}">
+                                                    {% with educaciones=e.candidato_101.can103educacion_set.all %}
+                                                        {% if educaciones %}
+                                                            {% for educacion in educaciones %}
+                                                                {% if educacion.tipo_estudio %}
+                                                                    <span class="nivel-estudio-valor" data-nivel="{{ educacion.tipo_estudio }}" data-texto="{{ educacion.mostrar_tipo_estudio }}"></span>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            -
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </td>
+                                                <td class="text-center">
+                                                    {% with porcentaje=e.json_match|get_match_porcentaje %}
+                                                        {% if porcentaje %}
+                                                            {% if porcentaje >= 80 %}
+                                                                <span class="badge bg-success text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
+                                                            {% elif porcentaje >= 60 %}
+                                                                <span class="badge bg-warning text-dark p-2">{{ porcentaje|floatformat:1 }}%</span>
+                                                            {% elif porcentaje >= 40 %}
+                                                                <span class="badge bg-info text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <span class="text-muted">-</span>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="d-flex gap-2 justify-content-center">
+                                                        {% if request.session.grupo_id == 5 %}
+                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
+                                                                <i class="material-symbols-outlined fs-14">manage_accounts</i> Gestionar
+                                                            </a>
+                                                        {% else %}
+                                                            <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
+                                                                <i class="material-symbols-outlined fs-14">manage_accounts</i> Gestionar
+                                                            </a>
+                                                        {% endif %}
+                                                        <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
+                                                            <i class="material-symbols-outlined fs-14">person_check</i> En Finalistas
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="7" class="text-center text-muted">No hay candidatos finalistas</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">
+                        
+                            <div class="mb-4">
+                                <div class="px-2 pt-2 pb-0">
+                                    <span class="fw-semibold text-secondary" style="font-size: 1.05rem;">
+                                        <i class="bi bi-question-circle me-1 text-primary"></i>
+                                        Preguntas generadas para la vacante
+                                    </span>
+                                </div>
+                                <div class="pt-2 px-2">
+                                    {% if preguntas %}
+                                        <ul class="ps-0 mb-0" style="list-style: none;">
+                                            {% for pregunta in preguntas %}
+                                                <li class="d-flex align-items-start mb-2">
+                                                    <span class="me-2 mt-1">
+                                                        <i class="material-symbols-outlined text-primary">help</i>
+                                                    </span>
+                                                    <span>{{ pregunta.pregunta }}</span>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <div class="alert alert-info mb-0">
+                                            No hay preguntas generadas para esta vacante.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div>
+            </div>
+		</div>
+	</div>
+
+</div>
+
+<!-- Modal Perfil Completo de la Vacante -->
+<div class="modal fade" id="perfilVacanteModal" tabindex="-1" aria-labelledby="perfilVacanteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="perfilVacanteModalLabel">
+                    <i class="bi bi-building me-2"></i>Información Completa del Cliente
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Información del Cliente -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-success bg-opacity-10">
+                                <h6 class="mb-0 text-success"><i class="bi bi-building me-2"></i>Información del Cliente</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Razón Social</small>
+                                        <p class="mb-2 fw-semibold">{{ data.cliente.razon_social }}</p>
+                                        
+                                        <small class="text-muted">Contacto</small>
+                                        <p class="mb-2 fw-semibold">{{ data.cliente.contacto }}</p>
+                                        
+                                        <small class="text-muted">Email</small>
+                                        <p class="mb-2 fw-semibold">{{ data.cliente.email }}</p>
+                                        
+                                        <small class="text-muted">Teléfono</small>
+                                        <p class="mb-2 fw-semibold">{{ data.cliente.telefono }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Ciudad</small>
+                                        <p class="mb-2 fw-semibold">{{ data.cliente.ciudad }}</p>
+                                        
+                                        <small class="text-muted">Tipo de Cliente</small>
+                                        <p class="mb-2 fw-semibold">{{ data.cliente.tipo_cliente }}</p>
+                                        
+                                        <small class="text-muted">Actividad Económica</small>
+                                        <p class="mb-2 fw-semibold">{{ data.cliente.actividad_economica }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Perfil Empresarial -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-primary bg-opacity-10">
+                                <h6 class="mb-0 text-primary"><i class="bi bi-file-text me-2"></i>Perfil Empresarial</h6>
+                            </div>
+                            <div class="card-body">
+                                {% if data.cliente.perfil_empresarial %}
+                                    <p class="mb-0">{{ data.cliente.perfil_empresarial }}</p>
+                                {% else %}
+                                    <p class="text-muted mb-0">No hay perfil empresarial disponible para este cliente.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %} 
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+
+{% if form.errors %}
+    var myModal = new bootstrap.Modal(document.getElementById('perfilVacanteModal'));
+    myModal.show();
+{% endif %}
+
+
+initializeSelect2('#id_analista_asignado');
+initializeSelect2('#id_reclutador_asignado');
+
+// Inicializar DataTables para las tablas
+$(document).ready(function() {
+    // Verificar que DataTables esté disponible
+    if (typeof $.fn.DataTable === 'undefined') {
+        console.error('DataTables no está cargado');
+        return;
+    }
+
+    // Configuración común para todos los DataTables con todas las funcionalidades
+        var dataTableConfig = {
+            "dom": '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar:",
+            "searchPlaceholder": "Buscar",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+            "emptyTable": "No hay candidatos en este estado",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "infoThousands": ","
+            },
+        "columnDefs": [
+            {
+                "targets": [0, 6], // Columna de Imagen y Acciones
+                "orderable": false,
+                "searchable": false
+            }
+        ],
+        "order": [[0, "desc"]], // Ordenar por ID descendente
+            "responsive": true,
+            "autoWidth": false,
+        "pageLength": 10,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
+            "searching": true,
+            "ordering": true,
+            "info": true,
+        "paging": true,
+        "processing": false,
+        "deferRender": false,
+        "destroy": false,
+        "retrieve": true
+    };
+
+    // Configuración para tabla de entrevistas (sin columnDefs específicos)
+    var dataTableConfigEntrevistas = {
+        "dom": '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        "language": {
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "zeroRecords": "No se encontraron registros",
+            "info": "Mostrando página _PAGE_ de _PAGES_",
+            "infoEmpty": "No hay registros disponibles",
+            "infoFiltered": "(filtrado de _MAX_ registros totales)",
+            "search": "Buscar:",
+            "searchPlaceholder": "Buscar",
+            "paginate": {
+                "first": "Primero",
+                "last": "Último",
+                "next": "Siguiente",
+                "previous": "Anterior"
+            },
+            "emptyTable": "No hay entrevistas disponibles",
+            "loadingRecords": "Cargando...",
+            "processing": "Procesando...",
+            "infoThousands": ","
+        },
+        "order": [[0, "desc"]], // Ordenar por ID descendente
+        "responsive": true,
+        "autoWidth": false,
+        "pageLength": 10,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "paging": true,
+        "processing": false,
+        "deferRender": false,
+        "destroy": false,
+        "retrieve": true
+        };
+
+        // Variables para almacenar las instancias de DataTable
+    var tableRecibido = null;
+    var tableSeleccionado = null;
+    var tableFinalista = null;
+    var tableDescartado = null;
+        var tableEntrevistas = null;
+
+    // Función para inicializar DataTable solo si no existe
+    function initDataTable(tableId, config) {
+        var tableElement = $('#' + tableId);
+        var tableConfig = config || dataTableConfig;
+        
+        if (tableElement.length === 0) {
+            console.warn('Tabla ' + tableId + ' no encontrada');
+            return null;
+        }
+
+        if (!$.fn.DataTable.isDataTable('#' + tableId)) {
+            try {
+                // Limpiar cualquier fila con colspan que pueda causar problemas
+                var tbody = tableElement.find('tbody');
+                tbody.find('tr').each(function() {
+                    var $row = $(this);
+                    var $tdWithColspan = $row.find('td[colspan]');
+                    if ($tdWithColspan.length > 0) {
+                        $row.remove();
+                    }
+                });
+                
+                var table = tableElement.DataTable(tableConfig);
+                console.log('DataTable inicializado para: ' + tableId);
+                return table;
+            } catch (error) {
+                console.error('Error al inicializar DataTable para ' + tableId + ':', error);
+                return null;
+            }
+        } else {
+            // Si ya existe, obtener la instancia
+            return tableElement.DataTable();
+        }
+    }
+
+    // Inicializar DataTable para Recibido (tab activo por defecto)
+    setTimeout(function() {
+        if ($('#tableRecibido').length && $('#nav-recibido').hasClass('show active')) {
+            tableRecibido = initDataTable('tableRecibido');
+        }
+    }, 500);
+
+    // Inicializar DataTables cuando se muestren los tabs de estados
+    $('#nav-recibido-tab').on('shown.bs.tab', function (e) {
+        setTimeout(function() {
+            if (!tableRecibido) {
+                tableRecibido = initDataTable('tableRecibido');
+            } else {
+                // Redibujar la tabla si ya existe
+                tableRecibido.columns.adjust().draw();
+            }
+        }, 200);
+    });
+
+    $('#nav-seleccionado-tab').on('shown.bs.tab', function (e) {
+        setTimeout(function() {
+            if (!tableSeleccionado) {
+                tableSeleccionado = initDataTable('tableSeleccionado');
+            } else {
+                tableSeleccionado.columns.adjust().draw();
+            }
+        }, 200);
+    });
+
+    $('#nav-finalizalista-tab').on('shown.bs.tab', function (e) {
+        setTimeout(function() {
+            if (!tableFinalista) {
+                tableFinalista = initDataTable('tableFinalista');
+            } else {
+                tableFinalista.columns.adjust().draw();
+            }
+        }, 200);
+    });
+
+    $('#nav-descartado-tab').on('shown.bs.tab', function (e) {
+        setTimeout(function() {
+            if (!tableDescartado) {
+                tableDescartado = initDataTable('tableDescartado');
+            } else {
+                tableDescartado.columns.adjust().draw();
+            }
+        }, 200);
+    });
+
+    // Inicializar DataTable de entrevistas cuando se muestre el tab
+    $('#nav-entrevista-tab').on('shown.bs.tab', function (e) {
+        setTimeout(function() {
+            if (!tableEntrevistas) {
+                tableEntrevistas = initDataTable('entrevista-tabla', dataTableConfigEntrevistas);
+            } else {
+                    tableEntrevistas.columns.adjust().draw();
+                }
+        }, 200);
+    });
+
+    // Inicializar tabla de entrevistas si el tab está activo al cargar
+    if ($('#nav-entrevista').hasClass('show active')) {
+        setTimeout(function() {
+            if ($('#entrevista-tabla').length) {
+                tableEntrevistas = initDataTable('entrevista-tabla', dataTableConfigEntrevistas);
+            }
+        }, 500);
+    }
+
+    // Función para calcular la edad
+    function calcularEdad(fechaNacimiento) {
+        if (!fechaNacimiento) return '-';
+        
+        var hoy = new Date();
+        var fechaNac = new Date(fechaNacimiento);
+        var edad = hoy.getFullYear() - fechaNac.getFullYear();
+        var mes = hoy.getMonth() - fechaNac.getMonth();
+        
+        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+            edad--;
+        }
+        
+        return edad + ' años';
+    }
+
+    // Calcular edades de todos los candidatos
+    $('.edad-candidato').each(function() {
+        var fechaNacimiento = $(this).data('fecha-nacimiento');
+        if (fechaNacimiento) {
+            $(this).text(calcularEdad(fechaNacimiento));
+        }
+    });
+
+    // Obtener el nivel de estudio más alto para cada candidato
+    $('.nivel-estudio').each(function() {
+        var $td = $(this);
+        var $niveles = $td.find('.nivel-estudio-valor');
+        
+        if ($niveles.length > 0) {
+            var nivelMax = 0;
+            var textoMax = '';
+            
+            $niveles.each(function() {
+                var nivel = parseInt($(this).data('nivel')) || 0;
+                if (nivel > nivelMax) {
+                    nivelMax = nivel;
+                    textoMax = $(this).data('texto');
+                }
+            });
+            
+            if (textoMax) {
+                $td.text(textoMax);
+    } else {
+                $td.text('-');
+    }
+        }
+    });
+
+    // Código para buscar candidato por documento
+        const inputDocumento = $('#id_numero_documento');
+        const apiUrl = "{% url 'reclutados:api_canidate_document' %}";
+
+        inputDocumento.on('blur', function () {
+            const numeroDocumento = $(this).val().trim();
+
+            if (numeroDocumento.length > 0) {
+                $.ajax({
+                    url: apiUrl,
+                    method: 'POST',
+                    data: {
+                        numero_documento: numeroDocumento,
+                        vacante_id: '{{ vacante.id }}',
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        if (data.status == 'error') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message,
+                                confirmButtonText: 'Aceptar'
+                            });
+                            
+                            // Limpiar los campos si hay error
+                            $('#id_primer_nombre').val('');
+                            $('#id_segundo_nombre').val('');
+                            $('#id_primer_apellido').val('');
+                            $('#id_segundo_apellido').val('');
+                            $('#id_email').val('');
+                            $('#id_telefono').val('');
+                            return;
+                        }
+
+                        // Llenar campos
+                        $('#id_primer_nombre').val(data.primer_nombre || '');
+                        $('#id_segundo_nombre').val(data.segundo_nombre || '');
+                        $('#id_primer_apellido').val(data.primer_apellido || '');
+                        $('#id_segundo_apellido').val(data.segundo_apellido || '');
+                        $('#id_email').val(data.email || '');
+                        $('#id_telefono').val(data.telefono || '');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error al buscar candidato:', error);
+                        /*
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error al buscar candidato.',
+                            confirmButtonText: 'Aceptar'
+                        });
+                        */
+                        
+                        // Limpiar los campos si hay error
+                        $('#id_primer_nombre').val('');
+                        $('#id_segundo_nombre').val('');
+                        $('#id_primer_apellido').val('');
+                        $('#id_segundo_apellido').val('');
+                        $('#id_email').val('');
+                        $('#id_telefono').val('');
+                    }
+                });
+            }
+        });
+    });
+
+</script>  
+{% endblock js %}

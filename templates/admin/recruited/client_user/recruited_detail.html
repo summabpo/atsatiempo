@@ -71,7 +71,16 @@ Detalle vacante
                     {% endif %}
 
                     {% if request.session.user_login.cliente_tipo == '3' %}
-                    
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_gestion_propias_cliente' vacante.asignacion_cliente_id_064.id_cliente_asignado.id vacante.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Gestión Vacante</span>
+                        </a>
+                    </li>
                     {% endif %}
                     
                 {% endif %}
@@ -194,6 +203,11 @@ Detalle vacante
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="historico-tab" data-bs-toggle="tab" data-bs-target="#historico-tab-pane" type="button" role="tab" aria-controls="historico-tab-pane" aria-selected="false">Histórico</button>
                                 </li>
+                                {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="respuesta-cliente-tab" data-bs-toggle="tab" data-bs-target="#respuesta-cliente-tab-pane" type="button" role="tab" aria-controls="respuesta-cliente-tab-pane" aria-selected="false">Respuesta Cliente</button>
+                                </li>
+                                {% endif %}
                             </ul>
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="match-tab-pane" role="tabpanel" aria-labelledby="match-tab" tabindex="0">
@@ -495,6 +509,43 @@ Detalle vacante
                                         </div>
                                     </div>
                                 </div>
+                                {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
+                                <div class="tab-pane fade" id="respuesta-cliente-tab-pane" role="tabpanel" aria-labelledby="respuesta-cliente-tab" tabindex="0">
+                                    {% if tiene_respuesta_cliente %}
+                                        <!-- Mostrar información en modo solo lectura -->
+                                        <div class="card bg-white border-0 rounded-3 mb-4">
+                                            <div class="card-body p-4">
+                                                <div class="mb-4 p-3 border rounded bg-primary bg-opacity-10">
+                                                    <h4 class="mb-3 text-primary">Respuesta del Cliente</h4>
+                                                    <div class="row">
+                                                        <div class="col-12 mb-3">
+                                                            <label class="form-label fw-semibold">Estado:</label>
+                                                            <div>
+                                                                <span class="badge bg-{{ respuesta_cliente_data.color_badge }} text-white p-2 fs-6">
+                                                                    {{ respuesta_cliente_data.estado }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 mb-3">
+                                                            <label class="form-label fw-semibold">Descripción:</label>
+                                                            <div class="p-3 bg-white border rounded">
+                                                                <p class="mb-0 text-secondary">{{ respuesta_cliente_data.descripcion|linebreaks }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <!-- Mostrar formulario editable -->
+                                        <div class="card bg-white border-0 rounded-3 mb-4">
+                                            <div class="card-body p-4">
+                                                {% crispy form_respuesta_cliente %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
                             </div>
 
                         </div>
@@ -511,5 +562,60 @@ Detalle vacante
     // Initialize select2 for specific fields
     initializeSelect2('#id_tipo_entrevista');
     initializeSelect2('#id_entrevistador');
-</script>  
+    // Initialize select2 for respuesta cliente form
+    $(document).ready(function() {
+        // Initialize select2 for estado_respuesta field
+        if ($('#id_estado_respuesta').length) {
+            $('#id_estado_respuesta').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Seleccione una opción...',
+                allowClear: true
+            });
+            
+            // Ajustar alineación de la X (clear button) después de la inicialización
+            $('#id_estado_respuesta').on('select2:select', function() {
+                setTimeout(function() {
+                    var $clearButton = $('.select2-selection__clear');
+                    if ($clearButton.length) {
+                        $clearButton.css({
+                            'line-height': '48px',
+                            'vertical-align': 'middle',
+                            'display': 'flex',
+                            'align-items': 'center',
+                            'justify-content': 'center'
+                        });
+                    }
+                }, 10);
+            });
+        }
+    });
+</script>
+<style>
+    /* Ajustar alineación de la X en select2 para estado_respuesta */
+    #id_estado_respuesta + .select2-container .select2-selection--single .select2-selection__clear {
+        position: absolute !important;
+        right: 30px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        line-height: 1 !important;
+        height: 20px !important;
+        width: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 18px !important;
+        font-weight: bold !important;
+        color: #6c757d !important;
+        cursor: pointer !important;
+        z-index: 1 !important;
+    }
+    
+    #id_estado_respuesta + .select2-container .select2-selection--single .select2-selection__rendered {
+        padding-right: 50px !important;
+        line-height: 48px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+</style>
 {% endblock js %}

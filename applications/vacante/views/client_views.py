@@ -5,6 +5,7 @@ from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, 
 
 from applications.services.service_interview import query_interview_all
 from applications.services.service_recruited import query_recruited_vacancy_id
+from applications.reclutado.forms.FormRecruited import ReclutadoCrearForm
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones, Cli075GrupoProfesion
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.entrevista.models import Cli057AsignacionEntrevista
@@ -19,10 +20,10 @@ from applications.usuarios.decorators  import validar_permisos
 from django.db.models.functions import Concat
 
 #forms
-from applications.vacante.forms.VacanteForms import VacancyAssingForm, VacancyFormAllV2, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll
+from applications.vacante.forms.VacanteForms import VacancyAssingForm, VacancyFormAllV2, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll, VacancyAssignRecruiterForm
 
 #views
-from applications.services.service_vacanty import query_vacanty_all, query_vacanty_detail
+from applications.services.service_vacanty import query_vacanty_all, query_vacanty_detail, get_vacanty_questions
 
 #query
 from applications.services.service_client import query_client_detail
@@ -475,11 +476,71 @@ def list_vacanty_all(request):
         asignacion_cliente_id_064__id_cliente_asignado=cliente
     )
 
-    context ={
+    context ={ 
         'vacantes': vacantes,
     }
 
     return render(request, 'admin/vacancy/client_user/vacancy_list.html', context)
+
+
+#gestionar la vacante
+@login_required
+@validar_permisos('acceso_cliente')
+def vacancy_management_from_client(request, pk, vacante_id):
+    # Verificar si el cliente_id está en la sesión
+    cliente_id = request.session.get('cliente_id')
+    form_errors = False
+    
+    # Data cliente a mostrar
+    data = query_client_detail(pk)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), id=vacante_id)
+    
+
+    # Obtener información de las entrevistas por vacante
+    entrevistas = query_interview_all()
+    entrevistas = entrevistas.filter(asignacion_vacante__vacante_id_052=vacante.id)
+
+    # Obtener preguntas de la vacante
+    preguntas = get_vacanty_questions(vacante.id)
+
+    # Obtener los reclutados asociados a la vacante con estado_aplicacion = 8 (Seleccionado)
+    reclutados = query_recruited_vacancy_id(vacante.id).filter(estado_aplicacion=8)
+    
+    # Para este template solo mostramos finalistas (estado_aplicacion = 8)
+    reclutados_finalizalista = list(reclutados)
+    
+    # Mantener las otras listas vacías para compatibilidad con el template
+    reclutados_recibido = []
+    reclutados_seleccionado = []
+    reclutados_descartado = []
+    
+
+    # Formularios para reclutar candidato y asignar analista a la vacante
+    form_reclutados = ReclutadoCrearForm()
+    form = VacancyAssingForm(cliente_id=cliente_id)
+    form_reclutador = VacancyAssignRecruiterForm(cliente_id=cliente_id)
+    analista_asignado = UsuarioBase.objects.filter(id=vacante.usuario_asignado_id).first()
+    reclutador_asignado = UsuarioBase.objects.filter(id=vacante.asignacion_reclutador_id).first()
+
+    context = {
+        'data': data,
+        'vacante': vacante,
+        'reclutados': reclutados,
+        'reclutados_recibido': reclutados_recibido,
+        'reclutados_seleccionado': reclutados_seleccionado,
+        'reclutados_finalizalista': reclutados_finalizalista,
+        'reclutados_descartado': reclutados_descartado,
+        'entrevistas': entrevistas,
+        'form_reclutados' : form_reclutados,
+        'preguntas': preguntas,
+        'form': form,
+        'form_reclutador': form_reclutador,
+        'analista_asignado': analista_asignado,
+        'reclutador_asignado': reclutador_asignado,
+        'form_errors': form_errors,
+    }
+    return render(request, 'admin/vacancy/client_user/vacancy_management.html', context)
+
 
 #detalle de la vacante
 @login_required
