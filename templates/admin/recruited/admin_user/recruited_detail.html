@@ -1,0 +1,877 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Reporte Final Aplicación Vacante
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<div class="d-flex align-items-center gap-3">
+			<h3 class="mb-0" style="color: #B10022;">REPORTE FINAL APLICACIÓN DE VACANTE: </h3>
+			<a href="{% url 'reclutados:reclutados_reporte_pdf_admin' reclutado.id %}" 
+			   class="btn btn-primary bg-primary bg-opacity-10 text-primary py-3 px-5 fw-semibold border-0 d-inline-flex align-items-center gap-2"
+			   target="_blank" style="vertical-align:middle;">
+				<i class="material-symbols-outlined" style="font-size: 1.5rem; line-height: 1;">picture_as_pdf</i>
+				<span>Descargar Reporte PDF</span>
+			</a>
+		</div>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover" >Inicio</span>
+					</a>
+				</li>
+                {% if request.session.grupo_id == 1 %}
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'clientes:cliente_ver' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Listado de Clientes</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_propias' vacante.asignacion_cliente_id_064.id_cliente_asignado.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{% url 'vacantes:vacantes_gestion_propias' vacante.asignacion_cliente_id_064.id_cliente_asignado.id vacante.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover" >Gestión de Vacante</span>
+                        </a>
+                    </li>
+                {% endif %}
+                
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span class="fw-medium">Detalle Aplicación ID: {{ reclutado.id }}</span>
+                </li>
+			</ol>
+		</nav>
+	</div>
+    <div class="row">
+		<div class="col-md-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card bg-white border-0 rounded-3 mb-4">
+                        <div class="card-body p-4">
+                            <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="reporte-final-tab" data-bs-toggle="tab" data-bs-target="#reporte-final-tab-pane" type="button" role="tab" aria-controls="reporte-final-tab-pane" aria-selected="true">Reporte Final del Candidato</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="match-tab" data-bs-toggle="tab" data-bs-target="#match-tab-pane" type="button" role="tab" aria-controls="match-tab-pane" aria-selected="false">Match Candidato Vacante</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="info-vacante-tab" data-bs-toggle="tab" data-bs-target="#info-vacante-tab-pane" type="button" role="tab" aria-controls="info-vacante-tab-pane" aria-selected="false">Info Vacante</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link " id="candidato-tab" data-bs-toggle="tab" data-bs-target="#candidato-tab-pane" type="button" role="tab" aria-controls="candidato-tab-pane" aria-selected="false">Perfil Candidato</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="entrevista-tab" data-bs-toggle="tab" data-bs-target="#entrevista-tab-pane" type="button" role="tab" aria-controls="entrevista-tab-pane" aria-selected="false">Entrevistas</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions-tab-pane" type="button" role="tab" aria-controls="questions-tab-pane" aria-selected="false">Preguntas</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="historico-tab" data-bs-toggle="tab" data-bs-target="#historico-tab-pane" type="button" role="tab" aria-controls="historico-tab-pane" aria-selected="false">Histórico</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="reporte-final-tab-pane" role="tabpanel" aria-labelledby="reporte-final-tab" tabindex="0">
+                                    <div class="card bg-white border-0 rounded-3 mb-4">
+                                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                                            <h3 class="text-primary my-2 fs-4 fw-semibold">Reporte Final del Candidato</h3>
+                                        </div>
+                                        <div class="card-body p-4">
+                                            <div class="row">
+                                                <!-- Columna 6: Elevator Pitch / Video del Candidato -->
+                                                <div class="col-md-6 mb-4">
+                                                    <div class="card bg-white border border-1 rounded-3 h-100">
+                                                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                                                            <h5 class="text-primary my-2 fs-5 fw-semibold">Elevator Pitch / Video del Candidato</h5>
+                                                        </div>
+                                                        <div class="card-body p-4">
+                                                            {% if candidato.video_perfil %}
+                                                                <div class="text-center">
+                                                                    <button type="button" class="btn btn-primary bg-primary bg-opacity-10 text-primary py-3 px-5 fw-semibold border-0 d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#videoModal">
+                                                                        <i class="material-symbols-outlined" style="font-size: 1.5rem;">play_circle</i>
+                                                                        <span>Ver Video del Candidato</span>
+                                                                    </button>
+                                                                    <p class="text-muted small mt-2 mb-0">{{ candidato.video_perfil.name }}</p>
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="text-center py-5">
+                                                                    <i class="material-symbols-outlined text-muted" style="font-size: 4rem;">videocam_off</i>
+                                                                    <p class="text-muted mt-3">No hay video de perfil disponible</p>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Columna 6: Espacio para Imagen -->
+                                                <div class="col-md-6 mb-4">
+                                                    <div class="card bg-white border border-1 rounded-3 h-100">
+                                                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                                                            <h5 class="text-primary my-2 fs-5 fw-semibold">Imagen</h5>
+                                                        </div>
+                                                        <div class="card-body p-4">
+                                                            <!-- Imagen basada en el promedio de la última entrevista -->
+                                                            <div class="text-center" id="imagen-promedio-container">
+                                                                <img id="imagen-promedio" src="{% static 'media/avatars/0.png' %}" alt="Imagen promedio" class="img-fluid rounded" style="max-width: 100%; height: auto; max-height: 400px;">
+                                                                <p class="text-muted mt-3 mb-0" id="texto-promedio">Cargando promedio...</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12 mb-4">
+                                                        <div class="card bg-white border border-1 rounded-3 h-100">
+                                                            <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                                                                <h5 class="text-primary my-2 fs-5 fw-semibold">Resultado entrevista</h5>
+                                                            </div>
+                                                            <div class="card-body p-4">
+                                                                {% if entrevista %}
+                                                                    {% for e in entrevista %}
+                                                                        {% if e.resultado_entrevista %}
+                                                                            <div class="mb-4" data-entrevista-id="{{e.id}}">
+                                                                                <h6 class="text-primary fw-semibold mb-3">
+                                                                                    <i class="material-symbols-outlined me-2">assessment</i>
+                                                                                    Entrevista ID: {{e.id}} - {{e.fecha_entrevista}}
+                                                                                </h6>
+                                                                                <div class="row g-3" id="items-entrevista-{{e.id}}">
+                                                                                    {% for item_nombre, item_data in e.resultado_entrevista.items %}
+                                                                                        {% if item_nombre != 'id_usuario' and item_nombre != 'fecha_entrevista' %}
+                                                                                            {% with calificacion=item_data.calificacion|default:0 %}
+                                                                                                <div class="col-md-2 item-calificacion" data-calificacion="{{ calificacion }}" data-item-nombre="{{ item_nombre }}">
+                                                                                                    <div class="card bg-primary bg-opacity-10 border border-primary rounded-3 h-100 text-center p-3">
+                                                                                                        <h6 class="fw-semibold text-dark mb-2" style="font-size: 0.85rem; min-height: 3rem;">
+                                                                                                            {{ item_nombre }}
+                                                                                                        </h6>
+                                                                                                        <div class="mt-2">
+                                                                                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary fs-5 px-3 py-2 fw-semibold">
+                                                                                                                {{ calificacion }}/10
+                                                                                                            </span>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            {% endwith %}
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                    <!-- Columna para el promedio -->
+                                                                                    <div class="col-md-2 item-promedio" data-entrevista-promedio="{{e.id}}">
+                                                                                        <div class="card bg-primary bg-opacity-10 border border-primary rounded-3 h-100 text-center p-3">
+                                                                                            <h6 class="fw-semibold text-primary mb-2" style="font-size: 0.9rem;">
+                                                                                                <i class="material-symbols-outlined me-1">calculate</i>
+                                                                                                Promedio
+                                                                                            </h6>
+                                                                                            <div class="mt-2">
+                                                                                                <span class="badge bg-primary text-white fs-5 px-3 py-2 fw-semibold" id="promedio-{{e.id}}">
+                                                                                                    -
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                {% else %}
+                                                                    <div class="text-center py-4">
+                                                                        <i class="material-symbols-outlined text-muted" style="font-size: 3rem;">assessment</i>
+                                                                        <p class="text-muted mt-3 mb-0">No hay entrevistas registradas.</p>
+                                                                    </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="match-tab-pane" role="tabpanel" aria-labelledby="match-tab" tabindex="0">
+                                    {% include "admin/vacancy/partials/match_candidate_vacancy.html" %}
+                                </div>
+                                <div class="tab-pane fade" id="info-vacante-tab-pane" role="tabpanel" aria-labelledby="info-vacante-tab" tabindex="0">
+                                    {% include "admin/vacancy/common_template/info_vacancy.html" %}
+                                </div>
+                                <div class="tab-pane fade" id="candidato-tab-pane" role="tabpanel" aria-labelledby="candidato-tab" tabindex="0">
+                                    <div style="max-width: 1200px; width: 100%; margin-left: auto; margin-right: auto;">
+                                        <!-- Contenido Principal del Dashboard -->
+                                        <main style="display: flex; flex-wrap: wrap; margin-left: -1rem; margin-right: -1rem;">
+
+                                            <!-- Columna Izquierda -->
+                                            <div style="width: 100%; max-width: 100%; flex: 1 0 340px; padding: 1rem; box-sizing: border-box; margin-bottom: 1.5rem;">
+                                                
+                                                <!-- Tarjeta de Perfil -->
+                                                <div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); height: 100%; display: flex; flex-direction: column;">
+                                                    <div style="padding: 2rem; text-align: center;">
+                                                        {% if candidato.imagen_perfil %}
+                                                            <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2 wh-75" style="width: 100px; height: 100px; border-radius: 50%; margin-left: auto; margin-right: auto; margin-bottom: 1rem; border: 4px solid #dee2e6; alt="{{ candidato.imagen_perfil.url }}">
+                                                        {% else %}
+                                                            <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2 wh-75" style="width: 100px; height: 100px; border-radius: 50%; margin-left: auto; margin-right: auto; margin-bottom: 1rem; border: 4px solid #dee2e6; alt="user">
+                                                        {% endif %}
+                                                        <h2 style="font-size: 1.5rem; font-weight: 600; color: #212529; margin: 0;">{{ candidato.nombre_completo }}</h2>
+                                                        <p style="color: #6c757d; margin: 0.25rem 0 1.5rem 0;">Candidato</p>
+                                                        {% if info_detalle_candidato.hoja_de_vida %}
+                                                        <a href="{{ info_detalle_candidato.hoja_de_vida }}" download style="background-color: #b10022; color: #ffffff; font-weight: 500; padding: 0.6rem 1.2rem; border-radius: 0.5rem; display: inline-flex; align-items: center; border: none; cursor: pointer; font-size: 0.9rem; text-decoration: none;">
+                                                            <span class="material-symbols-outlined text-white" style="margin-right: 0.75rem;">download</span>
+                                                            Descargar Hoja de Vida
+                                                        </a>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid #dee2e6;">
+                                                        <h3 style="font-size: 1rem; font-weight: 600; color: #212529; margin-top: 1.5rem; margin-bottom: 1rem;">Información de Contacto</h3>
+                                                        <div style="margin-bottom: 1rem;">
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">badge</span>DOCUMENTO</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.numero_documento }}</span>
+                                                        </div>
+                                                        
+                                                        <div style="margin-bottom: 1rem;">
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">email</span>EMAIL</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.email }}</span>
+                                                        </div>
+                                                        
+                                                        <div style="margin-bottom: 1rem;">
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">phone</span>TELÉFONO</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.telefono }}</span>
+                                                        </div>
+                                                        <br>
+                                                        <div>
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">wc</span>GENERO</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.sexo }}</span>
+                                                        </div>
+                                                        <br>
+                                                        <div>
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">calendar_month</span>FECHA NACIMIENTO</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.fecha_nacimiento }}</span>
+                                                        </div>
+                                                        <br>
+                                                        <div>
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">percent</span>PERFIL COMPLETADO</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{ info_detalle_candidato.porcentaje }}%</span>
+                                                        </div>
+                                                        <br>
+                                                        <div>
+                                                            <strong style="display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><span class="material-symbols-outlined text-primary me-2">location_on</span>UBICACIÓN</strong>
+                                                            <span style="color: #212529; padding-left: 1.85rem;">{{info_detalle_candidato.ciudad }}, Colombia</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Columna Derecha -->
+                                            <div style="width: 100%; max-width: 100%; flex: 2 1 500px; padding: 1rem; box-sizing: border-box;">
+                                                <div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); margin-bottom: 1.5rem; padding: 1.5rem;">
+                                                    <h3 style="margin: 0 0 1.5rem 0; font-size: 1.25rem; font-weight: 600; color: #212529; display: flex; align-items: center;">
+                                                        <span class="material-symbols-outlined text-primary" style="margin-right: 0.75rem;">school</span>
+                                                        Formación Académica
+                                                    </h3>
+                                                    <div>
+                                                        {% for edu in info_detalle_candidato.educacion %}
+                                                        <!-- Primer elemento de la línea de tiempo -->
+                                                        <div style="position: relative; padding-left: 2rem; padding-bottom: 2rem;">
+                                                            <div style="position: absolute; left: 0; top: 5px; height: 100%; width: 2px; background-color: #dee2e6;"></div>
+                                                            <div style="position: absolute; left: -7px; top: 5px; width: 14px; height: 14px; background-color: #b10022; border-radius: 50%; border: 2px solid #ffffff;"></div>
+                                                            <p style="font-weight: 600; color: #212529; margin:0;">{{ edu.institucion }}</p>
+                                                            <p style="color: #6c757d; margin:0;">{{ edu.titulo }} ({{ edu.tipo_estudio }})</p>
+                                                            <p style="color: #6c757d; margin:0; font-size: 0.9rem;">{{ edu.fecha_inicial }} - {{ edu.fecha_final }}</p>
+                                                        </div>
+                                                        {% empty %}
+                                                            <p>No se registran estudios.</p>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+
+                                                <div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); margin-bottom: 1.5rem; padding: 1.5rem;">
+                                                    <h3 style="margin: 0 0 1.5rem 0; font-size: 1.25rem; font-weight: 600; color: #212529; display: flex; align-items: center;">
+                                                        <span class="material-symbols-outlined text-primary" style="margin-right: 0.75rem;">work</span>
+                                                        Experiencia Laboral
+                                                    </h3>
+                                                    <div>
+                                                        {% for exp in info_detalle_candidato.experiencia %}
+                                                        <!-- Primer elemento de la línea de tiempo -->
+                                                        <div style="position: relative; padding-left: 2rem; padding-bottom: 2rem;">
+                                                            <div style="position: absolute; left: 0; top: 5px; height: 100%; width: 2px; background-color: #dee2e6;"></div>
+                                                            <div style="position: absolute; left: -7px; top: 5px; width: 14px; height: 14px; background-color: #b10022; border-radius: 50%; border: 2px solid #ffffff;"></div>
+                                                            <p style="font-weight: 600; color: #212529; margin:0;"> {{ exp.entidad }} ({{ exp.sector }}).</p>
+                                                            <p style="color: #6c757d; margin:0;">{{ exp.cargo }}</p>
+                                                            <p style="color: #6c757d; margin:0;">{{ exp.fecha_inicial }} a {{ exp.fecha_final }}</p>
+                                                        </div>
+                                                        {% empty %}
+                                                            <p>No se registran experiencias laborales.</p>
+                                                        {% endfor %}
+                                                        
+                                                    </div>
+                                                </div>
+
+                                                <div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); padding: 1.5rem;">
+                                                    <h3 style="margin: 0 0 1rem 0; font-size: 1.25rem; font-weight: 600; color: #212529; display: flex; align-items: center;">
+                                                        <span class="material-symbols-outlined text-primary" style="margin-right: 0.75rem;">star_outline</span>
+                                                        Soft Skills
+                                                    </h3>
+                                                    <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                                                        {% for skill in info_detalle_candidato.skills %}
+                                                            <span class="bg-primary bg-opacity-10 text-primary" style="padding: 0.4em 0.8em; font-size: 0.9em; font-weight: 500; border-radius: 0.5rem;">{{ skill.nombre }}</span>
+                                                        {% empty %}
+                                                            <li class="list-group-item">No se registran habilidades.</li>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </main>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="entrevista-tab-pane" role="tabpanel" aria-labelledby="entrevista-tab" tabindex="0">
+                                    <div class="default-table-area all-projects">
+                                        <div class="table-responsive">
+                                            <table class="table align-middle text-center" id="myTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col" class="text-center">ID</th>
+                                                        <th scope="col" class="text-center">FECHA ASIGNACIÓN</th>
+                                                        <th scope="col" class="text-center">ENTREVISTADOR</th>
+                                                        <th scope="col" class="text-center">FECHA</th>
+                                                        <th scope="col" class="text-center">HORA</th>
+                                                        <th scope="col" class="text-center">TIPO ENTREVISTA</th>
+                                                        <th class="text-center">ESTADO</th>
+                                                        <th scope="col" class="text-center">ACCIONES</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for e in entrevista %}
+                                                    <tr>
+                                                        <td class="text-body text-center">{{e.id}}</td>
+                                                        <td class="text-body">{{e.fecha_asignacion}}</td>
+                                                        <td class="text-body">{{e.usuario_asignado.primer_nombre}} {{e.usuario_asignado.primer_apellido}}</td>
+                                                        <td class="text-body">{{e.fecha_entrevista}}</td>
+                                                        <td class="text-body">{{e.hora_entrevista}}</td>
+                                                        <td class="text-body">{{e.get_tipo_entrevista_display}}</td>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-opacity-10 bg-{{e.obtener_nombre_estado_color.color}} py-1 px-2 text-{{e.obtener_nombre_estado_color.color}} rounded-1 fw-medium fs-12">{{e.obtener_nombre_estado_color.estado}}</span>
+                                                        </td>
+                                                        <td>
+                                                            
+                                                            <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                                                <a href="{% url 'entrevistas:entrevistar_gestionar_cliente' e.id  %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                                    <i class="material-symbols-outlined fs-16 text-danger">edit_document</i>
+                                                                </a>
+                                                            </div>
+                                                            
+                                                        </td> 
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="questions-tab-pane" role="tabpanel" aria-labelledby="questions-tab" tabindex="0">
+                                    <div class="row">
+                                        {% if reclutado.preguntas_reclutamiento %}
+                                            <div class="col-12">
+                                                <div class="row justify-content-center">
+                                                    <div class="col-md-12">
+                                                        <div class="card card bg-white border-1 rounded-3 mb-4">
+                                                            <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                                                                <p class="text-primary my-2 fs-4 fw-semibold">Respuestas requeridas de la vacante</p>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                {% for pregunta, respuesta in reclutado.preguntas_reclutamiento.items %}
+                                                                    <div class="row mb-3 align-items-center">
+                                                                        <div class="col-md-9 text-start pe-3">
+                                                                            <strong class="d-block mb-0 fs-6 text-dark"><b class="text-danger">{{ forloop.counter }} - </b> {{ pregunta|capfirst }}</strong>
+                                                                        </div>
+                                                                        <div class="col-md-3 text-end">
+                                                                            {% if respuesta|lower == "no" %}
+                                                                                <span class="badge fs-6 py-2 px-3 bg-secondary bg-opacity-10 text-secondary" style="font-weight: 500;">
+                                                                                    {{ respuesta|default:"Sin respuesta" }}
+                                                                                </span>
+                                                                            {% else %}
+                                                                                <span class="badge fs-6 py-2 px-3 bg-primary bg-opacity-10 text-primary" style="font-weight: 500;">
+                                                                                    {{ respuesta|default:"Sin respuesta" }}
+                                                                                </span>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    </div>
+                                                                    {% if not forloop.last %}
+                                                                        <hr>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="col-12 text-center">
+                                                <h5 class="text-muted">No hay preguntas de reclutamiento registradas.</h5>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="historico-tab-pane" role="tabpanel" aria-labelledby="historico-tab" tabindex="0">
+                                    <div class="accordion-body">
+                                        <div class="card bg-white border-0 rounded-3 mb-4">
+                                            <div class="card-body p-4">
+                                                <div class="mb-4">
+                                                    <h3 class="mb-0 text-primary">Historial de Aplicación</h3>
+                                                </div>
+                                                <div class="timeline-wrap">
+                                                    {% for h in historial %}
+                                                    <div class="timeline-item-2 mb-5">
+                                                        <div class="text p-4 rounded-3 shadow-sm border-start border-4 {% if h.estado == 'Entrevista Aprobada' %}border-success bg-white{% elif h.estado == 'Entrevista Programada' %}border-warning bg-white{% else %}border-secondary bg-white{% endif %}">
+                                                            <h5 class="fw-bold mb-2 text-dark">
+                                                                <span class="material-symbols-outlined me-1 {% if h.estado == 'Entrevista Aprobada' %}text-success{% elif h.estado == 'Entrevista Programada' %}text-warning{% else %}text-muted{% endif %}">event</span>
+                                                                Estado: {{ h.estado }}
+                                                            </h5>
+                                                            <p class="mb-2 text-secondary">{{ h.descripcion|default:"Sin descripción disponible." }}</p>
+                                                    
+                                                            <ul class="ps-0 mb-3 list-unstyled d-flex align-items-center flex-wrap small">
+                                                                <li class="d-flex align-items-center me-4">
+                                                                    <span class="material-symbols-outlined me-2 text-primary">person</span>
+                                                                    <strong>Usuario:</strong> {{ h.usuario }}
+                                                                </li>
+                                                                <li class="d-flex align-items-center me-4">
+                                                                    <span class="material-symbols-outlined me-2 text-primary">work</span>
+                                                                    <strong>Vacante:</strong> {{ h.vacante }}
+                                                                </li>
+                                                            </ul>
+                                                    
+                                                            <span class="d-block text-muted">
+                                                                <span class="fw-semibold">ID Aplicación:</span> {{ h.aplicacion_id }}
+                                                            </span>
+                                                        </div>
+                                                    
+                                                        <div class="icon {{ forloop.counter|add:"1" }}">
+                                                            <div></div>
+                                                        </div>
+                                                    
+                                                        <div class="time">
+                                                            <span class="badge bg-primary text-white fs-6">
+                                                                {{ h.fecha|date:"H:i A, d M Y" }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para el Video del Candidato -->
+{% if candidato.video_perfil %}
+<div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary bg-opacity-10 border-0">
+                <h5 class="modal-title text-primary fw-semibold" id="videoModalLabel">Video del Candidato</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="ratio ratio-16x9">
+                    <video controls style="width: 100%; height: 100%;">
+                        <source src="{{ candidato.video_perfil.url }}" type="video/mp4">
+                        Tu navegador no soporta el elemento de video.
+                    </video>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block js %} 
+<script>
+    // Initialize select2 for specific fields
+    initializeSelect2('#id_tipo_entrevista');
+    initializeSelect2('#id_entrevistador');
+    
+    // Variable para evitar ordenar múltiples veces
+    var itemsOrdenados = false;
+    
+    // Ordenar items de entrevista por número
+    function ordenarItemsEntrevista() {
+        if (itemsOrdenados) {
+            return; // Ya se ordenaron, no volver a ordenar
+        }
+        
+        document.querySelectorAll('[id^="items-entrevista-"]').forEach(function(row) {
+            // Verificar si ya tiene el atributo data-ordenado
+            if (row.hasAttribute('data-ordenado')) {
+                return; // Ya está ordenado
+            }
+            
+            var items = Array.from(row.querySelectorAll('.item-calificacion'));
+            var promedio = row.querySelector('.item-promedio');
+            
+            if (items.length === 0) {
+                return; // No hay items para ordenar
+            }
+            
+            // Ordenar items por el número al inicio del nombre
+            items.sort(function(a, b) {
+                var nombreA = a.getAttribute('data-item-nombre') || '';
+                var nombreB = b.getAttribute('data-item-nombre') || '';
+                
+                // Extraer el número al inicio (ej: "1. IDENTIDAD..." -> 1)
+                var matchA = nombreA.match(/^(\d+)/);
+                var matchB = nombreB.match(/^(\d+)/);
+                var numA = matchA ? parseInt(matchA[1]) : 999;
+                var numB = matchB ? parseInt(matchB[1]) : 999;
+                
+                return numA - numB;
+            });
+            
+            // Guardar el promedio antes de limpiar
+            var promedioClone = promedio ? promedio.cloneNode(true) : null;
+            
+            // Limpiar el row
+            row.innerHTML = '';
+            
+            // Agregar items ordenados
+            items.forEach(function(item) {
+                row.appendChild(item);
+            });
+            
+            // Agregar el promedio al final
+            if (promedioClone) {
+                row.appendChild(promedioClone);
+            }
+            
+            // Marcar como ordenado
+            row.setAttribute('data-ordenado', 'true');
+        });
+        
+        itemsOrdenados = true;
+    }
+    
+    // Calcular promedios de las entrevistas
+    function calcularPromediosEntrevistas() {
+        var todasLasEntrevistas = [];
+        
+        document.querySelectorAll('[data-entrevista-id]').forEach(function(entrevistaDiv) {
+            var entrevistaId = entrevistaDiv.getAttribute('data-entrevista-id');
+            var items = entrevistaDiv.querySelectorAll('.item-calificacion');
+            var total = 0;
+            var count = 0;
+            
+            items.forEach(function(item) {
+                var calificacion = parseFloat(item.getAttribute('data-calificacion')) || 0;
+                total += calificacion;
+                count++;
+            });
+            
+            if (count > 0) {
+                var promedio = parseFloat((total / count).toFixed(1));
+                var promedioElement = document.getElementById('promedio-' + entrevistaId);
+                if (promedioElement) {
+                    promedioElement.textContent = promedio + '/10';
+                }
+                
+                // Guardar información de la entrevista para encontrar la última
+                todasLasEntrevistas.push({
+                    id: parseInt(entrevistaId),
+                    promedio: promedio
+                });
+            }
+        });
+        
+        // Encontrar la última entrevista (mayor ID) y mostrar su imagen
+        if (todasLasEntrevistas.length > 0) {
+            // Ordenar por ID descendente para obtener la última (mayor ID)
+            todasLasEntrevistas.sort(function(a, b) {
+                return b.id - a.id;
+            });
+            
+            var ultimaEntrevista = todasLasEntrevistas[0];
+            mostrarImagenPromedio(ultimaEntrevista.promedio, ultimaEntrevista.id);
+        } else {
+            mostrarImagenPromedio(0, 0);
+        }
+    }
+    
+    // Variable para evitar cargar la imagen múltiples veces
+    var imagenCargada = false;
+    
+    // Función para mostrar la imagen según el promedio de la última entrevista
+    function mostrarImagenPromedio(promedio, entrevistaId) {
+        var imagenElement = document.getElementById('imagen-promedio');
+        var textoElement = document.getElementById('texto-promedio');
+        
+        if (!imagenElement) {
+            return; // El elemento no existe aún
+        }
+        
+        // Evitar cargar múltiples veces si ya se cargó con el mismo promedio
+        var dataKey = 'promedio-' + promedio + '-id-' + entrevistaId;
+        if (imagenElement.getAttribute('data-loaded') === dataKey) {
+            return; // Ya se cargó esta imagen
+        }
+        
+        var nombreImagen = '0.png';
+        
+        // Determinar qué imagen mostrar según el promedio
+        if (promedio < 1) {
+            nombreImagen = '0.png';
+        } else if (promedio > 9) {
+            nombreImagen = '10.png';
+        } else if (promedio > 7) {
+            nombreImagen = '8.png';
+        } else if (promedio > 5) {
+            nombreImagen = '6.png';
+        } else if (promedio > 3) {
+            nombreImagen = '4.png';
+        } else if (promedio > 2) {
+            nombreImagen = '2.png';
+        } else {
+            // promedio >= 1 y <= 2
+            nombreImagen = '0.png';
+        }
+        
+        var rutaImagen = '{% static "media/avatars/" %}' + nombreImagen;
+        
+        // Remover el listener anterior si existe para evitar bucles
+        var nuevaImagen = new Image();
+        nuevaImagen.onload = function() {
+            imagenElement.src = rutaImagen;
+            imagenElement.alt = 'Promedio Entrevista ID ' + entrevistaId + ': ' + promedio + '/10';
+            imagenElement.setAttribute('data-loaded', dataKey);
+        };
+        nuevaImagen.onerror = function() {
+            // Si la imagen no existe, mostrar un placeholder solo una vez
+            if (!imagenElement.hasAttribute('data-error-shown')) {
+                imagenElement.src = '{% static "media/avatars/0.png" %}';
+                imagenElement.alt = 'Imagen no encontrada';
+                imagenElement.setAttribute('data-error-shown', 'true');
+            }
+        };
+        nuevaImagen.src = rutaImagen;
+        
+        if (textoElement) {
+            if (entrevistaId > 0) {
+                textoElement.textContent = 'Entrevista ID: ' + entrevistaId + ' - Promedio: ' + promedio + '/10';
+            } else {
+                textoElement.textContent = 'No hay entrevistas registradas';
+            }
+        }
+    }
+    
+    // Variable para controlar si ya se inicializó
+    var inicializado = false;
+    
+    // Ordenar y calcular promedios cuando el DOM esté listo
+    function inicializarEntrevistas() {
+        // Evitar ejecutar múltiples veces
+        if (inicializado) {
+            return;
+        }
+        
+        try {
+            ordenarItemsEntrevista();
+            calcularPromediosEntrevistas();
+            inicializado = true;
+        } catch (e) {
+            console.error('Error al inicializar entrevistas:', e);
+        }
+    }
+    
+    // Función para recalcular solo cuando se active el tab
+    function recalcularAlActivarTab() {
+        // Solo recalcular promedios, no reordenar
+        calcularPromediosEntrevistas();
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(inicializarEntrevistas, 100);
+        });
+    } else {
+        setTimeout(inicializarEntrevistas, 100);
+    }
+    
+    // Recalcular cuando se active el tab de reporte final (solo una vez)
+    var reporteFinalTab = document.querySelector('#reporte-final-tab');
+    if (reporteFinalTab) {
+        var tabListenerAdded = false;
+        reporteFinalTab.addEventListener('shown.bs.tab', function() {
+            if (!tabListenerAdded) {
+                recalcularAlActivarTab();
+                tabListenerAdded = true;
+            }
+        });
+    }
+    
+    // Función para renderizar gráficos cuando se active el tab
+    var chartsRendered = false;
+    var reporteFinalTab = document.querySelector('#reporte-final-tab');
+    if (reporteFinalTab) {
+        reporteFinalTab.addEventListener('shown.bs.tab', function() {
+            if (!chartsRendered) {
+                setTimeout(function() {
+                    // Forzar re-renderizado de gráficos
+                    var chartElements = document.querySelectorAll('[id^="chart-donut-"]');
+                    chartElements.forEach(function(el) {
+                        if (el && !el.hasAttribute('data-rendered')) {
+                            var chartId = el.id;
+                            // Buscar y ejecutar la función de renderizado correspondiente
+                            var scriptTag = document.querySelector('script');
+                            if (scriptTag) {
+                                // Los gráficos se renderizarán automáticamente cuando el tab esté visible
+                            }
+                        }
+                    });
+                    chartsRendered = true;
+                }, 100);
+            }
+        });
+    }
+    
+    // Crear gráficos tipo dona para los resultados de las entrevistas
+    {% if entrevista %}
+        {% for e in entrevista %}
+            {% if e.resultado_entrevista %}
+                {% for item_nombre, item_data in e.resultado_entrevista.items %}
+                    {% if item_nombre != 'id_usuario' and item_nombre != 'fecha_entrevista' %}
+                        {% with chart_id=e.id|stringformat:"s"|add:"-"|add:forloop.counter0|stringformat:"s" %}
+                        (function() {
+                            var calificacion = {{ item_data.calificacion|default:0 }};
+                            var color;
+                            
+                            // Determinar color según la calificación
+                            if (calificacion >= 80) {
+                                color = "#28a745"; // Verde
+                            } else if (calificacion >= 60) {
+                                color = "#ffc107"; // Amarillo
+                            } else {
+                                color = "#dc3545"; // Rojo
+                            }
+                            
+                            var options = {
+                                series: [calificacion],
+                                chart: {
+                                    type: 'radialBar',
+                                    height: 220,
+                                    width: '100%',
+                                    sparkline: {
+                                        enabled: false
+                                    }
+                                },
+                                plotOptions: {
+                                    radialBar: {
+                                        startAngle: -90,
+                                        endAngle: 90,
+                                        hollow: {
+                                            size: '60%',
+                                            background: 'transparent'
+                                        },
+                                        track: {
+                                            background: "#e7e7e7",
+                                            strokeWidth: '100%',
+                                            margin: 5
+                                        },
+                                        dataLabels: {
+                                            name: {
+                                                show: false
+                                            },
+                                            value: {
+                                                offsetY: 0,
+                                                fontSize: '32px',
+                                                fontWeight: '700',
+                                                color: color,
+                                                formatter: function(val) {
+                                                    return Math.round(val) + "%";
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                fill: {
+                                    type: 'gradient',
+                                    gradient: {
+                                        shade: 'light',
+                                        shadeIntensity: 0.4,
+                                        inverseColors: false,
+                                        opacityFrom: 1,
+                                        opacityTo: 1,
+                                        stops: [0, 50, 53, 91]
+                                    }
+                                },
+                                colors: [color],
+                                labels: ['Calificación'],
+                                stroke: {
+                                    lineCap: 'round'
+                                }
+                            };
+                            
+                            var chartId = "chart-donut-{{chart_id}}";
+                            
+                            function renderChart() {
+                                var chartElement = document.querySelector("#" + chartId);
+                                if (chartElement) {
+                                    // Verificar si el elemento está en el DOM y tiene dimensiones
+                                    var rect = chartElement.getBoundingClientRect();
+                                    if (rect.width > 0 && rect.height > 0) {
+                                        // Verificar si ya tiene un gráfico renderizado
+                                        if (!chartElement.hasAttribute('data-rendered')) {
+                                            try {
+                                                var chart = new ApexCharts(chartElement, options);
+                                                chart.render();
+                                                chartElement.setAttribute('data-rendered', 'true');
+                                            } catch(e) {
+                                                console.error('Error rendering chart:', e);
+                                            }
+                                        }
+                                    } else {
+                                        // Si el elemento aún no tiene dimensiones (tab no activo), intentar de nuevo
+                                        setTimeout(renderChart, 200);
+                                    }
+                                }
+                            }
+                            
+                            // Esperar a que el DOM esté completamente cargado
+                            if (document.readyState === 'loading') {
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    setTimeout(renderChart, 100);
+                                });
+                            } else {
+                                setTimeout(renderChart, 100);
+                            }
+                            
+                            // También intentar renderizar cuando se active el tab
+                            var reporteFinalTab = document.querySelector('#reporte-final-tab');
+                            if (reporteFinalTab) {
+                                reporteFinalTab.addEventListener('shown.bs.tab', function() {
+                                    setTimeout(renderChart, 150);
+                                });
+                            }
+                        })();
+                        {% endwith %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</script>
+{% endblock js %}
