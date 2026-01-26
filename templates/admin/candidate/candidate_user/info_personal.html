@@ -181,7 +181,7 @@ Información Básica | Talent Tray
 									<h6 class="mb-0 pe-3 text-primary fw-bold">DOCUMENTOS</h6>
 									<hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
 								</div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     {{ form.imagen_perfil.label_tag }} {{ form.imagen_perfil }}
                                     {% if form.imagen_perfil.errors %}
                                         <div class="text-danger small">{{ form.imagen_perfil.errors }}</div>
@@ -192,7 +192,7 @@ Información Básica | Talent Tray
                                         </div>
                                     {% endif %}
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     {{ form.hoja_de_vida.label_tag }} {{ form.hoja_de_vida }}
                                     {% if form.hoja_de_vida.errors %}
                                         <div class="text-danger small">{{ form.hoja_de_vida.errors }}</div>
@@ -200,6 +200,28 @@ Información Básica | Talent Tray
                                     {% if form.hoja_de_vida.value %}
                                         <div class="mt-2">
                                             <span class="text-secondary small">Archivo actual: {{ form.hoja_de_vida.value }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    {{ form.video_perfil.label_tag }} {{ form.video_perfil }}
+                                    {% if form.video_perfil.help_text %}
+                                        <small class="form-text text-muted">{{ form.video_perfil.help_text }}</small>
+                                    {% endif %}
+                                    {% if form.video_perfil.errors %}
+                                        <div class="text-danger small">{{ form.video_perfil.errors }}</div>
+                                    {% endif %}
+                                    {% if form.video_perfil.value %}
+                                        <div class="mt-2">
+                                            <span class="text-secondary small">Video actual: {{ form.video_perfil.value }}</span>
+                                            {% if candidato.video_perfil %}
+                                                <div class="mt-2">
+                                                    <video width="100%" controls style="max-width: 300px;">
+                                                        <source src="{{ candidato.video_perfil.url }}" type="video/mp4">
+                                                        Tu navegador no soporta el elemento de video.
+                                                    </video>
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     {% endif %}
                                 </div>

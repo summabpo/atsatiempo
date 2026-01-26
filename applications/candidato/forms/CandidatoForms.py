@@ -459,6 +459,15 @@ class CandidateForm(forms.Form):
             'class': 'form-control form-control-solid'
         })
     )
+    video_perfil = forms.FileField(
+        label='VIDEO DE PERFIL',
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control form-control-solid',
+            'accept': 'video/*'  # Acepta solo archivos de video
+        }),
+        help_text='Sube un video desde tu dispositivo móvil o web (máximo 50MB, formatos: MP4, MOV, AVI)'
+    )
 
     perfil = forms.CharField(
         label='Mi perfil',
@@ -590,8 +599,9 @@ class CandidateForm(forms.Form):
                 Div(
                     HTML("<h4 class='mb-3 text-primary'>Documentos</h4>"),
                     
-                    Div('imagen_perfil', css_class='col-md-6'),
-                    Div('hoja_de_vida', css_class='col-md-6'),
+                    Div('imagen_perfil', css_class='col-md-4'),
+                    Div('hoja_de_vida', css_class='col-md-4'),
+                    Div('video_perfil', css_class='col-md-4'),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -623,6 +633,7 @@ class CandidateForm(forms.Form):
         direccion = cleaned_data.get('direccion')
         imagen_perfil = cleaned_data.get('imagen_perfil')
         hoja_de_vida = cleaned_data.get('hoja_de_vida')
+        video_perfil = cleaned_data.get('video_perfil')
         perfil = cleaned_data.get('perfil')
         motivadores = cleaned_data.get('motivadores')
         
@@ -759,6 +770,26 @@ class CandidateForm(forms.Form):
             if not tiene_hoja_de_vida:
                 self.add_error('hoja_de_vida', 'La hoja de vida es un campo obligatorio.')
 
+        # validación video de perfil
+        tamanio_maximo_video = 50 * 1024 * 1024  # 50 MB
+        listado_extensiones_video = ['.mp4', '.mov', '.avi', '.webm', '.mkv']
+
+        if video_perfil:
+            if video_perfil.size > tamanio_maximo_video:
+                self.add_error('video_perfil', 'El tamaño del video supera el tamaño permitido (máximo 50MB).')
+
+            extension_video = os.path.splitext(video_perfil.name)[1].lower()
+            if extension_video not in listado_extensiones_video:
+                self.add_error('video_perfil', 'El archivo de video no es válido. Formatos permitidos: MP4, MOV, AVI, WEBM, MKV.')
+
+            # Verificar duplicados excluyendo el candidato actual si existe
+            candidato = getattr(self, 'candidato', None)
+            if candidato:
+                if Can101Candidato.objects.filter(video_perfil=video_perfil.name).exclude(id=candidato.id).exists():
+                    self.add_error('video_perfil', 'Ya existe un video con este nombre en otro registro. Por favor renombre el archivo y vuelva a intentarlo.')
+            else:
+                if Can101Candidato.objects.filter(video_perfil=video_perfil.name).exists():
+                    self.add_error('video_perfil', 'Ya existe un video con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
 
         # validación motivadores
         # motivadores puede venir como QuerySet, lista de objetos, o lista de dicts (cuando se inicializa desde JSON)

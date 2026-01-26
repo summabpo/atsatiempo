@@ -49,6 +49,8 @@ def candidate_info(request):
                 candidato.imagen_perfil = form.cleaned_data['imagen_perfil']
             if form.cleaned_data['hoja_de_vida']:
                 candidato.hoja_de_vida = form.cleaned_data['hoja_de_vida']
+            if form.cleaned_data['video_perfil']:
+                candidato.video_perfil = form.cleaned_data['video_perfil']
             candidato.email = form.cleaned_data['email']
             candidato.perfil = form.cleaned_data['perfil']
             
@@ -120,6 +122,7 @@ def candidate_info(request):
             'aspiracion_salarial': candidato.aspiracion_salarial,
             'imagen_perfil': candidato.imagen_perfil,
             'hoja_de_vida': candidato.hoja_de_vida,
+            'video_perfil': candidato.video_perfil,
         }
         
         # Distribuir los datos de fit_cultural en los campos correspondientes por grupo
@@ -138,6 +141,7 @@ def candidate_info(request):
 
     context = {
         'form': form,
+        'candidato': candidato,  # Agregar el candidato al contexto para mostrar el video
     }
 
     return render(request, 'admin/candidate/candidate_user/info_personal.html', context)

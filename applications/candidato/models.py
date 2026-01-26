@@ -17,12 +17,14 @@ class Can101Candidato(models.Model):
     skills = models.ManyToManyField('Can104Skill', through='Can101CandidatoSkill', related_name='candidatos_skill')
     imagen_perfil = models.ImageField(upload_to='media_uploads/media_uploads/candidato/', blank=True, null=True, verbose_name="Imagen de Perfil")
     hoja_de_vida = models.FileField(upload_to='media_uploads/media_uploads/hoja_de_vida/', blank=True, null=True, verbose_name="Hoja de Vida")
+    video_perfil = models.FileField(upload_to='media_uploads/media_uploads/videos_candidato/', blank=True, null=True, verbose_name="Video de Perfil", help_text="Sube un video desde tu dispositivo móvil o web")
     numero_documento = models.CharField(max_length=20, blank=True, null=True)
     direccion = models.CharField(max_length=255, blank=True, null=True, verbose_name="Dirección")
     perfil = models.TextField(blank=True, null=True, verbose_name="Perfil del Candidato")
     aspiracion_salarial = models.IntegerField(blank=True, null=True, verbose_name="Aspiración Salarial")
     fit_cultural = models.JSONField(blank=True, null=True, verbose_name="Fit Cultural", help_text="Fit cultural en formato JSON")
     motivadores = models.JSONField(blank=True, null=True, verbose_name="Motivadores", help_text="Motivadores en formato JSON")
+    
     
     def __str__(self):
         return self.email

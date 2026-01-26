@@ -1,11 +1,14 @@
 from django.urls import path
-from applications.reclutado.views import client_views, client_analyst_internal_views, candidate_views, api_views, client_recruiter_views
+from applications.reclutado.views import client_views, client_analyst_internal_views, candidate_views, api_views, client_recruiter_views, admin_views
 
 
 
 url_principal = 'reclutado/'
 
 urlpatterns = [
+
+    #all
+    
 
     #client_user
     path( url_principal+'listado/<int:pk>/', client_views.detail_vacancy_recruited, name='vacantes_reclutados_cliente'),
@@ -27,5 +30,9 @@ urlpatterns = [
     path( url_principal+'vacantes_asignadas/gestionar/<int:pk>/<int:vacante_id>/', client_recruiter_views.vacancies_assigned_recruiter_detail, name='vacantes_gestion_reclutador'),
     path( url_principal+'detalle/reclutado/<int:pk>/', client_recruiter_views.detail_recruited, name='reclutados_detalle_reclutador'),
     path( url_principal+'crear_entrevistas_multiples/<int:pk>/<int:vacante_id>/', client_recruiter_views.crear_entrevistas_multiples, name='crear_entrevistas_multiples'),
+
+    #admin_user
+    path( url_principal+'resultado/<int:pk>/', admin_views.detail_aplicacion_vacante, name='reclutados_detalle_admin'),
+    path( url_principal+'reporte/pdf/<int:pk>/', admin_views.generar_reporte_pdf, name='reclutados_reporte_pdf_admin'),
 
 ]
