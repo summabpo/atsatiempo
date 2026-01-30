@@ -629,11 +629,15 @@
         background-color: $dark-input-bg !important;
     }
     .modal-content {
-        background-color: $dark-input-bg;
+        background-color: $dark-card-bg;
+        
     }
     .modal-header {
         border-color: $dark-border;
         background-color: $dark-card-bg;
+        .btn-close {
+            filter: invert(1);
+        }
     }
     .modal-footer {
         border-color: $dark-border;
@@ -858,6 +862,480 @@
     .for-dark {
         h3 {
             color: $secondary;
+        }
+    }
+
+    .for-dark-card {
+        background-color: $dark-card-bg !important;
+    }
+    .for-dark-read {
+        background-color: #15203c  !important;
+        color: $white !important;
+        &:hover {
+            background-color: $primary !important;
+        }
+    }
+    .campaigns-close {
+        filter: invert(1);
+    }
+
+    .sales_by_locations {
+        li {
+            .progress {
+                background-color: #202a43;
+            }
+        }
+    }
+    .recent-property-slide {
+        .bg-white {
+            background-color: $dark-body-bg !important;
+        }
+    }
+    .avatar-upload {
+        .avatar-preview {
+            border-color: $dark-border;
+        }
+        .avatar-edit input + label {
+            background-color: $dark-body-bg;
+            &::after {
+                color: $white;
+            }
+        }
+    }
+    .tab-content-wrap {
+        .tab-contents {
+            &.back-none {
+                &::before {
+                    background-color: $dark-card-bg;
+                }
+            }
+            &.continue-none {
+                &::before {
+                    background-color: $dark-card-bg;
+                }
+            }
+            .action-opt .btn {
+                background-color: $dark-body-bg !important;
+                color: $white;
+            }
+        }
+    }
+    .irs--flat .irs-line {
+        background-color: #202a43;
+    }
+    .custom-radio {
+        input[type=radio]:checked + .radio-content {
+            background-color: #202a43;
+        }
+        .radio-content {
+            border: 2px dashed #212c47;
+        }
+        input[type=radio] {
+            background: #202a43;
+            border-color: #202a43;
+            &:checked + .radio-content:after {
+                border-color: #202a43;
+            }
+        }
+    }
+    .only-file-upload {
+        .bg-border-color {
+            background-color: $dark-card-bg !important;
+        }
+        .form__files-container {
+            background-color: #15203c;
+        }
+        .form__text {
+            color: $white;
+        }
+    }
+    .border-end {
+        border-color: $dark-border !important;
+    }
+    .border-border-color {
+        border-color: $dark-border !important;
+    }
+    .default-table-area {
+        &.agents-performance-overview {
+            &.style-three {
+                .table-responsive {
+                    .table {
+                        tbody {
+                            tr {
+                                td {
+                                    background-color: $dark-body-bg;
+                                    &.bg-white {
+                                        background-color: $dark-card-bg !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .progress, .progress-stacked {
+        background-color: #202a43;
+    }
+    .for-dark-digital-date {
+        background-color: #15203c !important;
+        border-color: #15203c !important;
+        color: #fff !important;
+    }
+    .calendar-container {
+        .calendar-table {
+            td {
+                border-color: $dark-card-bg;
+            }
+            td {
+                color: $white;
+                &::after {
+                    background-color: $dark-body-bg;
+                }
+                &.prev-month {
+                    background-color: $dark-body-bg;
+                    opacity: 0.6;
+                    &::after {
+                        border-color: $dark-border;
+                    }
+                }
+                &.next-month {
+                    background-color: $dark-body-bg;
+                    opacity: 0.6;
+                    &::after {
+                        border-color: $dark-border;
+                    }
+                }
+            }
+        }
+    }
+    .all-inline-border-for-dark {
+        border-color: $dark-body-color !important;
+    }
+    .schedule-for-dark {
+        background-color: $dark-body-bg !important;
+        .btn {
+            background-color: #15203c !important;
+            &:hover {
+                background-color: $primary !important;
+            }
+        }
+        .bg-white {
+            background-color: #15203c !important;
+        }
+    }
+    .recent-instagram-for-dark-mode {
+        .d-flex.flex-wrap.gap-2.justify-content-between.align-items-center.child.px-4 {
+            border-color: $dark-border !important;
+        }
+        .text-primary-50 {
+            background-color: $dark-body-bg !important;
+            &:hover {
+                background-color: $primary !important;
+            }
+        }
+        .text-primary-div-50 {
+            background-color: $dark-body-bg !important;
+            &:hover {
+                background-color: $primary !important;
+            }
+        }
+    }
+    .for-dark-rounded-bg {
+        .card-body {
+            background-color: $dark-border !important;
+        }
+        &.bg-white {
+            background-color: $dark-card-bg !important;
+        }
+    }
+    .categories-tabs {
+        .nav-item {
+            .nav-link {
+                border-color: $dark-border !important;
+                border: double;
+                &.active {
+                    border-color: $primary !important;
+                }           
+            }
+        }
+    }
+    .payment-method {
+        .btn {
+            background-color: $dark-body-bg !important;
+            border-color: $dark-border !important;
+        }
+        .btn-check:checked + .btn, .payment-method :not(.btn-check) + .btn:active, .payment-method .btn:first-child:active, .payment-method .btn.active, .payment-method .btn.show {
+            background-color: $dark-border !important;
+        }
+    }
+    .doctor-cover-bg {
+        &::before {
+            background-color: $dark-card-bg;
+        }
+        .avatar-preview.rounded-circle {
+            border-color: $dark-border !important;
+        }
+    }
+    .doctor-filter-img {
+        filter: brightness(100);
+    }
+    .medicine-time {
+        background-color: $dark-input-bg;
+        .text-secondary-50 {
+            color: $white !important;
+        }
+    }
+    .calendar-container {
+        &.style-two {
+            .calendar-header {
+                button {
+                    &.change-btn {
+                        background-color: $dark-body-bg;
+                        color: $white !important;
+                        &:hover {
+                            background-color: $primary;
+                        }
+                    }
+                }
+                .month-year {
+                    background-color: transparent;
+                    color: $white;
+                }
+            }
+            .calendar-table tr th {
+                color: $white !important;
+            }
+        }
+    }
+    .today-appointment-for-dark {
+        img.position-absolute.top-50.start-0.translate-middle.bg-white {
+            background-color: $dark-card-bg !important;
+        }
+        .recent-appointment-notify.z-1 {
+            border-color: $dark-border !important;
+        }
+    }
+    .today-appointments-for-dark {
+        img.position-absolute.top-50.start-0.translate-middle.bg-white {
+            background-color: $dark-card-bg !important;
+        }
+        .recent-appointment-for-rtl {
+            border-color: $dark-border !important;
+        }
+        span.text-dark.fw-semibold.d-block.mb-1 {
+            color: $dark !important;
+        }
+    }
+    .select-dropdown {
+        .dropdown-toggle {
+            background-color: $dark-input-bg !important;
+            border-color: $dark-input-bg !important;
+            color: $white !important;
+        }
+        .dropdown-menu {
+            background-color: $dark-input-bg !important;
+            border-color: $dark-input-bg !important;
+            .dropdown-item  {
+                &:hover {
+                    background-color: $primary;
+                }
+            }
+        }
+    }
+    .text-secondary-50 {
+        color: $white !important;
+    }
+    .text-body-color-50 {
+        color: $dark-body-color !important;
+    }
+    .top-selling-products-for-dark {
+        background-color: $dark-card-bg !important;
+    }
+    .most-popular-tabs .nav-item .nav-link {
+        background-color: $dark-input-bg !important;
+        border-color: $dark-input-bg !important;
+        color: $white !important;
+        &.active {
+            background-color: $primary !important;
+        }
+    }
+    .follow-button {
+        background-color: $dark-input-bg !important;
+        border-color: $dark-input-bg !important;
+        color: $white !important;
+        &.followed {
+            background-color: $primary !important;
+        }
+    }
+    .header-navbar {
+        background-color: $dark-card-bg;
+        .navbar-nav {
+            .nav-item {
+                .nav-link {
+                    color: $white;
+                    &:hover {
+                        color: $primary !important;
+                    }
+                    &.active {
+                        color: $primary !important;
+                    }
+                }
+                .dropdown-menu {
+                    background-color: $dark-body-bg;
+                    li {
+                        .dropdown-item {
+                            color: $white;
+                        }
+                    }
+                }
+                &:hover .nav-link {
+                    color: $primary;
+                }
+            }
+        }
+    }
+    .product-quantity .add-to-cart-counter .minusBtn {
+        &.for-dark-cart {
+            background-color: #0a0e19 !important;
+        }
+    }
+    .header-navbar .nav-btn.next-btn::before {
+        background-color: #0c1427;
+    }
+    .settings-box {
+        border-color: #172036;
+        span {
+            &:nth-child(1) {
+                background-color: #172036;
+            }
+            &:nth-child(2) {
+                background-color: #172036;
+            }
+            &:nth-child(3) {
+                background-color: #172036;
+            }
+        }
+    }
+    .border-border-color-50 {
+        border-color: $dark-border !important;
+    }
+    .popular-rooms-bg {
+        background-color: $dark-card-bg !important;
+    }
+    .welcome-for-hotel {
+        background-color: $dark-body-bg !important;
+        .text-danger-50 {
+            background-color: transparent !important;
+            border-color: $danger-50 !important;
+        }
+        .text-success-60 {
+            background-color: transparent !important;
+            border-color: $success-60 !important;
+        }
+        .bg-white {
+            background-color: $dark-card-bg !important;
+        }
+    }
+    .calendar-container {
+        &.style-three {
+            .calendar-header button.change-btn {
+                background-color: $dark-border !important;
+                color: $white !important;
+            }
+        }
+    }
+    .default-table-area.upcoming-vip-reservations-table.style-two .table-responsive .table tbody tr td {
+        .bg-border-color-50 {
+            background-color: $dark-border !important;
+        }
+    }
+    .recent-room-bookings {
+        .bg-border-color-50 {
+            background-color: $dark-border !important;
+        }
+        .bg-border-color {
+            background-color: $dark-border !important;
+            color: $white !important;
+            &:hover {
+                background-color: $primary !important;
+            }
+        }
+    }
+    .swiper-pagination-popular-rooms.swiper-pagination-clickable .swiper-pagination-bullet {
+        background-color: $dark-body-color !important;
+        &.swiper-pagination-bullet-active {
+            background-color: $danger !important;
+        }
+    }
+    .swiper-pagination-client-ratings.swiper-pagination-clickable .swiper-pagination-bullet {
+        background-color: $dark-body-color !important;
+        &.swiper-pagination-bullet-active {
+            background-color: $danger !important;
+        }
+    }
+    .top-channels-for-dark {
+        .ms-auto {
+            background: conic-gradient(#6f77f3 80%, #0C1427  80%) !important;
+            div {
+                background-color: #0C1427 !important;
+            }
+        }
+    }
+    .my-featured-listings-bg {
+        background-color: #15203c !important;
+        .bg-white {
+            background-color: $dark-card-bg !important;
+            .hover-bg {
+                background-color: $dark-border !important;
+                &:hover {
+                    background-color: $primary !important;
+                }
+            }
+        }
+    }
+    .manage-app-for-dark {
+        background-color: #15203c !important;
+    }
+    .client-ratings-bg {
+        background-color: $dark-card-bg !important;
+        .bg-border-color-50 {
+            background-color: $dark-body-bg !important;
+        }
+        .bg-danger-100 {
+            background-color: $dark-body-bg !important;
+        }
+        .bg-success-90 {
+            background-color: $dark-body-bg !important;
+        }
+    }
+    .wallet-for-dark-mode {
+        background: linear-gradient(90deg, $dark-card-bg, $dark-card-bg) !important;
+    }
+    .debit-card-bg-for-dark-mode {
+        background-color: $dark-card-bg;
+        background-image: unset !important;
+    }
+    .daily-limit-form-dark-mode {
+        background-color: $dark-body-bg !important;
+    }
+    .apexcharts-text tspan {
+        fill: #8695aa;
+    }
+    .performance-for-darkmode {
+        background-color: #162243 !important;
+        i {
+            background-color: $dark-card-bg !important;
+        }
+    }
+    .bg-for-dark-room-details {
+        background-color: $dark-card-bg !important;
+    }
+    .calendar-container.style-three .calendar-table td {
+        background-color: #172036;
+        &::after {
+            background-color: #172036;
         }
     }
 }

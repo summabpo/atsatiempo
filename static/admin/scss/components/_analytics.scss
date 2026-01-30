@@ -42,6 +42,19 @@
     }
 }
 
+/* Max width 767px */
+@media only screen and (max-width : 767px) {
+
+    .analytics-tabs {
+        li {
+            button {
+                padding: 3px 11px;
+            }
+        }
+    }
+
+}
+
 /* Min width 1400px to Max width 1799px */
 @media only screen and (min-width : 1400px) and (max-width : 1799px) {
 
@@ -55,4 +68,15 @@
         margin-left: 21px;
     }
 
+}
+
+/* Min width 992px to Max width 1199px */
+@media only screen and (min-width : 992px) and (max-width : 1199px)  {
+    .analytics-tabs {
+        li {
+            button {
+                padding: 3px 9px;
+            }
+        }
+    }
 }

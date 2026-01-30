@@ -113,7 +113,7 @@
     }
     .main-content {
         padding-left: 12px;
-        padding-right: 283px;
+        padding-right: 273px;
     }
     [sidebar-data-theme=sidebar-hide] .main-content {
         padding-left: 0;
@@ -750,21 +750,7 @@
         }
         
     }
-    .rtl-btn {
-        background-color: $primary;
-    }
-    .settings-btn {
-        .slider {
-            position: relative;
-            &:before {
-                opacity: 0;
-            }
-            &:after {
-                opacity: 1;
-            }
-        }
-    }
-
+    
     /* RTL After Demos Add CSS */
     img.position-absolute.top-0.end-0 {
         &.shape-2 {
@@ -788,6 +774,599 @@
     .border-start {
         border-left: none !important;
         border-right: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+    }
+
+    .default-table-area {
+        &.history-of-bids {
+            &.style-two {
+                .table-responsive {
+                    .table {
+                        tbody {
+                            tr {
+                                td {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.top-nfts-table {
+            &.style-two {
+                .table-responsive {
+                    .table {
+                        thead {
+                            tr {
+                                th {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                        tbody {
+                            tr {
+                                td {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.campaigns-table {
+            &.style-two {
+                .table-responsive {
+                    .table {
+                        thead {
+                            tr {
+                                th {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                        tbody {
+                            tr {
+                                td {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.patient-table {
+            &.style-two {
+                .table-responsive {
+                    .table {
+                        thead {
+                            tr {
+                                th {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                        tbody {
+                            tr {
+                                td {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.sales-locations-table {
+            &.style-two {
+                .table-responsive {
+                    .table {
+                        thead {
+                            tr {
+                                th {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                        tbody {
+                            tr {
+                                td {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.transaction-table {
+            &.style-two {
+                .table-responsive {
+                    .table {
+                        thead {
+                            tr {
+                                th {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                        tbody {
+                            tr {
+                                td {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.rankings-table {
+            &.style-two {
+                .table-responsive {
+                    .table {
+                        thead {
+                            tr {
+                                th {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                        tbody {
+                            tr {
+                                td {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.portfolio-table {
+            &.style-two {
+                .table-responsive {
+                    .table {
+                        thead {
+                            tr {
+                                th {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                        tbody {
+                            tr {
+                                td {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.browser-leads {
+            &.style-two {
+                .table-responsive {
+                    .table {
+                        thead {
+                            tr {
+                                th {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                        tbody {
+                            tr {
+                                td {
+                                    &:first-child {
+                                        padding-left: 8px !important;
+                                        padding-right: 0 !important;
+                                    }
+                                    &:last-child {
+                                        padding-right: 8px !important;
+                                        padding-left: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .nft-slide {
+        direction: ltr;
+        text-align: right;
+    }
+    .nft-slide-two {
+        direction: ltr;
+        text-align: right;
+    }
+    .top-collections-slide {
+        direction: ltr;
+        text-align: right;
+    }
+    .saas-chart-position {
+        right: auto !important;
+        left: -11px !important;
+    }
+    .modal-header .btn-close {
+        margin-left: 0;
+        margin-right: auto;
+    }
+    .recent-property-slide {
+        direction: ltr;
+        text-align: right;
+    }
+    .default-table-area {
+        &.agents-performance-overview {
+            &.style-three {
+                .table-responsive {
+                    .table {
+                        tbody {
+                            tr {
+                                td {
+                                    &:last-child {
+                                        border-radius: 7px 0 0 7px !important;
+                                        padding-right: 25px !important;
+                                        padding-left: 8px !important;
+                                    }
+                                    &:first-child {
+                                        border-radius: 0 7px 7px 0 !important;
+                                        padding-left: 25px !important;
+                                        padding-right: 8px !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .border-end {
+        border-right: none !important;
+        border-left: 1px solid $border-color !important;
+    }
+    @media (min-width: 768px) {
+        .text-md-end {
+            text-align: left !important;
+        }
+    }
+    i.ri-calendar-line.position-absolute.top-50.start-0.translate-middle-y.ps-3 {
+        display: none;
+    }
+    .for-rtl-chat {
+        .ms-auto {
+            margin-left: 0 !important;
+            margin-right: auto !important;
+            text-align: right;
+        }
+    }
+    .for-rtl-form {
+        .start-0 {
+            left: auto !important;
+            right: 0;
+        }
+        .form-control {
+            padding-right: 40px;
+        }
+    }
+    .for-rtl-beauty {
+        .p-3.pb-0.ps-0.text-end {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    }
+    .customer-join {
+        li {
+            &.item {
+                margin-left: 0;
+                margin-right: -15px;
+            }
+            &:first-child {
+                margin-right: 0;
+            }
+        }
+    }
+    .ms-10 {
+        margin-left: 0;
+        margin-right: 10px;
+    }
+    .doctor-name {
+        padding-right: 30px !important;
+        padding-left: 0 !important;
+    }
+    .ms-auto {
+        margin-left: 0 !important;
+        margin-right: auto !important;
+    }
+    .top-selling-products-slide {
+        direction: ltr;
+    }
+    .recent-appointment-for-rtl {
+        padding-left: 0 !important;
+        padding-right: 37px !important;
+        border: none !important;
+        img.position-absolute.top-50.start-0.translate-middle {
+            left: 0 !important;
+            right: -50px !important;
+        }
+    }
+    .right-for-rtl {
+        right: 0 !important;
+        left: -8px !important;
+    }
+    .position-for-mobile {
+        ul.ps-0.mb-0.list-unstyled.last-child-none {
+            margin-left: 0 !important;
+            margin-right: -110px !important;
+        }
+        span.d-inline-block.rounded-circle {
+            margin-right: 0 !important;
+            margin-left: 7px !important;
+        }
+    }
+    .mastering-digital-marketing-slide {
+        direction: ltr;
+    }
+    .for-rtl-shape {
+        right: 0 !important;
+        left: auto !important;
+        z-index: -1;
+    }
+    .play-for-rtl {
+        .ms-sm-3 {
+            margin-right: 0 !important;
+            margin-left: 15px !important;
+        }
+        .ms-10 {
+            margin-right: 0 !important;
+            margin-left: 10px !important;
+        }
+    }
+    .header-navbar {
+        .navbar-nav {
+            .nav-item {
+                .dropdown-menu {
+                    left: auto;
+                    right: 0;
+                    text-align: right;
+                    li {
+                        .dropdown-item {
+                            &.for-icon {
+                                padding-right: 20px !important;
+                                .menu-icon {
+                                    margin-right: 0;
+                                    margin-left: 5px;
+                                }
+                            } 
+                            &::before {
+                                left: auto;
+                                right: 20px;
+                            }
+                            &.dropdown-toggle::after {
+                                right: auto;
+                                left: 19px;
+                            }
+                        }
+                    }
+                    li .dropdown-item.sub-dropdown.dropdown-toggle {
+                        padding-right: 40px;
+                    }
+                }
+                &:last-child {
+                    margin-left: 0;
+                    .dropdown-menu {
+                        right: auto !important;
+                        left: 0 !important;
+                        li {
+                            .dropdown-menu {
+                                right: -100% !important;
+                                left: auto !important;
+                            }
+                        }
+                    }
+                }
+                &.authentication-item {
+                    .dropdown-menu {
+                        right: auto !important;
+                        left: 0 !important;
+                        li {
+                            .dropdown-menu {
+                                right: -100% !important;
+                                left: auto !important;
+                            }
+                        }
+                    }
+                }
+                &.profile-item {
+                    .dropdown-menu {
+                        right: auto !important;
+                        left: 0 !important;
+                        li {
+                            .dropdown-menu {
+                                right: -100% !important;
+                                left: auto !important;
+                            }
+                        }
+                    }
+                }
+                &.modules-item {
+                    .dropdown-menu {
+                        right: auto !important;
+                        left: 0 !important;
+                        li {
+                            .dropdown-menu {
+                                left: -100% !important;
+                                right: auto !important;
+                            }
+                        }
+                    }
+                }
+                .nav-link {
+                    &.dropdown-toggle {
+                        padding-right: 0;
+                        padding-left: 20px !important;
+                        &::after {
+                            right: auto;
+                            left: 0;
+                        }
+                    }
+                    .count {
+                        margin-left: 0;
+                        margin-right: 8px;
+                    }
+                    .menu-icon {
+                        margin-right: 0;
+                        margin-left: 5px;
+                    }
+                }
+            }
+        }
+    }
+    .header-navbar .nav-btn.next-btn {
+        right: auto;
+        left: -12px;
+        &::before {
+            right: auto;
+            left: -200px;
+        }
+    }
+    .popular-rooms-slide {
+        direction: ltr;
+    }
+    .client-ratings-slide {
+        direction: ltr;
+    }
+    .my-featured-listings-slide {
+        direction: ltr;
+    }
+    .room-details-slide {
+        direction: ltr;
+    }
+    .room-details-slide2 {
+        direction: ltr;
+    }
+    .breadcrumb-item + .breadcrumb-item::before {
+        float: right;
+        padding-right: 0;
+        padding-left: 0.5rem;
     }
     
 }

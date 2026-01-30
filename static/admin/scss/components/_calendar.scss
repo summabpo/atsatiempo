@@ -132,6 +132,14 @@
     .fc .fc-view-harness-active > .fc-view {
         overflow: auto;
     }
+    th.fc-col-header-cell {
+        border-color: #ECF0FF;
+        background-color: #ECF0FF;
+        padding: 5px 4px;
+    }
+    table.fc-scrollgrid-sync-table {
+        height: 562px;
+    }
 }
 
 /* Calendar Area Style
@@ -258,6 +266,268 @@
     }
 }
 
+/* Calendar Area Style
+============================================*/
+.calendar-container {
+	width: 100%;
+	border: none;
+	padding: 0;
+	box-shadow: none;
+	border-radius: 0;
+    position: relative;
+    &.border-bottom-1 {
+        border-bottom: 1px dashed #B9C1CD;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+        select {
+            padding: 0;
+            font-size: 16px;
+            border: 0;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            cursor: pointer;
+            &:focus {
+                box-shadow: none;
+                border-bottom: none;
+                outline: 0;
+            }
+        }
+        button {
+            display: none;
+        }
+    }
+    .calendar-table {
+        width: 100%;
+        border-collapse: collapse;
+        th {
+            text-align: center;
+            color: #7A799B;
+            font-size: 12px;
+            letter-spacing: 0.72px;
+            text-transform: capitalize;
+            font-weight: 400;
+            padding-bottom: 15px;
+        }
+        td {
+            text-align: center;
+            width: 44px;
+            height: 52px;
+            font-size: 16px;
+            font-weight: 400;
+            color: $secondary;
+            cursor: pointer;
+            background-color: transparent;
+            border: 2px solid $white;
+            border-radius: 10px;
+            position: relative;
+            z-index: 1;
+            &::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                left: 0;
+                right: 0;
+                margin: auto;
+                width: 100%;
+                height: 100%;
+                background-color: #E6EFF2;
+                z-index: -2;
+                border-radius: 10px;
+            }
+            &.prev-month {
+                background-color: $white;
+                color: #ACC1C9;
+                &::after {
+                    background-color: transparent;
+                    border: 1px solid #E6EFF2;
+                }
+            }
+            &.next-month {
+                background-color: $white;
+                color: #ACC1C9;
+            }
+            &.current-day {
+                color: $white;
+                font-weight: 500;
+                position: relative;
+                z-index: 1;
+                &::before {
+                    content: "";
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                    width: 32px;
+                    height: 32px;
+                    line-height: 32px;
+                    background-color: $primary !important;
+                    border-radius: 50px;
+                    z-index: -1;
+                }
+            }
+            &.active-date {
+                color: $white;
+                font-weight: 500;
+                position: relative;
+                z-index: 1;
+                &::before {
+                    content: "";
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                    width: 32px;
+                    height: 32px;
+                    line-height: 32px;
+                    background-color: $primary !important;
+                    border-radius: 50px;
+                    z-index: -1;
+                }
+            }
+            &.active {
+                color: $white;
+                font-weight: 500;
+                position: relative;
+                z-index: 1;
+                &::before {
+                    content: "";
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                    width: 32px;
+                    height: 32px;
+                    line-height: 32px;
+                    background-color: $primary !important;
+                    border-radius: 50px;
+                    z-index: -1;
+                }
+            }
+        }
+    }
+    &.style-two {
+        .calendar-header {
+            margin-bottom: 15px;
+            margin-left: 15px;
+            margin-right: 15px;
+            button {
+                display: block;
+                &.change-btn {
+                    background-color: $border-color;
+                    border: 0;
+                    color: $secondary;
+                    border: 0 !important;
+                    font-size: 18px;
+                    border-radius: 100px;
+                    transition: $transition;
+                    i {
+                        transition: $transition;  
+                    }
+                    &:hover {
+                        background-color: $primary;
+                        i {
+                            color: $white;
+                        }
+                    }
+                }
+            }
+            .month-year {
+                color: $secondary;
+                font-size: 12px;
+                font-weight: 500;
+            }
+        }
+        .calendar-table {
+            tr {
+                th {
+                    color: $secondary;
+                    font-size: 12px;
+                    font-weight: 600;
+                }
+            }
+            td {
+                border-color: $white;
+                &::after {
+                    background-color: $white;
+                }
+            }
+            td {
+                &.prev-month {
+                    &::after {
+                        border-color: $white;
+                    }
+                }
+                &.next-month {
+                    &::after {
+                        border-color: $white;
+                    }
+                }
+            }
+        }
+    }
+    &.style-three {
+        .calendar-header {
+            margin-bottom: 15px;
+            margin-left: 0;
+            margin-right: 0;
+            button {
+                display: block;
+                &.change-btn {
+                    background-color: #e6eff2;
+                    border: 0;
+                    color: $secondary;
+                    border: 0 !important;
+                    font-size: 18px;
+                    border-radius: 100px;
+                    transition: $transition;
+                    i {
+                        transition: $transition;  
+                    }
+                    &:hover {
+                        background-color: $primary;
+                        i {
+                            color: $white;
+                        }
+                    }
+                }
+            }
+            .month-year {
+                color: $secondary;
+                font-size: 12px;
+                font-weight: 500;
+            }
+        }
+        .prev-month {
+           opacity: 0;
+        }
+        .next-month {
+            opacity: 0;
+            display: none;
+        }
+        .calendar-table {
+            td {
+                font-size: 14px;
+                font-weight: 500;
+                height: 50px
+            }
+        }
+    }
+}
+
 .calendar-content {
     #month-year {
         font-size: 18px;
@@ -291,6 +561,86 @@
         line-height: 40px;
         padding: 0;
     }
+}
+
+.datepicker-wrap {
+    #date-input {
+        border: none;
+        background-color: #ECEEF2;
+        width: 125px;
+        height: 36px;
+        border-radius: 7px;
+        padding: 0 14px;
+        color: #64748B;
+        &:focus {
+            box-shadow: none;
+            border: none;
+            outline: none;
+        }
+    }
+    .datepicker-container {
+        position: relative;
+        display: inline-block;
+        i {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+        }
+    }
+    .datepicker {
+        display: none;
+        position: absolute;
+        top: 30px;
+        background: $white;
+        border-radius: 5px;
+        padding: 10px;
+        box-shadow: $box-shadow;
+        z-index: 9;
+        right: 0;
+        &.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #f4f4f4;
+            padding: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            font-size: 12px;
+            color: $secondary;
+        }
+        td {
+            text-align: center;
+            padding: 5px;
+            cursor: pointer;
+            font-weight: 400;
+            font-size: 12px;
+            border: 1px solid $border-color;
+        }
+        td:hover {
+            background: #eaeaea;
+        }
+        .selected {
+            background: #007bff;
+            color: #fff;
+        }
+    }
+    
+   
+
+     
+
+    
+
+    
+
+    
+    
 }
 
 @media only screen and (max-width: 991px) {

@@ -86,14 +86,15 @@
             color:  $white !important;
         }
     }
-}
-.navbar-nav {
-    .nav-link {
-        &.active {
-            color: $primary !important;
+    .navbar-nav {
+        .nav-link {
+            &.active {
+                color: $primary !important;
+            }
         }
     }
 }
+
 .banner-area {
     padding-top: 185px;
     padding-bottom: 150px;
