@@ -607,10 +607,23 @@ class CandidateForm(forms.Form):
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             ),
             Div(
-                HTML("<h4 class='mb-3 text-primary'>Fit Cultural y Motivadores</h4>"),
+                HTML("<h4 class='mb-3 text-primary'>Fit Cultural</h4>"),
+                HTML("<p class='text-muted mb-3'>Selecciona una opción por cada categoría. Marca lo que más se ajusta a tu realidad.</p>"),
                 Div(
-                    Div('fit_cultural', css_class='col-md-6 fit-cultural-checkboxes'),
-                    Div('motivadores', css_class='col-md-6 motivadores'),
+                    Div('grupo_fit_1', css_class='col-md-6 mb-3'),
+                    Div('grupo_fit_2', css_class='col-md-6 mb-3'),
+                    Div('grupo_fit_3', css_class='col-md-6 mb-3'),
+                    Div('grupo_fit_4', css_class='col-md-6 mb-3'),
+                    Div('grupo_fit_5', css_class='col-md-6 mb-3'),
+                    css_class='row'
+                ),
+                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+            ),
+            Div(
+                HTML("<h4 class='mb-3 text-primary'>Motivadores</h4>"),
+                HTML("<p class='text-muted mb-3'>Selecciona máximo 2 motivadores que sean más importantes para ti en tu vida laboral.</p>"),
+                Div(
+                    Div('motivadores', css_class='col-md-12 motivadores'),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"

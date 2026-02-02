@@ -23,13 +23,14 @@ urlpatterns = [
     
     path( url_principal+'informacion/skills/borrar/<int:pk>', candidate_views.candidate_info_skills_delete, name='candidato_info_habilidades_borrar'),
     path( url_principal+'informacion/redes/borrar/<int:pk>', candidate_views.canidate_info_social_network_delete, name='candidato_info_redes_borrar'),
+    path( url_principal+'info/', candidate_views.candidate_info_wizard, name='candidato_info_wizard'),
 
     #apis
     path( url_principal+'informacion/skills/api/', api_views.api_suggestions_skills, name='api_sugerencias_habilidades'),
 
     # path( url_principal+'crear', views.candidato_crear, name='candidato_crear'),
     # # path( url_principal+'listar', views.ListadoCandidato.as_view(), name='candidato_listar'),
-    # path( url_principal+'listar', CandidatoView.candidatos_listar, name='candidato_listar'),
+    # path( url_principal+'listar', CandidatoView.candinformación basicaidatos_listar, name='candidato_listar'),
 
     # path( url_principal+'academica/<int:pk>/', EstudioView.estudio_mostrar, name='candidato_academica'),
     # path( url_principal+'academica/api/', EstudioView.estudio_api,name='estudio_api'),
