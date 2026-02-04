@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 from django.shortcuts import render, redirect, get_object_or_404 # type: ignore
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -32,7 +33,105 @@ def candidate_info(request):
     candidato = get_object_or_404(Can101Candidato, pk=candidato_id)
 
     if request.method == 'POST':
-        form = CandidateForm(request.POST, request.FILES, instance=candidato)
+        # Inicializar files_saved_in_request
+        files_saved_in_request = {
+            'imagen_perfil': False,
+            'hoja_de_vida': False,
+            'video_perfil': False,
+        }
+        
+        # Validar y guardar archivos primero si son válidos
+        files_saved = False
+        file_errors = {}
+        
+        # Validar imagen_perfil
+        if 'imagen_perfil' in request.FILES:
+            imagen_perfil = request.FILES['imagen_perfil']
+            tamanio_maximo = 5 * 1024 * 1024  # 5 MB
+            listado_extensiones = ['.jpg', '.jpeg', '.png']
+            
+            if imagen_perfil.size > tamanio_maximo:
+                file_errors['imagen_perfil'] = 'El tamaño del archivo supera el tamaño permitido.'
+            else:
+                extension = os.path.splitext(imagen_perfil.name)[1].lower()
+                if extension not in listado_extensiones:
+                    file_errors['imagen_perfil'] = 'El archivo no es válido.'
+                elif Can101Candidato.objects.filter(imagen_perfil=imagen_perfil.name).exclude(id=candidato.id).exists():
+                    file_errors['imagen_perfil'] = 'Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.'
+                else:
+                    # Validar que sea una imagen válida antes de guardar
+                    try:
+                        from PIL import Image
+                        imagen_perfil.seek(0)  # Resetear el puntero
+                        img = Image.open(imagen_perfil)
+                        img.verify()  # Verificar que sea una imagen válida
+                        imagen_perfil.seek(0)  # Resetear nuevamente para guardar
+                        
+                        # Archivo válido, guardarlo inmediatamente
+                        candidato.imagen_perfil = imagen_perfil
+                        files_saved = True
+                        files_saved_in_request['imagen_perfil'] = True
+                    except Exception as e:
+                        file_errors['imagen_perfil'] = 'El archivo debe ser una imagen válida en formato PNG o JPG.'
+        
+        # Validar hoja_de_vida
+        if 'hoja_de_vida' in request.FILES:
+            hoja_de_vida = request.FILES['hoja_de_vida']
+            tamanio_maximo_hoja = 5 * 1024 * 1024  # 5 MB
+            listado_extensiones_hoja = ['.pdf', '.doc', '.docx']
+            
+            if hoja_de_vida.size > tamanio_maximo_hoja:
+                file_errors['hoja_de_vida'] = 'El tamaño del archivo supera el tamaño permitido (máximo 5MB).'
+            else:
+                extension_hoja = os.path.splitext(hoja_de_vida.name)[1].lower()
+                if extension_hoja not in listado_extensiones_hoja:
+                    file_errors['hoja_de_vida'] = 'El archivo no es válido. Debe ser un archivo PDF o Word (.doc, .docx).'
+                elif Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exclude(id=candidato.id).exists():
+                    file_errors['hoja_de_vida'] = 'Ya existe un archivo con este nombre en otro registro. Por favor renombre el archivo y vuelva a intentarlo.'
+                else:
+                    # Archivo válido, guardarlo inmediatamente
+                    candidato.hoja_de_vida = hoja_de_vida
+                    files_saved = True
+                    files_saved_in_request['hoja_de_vida'] = True
+        
+        # Validar video_perfil
+        if 'video_perfil' in request.FILES:
+            video_perfil = request.FILES['video_perfil']
+            tamanio_maximo_video = 50 * 1024 * 1024  # 50 MB
+            listado_extensiones_video = ['.mp4', '.mov', '.avi', '.webm', '.mkv']
+            
+            if video_perfil.size > tamanio_maximo_video:
+                file_errors['video_perfil'] = 'El tamaño del video supera el tamaño permitido (máximo 50MB).'
+            else:
+                extension_video = os.path.splitext(video_perfil.name)[1].lower()
+                if extension_video not in listado_extensiones_video:
+                    file_errors['video_perfil'] = 'El archivo de video no es válido. Formatos permitidos: MP4, MOV, AVI, WEBM, MKV.'
+                elif Can101Candidato.objects.filter(video_perfil=video_perfil.name).exclude(id=candidato.id).exists():
+                    file_errors['video_perfil'] = 'Ya existe un video con este nombre en otro registro. Por favor renombre el archivo y vuelva a intentarlo.'
+                else:
+                    # Archivo válido, guardarlo inmediatamente
+                    candidato.video_perfil = video_perfil
+                    files_saved = True
+                    files_saved_in_request['video_perfil'] = True
+        
+        # Crear el formulario DESPUÉS de validar y guardar archivos, pasando files_saved_in_request actualizado
+        form = CandidateForm(request.POST, request.FILES, instance=candidato, files_saved_in_request=files_saved_in_request)
+        
+        # Si hay errores en archivos, agregarlos al formulario
+        for field, error_msg in file_errors.items():
+            form.add_error(field, error_msg)
+        
+        # Si se guardaron archivos, guardar el candidato inmediatamente
+        if files_saved:
+            candidato.save()
+            # Actualizar imagen de perfil en el usuario si se guardó una nueva
+            if 'imagen_perfil' in request.FILES and 'imagen_perfil' not in file_errors:
+                usuario = UsuarioBase.objects.get(id=request.session.get('user_login')['id'])
+                usuario.imagen_perfil = candidato.imagen_perfil
+                usuario.save()
+            # Recargar el candidato para que el formulario tenga los archivos actualizados
+            candidato.refresh_from_db()
+            # NO mostrar mensaje aquí - solo se mostrará cuando el formulario se procese correctamente
 
         if form.is_valid():
             candidato.numero_documento = form.cleaned_data['numero_documento']
@@ -45,12 +144,19 @@ def candidate_info(request):
             candidato.fecha_nacimiento = form.cleaned_data['fecha_nacimiento']
             candidato.telefono = form.cleaned_data['telefono']
             candidato.direccion = form.cleaned_data['direccion']
-            if form.cleaned_data['imagen_perfil']:
-                candidato.imagen_perfil = form.cleaned_data['imagen_perfil']
-            if form.cleaned_data['hoja_de_vida']:
-                candidato.hoja_de_vida = form.cleaned_data['hoja_de_vida']
-            if form.cleaned_data['video_perfil']:
-                candidato.video_perfil = form.cleaned_data['video_perfil']
+            # Los archivos ya fueron guardados arriba si eran válidos, NO sobrescribirlos
+            # Solo actualizar si hay un nuevo archivo en el formulario que no se guardó antes
+            if 'imagen_perfil' in request.FILES and 'imagen_perfil' not in file_errors and not files_saved_in_request['imagen_perfil']:
+                # Hay un nuevo archivo que no se guardó antes, guardarlo ahora
+                candidato.imagen_perfil = request.FILES['imagen_perfil']
+            # Si ya se guardó antes, no hacer nada (mantener el que ya está guardado)
+            
+            if 'hoja_de_vida' in request.FILES and 'hoja_de_vida' not in file_errors and not files_saved_in_request['hoja_de_vida']:
+                candidato.hoja_de_vida = request.FILES['hoja_de_vida']
+            
+            if 'video_perfil' in request.FILES and 'video_perfil' not in file_errors and not files_saved_in_request['video_perfil']:
+                candidato.video_perfil = request.FILES['video_perfil']
+            
             candidato.email = form.cleaned_data['email']
             candidato.perfil = form.cleaned_data['perfil']
             
@@ -90,12 +196,18 @@ def candidate_info(request):
             
             candidato.save()
 
+            # Mostrar mensaje de éxito solo cuando el formulario se procesa correctamente
             messages.success(request, 'Información básica actualizada exitosamente.')
 
             return redirect('candidatos:candidato_info_personal')
         else:
             print(form.errors)
-            messages.error(request, 'Error al actualizar la información básica.')
+            # Si los archivos ya se guardaron, no mostrar error general, solo los errores específicos
+            if not files_saved:
+                messages.error(request, 'Error al actualizar la información básica.')
+            # Si hay error, recrear el formulario pero manteniendo los archivos de request.FILES
+            # para que se puedan reutilizar en el siguiente envío
+            form = CandidateForm(request.POST, request.FILES, instance=candidato, files_saved_in_request=files_saved_in_request)
     else:
         initial_data = {
             'email': candidato.email,
@@ -139,10 +251,61 @@ def candidate_info(request):
         
         form = CandidateForm(initial=initial_data, instance=candidato)
 
+    # Obtener descripciones de fit cultural para tooltips
+    from applications.cliente.models import Cli077FitCultural
+    import json
+    fit_cultural_descriptions = {}
+    fit_cultural_items = Cli077FitCultural.objects.filter(estado=1).select_related('grupo')
+    for item in fit_cultural_items:
+        if item.descripcion:
+            fit_cultural_descriptions[str(item.id)] = item.descripcion
+
+    # Calcular porcentajes de completitud
+    from applications.services.service_candidate import personal_information_calculation
+    porcentajes = personal_information_calculation(candidato.id)
+    
+    # Calcular porcentaje de redes sociales
+    from applications.candidato.models import Can106CandidatoRed
+    socialNetwork = Can106CandidatoRed.objects.filter(candidato_id_101=candidato.id, estado_id_001=1)
+    if socialNetwork.exists():
+        porcentaje_redes = 100
+    else:
+        porcentaje_redes = 0
+    
+    porcentajes['redes_sociales'] = {
+        'porcentaje': porcentaje_redes,
+        'campos': {
+            'total': 1,
+            'llenos': 1 if socialNetwork.exists() else 0,
+        }
+    }
+    
+    # Recalcular porcentaje total incluyendo las 5 secciones
+    porcentajes['porcentaje_total'] = int((
+        porcentajes['info_personal']['porcentaje'] + 
+        porcentajes['educacion']['porcentaje'] + 
+        porcentajes['experiencia']['porcentaje'] + 
+        porcentajes['skills']['porcentaje'] + 
+        porcentajes['redes_sociales']['porcentaje']
+    ) / 5)
+
     context = {
         'form': form,
         'candidato': candidato,  # Agregar el candidato al contexto para mostrar el video
+        'fit_cultural_descriptions': json.dumps(fit_cultural_descriptions),  # Pasar como JSON
+        'porcentajes': porcentajes,
+        'active_section': 'personal',
+        'files_saved_in_request': {
+            'imagen_perfil': False,
+            'hoja_de_vida': False,
+            'video_perfil': False,
+        }
     }
+    
+    # Si se guardaron archivos en esta petición, indicarlo en el contexto
+    if request.method == 'POST':
+        if 'files_saved_in_request' in locals():
+            context['files_saved_in_request'] = files_saved_in_request
 
     return render(request, 'admin/candidate/candidate_user/info_personal.html', context)
 
@@ -197,10 +360,42 @@ def candidate_info_academy(request):
     else:
         form = candidateStudyForm(request.POST or None)
 
+    # Calcular porcentajes de completitud
+    from applications.services.service_candidate import personal_information_calculation
+    candidato = Can101Candidato.objects.get(id=candidato_id)
+    porcentajes = personal_information_calculation(candidato.id)
+    
+    # Calcular porcentaje de redes sociales
+    from applications.candidato.models import Can106CandidatoRed
+    socialNetwork = Can106CandidatoRed.objects.filter(candidato_id_101=candidato.id, estado_id_001=1)
+    if socialNetwork.exists():
+        porcentaje_redes = 100
+    else:
+        porcentaje_redes = 0
+    
+    porcentajes['redes_sociales'] = {
+        'porcentaje': porcentaje_redes,
+        'campos': {
+            'total': 1,
+            'llenos': 1 if socialNetwork.exists() else 0,
+        }
+    }
+    
+    # Recalcular porcentaje total incluyendo las 5 secciones
+    porcentajes['porcentaje_total'] = int((
+        porcentajes['info_personal']['porcentaje'] + 
+        porcentajes['educacion']['porcentaje'] + 
+        porcentajes['experiencia']['porcentaje'] + 
+        porcentajes['skills']['porcentaje'] + 
+        porcentajes['redes_sociales']['porcentaje']
+    ) / 5)
+
     context = {
         'studies': studies,
         'form': form,
         'form_errors': form_errors,
+        'porcentajes': porcentajes,
+        'active_section': 'academica',
     }
     return render(request, 'admin/candidate/candidate_user/info_academy.html', context)
 
@@ -305,10 +500,42 @@ def candidate_info_job(request):
     else:
         form = candidateJobForm()
 
+    # Calcular porcentajes de completitud
+    from applications.services.service_candidate import personal_information_calculation
+    candidato = Can101Candidato.objects.get(id=candidato_id)
+    porcentajes = personal_information_calculation(candidato.id)
+    
+    # Calcular porcentaje de redes sociales
+    from applications.candidato.models import Can106CandidatoRed
+    socialNetwork = Can106CandidatoRed.objects.filter(candidato_id_101=candidato.id, estado_id_001=1)
+    if socialNetwork.exists():
+        porcentaje_redes = 100
+    else:
+        porcentaje_redes = 0
+    
+    porcentajes['redes_sociales'] = {
+        'porcentaje': porcentaje_redes,
+        'campos': {
+            'total': 1,
+            'llenos': 1 if socialNetwork.exists() else 0,
+        }
+    }
+    
+    # Recalcular porcentaje total incluyendo las 5 secciones
+    porcentajes['porcentaje_total'] = int((
+        porcentajes['info_personal']['porcentaje'] + 
+        porcentajes['educacion']['porcentaje'] + 
+        porcentajes['experiencia']['porcentaje'] + 
+        porcentajes['skills']['porcentaje'] + 
+        porcentajes['redes_sociales']['porcentaje']
+    ) / 5)
+
     context = {
         'jobs': jobs,
         'form': form,
         'form_errors': form_errors,
+        'porcentajes': porcentajes,
+        'active_section': 'laboral',
     }
     return render(request, 'admin/candidate/candidate_user/info_job.html', context)
 
@@ -460,9 +687,41 @@ def candidate_info_skills(request):
         form = CandidateHabilityFormList(initial=initial_data)
 
     
+    # Calcular porcentajes de completitud
+    from applications.services.service_candidate import personal_information_calculation
+    candidato = Can101Candidato.objects.get(id=candidato_id)
+    porcentajes = personal_information_calculation(candidato.id)
+    
+    # Calcular porcentaje de redes sociales
+    from applications.candidato.models import Can106CandidatoRed
+    socialNetwork = Can106CandidatoRed.objects.filter(candidato_id_101=candidato.id, estado_id_001=1)
+    if socialNetwork.exists():
+        porcentaje_redes = 100
+    else:
+        porcentaje_redes = 0
+    
+    porcentajes['redes_sociales'] = {
+        'porcentaje': porcentaje_redes,
+        'campos': {
+            'total': 1,
+            'llenos': 1 if socialNetwork.exists() else 0,
+        }
+    }
+    
+    # Recalcular porcentaje total incluyendo las 5 secciones
+    porcentajes['porcentaje_total'] = int((
+        porcentajes['info_personal']['porcentaje'] + 
+        porcentajes['educacion']['porcentaje'] + 
+        porcentajes['experiencia']['porcentaje'] + 
+        porcentajes['skills']['porcentaje'] + 
+        porcentajes['redes_sociales']['porcentaje']
+    ) / 5)
+    
     context = {
         'form': form,
         'skills': skills,
+        'porcentajes': porcentajes,
+        'active_section': 'habilidades',
     }
     
     return render(request, 'admin/candidate/candidate_user/info_skills.html', context)
@@ -567,10 +826,39 @@ def candidate_info_social_network(request):
         form = SocialNetworkForm()
         
 
+    # Calcular porcentajes de completitud
+    from applications.services.service_candidate import personal_information_calculation
+    porcentajes = personal_information_calculation(candidato.id)
+    
+    # Calcular porcentaje de redes sociales
+    if redes.exists():
+        porcentaje_redes = 100
+    else:
+        porcentaje_redes = 0
+    
+    porcentajes['redes_sociales'] = {
+        'porcentaje': porcentaje_redes,
+        'campos': {
+            'total': 1,
+            'llenos': 1 if redes.exists() else 0,
+        }
+    }
+    
+    # Recalcular porcentaje total incluyendo las 5 secciones
+    porcentajes['porcentaje_total'] = int((
+        porcentajes['info_personal']['porcentaje'] + 
+        porcentajes['educacion']['porcentaje'] + 
+        porcentajes['experiencia']['porcentaje'] + 
+        porcentajes['skills']['porcentaje'] + 
+        porcentajes['redes_sociales']['porcentaje']
+    ) / 5)
+
     context = {
         'candidato': candidato,
         'form': form,
         'redes': redes,
+        'porcentajes': porcentajes,
+        'active_section': 'redes',
     }
 
     return render(request, 'admin/candidate/candidate_user/info_social_network.html', context)
@@ -638,382 +926,3 @@ def canidate_info_social_network_delete(request, pk):
     
     return redirect('candidatos:candidato_info_redes')
 
-
-@login_required
-@validar_permisos('acceso_candidato')
-def candidate_info_wizard(request):
-    """
-    Vista principal del wizard de información del candidato
-    Maneja todos los formularios de las diferentes secciones
-    """
-    
-    # Obtener el candidato desde la sesión
-    candidate_id = request.session.get('candidato_id')
-    candidate = Can101Candidato.objects.get(id=candidate_id)
-    
-    # Obtener datos existentes para mostrar en las secciones
-    jobs = Can102Experiencia.objects.filter(candidato_id_101=candidate.id).order_by('-fecha_inicial')
-    studies = Can103Educacion.objects.filter(candidato_id_101=candidate.id).order_by('-fecha_inicial')
-    skills = Can101CandidatoSkill.objects.filter(candidato_id_101=candidate.id).order_by('-id')
-    socialNetwork = Can106CandidatoRed.objects.filter(candidato_id_101=candidate.id, estado_id_001=1).order_by('-id')
-
-    # ===================================================================
-    # SECCIÓN 1: FORMULARIO DE INFORMACIÓN BÁSICA
-    # ===================================================================
-    # Aquí se maneja el formulario de información personal del candidato
-    # Incluye: datos personales, contacto, perfil, documentos, fit cultural y motivadores
-    from applications.candidato.forms.CandidatoForms import CandidateForm
-    
-    form_info_personal = None
-    if request.method == 'POST' and 'form_info_personal' in request.POST:
-        form_info_personal = CandidateForm(request.POST, request.FILES, instance=candidate)
-        if form_info_personal.is_valid():
-            # Actualizar datos básicos
-            candidate.numero_documento = form_info_personal.cleaned_data['numero_documento']
-            candidate.primer_nombre = form_info_personal.cleaned_data['primer_nombre']
-            candidate.segundo_nombre = form_info_personal.cleaned_data['segundo_nombre']
-            candidate.primer_apellido = form_info_personal.cleaned_data['primer_apellido']
-            candidate.segundo_apellido = form_info_personal.cleaned_data['segundo_apellido']
-            candidate.ciudad_id_004 = form_info_personal.cleaned_data['ciudad_id_004']
-            candidate.sexo = form_info_personal.cleaned_data['sexo']
-            candidate.fecha_nacimiento = form_info_personal.cleaned_data['fecha_nacimiento']
-            candidate.telefono = form_info_personal.cleaned_data['telefono']
-            candidate.direccion = form_info_personal.cleaned_data['direccion']
-            candidate.email = form_info_personal.cleaned_data['email']
-            candidate.perfil = form_info_personal.cleaned_data['perfil']
-            candidate.aspiracion_salarial = form_info_personal.cleaned_data.get('aspiracion_salarial')
-            
-            # Manejar archivos solo si se suben nuevos
-            if form_info_personal.cleaned_data.get('imagen_perfil'):
-                candidate.imagen_perfil = form_info_personal.cleaned_data['imagen_perfil']
-            if form_info_personal.cleaned_data.get('hoja_de_vida'):
-                candidate.hoja_de_vida = form_info_personal.cleaned_data['hoja_de_vida']
-            if form_info_personal.cleaned_data.get('video_perfil'):
-                candidate.video_perfil = form_info_personal.cleaned_data['video_perfil']
-            
-            # Guardar fit cultural
-            fit_cultural_objs = []
-            for i in range(1, 6):
-                grupo_field = f'grupo_fit_{i}'
-                if grupo_field in form_info_personal.cleaned_data and form_info_personal.cleaned_data[grupo_field]:
-                    fit_cultural_objs.append(form_info_personal.cleaned_data[grupo_field])
-            
-            if fit_cultural_objs:
-                fit_cultural_data = [
-                    {"id": fc.id, "nombre": fc.nombre}
-                    for fc in fit_cultural_objs
-                ]
-                candidate.fit_cultural = fit_cultural_data
-            else:
-                candidate.fit_cultural = []
-            
-            # Guardar motivadores
-            motivadores_objs = form_info_personal.cleaned_data.get('motivadores', [])
-            if motivadores_objs:
-                motivadores_data = [
-                    {"id": m.id, "nombre": m.nombre}
-                    for m in motivadores_objs
-                ]
-                candidate.motivadores = motivadores_data
-            else:
-                candidate.motivadores = []
-            
-            # Actualizar usuario relacionado
-            from applications.usuarios.models import UsuarioBase
-            usuario = UsuarioBase.objects.get(id=request.session.get('user_login')['id'])
-            usuario.candidato_id_101 = candidate
-            if candidate.imagen_perfil:
-                usuario.imagen_perfil = candidate.imagen_perfil
-            usuario.save()
-            
-            candidate.save()
-            messages.success(request, 'Información básica actualizada exitosamente.')
-            return redirect('candidatos:candidato_info_wizard')
-        else:
-            # El formulario tiene errores, se mostrarán en el template
-            messages.error(request, 'Por favor, corrige los errores en el formulario.')
-            # Guardar archivos temporalmente incluso si hay errores de validación
-            # Esto permite que los archivos persistan después de refrescar
-            if request.FILES.get('imagen_perfil'):
-                # Guardar el archivo temporalmente en el candidato
-                candidate.imagen_perfil = request.FILES['imagen_perfil']
-                candidate.save(update_fields=['imagen_perfil'])
-            if request.FILES.get('hoja_de_vida'):
-                candidate.hoja_de_vida = request.FILES['hoja_de_vida']
-                candidate.save(update_fields=['hoja_de_vida'])
-            if request.FILES.get('video_perfil'):
-                candidate.video_perfil = request.FILES['video_perfil']
-                candidate.save(update_fields=['video_perfil'])
-            # El formulario con errores se pasará al contexto para mostrarlos
-            # No hacer redirect, continuar para renderizar el template con errores
-    else:
-        # Inicializar formulario con datos existentes
-        initial_data_personal = {
-            'email': candidate.email,
-            'primer_nombre': candidate.primer_nombre,
-            'segundo_nombre': candidate.segundo_nombre,
-            'primer_apellido': candidate.primer_apellido,
-            'segundo_apellido': candidate.segundo_apellido,
-            'ciudad_id_004': candidate.ciudad_id_004.id if candidate.ciudad_id_004 else None,
-            'sexo': candidate.sexo,
-            'fecha_nacimiento': candidate.fecha_nacimiento.strftime('%Y-%m-%d') if candidate.fecha_nacimiento else '',
-            'telefono': candidate.telefono,
-            'numero_documento': candidate.numero_documento,
-            'direccion': candidate.direccion,
-            'perfil': candidate.perfil,
-            'aspiracion_salarial': candidate.aspiracion_salarial,
-            'grupo_fit_1': None,
-            'grupo_fit_2': None,
-            'grupo_fit_3': None,
-            'grupo_fit_4': None,
-            'grupo_fit_5': None,
-            'motivadores': [item['id'] for item in candidate.motivadores] if candidate.motivadores else [],
-        }
-        
-        # Distribuir fit cultural por grupos
-        if candidate.fit_cultural:
-            from applications.cliente.models import Cli077FitCultural
-            for item in candidate.fit_cultural:
-                try:
-                    fit_obj = Cli077FitCultural.objects.get(id=item['id'])
-                    grupo_field = f'grupo_fit_{fit_obj.grupo.id}'
-                    if grupo_field in initial_data_personal:
-                        initial_data_personal[grupo_field] = fit_obj.id
-                except Cli077FitCultural.DoesNotExist:
-                    continue
-        
-        form_info_personal = CandidateForm(initial=initial_data_personal, instance=candidate)
-        # Configurar para que no genere su propio tag form (ya tenemos uno en el template)
-        form_info_personal.helper.form_tag = False
-
-    # ===================================================================
-    # SECCIÓN 2: FORMULARIO DE INFORMACIÓN ACADÉMICA
-    # ===================================================================
-    # Aquí se maneja el formulario para agregar nuevos estudios académicos
-    # El listado de estudios existentes se muestra en el template
-    from applications.candidato.forms.EstudioForms import candidateStudyForm
-    
-    form_info_academica = None
-    if request.method == 'POST' and 'form_info_academica' in request.POST:
-        form_info_academica = candidateStudyForm(request.POST, request.FILES)
-        if form_info_academica.is_valid():
-            institucion = form_info_academica.cleaned_data['institucion']
-            grado_en = form_info_academica.cleaned_data['grado_en']
-            fecha_inicial = form_info_academica.cleaned_data['fecha_inicial']
-            fecha_final = form_info_academica.cleaned_data['fecha_final'] if form_info_academica.cleaned_data['fecha_final'] else None
-            titulo = form_info_academica.cleaned_data['titulo'] if form_info_academica.cleaned_data['titulo'] else None
-            ciudad_obj_004 = form_info_academica.cleaned_data['ciudad_id_004']
-            tipo_estudio = form_info_academica.cleaned_data['tipo_estudio']
-            certificacion = form_info_academica.cleaned_data.get('certificacion')
-            profesion_estudio = form_info_academica.cleaned_data['profesion_estudio'] if form_info_academica.cleaned_data['profesion_estudio'] else None
-            
-            Can103Educacion.objects.create(
-                estado_id_001=Cat001Estado.objects.get(id=1),
-                institucion=institucion,
-                grado_en=grado_en,
-                fecha_inicial=fecha_inicial,
-                fecha_final=fecha_final,
-                titulo=titulo,
-                candidato_id_101=candidate,
-                ciudad_id_004=ciudad_obj_004,
-                tipo_estudio=tipo_estudio,
-                certificacion=certificacion if certificacion else None,
-                profesion_estudio=profesion_estudio if profesion_estudio else None
-            )
-            
-            messages.success(request, 'Información académica agregada exitosamente.')
-            return redirect('candidatos:candidato_info_wizard')
-    else:
-        form_info_academica = candidateStudyForm()
-
-    # ===================================================================
-    # SECCIÓN 3: FORMULARIO DE INFORMACIÓN LABORAL
-    # ===================================================================
-    # Aquí se maneja el formulario para agregar nuevas experiencias laborales
-    # El listado de experiencias existentes se muestra en el template
-    from applications.candidato.forms.ExperienciaForms import candidateJobForm
-    
-    form_info_laboral = None
-    if request.method == 'POST' and 'form_info_laboral' in request.POST:
-        form_info_laboral = candidateJobForm(request.POST)
-        if form_info_laboral.is_valid():
-            entidad = form_info_laboral.cleaned_data['entidad']
-            sector = form_info_laboral.cleaned_data['sector']
-            fecha_inicial = form_info_laboral.cleaned_data['fecha_inicial']
-            fecha_final = form_info_laboral.cleaned_data['fecha_final'] if form_info_laboral.cleaned_data['fecha_final'] else None
-            activo = form_info_laboral.cleaned_data['activo']
-            logro = form_info_laboral.cleaned_data['logro']
-            cargo = form_info_laboral.cleaned_data['cargo']
-            motivo_salida = form_info_laboral.cleaned_data['motivo_salida']
-            salario = form_info_laboral.cleaned_data['salario'] if form_info_laboral.cleaned_data['salario'] else None
-            modalidad_trabajo = form_info_laboral.cleaned_data['modalidad_trabajo']
-            nombre_jefe = form_info_laboral.cleaned_data['nombre_jefe'] if form_info_laboral.cleaned_data['nombre_jefe'] else None
-
-            Can102Experiencia.objects.create(
-                estado_id_001=Cat001Estado.objects.get(id=1),
-                entidad=entidad,
-                sector=sector,
-                fecha_inicial=fecha_inicial,
-                fecha_final=fecha_final,
-                activo=activo,
-                logro=logro,
-                candidato_id_101=candidate,
-                cargo=cargo,
-                motivo_salida=motivo_salida,
-                salario=salario,
-                modalidad_trabajo=modalidad_trabajo,
-                nombre_jefe=nombre_jefe
-            )
-            
-            messages.success(request, 'Información laboral agregada exitosamente.')
-            return redirect('candidatos:candidato_info_wizard')
-    else:
-        form_info_laboral = candidateJobForm()
-
-    # ===================================================================
-    # SECCIÓN 4: FORMULARIO DE HABILIDADES
-    # ===================================================================
-    # Aquí se maneja el formulario para seleccionar habilidades del candidato
-    # Permite seleccionar habilidades por grupos: relacionales, personales, cognitivas, digitales y liderazgo
-    from applications.candidato.forms.HabilidadForms import CandidateHabilityFormList
-    
-    form_info_habilidades = None
-    if request.method == 'POST' and 'form_info_habilidades' in request.POST:
-        form_info_habilidades = CandidateHabilityFormList(request.POST, request.FILES)
-        if form_info_habilidades.is_valid():
-            # Obtener todas las habilidades seleccionadas
-            skill_all = []
-            ids_skill_relacionales = [skill.id for skill in form_info_habilidades.cleaned_data.get('skill_relacionales', [])]
-            skill_all.extend(ids_skill_relacionales)
-            ids_skill_personales = [skill.id for skill in form_info_habilidades.cleaned_data.get('skill_personales', [])]
-            skill_all.extend(ids_skill_personales)
-            ids_skill_cognitivas = [skill.id for skill in form_info_habilidades.cleaned_data.get('skill_cognitivas', [])]
-            skill_all.extend(ids_skill_cognitivas)
-            ids_skill_digitales = [skill.id for skill in form_info_habilidades.cleaned_data.get('skill_digitales', [])]
-            skill_all.extend(ids_skill_digitales)
-            ids_skill_liderazgo = [skill.id for skill in form_info_habilidades.cleaned_data.get('skill_liderazgo', [])]
-            skill_all.extend(ids_skill_liderazgo)
-            
-            # Eliminar habilidades que ya no están seleccionadas
-            habilidades_actuales = set(Can101CandidatoSkill.objects.filter(candidato_id_101=candidate).values_list('skill_id_104', flat=True))
-            habilidades_nuevas = set(skill_all)
-            habilidades_a_eliminar = habilidades_actuales - habilidades_nuevas
-            Can101CandidatoSkill.objects.filter(candidato_id_101=candidate, skill_id_104__in=habilidades_a_eliminar).delete()
-
-            # Agregar nuevas habilidades si no existen
-            for skill_id in skill_all:
-                skill = Can104Skill.objects.get(id=skill_id)
-                if not Can101CandidatoSkill.objects.filter(candidato_id_101=candidate, skill_id_104=skill).exists():
-                    Can101CandidatoSkill.objects.create(
-                        candidato_id_101=candidate,
-                        skill_id_104=skill,
-                        nivel=1,
-                        tipo_habilidad='S',
-                        certificado_habilidad=None
-                    )
-
-            messages.success(request, 'Habilidades actualizadas exitosamente.')
-            return redirect('candidatos:candidato_info_wizard')
-    else:
-        # Preparar datos iniciales para el formulario de habilidades
-        initial_data_habilidades = {
-            'skill_relacionales': [],
-            'skill_personales': [],
-            'skill_cognitivas': [],
-            'skill_digitales': [],
-            'skill_liderazgo': [],
-        }
-
-        for cs in skills:
-            if cs.skill_id_104.grupo.id == 1:
-                initial_data_habilidades['skill_relacionales'].append(cs.skill_id_104.id)
-            elif cs.skill_id_104.grupo.id == 2:
-                initial_data_habilidades['skill_personales'].append(cs.skill_id_104.id)
-            elif cs.skill_id_104.grupo.id == 3:
-                initial_data_habilidades['skill_cognitivas'].append(cs.skill_id_104.id)
-            elif cs.skill_id_104.grupo.id == 4:
-                initial_data_habilidades['skill_digitales'].append(cs.skill_id_104.id)
-            elif cs.skill_id_104.grupo.id == 5:
-                initial_data_habilidades['skill_liderazgo'].append(cs.skill_id_104.id)
-        
-        form_info_habilidades = CandidateHabilityFormList(initial=initial_data_habilidades)
-
-    # ===================================================================
-    # SECCIÓN 5: FORMULARIO DE REDES SOCIALES
-    # ===================================================================
-    # Aquí se maneja el formulario para agregar nuevas redes sociales
-    # El listado de redes sociales existentes se muestra en el template
-    from applications.candidato.forms.SocialForms import SocialNetworkForm
-    
-    form_info_redes = None
-    if request.method == 'POST' and 'form_info_redes' in request.POST:
-        form_info_redes = SocialNetworkForm(request.POST)
-        if form_info_redes.is_valid():
-            red_social_id_105 = form_info_redes.cleaned_data['red_social_id_105']
-            url = form_info_redes.cleaned_data['url']
-
-            # Verificar si la red social ya está registrada para el candidato
-            if not Can106CandidatoRed.objects.filter(candidato_id_101=candidate, red_social_id_105=red_social_id_105, estado_id_001=1).exists():
-                Can106CandidatoRed.objects.create(
-                    candidato_id_101=candidate,
-                    red_social_id_105=red_social_id_105,
-                    url=url,
-                    estado_id_001=Cat001Estado.objects.get(id=1)
-                )
-                messages.success(request, 'Red social agregada exitosamente.')
-                return redirect('candidatos:candidato_info_wizard')
-            else:
-                messages.error(request, 'La red social ya está registrada.')
-    else:
-        form_info_redes = SocialNetworkForm()
-
-    # ===================================================================
-    # CÁLCULO DE PORCENTAJES DE COMPLETITUD
-    # ===================================================================
-    # Se calculan los porcentajes de completitud para cada sección
-    # Esto se usa para mostrar el progreso en las cards superiores
-    from applications.services.service_candidate import personal_information_calculation
-    porcentajes = personal_information_calculation(candidate.id)
-    
-    # Calcular porcentaje de redes sociales
-    if socialNetwork.exists():
-        porcentaje_redes = 100
-    else:
-        porcentaje_redes = 0
-    
-    porcentajes['redes_sociales'] = {
-        'porcentaje': porcentaje_redes,
-        'campos': {
-            'total': 1,
-            'llenos': 1 if socialNetwork.exists() else 0,
-        }
-    }
-    
-    # Recalcular porcentaje total incluyendo las 5 secciones
-    porcentajes['porcentaje_total'] = int((
-        porcentajes['info_personal']['porcentaje'] + 
-        porcentajes['educacion']['porcentaje'] + 
-        porcentajes['experiencia']['porcentaje'] + 
-        porcentajes['skills']['porcentaje'] + 
-        porcentajes['redes_sociales']['porcentaje']
-    ) / 5)
-
-    # ===================================================================
-    # CONTEXTO PARA EL TEMPLATE
-    # ===================================================================
-    # Se prepara el contexto con todos los formularios y datos necesarios
-    context = {
-        'candidate': candidate,
-        'porcentajes': porcentajes,
-        'jobs': jobs,
-        'studies': studies,
-        'skills': skills,
-        'socialNetwork': socialNetwork,
-        'form_info_personal': form_info_personal,
-        'form_info_academica': form_info_academica,
-        'form_info_laboral': form_info_laboral,
-        'form_info_habilidades': form_info_habilidades,
-        'form_info_redes': form_info_redes,
-    }
-
-    return render(request, 'admin/candidate/candidate_user/info_wizard.html', context)

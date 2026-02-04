@@ -9,6 +9,65 @@ Información Básica | Talent Tray
 
 {% block styles %}
 <style>
+    /* Ocultar input file nativo */
+    .custom-file-input {
+        position: absolute !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        pointer-events: none !important;
+    }
+    
+    /* Ocultar el enlace "Actualmente:" que aparece arriba del campo file */
+    #id_imagen_perfil + a,
+    #id_hoja_de_vida + a,
+    #id_video_perfil + a,
+    #id_imagen_perfil ~ a,
+    #id_hoja_de_vida ~ a,
+    #id_video_perfil ~ a,
+    .col-md-4:has(#id_imagen_perfil) a[href*="media_uploads"],
+    .col-md-4:has(#id_hoja_de_vida) a[href*="media_uploads"],
+    .col-md-4:has(#id_video_perfil) a[href*="media_uploads"] {
+        display: none !important;
+    }
+    
+    /* Ocultar cualquier texto que contenga "Actualmente" o rutas de archivos */
+    .col-md-4:has(#id_imagen_perfil) small:contains("Actualmente"),
+    .col-md-4:has(#id_hoja_de_vida) small:contains("Actualmente"),
+    .col-md-4:has(#id_video_perfil) small:contains("Actualmente"),
+    .col-md-4:has(#id_imagen_perfil) span:contains("Actualmente"),
+    .col-md-4:has(#id_hoja_de_vida) span:contains("Actualmente"),
+    .col-md-4:has(#id_video_perfil) span:contains("Actualmente") {
+        display: none !important;
+    }
+    
+    .custom-file-label {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background-color: #B10022;
+        color: white;
+        border: 1px solid #B10022;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .custom-file-label:hover {
+        background-color: #8b0019;
+        border-color: #8b0019;
+        color: white;
+    }
+    
+    .file-info-display {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        background-color: transparent;
+        border: none;
+    }
+    
     /* Estilos para checkboxes en línea horizontal */
 	.fit-cultural-checkboxes .form-check {
 		display: inline-block !important;
@@ -42,6 +101,75 @@ Información Básica | Talent Tray
 		margin-bottom: 10px !important;
 		min-width: 180px !important;
 	}
+	
+	/* Estilos para las descripciones dentro de los radio buttons de fit cultural */
+	.form-check-label small.text-muted {
+		display: block;
+		font-size: 0.85rem;
+		color: #6c757d !important;
+		font-style: italic;
+		line-height: 1.4;
+		margin-top: 0.25rem;
+		padding-left: 0;
+		opacity: 0.85;
+	}
+	
+	/* Mejorar el espaciado de los radio buttons con descripciones */
+	.form-check {
+		margin-bottom: 1rem;
+		padding-left: 1.5rem;
+	}
+	
+	.form-check-label {
+		cursor: pointer;
+		width: 100%;
+	}
+	
+	/* Estilos para las explicaciones de fit cultural - solo grupo 1 (Estilo trabajo) */
+	#id_grupo_fit_1 + .help-block,
+	.form-group:has(#id_grupo_fit_1) .help-block {
+		font-size: 0.875rem;
+		color: #6c757d;
+		font-style: italic;
+		margin-top: 0.5rem;
+		margin-bottom: 1rem;
+		line-height: 1.5;
+		padding: 0.5rem 0.75rem;
+		background-color: rgba(177, 0, 34, 0.03);
+		border-left: 3px solid rgba(177, 0, 34, 0.2);
+		border-radius: 4px;
+	}
+	
+	/* Estilos alternativos para help-text de crispy forms - solo grupo 1 */
+	.form-group label[for="id_grupo_fit_1"] ~ small,
+	.form-group #id_grupo_fit_1 ~ small {
+		display: block;
+		font-size: 0.875rem;
+		color: #6c757d;
+		font-style: italic;
+		margin-top: 0.5rem;
+		margin-bottom: 1rem;
+		line-height: 1.5;
+		padding: 0.5rem 0.75rem;
+		background-color: rgba(177, 0, 34, 0.03);
+		border-left: 3px solid rgba(177, 0, 34, 0.2);
+		border-radius: 4px;
+		font-weight: 400;
+	}
+	
+	/* Asegurar que el texto de ayuda del grupo 1 sea visible pero discreto */
+	.form-group:has(#id_grupo_fit_1) .form-text.text-muted {
+		font-size: 0.875rem !important;
+		color: #6c757d !important;
+		font-style: italic;
+		margin-top: 0.5rem;
+		margin-bottom: 1rem;
+		line-height: 1.5;
+		padding: 0.5rem 0.75rem;
+		background-color: rgba(177, 0, 34, 0.03);
+		border-left: 3px solid rgba(177, 0, 34, 0.2);
+		border-radius: 4px;
+	}
 </style>
 {% endblock %}
 
@@ -64,7 +192,12 @@ Información Básica | Talent Tray
 		</nav>
 	</div>
 
+	<!-- Panel de información -->
+	{% include 'admin/candidate/candidate_user/layout/base_candidate_info_records.html' %}
+
 	<!-- Start Your Code -->
+    
+
     <div class="row">
 		<div class="col-12">
             <div class="card bg-white border-0 rounded-3 mb-4">
@@ -182,48 +315,67 @@ Información Básica | Talent Tray
 									<hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
 								</div>
                                 <div class="col-md-4 mb-3">
-                                    {{ form.imagen_perfil.label_tag }} {{ form.imagen_perfil }}
+                                    {{ form.imagen_perfil.label_tag }}
+                                    <div class="position-relative d-inline-block w-100">
+                                        {{ form.imagen_perfil }}
+                                        <label for="id_imagen_perfil" class="custom-file-label w-100 text-center">
+                                            <i class="ri-upload-cloud-line me-1"></i> Seleccionar imagen
+                                        </label>
+                                    </div>
                                     {% if form.imagen_perfil.errors %}
                                         <div class="text-danger small">{{ form.imagen_perfil.errors }}</div>
                                     {% endif %}
-                                    {% if form.imagen_perfil.value %}
-                                        <div class="mt-2">
-                                            <span class="text-secondary small">Archivo actual: {{ form.imagen_perfil.value }}</span>
+                                    <!-- Botón único para ver archivo (nuevo o existente) -->
+                                    <div id="file_info_imagen_perfil" class="file-info-display mt-2" style="display: none;">
+                                        <div class="d-flex justify-content-end align-items-center">
+                                            <button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary" data-bs-toggle="modal" data-bs-target="#modal_imagen_perfil" id="btn_ver_imagen_perfil">
+                                                <i class="ri-eye-line me-1"></i> Ver
+                                            </button>
                                         </div>
-                                    {% endif %}
+                                    </div>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    {{ form.hoja_de_vida.label_tag }} {{ form.hoja_de_vida }}
+                                    {{ form.hoja_de_vida.label_tag }}
+                                    <div class="position-relative d-inline-block w-100">
+                                        {{ form.hoja_de_vida }}
+                                        <label for="id_hoja_de_vida" class="custom-file-label w-100 text-center">
+                                            <i class="ri-upload-cloud-line me-1"></i> Seleccionar archivo
+                                        </label>
+                                    </div>
                                     {% if form.hoja_de_vida.errors %}
                                         <div class="text-danger small">{{ form.hoja_de_vida.errors }}</div>
                                     {% endif %}
-                                    {% if form.hoja_de_vida.value %}
-                                        <div class="mt-2">
-                                            <span class="text-secondary small">Archivo actual: {{ form.hoja_de_vida.value }}</span>
+                                    <!-- Botón único para ver archivo (nuevo o existente) -->
+                                    <div id="file_info_hoja_de_vida" class="file-info-display mt-2" style="display: none;">
+                                        <div class="d-flex justify-content-end align-items-center">
+                                            <button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary" data-bs-toggle="modal" data-bs-target="#modal_hoja_de_vida" id="btn_ver_hoja_de_vida">
+                                                <i class="ri-eye-line me-1"></i> Ver
+                                            </button>
                                         </div>
-                                    {% endif %}
+                                    </div>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    {{ form.video_perfil.label_tag }} {{ form.video_perfil }}
+                                    {{ form.video_perfil.label_tag }}
+                                    <div class="position-relative d-inline-block w-100">
+                                        {{ form.video_perfil }}
+                                        <label for="id_video_perfil" class="custom-file-label w-100 text-center">
+                                            <i class="ri-upload-cloud-line me-1"></i> Seleccionar video
+                                        </label>
+                                    </div>
                                     {% if form.video_perfil.help_text %}
                                         <small class="form-text text-muted">{{ form.video_perfil.help_text }}</small>
                                     {% endif %}
                                     {% if form.video_perfil.errors %}
                                         <div class="text-danger small">{{ form.video_perfil.errors }}</div>
                                     {% endif %}
-                                    {% if form.video_perfil.value %}
-                                        <div class="mt-2">
-                                            <span class="text-secondary small">Video actual: {{ form.video_perfil.value }}</span>
-                                            {% if candidato.video_perfil %}
-                                                <div class="mt-2">
-                                                    <video width="100%" controls style="max-width: 300px;">
-                                                        <source src="{{ candidato.video_perfil.url }}" type="video/mp4">
-                                                        Tu navegador no soporta el elemento de video.
-                                                    </video>
-                                                </div>
-                                            {% endif %}
+                                    <!-- Botón único para ver archivo (nuevo o existente) -->
+                                    <div id="file_info_video_perfil" class="file-info-display mt-2" style="display: none;">
+                                        <div class="d-flex justify-content-end align-items-center">
+                                            <button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary" data-bs-toggle="modal" data-bs-target="#modal_video_perfil" id="btn_ver_video_perfil">
+                                                <i class="ri-eye-line me-1"></i> Ver
+                                            </button>
                                         </div>
-                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -305,6 +457,113 @@ Lo que elijas nos ayudará a ubicarte en una empresa donde encuentres no solo un
         </div>
     </div>
 </div>
+
+<!-- Modales para visualizar archivos -->
+<!-- Modal para imagen de perfil (nueva) -->
+<div class="modal fade" id="modal_imagen_perfil" tabindex="-1" aria-labelledby="modal_imagen_perfil_label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_imagen_perfil_label">Imagen de Perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modal_img_imagen_perfil" src="" alt="Imagen de perfil" class="img-fluid" style="max-height: 70vh;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para imagen de perfil (actual del servidor) -->
+{% if candidato.imagen_perfil %}
+<div class="modal fade" id="modal_imagen_perfil_current" tabindex="-1" aria-labelledby="modal_imagen_perfil_current_label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_imagen_perfil_current_label">Imagen de Perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="{{ candidato.imagen_perfil.url }}" alt="Imagen de perfil" class="img-fluid" style="max-height: 70vh;">
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Modal para hoja de vida (nueva) -->
+<div class="modal fade" id="modal_hoja_de_vida" tabindex="-1" aria-labelledby="modal_hoja_de_vida_label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_hoja_de_vida_label">Hoja de Vida</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal_body_hoja_de_vida">
+                <iframe id="modal_iframe_hoja_de_vida" src="" style="width: 100%; height: 70vh; border: none; display: none;"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para hoja de vida (actual del servidor) -->
+{% if candidato.hoja_de_vida %}
+<div class="modal fade" id="modal_hoja_de_vida_current" tabindex="-1" aria-labelledby="modal_hoja_de_vida_current_label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_hoja_de_vida_current_label">Hoja de Vida</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% if candidato.hoja_de_vida.name|slice:"-4:" == ".pdf" %}
+                    <iframe src="{{ candidato.hoja_de_vida.url }}" style="width: 100%; height: 70vh; border: none;"></iframe>
+                {% else %}
+                    <div class="alert alert-info">
+                        <p>Para visualizar archivos Word, por favor descárgalo haciendo clic en el siguiente enlace:</p>
+                        <a href="{{ candidato.hoja_de_vida.url }}" target="_blank" class="btn btn-primary">
+                            <i class="ri-download-line me-1"></i> Descargar archivo
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Modal para video de perfil (nuevo) -->
+<div class="modal fade" id="modal_video_perfil" tabindex="-1" aria-labelledby="modal_video_perfil_label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_video_perfil_label">Video de Perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <video id="modal_video_video_perfil" src="" controls class="w-100" style="max-height: 70vh;"></video>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para video de perfil (actual del servidor) -->
+{% if candidato.video_perfil %}
+<div class="modal fade" id="modal_video_perfil_current" tabindex="-1" aria-labelledby="modal_video_perfil_current_label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_video_perfil_current_label">Video de Perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <video src="{{ candidato.video_perfil.url }}" controls class="w-100" style="max-height: 70vh;"></video>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}
 
 
@@ -312,5 +571,742 @@ Lo que elijas nos ayudará a ubicarte en una empresa donde encuentres no solo un
 <script>
     initializeSelect2('#id_sexo');
     initializeSelect2('#id_ciudad_id_004');
+    
+    // Diccionario de descripciones de fit cultural desde el servidor
+    var fitCulturalDescriptions = {{ fit_cultural_descriptions|safe }};
+    
+    // Inicializar tooltips para las descripciones de fit cultural
+    function initializeFitCulturalTooltips() {
+        // Buscar todos los inputs radio de fit cultural
+        $('input[name^="grupo_fit_"]').each(function() {
+            var $input = $(this);
+            var value = $input.val();
+            
+            // Obtener la descripción del diccionario
+            var descripcion = fitCulturalDescriptions[value];
+            
+            if (descripcion && descripcion.trim() !== '') {
+                // Encontrar el label asociado
+                var $label = $('label[for="' + $input.attr('id') + '"]');
+                if ($label.length === 0) {
+                    $label = $input.closest('.form-check').find('label');
+                }
+                
+                if ($label.length > 0) {
+                    // Destruir tooltip existente si hay uno
+                    var existingTooltip = bootstrap.Tooltip.getInstance($label[0]);
+                    if (existingTooltip) {
+                        existingTooltip.dispose();
+                    }
+                    
+                    // Agregar atributos de tooltip al label
+                    $label.attr({
+                        'data-bs-toggle': 'tooltip',
+                        'data-bs-placement': 'top',
+                        'data-bs-title': descripcion,
+                        'data-bs-html': 'false'
+                    });
+                    
+                    // Inicializar el tooltip de Bootstrap
+                    try {
+                        var tooltip = new bootstrap.Tooltip($label[0], {
+                            placement: 'top',
+                            html: false,
+                            trigger: 'hover focus',
+                            container: 'body'
+                        });
+                    } catch(e) {
+                        console.error('Error inicializando tooltip:', e);
+                    }
+                }
+            }
+        });
+    }
+    
+    // Función para formatear tamaño de archivo
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        var k = 1024;
+        var sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        var i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+    
+    // Función para obtener extensión de archivo
+    function getFileExtension(filename) {
+        return filename.split('.').pop().toLowerCase();
+    }
+    
+    // Función para validar imagen de perfil
+    function validarImagenPerfil(file) {
+        var errores = [];
+        
+        // Validar formato: solo PNG y JPG (sin importar mayúsculas/minúsculas)
+        var extensionesPermitidas = ['png', 'jpg', 'jpeg'];
+        var extension = getFileExtension(file.name); // Ya convierte a minúsculas
+        
+        // Validar por extensión
+        var extensionValida = extensionesPermitidas.indexOf(extension) !== -1;
+        
+        // También validar por tipo MIME como respaldo
+        var tiposMimePermitidos = ['image/png', 'image/jpeg', 'image/jpg'];
+        var tipoMime = (file.type || '').toLowerCase();
+        var tipoMimeValido = tiposMimePermitidos.indexOf(tipoMime) !== -1;
+        
+        // Si no pasa ninguna de las dos validaciones, es un error
+        if (!extensionValida && !tipoMimeValido) {
+            errores.push('El archivo debe ser una imagen en formato PNG o JPG.');
+        }
+        
+        // Validar tamaño: máximo 5 MB
+        var tamanioMaximo = 5 * 1024 * 1024; // 5 MB en bytes
+        if (file.size > tamanioMaximo) {
+            errores.push('El tamaño del archivo no debe superar los 5 MB.');
+        }
+        
+        return errores;
+    }
+    
+    // Función para mostrar información de imagen
+    function previewImagen(input) {
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+            
+            // Validar el archivo antes de procesarlo
+            var errores = validarImagenPerfil(file);
+            if (errores.length > 0) {
+                // Mostrar SweetAlert con los errores
+                Swal.fire({
+                    title: 'Error al cargar imagen',
+                    html: errores.join('<br>'),
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#B10022',
+                    allowOutsideClick: false,
+                    allowEscapeKey: true
+                });
+                
+                // Limpiar el input y ocultar el botón de ver
+                input.value = '';
+                $('#file_info_imagen_perfil').hide();
+                
+                // Limpiar de memoria y sessionStorage
+                if (window.attachedFiles['imagen_perfil']) {
+                    delete window.attachedFiles['imagen_perfil'];
+                }
+                sessionStorage.removeItem('file_imagen_perfil');
+                sessionStorage.removeItem('preview_imagen_perfil');
+                sessionStorage.removeItem('has_file_imagen_perfil');
+                sessionStorage.removeItem('is_new_imagen_perfil');
+                
+                return; // Detener el procesamiento
+            }
+            
+            // Si pasa la validación, procesar el archivo
+            console.log('Archivo válido, procesando:', file.name, 'Tipo:', file.type, 'Tamaño:', file.size);
+            // Guardar archivo en memoria inmediatamente - CRÍTICO para persistencia
+            window.attachedFiles['imagen_perfil'] = file;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                // Mostrar botón de ver y configurar para archivo nuevo
+                $('#file_info_imagen_perfil').show();
+                $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil');
+                // Configurar modal para archivo nuevo
+                $('#modal_img_imagen_perfil').attr('src', e.target.result);
+                // Guardar en sessionStorage - CRÍTICO para persistencia
+                saveFileToSession('imagen_perfil', file);
+                // Marcar que hay un archivo nuevo cargado - CRÍTICO para persistencia
+                sessionStorage.setItem('has_file_imagen_perfil', 'true');
+                sessionStorage.setItem('is_new_imagen_perfil', 'true');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // Si no hay archivo nuevo, verificar si hay uno en memoria o en el servidor
+            if (!window.attachedFiles['imagen_perfil']) {
+                var hasNewFile = sessionStorage.getItem('is_new_imagen_perfil');
+                if (hasNewFile !== 'true') {
+                    // No hay archivo nuevo, verificar si hay uno en el servidor
+                    {% if candidato.imagen_perfil %}
+                        $('#file_info_imagen_perfil').show();
+                        $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil_current');
+                    {% else %}
+                        $('#file_info_imagen_perfil').hide();
+                    {% endif %}
+                } else {
+                    // Hay un archivo nuevo en sessionStorage, restaurarlo
+                    restoreFilesFromSession();
+                }
+            }
+        }
+    }
+    
+    // Función para mostrar información de hoja de vida
+    function previewHojaVida(input) {
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+            // Guardar archivo en memoria inmediatamente - CRÍTICO para persistencia
+            window.attachedFiles['hoja_de_vida'] = file;
+            var extension = getFileExtension(file.name);
+            
+            // Mostrar botón de ver y configurar para archivo nuevo
+            $('#file_info_hoja_de_vida').show();
+            $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida');
+            // Marcar que hay un archivo nuevo cargado - CRÍTICO para persistencia
+            sessionStorage.setItem('has_file_hoja_de_vida', 'true');
+            sessionStorage.setItem('is_new_hoja_de_vida', 'true');
+            
+            // Guardar datos del archivo para el modal
+            var fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                // Guardar en variable global para usar cuando se abra el modal
+                window.hojaDeVidaPreview = {
+                    data: e.target.result,
+                    extension: extension
+                };
+            };
+            fileReader.readAsDataURL(file);
+            
+            // Configurar el modal cuando se abra
+            $('#modal_hoja_de_vida').off('show.bs.modal').on('show.bs.modal', function() {
+                if (window.hojaDeVidaPreview) {
+                    if (window.hojaDeVidaPreview.extension === 'pdf') {
+                        $('#modal_iframe_hoja_de_vida').attr('src', window.hojaDeVidaPreview.data).show();
+                        $('#modal_body_hoja_de_vida').find('.alert').remove();
+                    } else {
+                        $('#modal_iframe_hoja_de_vida').hide();
+                        if ($('#modal_body_hoja_de_vida').find('.alert').length === 0) {
+                            $('#modal_body_hoja_de_vida').append(
+                                '<div class="alert alert-info"><p>Para visualizar archivos Word, por favor descárgalo después de guardar el formulario.</p></div>'
+                            );
+                        }
+                    }
+                }
+            });
+            
+            // Guardar en sessionStorage - CRÍTICO para persistencia
+            saveFileToSession('hoja_de_vida', file);
+        } else {
+            // Si no hay archivo nuevo, verificar si hay uno en memoria o en el servidor
+            if (!window.attachedFiles['hoja_de_vida']) {
+                var hasNewFile = sessionStorage.getItem('is_new_hoja_de_vida');
+                if (hasNewFile !== 'true') {
+                    // No hay archivo nuevo, verificar si hay uno en el servidor
+                    {% if candidato.hoja_de_vida %}
+                        $('#file_info_hoja_de_vida').show();
+                        $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida_current');
+                    {% else %}
+                        $('#file_info_hoja_de_vida').hide();
+                    {% endif %}
+                } else {
+                    // Hay un archivo nuevo en sessionStorage, restaurarlo
+                    restoreFilesFromSession();
+                }
+            }
+        }
+    }
+    
+    // Función para mostrar información de video
+    function previewVideo(input) {
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+            // Guardar archivo en memoria inmediatamente - CRÍTICO para persistencia
+            window.attachedFiles['video_perfil'] = file;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                // Mostrar botón de ver y configurar para archivo nuevo
+                $('#file_info_video_perfil').show();
+                $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil');
+                // Configurar modal para archivo nuevo
+                $('#modal_video_video_perfil').attr('src', e.target.result);
+                // Guardar en sessionStorage - CRÍTICO para persistencia
+                saveFileToSession('video_perfil', file);
+                // Marcar que hay un archivo nuevo cargado - CRÍTICO para persistencia
+                sessionStorage.setItem('has_file_video_perfil', 'true');
+                sessionStorage.setItem('is_new_video_perfil', 'true');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // Si no hay archivo nuevo, verificar si hay uno en memoria o en el servidor
+            if (!window.attachedFiles['video_perfil']) {
+                var hasNewFile = sessionStorage.getItem('is_new_video_perfil');
+                if (hasNewFile !== 'true') {
+                    // No hay archivo nuevo, verificar si hay uno en el servidor
+                    {% if candidato.video_perfil %}
+                        $('#file_info_video_perfil').show();
+                        $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil_current');
+                    {% else %}
+                        $('#file_info_video_perfil').hide();
+                    {% endif %}
+                } else {
+                    // Hay un archivo nuevo en sessionStorage, restaurarlo
+                    restoreFilesFromSession();
+                }
+            }
+        }
+    }
+    
+    // Almacenar archivos en memoria para mantenerlos adjuntos
+    window.attachedFiles = window.attachedFiles || {};
+    
+    // Función para guardar archivo en sessionStorage y en memoria
+    function saveFileToSession(fieldName, file) {
+        try {
+            // Guardar el archivo en memoria para mantenerlo adjunto
+            window.attachedFiles[fieldName] = file;
+            
+            var fileData = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                lastModified: file.lastModified
+            };
+            sessionStorage.setItem('file_' + fieldName, JSON.stringify(fileData));
+            // También guardar la vista previa si es una imagen
+            if (fieldName === 'imagen_perfil' && file.type.startsWith('image/')) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    sessionStorage.setItem('preview_' + fieldName, e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        } catch(e) {
+            console.error('Error guardando archivo en sessionStorage:', e);
+        }
+    }
+    
+    // Función para reasignar archivos al formulario cuando hay errores
+    function reattachFilesToForm() {
+        ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
+            var file = window.attachedFiles[fieldName];
+            var hasFile = sessionStorage.getItem('has_file_' + fieldName);
+            var isNewFile = sessionStorage.getItem('is_new_' + fieldName);
+            
+            if (file && hasFile === 'true' && isNewFile === 'true') {
+                try {
+                    var input = document.getElementById('id_' + fieldName);
+                    if (input) {
+                        // Crear un nuevo DataTransfer para asignar el archivo
+                        var dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        input.files = dataTransfer.files;
+                        
+                        // Disparar evento change para actualizar la vista y mantener el estado visual
+                        setTimeout(function() {
+                            $(input).trigger('change');
+                        }, 50);
+                    }
+                } catch(e) {
+                    console.log('No se pudo reasignar archivo ' + fieldName + ':', e);
+                    // Aunque no se pueda reasignar, mantener la visualización
+                    if (hasFile === 'true') {
+                        if (fieldName === 'imagen_perfil') {
+                            $('#file_info_imagen_perfil').show();
+                            $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil');
+                            var previewData = sessionStorage.getItem('preview_imagen_perfil');
+                            if (previewData) {
+                                $('#modal_img_imagen_perfil').attr('src', previewData);
+                            }
+                        } else if (fieldName === 'hoja_de_vida') {
+                            $('#file_info_hoja_de_vida').show();
+                            $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida');
+                        } else if (fieldName === 'video_perfil') {
+                            $('#file_info_video_perfil').show();
+                            $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil');
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Función para restaurar archivo desde el servidor (cuando hay error de validación)
+    function restoreFileFromServer(fieldName, fileData) {
+        if (fileData && fileData.name) {
+            // Mostrar que el archivo está cargado
+            if (fieldName === 'imagen_perfil') {
+                $('#file_info_imagen_perfil').show();
+                // Si hay preview guardado, usarlo
+                var previewData = sessionStorage.getItem('preview_imagen_perfil');
+                if (previewData) {
+                    $('#modal_img_imagen_perfil').attr('src', previewData);
+                }
+            } else if (fieldName === 'hoja_de_vida') {
+                $('#file_info_hoja_de_vida').show();
+            } else if (fieldName === 'video_perfil') {
+                $('#file_info_video_perfil').show();
+            }
+        }
+    }
+    
+    // Función para restaurar archivos desde sessionStorage (solo mostrar info, no el archivo real)
+    function restoreFilesFromSession() {
+        ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
+            try {
+                var fileData = sessionStorage.getItem('file_' + fieldName);
+                var hasFile = sessionStorage.getItem('has_file_' + fieldName);
+                var isNewFile = sessionStorage.getItem('is_new_' + fieldName);
+                
+                // Si hay archivo nuevo en sessionStorage o en memoria, mostrarlo
+                if ((fileData || hasFile === 'true' || window.attachedFiles[fieldName]) && isNewFile === 'true') {
+                    if (fieldName === 'imagen_perfil') {
+                        // Intentar restaurar la vista previa de la imagen
+                        var previewData = sessionStorage.getItem('preview_' + fieldName);
+                        if (previewData) {
+                            $('#modal_img_imagen_perfil').attr('src', previewData);
+                        }
+                        $('#file_info_imagen_perfil').show();
+                        $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil');
+                    } else if (fieldName === 'hoja_de_vida') {
+                        if (fileData) {
+                            var data = JSON.parse(fileData);
+                            var extension = getFileExtension(data.name);
+                            // Recrear el objeto de preview
+                            window.hojaDeVidaPreview = {
+                                extension: extension
+                            };
+                        }
+                        $('#file_info_hoja_de_vida').show();
+                        $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida');
+                    } else if (fieldName === 'video_perfil') {
+                        $('#file_info_video_perfil').show();
+                        $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil');
+                    }
+                }
+            } catch(e) {
+                console.error('Error restaurando archivo desde sessionStorage:', e);
+            }
+        });
+    }
+    
+    // Limpiar sessionStorage cuando el formulario se envía exitosamente
+    function clearFileSession() {
+        ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
+            sessionStorage.removeItem('file_' + fieldName);
+        });
+    }
+    
+    // Event listeners para vista previa de archivos
+    $(document).ready(function() {
+        setTimeout(initializeFitCulturalTooltips, 300);
+        
+        // Ocultar inputs file nativos
+        $('#id_imagen_perfil, #id_hoja_de_vida, #id_video_perfil').addClass('custom-file-input');
+        
+        // Función para ocultar rutas y enlaces de archivos
+        function hideFilePaths() {
+            // Ocultar enlaces que muestran archivos actuales
+            $('#id_imagen_perfil, #id_hoja_de_vida, #id_video_perfil').each(function() {
+                var $input = $(this);
+                var $parent = $input.closest('.col-md-4');
+                
+                // Ocultar enlaces después del input
+                $input.next('a').hide();
+                $input.siblings('a').hide();
+                
+                // Ocultar enlaces dentro del mismo contenedor que contengan rutas
+                $parent.find('a[href*="media_uploads"]').hide();
+                $parent.find('a[href*="hoja_de_vida"]').hide();
+                $parent.find('a[href*="candidato"]').hide();
+                $parent.find('a[href*="videos_candidato"]').hide();
+                
+                // Ocultar texto que contenga "Actualmente" o rutas
+                $parent.find('small, span, div, p').each(function() {
+                    var text = $(this).text().trim();
+                    if (text.includes('Actualmente') || 
+                        text.includes('media_uploads') || 
+                        text.includes('hoja_de_vida') || 
+                        text.includes('candidato') || 
+                        text.includes('videos_candidato')) {
+                        // Solo ocultar si no es parte de nuestros contenedores personalizados
+                        if (!$(this).closest('.file-info-display, .custom-file-label, .modal, label').length) {
+                            $(this).hide();
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Ejecutar inmediatamente y con delays para asegurar que capture todos los elementos
+        hideFilePaths();
+        setTimeout(hideFilePaths, 100);
+        setTimeout(hideFilePaths, 300);
+        setTimeout(hideFilePaths, 500);
+        setTimeout(hideFilePaths, 1000);
+        
+        // Vista previa de imagen de perfil
+        $('#id_imagen_perfil').on('change', function() {
+            previewImagen(this);
+        });
+        
+        // Vista previa de hoja de vida
+        $('#id_hoja_de_vida').on('change', function() {
+            previewHojaVida(this);
+        });
+        
+        // Vista previa de video
+        $('#id_video_perfil').on('change', function() {
+            previewVideo(this);
+        });
+        
+        // Interceptar el envío del formulario para mantener archivos adjuntos
+        var formSubmitted = false;
+        $('#form_info_personal').on('submit', function(e) {
+            if (!formSubmitted) {
+                // Guardar archivos seleccionados antes de enviar
+                ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
+                    var input = document.getElementById('id_' + fieldName);
+                    if (input && input.files && input.files[0]) {
+                        // Guardar el archivo en memoria y sessionStorage
+                        var file = input.files[0];
+                        window.attachedFiles[fieldName] = file;
+                        saveFileToSession(fieldName, file);
+                        sessionStorage.setItem('has_file_' + fieldName, 'true');
+                        sessionStorage.setItem('is_new_' + fieldName, 'true');
+                    } else {
+                        // Si no hay archivo nuevo pero hay uno en memoria, mantenerlo
+                        if (window.attachedFiles[fieldName]) {
+                            try {
+                                // Intentar reasignar el archivo al input antes de enviar
+                                var dataTransfer = new DataTransfer();
+                                dataTransfer.items.add(window.attachedFiles[fieldName]);
+                                input.files = dataTransfer.files;
+                                sessionStorage.setItem('has_file_' + fieldName, 'true');
+                                sessionStorage.setItem('is_new_' + fieldName, 'true');
+                            } catch(err) {
+                                console.log('No se pudo reasignar archivo antes de enviar:', err);
+                                // Mantener al menos la referencia en memoria
+                                sessionStorage.setItem('has_file_' + fieldName, 'true');
+                                sessionStorage.setItem('is_new_' + fieldName, 'true');
+                            }
+                        }
+                    }
+                });
+                formSubmitted = true;
+            }
+        });
+        
+        // Si hay errores en el formulario, restaurar archivos desde sessionStorage y memoria
+        {% if form.errors %}
+            formSubmitted = false; // Permitir reenvío
+            
+            // Mostrar SweetAlert indicando que hay errores
+            Swal.fire({
+                title: 'Error en el formulario',
+                html: 'Por favor, revisa los campos marcados en rojo y corrige los errores antes de continuar.',
+                icon: 'error',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#B10022',
+                allowOutsideClick: false,
+                allowEscapeKey: true
+            });
+            
+            // Restaurar archivos que se cargaron pero el formulario falló
+            setTimeout(function() {
+                restoreFilesFromSession();
+                // Intentar reasignar archivos al formulario múltiples veces para asegurar que funcione
+                reattachFilesToForm();
+                setTimeout(function() {
+                    reattachFilesToForm();
+                }, 200);
+                setTimeout(function() {
+                    reattachFilesToForm();
+                }, 500);
+                setTimeout(function() {
+                    reattachFilesToForm();
+                }, 1000);
+            }, 100);
+        {% endif %}
+        
+        // Si hay archivos guardados en esta petición Y el formulario se procesó correctamente
+        {% if files_saved_in_request and not form.errors %}
+            setTimeout(function() {
+                {% if files_saved_in_request.imagen_perfil %}
+                    // Limpiar archivos de memoria y sessionStorage
+                    if (window.attachedFiles['imagen_perfil']) {
+                        delete window.attachedFiles['imagen_perfil'];
+                    }
+                    sessionStorage.removeItem('file_imagen_perfil');
+                    sessionStorage.removeItem('preview_imagen_perfil');
+                    sessionStorage.removeItem('has_file_imagen_perfil');
+                    sessionStorage.removeItem('is_new_imagen_perfil');
+                    
+                    // Mostrar el botón apuntando al archivo guardado en el servidor
+                    {% if candidato.imagen_perfil %}
+                        $('#file_info_imagen_perfil').show();
+                        $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil_current');
+                    {% endif %}
+                {% endif %}
+                {% if files_saved_in_request.hoja_de_vida %}
+                    // Limpiar archivos de memoria y sessionStorage
+                    if (window.attachedFiles['hoja_de_vida']) {
+                        delete window.attachedFiles['hoja_de_vida'];
+                    }
+                    sessionStorage.removeItem('file_hoja_de_vida');
+                    sessionStorage.removeItem('has_file_hoja_de_vida');
+                    sessionStorage.removeItem('is_new_hoja_de_vida');
+                    
+                    // Mostrar el botón apuntando al archivo guardado en el servidor
+                    {% if candidato.hoja_de_vida %}
+                        $('#file_info_hoja_de_vida').show();
+                        $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida_current');
+                    {% endif %}
+                {% endif %}
+                {% if files_saved_in_request.video_perfil %}
+                    // Limpiar archivos de memoria y sessionStorage
+                    if (window.attachedFiles['video_perfil']) {
+                        delete window.attachedFiles['video_perfil'];
+                    }
+                    sessionStorage.removeItem('file_video_perfil');
+                    sessionStorage.removeItem('has_file_video_perfil');
+                    sessionStorage.removeItem('is_new_video_perfil');
+                    
+                    // Mostrar el botón apuntando al archivo guardado en el servidor
+                    {% if candidato.video_perfil %}
+                        $('#file_info_video_perfil').show();
+                        $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil_current');
+                    {% endif %}
+                {% endif %}
+            }, 300);
+        {% endif %}
+        
+        // Inicializar botones según archivos existentes en el servidor
+        setTimeout(function() {
+            {% if candidato.imagen_perfil %}
+                // Verificar que realmente hay un archivo (no solo un string vacío)
+                var imagenPerfil = '{{ candidato.imagen_perfil|default:"" }}';
+                if (imagenPerfil && imagenPerfil.trim() !== '') {
+                    var hasNewFile = sessionStorage.getItem('is_new_imagen_perfil');
+                    if (hasNewFile !== 'true') {
+                        $('#file_info_imagen_perfil').show();
+                        $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil_current');
+                    }
+                } else {
+                    $('#file_info_imagen_perfil').hide();
+                }
+            {% else %}
+                $('#file_info_imagen_perfil').hide();
+            {% endif %}
+            {% if candidato.hoja_de_vida %}
+                var hojaVida = '{{ candidato.hoja_de_vida|default:"" }}';
+                if (hojaVida && hojaVida.trim() !== '') {
+                    var hasNewFile = sessionStorage.getItem('is_new_hoja_de_vida');
+                    if (hasNewFile !== 'true') {
+                        $('#file_info_hoja_de_vida').show();
+                        $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida_current');
+                    }
+                } else {
+                    $('#file_info_hoja_de_vida').hide();
+                }
+            {% else %}
+                $('#file_info_hoja_de_vida').hide();
+            {% endif %}
+            {% if candidato.video_perfil %}
+                var videoPerfil = '{{ candidato.video_perfil|default:"" }}';
+                if (videoPerfil && videoPerfil.trim() !== '') {
+                    var hasNewFile = sessionStorage.getItem('is_new_video_perfil');
+                    if (hasNewFile !== 'true') {
+                        $('#file_info_video_perfil').show();
+                        $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil_current');
+                    }
+                } else {
+                    $('#file_info_video_perfil').hide();
+                }
+            {% else %}
+                $('#file_info_video_perfil').hide();
+            {% endif %}
+        }, 100);
+        
+        // Verificar sessionStorage al cargar la página para mantener archivos visibles y adjuntos
+        setTimeout(function() {
+            ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
+                var hasFile = sessionStorage.getItem('has_file_' + fieldName);
+                var isNewFile = sessionStorage.getItem('is_new_' + fieldName);
+                
+                // Solo mostrar si realmente hay un archivo nuevo en sessionStorage Y en memoria
+                if (hasFile === 'true' && isNewFile === 'true' && window.attachedFiles[fieldName]) {
+                    // Hay un archivo nuevo adjunto
+                    if (fieldName === 'imagen_perfil') {
+                        $('#file_info_imagen_perfil').show();
+                        $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil');
+                        var previewData = sessionStorage.getItem('preview_imagen_perfil');
+                        if (previewData) {
+                            $('#modal_img_imagen_perfil').attr('src', previewData);
+                        }
+                    } else if (fieldName === 'hoja_de_vida') {
+                        $('#file_info_hoja_de_vida').show();
+                        $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida');
+                    } else if (fieldName === 'video_perfil') {
+                        $('#file_info_video_perfil').show();
+                        $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil');
+                    }
+                    
+                    // Intentar reasignar el archivo si está en memoria
+                    var input = document.getElementById('id_' + fieldName);
+                    if (input) {
+                        try {
+                            var dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(window.attachedFiles[fieldName]);
+                            input.files = dataTransfer.files;
+                            // Disparar evento change para actualizar la vista
+                            $(input).trigger('change');
+                        } catch(e) {
+                            console.log('No se pudo reasignar archivo directamente:', e);
+                        }
+                    }
+                } else if (hasFile === 'true' && isNewFile === 'true' && !window.attachedFiles[fieldName]) {
+                    // Si hay referencia en sessionStorage pero no en memoria, limpiar sessionStorage
+                    sessionStorage.removeItem('has_file_' + fieldName);
+                    sessionStorage.removeItem('is_new_' + fieldName);
+                    if (fieldName === 'imagen_perfil') {
+                        $('#file_info_imagen_perfil').hide();
+                    } else if (fieldName === 'hoja_de_vida') {
+                        $('#file_info_hoja_de_vida').hide();
+                    } else if (fieldName === 'video_perfil') {
+                        $('#file_info_video_perfil').hide();
+                    }
+                }
+            });
+        }, 300);
+        
+        // Si no hay errores y el formulario se procesó correctamente, limpiar archivos de memoria y apuntar al servidor
+        {% if not form.errors %}
+            // Limpiar solo si no hay errores (formulario procesado correctamente)
+            setTimeout(function() {
+                var hasErrors = $('.text-danger').length > 0;
+                if (!hasErrors) {
+                    // Limpiar archivos de memoria y sessionStorage que ya se guardaron
+                    ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
+                        // Limpiar de memoria
+                        if (window.attachedFiles[fieldName]) {
+                            delete window.attachedFiles[fieldName];
+                        }
+                        // Limpiar sessionStorage de archivos nuevos
+                        sessionStorage.removeItem('file_' + fieldName);
+                        sessionStorage.removeItem('preview_' + fieldName);
+                        sessionStorage.removeItem('has_file_' + fieldName);
+                        sessionStorage.removeItem('is_new_' + fieldName);
+                        
+                        // Asegurar que el botón apunte al archivo guardado en el servidor
+                        if (fieldName === 'imagen_perfil') {
+                            {% if candidato.imagen_perfil %}
+                                $('#file_info_imagen_perfil').show();
+                                $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil_current');
+                            {% endif %}
+                        } else if (fieldName === 'hoja_de_vida') {
+                            {% if candidato.hoja_de_vida %}
+                                $('#file_info_hoja_de_vida').show();
+                                $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida_current');
+                            {% endif %}
+                        } else if (fieldName === 'video_perfil') {
+                            {% if candidato.video_perfil %}
+                                $('#file_info_video_perfil').show();
+                                $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil_current');
+                            {% endif %}
+                        }
+                    });
+                }
+            }, 500);
+        {% endif %}
+    });
 </script>  
 {% endblock js %}
