@@ -281,6 +281,7 @@ class Cli077FitCultural(models.Model):
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, db_column='estado_id_004')
     nombre = models.CharField(max_length=50)
     grupo = models.ForeignKey(Cli076GrupoFitCultural, on_delete=models.CASCADE, db_column='grupo_id_076', blank=True, null=True, verbose_name="Grupo de Fit Cultural")
+    descripcion = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.nombre

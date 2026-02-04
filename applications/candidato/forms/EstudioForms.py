@@ -231,9 +231,9 @@ class candidateStudyForm(forms.Form):
         required=True,
         widget=forms.Select(
             attrs={
-                'class': 'form-select',
+                'class': 'form-select', 
                 'data-control': 'select2',
-                'data-dropdown-parent': '#estudios_candidato',
+                'data-placeholder': 'Seleccione una opción',
             }
         )
     )
@@ -245,7 +245,7 @@ class candidateStudyForm(forms.Form):
             attrs={
                 'class': 'form-select',
                 'data-control': 'select2',
-                'data-dropdown-parent': '#estudios_candidato',
+                'data-placeholder': 'Seleccione una opción',
             }
         )
     )
@@ -258,7 +258,7 @@ class candidateStudyForm(forms.Form):
             attrs={
                 'class': 'form-select',
                 'data-control': 'select2',
-                'data-dropdown-parent': '#estudios_candidato',
+                'data-placeholder': 'Seleccione una opción',
             }
         )
     )
@@ -276,13 +276,19 @@ class candidateStudyForm(forms.Form):
         self.instance = kwargs.pop('instance', None)
         super().__init__(*args, **kwargs)
 
-        # Si el formulario está en modo edición (es decir, tiene datos iniciales o instance), quitamos 'data-dropdown-parent' de los widgets select
-        if self.initial or self.instance:
+        # Si el formulario está en modo edición (es decir, tiene datos iniciales o instance)
+        is_editing = bool(self.initial or self.instance)
+        
+        if is_editing:
+            # Quitamos 'data-dropdown-parent' de los widgets select
             select_fields = ['tipo_estudio', 'ciudad_id_004', 'profesion_estudio']
             for field_name in select_fields:
                 field = self.fields.get(field_name)
                 if field and hasattr(field.widget, 'attrs'):
                     field.widget.attrs.pop('data-dropdown-parent', None)
+            
+            # Hacer el campo de certificación opcional cuando se está editando
+            self.fields['certificacion'].required = False
         
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -358,7 +364,10 @@ class candidateStudyForm(forms.Form):
         #     if len(fortaleza_adquiridas.split()) < 5:
         #         self.add_error('fortaleza_adquiridas', 'La descripción debe contener al menos 5 palabras')
 
-        # Validar archivo de certificación (opcional)
+        # Validar archivo de certificación
+        # Si estamos editando (hay datos iniciales), la certificación es opcional
+        is_editing = bool(self.initial)
+        
         if certificacion:
             if hasattr(certificacion, 'content_type'):
                 if certificacion.content_type != 'application/pdf':
@@ -366,7 +375,8 @@ class candidateStudyForm(forms.Form):
             if hasattr(certificacion, 'size'):
                 if certificacion.size > 5 * 1024 * 1024:
                     self.add_error('certificacion', 'El archivo no debe pesar más de 5 MB.')
-        else:
+        elif not is_editing:
+            # Solo es obligatorio si no estamos editando
             self.add_error('certificacion', 'El archivo de certificación es obligatorio.')
 
         if not profesion_estudio:

@@ -1,12 +1,71 @@
 from datetime import date
 import re, os
 from django import forms
+from django.utils.html import format_html, escape
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Layout, Div, Submit, HTML, Row, Column, Fieldset
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.services.choices import GENERO_CHOICES_STATIC
 from ..models import Can101Candidato
 from applications.cliente.models import Cli078MotivadoresCandidato, Cli077FitCultural
+
+
+class RadioSelectWithDescription(forms.RadioSelect):
+    """Widget personalizado que muestra la descripción de cada opción de fit cultural en un tooltip"""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Cache para las descripciones
+        self._descriptions_cache = {}
+    
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex, attrs)
+        
+        # Obtener el objeto del modelo para acceder a la descripción
+        fit_cultural = None
+        
+        # El valor puede ser el objeto del modelo directamente o el ID como string/int
+        if value and value != '':
+            if isinstance(value, Cli077FitCultural):
+                # Si ya es el objeto del modelo
+                fit_cultural = value
+            else:
+                # Si es el ID, obtener el objeto
+                try:
+                    # Convertir a int si es string
+                    fit_id = int(value) if isinstance(value, str) else value
+                    # Usar cache si está disponible
+                    if fit_id in self._descriptions_cache:
+                        fit_cultural = self._descriptions_cache[fit_id]
+                    else:
+                        fit_cultural = Cli077FitCultural.objects.get(id=fit_id)
+                        self._descriptions_cache[fit_id] = fit_cultural
+                except (Cli077FitCultural.DoesNotExist, ValueError, TypeError):
+                    pass
+        
+        # Si encontramos el objeto y tiene descripción, agregar atributo data-descripcion al input
+        if fit_cultural and fit_cultural.descripcion:
+            # Agregar un icono visual al label para indicar que hay información adicional
+            original_label = option['label']
+            option['label'] = format_html(
+                '{} <i class="ri-information-line text-primary ms-1" style="cursor: help; font-size: 0.9rem;"></i>',
+                original_label
+            )
+            # Agregar la descripción como atributo data-* en el input
+            # Asegurarse de que attrs existe y es un diccionario
+            if 'attrs' not in option or option['attrs'] is None:
+                option['attrs'] = {}
+            # Agregar el atributo data-descripcion
+            option['attrs']['data-descripcion'] = fit_cultural.descripcion
+            # También agregar el ID para referencia
+            option['attrs']['data-fit-id'] = str(fit_cultural.id)
+        
+        return option
+    
+    def render(self, name, value, attrs=None, renderer=None):
+        # Limpiar cache antes de renderizar
+        self._descriptions_cache = {}
+        return super().render(name, value, attrs, renderer)
 
 class CandidatoForm(forms.Form):
     # estado_id_001 = forms.ModelChoiceField(label='ESTADO', queryset=Cat001Estado.objects.all(), required=True)
@@ -20,7 +79,13 @@ class CandidatoForm(forms.Form):
     fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     telefono = forms.CharField(label='TELEFONO'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
     imagen_perfil = forms.ImageField(label='IMAGEN DE PERFIL', required=False)
-    hoja_de_vida = forms.FileField(label='HOJA DE VIDA', required=False)
+    hoja_de_vida = forms.FileField(
+        label='HOJA DE VIDA', 
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            'accept': '.pdf,.doc,.docx'  # Acepta PDF y Word
+        })
+    )
     
 
     def __init__(self, *args, **kwargs):
@@ -139,16 +204,16 @@ class CandidatoForm(forms.Form):
             
         
         # validacion hoja de vida
-        tamanio_maximo_hoja = 2 * 1024 * 1024  # 2 MB
-        listado_extensiones_hoja = ['.pdf']
+        tamanio_maximo_hoja = 5 * 1024 * 1024  # 5 MB (aumentado para Word)
+        listado_extensiones_hoja = ['.pdf', '.doc', '.docx']
 
         if hoja_de_vida:
             if hoja_de_vida.size > tamanio_maximo_hoja:
-                self.add_error('hoja_de_vida', 'El tamaño del archivo supera el tamaño permitido.')
+                self.add_error('hoja_de_vida', 'El tamaño del archivo supera el tamaño permitido (máximo 5MB).')
 
             extension_hoja = os.path.splitext(hoja_de_vida.name)[1].lower()
             if extension_hoja not in listado_extensiones_hoja:
-                self.add_error('hoja_de_vida', 'El archivo no es válido. Debe ser un archivo PDF.')
+                self.add_error('hoja_de_vida', 'El archivo no es válido. Debe ser un archivo PDF o Word (.doc, .docx).')
 
             if self.instance:
                 if Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exclude(id=self.instance.id).exists():
@@ -189,7 +254,13 @@ class CandidatoFormAdmin(forms.Form):
     fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     telefono = forms.CharField(label='TELEFONO'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
     imagen_perfil = forms.ImageField(label='IMAGEN DE PERFIL', required=False)
-    hoja_de_vida = forms.FileField(label='HOJA DE VIDA', required=False)
+    hoja_de_vida = forms.FileField(
+        label='HOJA DE VIDA', 
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            'accept': '.pdf,.doc,.docx'  # Acepta PDF y Word
+        })
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -332,16 +403,16 @@ class CandidatoFormAdmin(forms.Form):
                 self.add_error('imagen_perfil','Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
 
         # validacion hoja de vida
-        tamanio_maximo_hoja = 2 * 1024 * 1024  # 2 MB
-        listado_extensiones_hoja = ['.pdf']
+        tamanio_maximo_hoja = 5 * 1024 * 1024  # 5 MB (aumentado para Word)
+        listado_extensiones_hoja = ['.pdf', '.doc', '.docx']
 
         if hoja_de_vida:
             if hoja_de_vida.size > tamanio_maximo_hoja:
-                self.add_error('hoja_de_vida', 'El tamaño del archivo supera el tamaño permitido.')
+                self.add_error('hoja_de_vida', 'El tamaño del archivo supera el tamaño permitido (máximo 5MB).')
 
             extension_hoja = os.path.splitext(hoja_de_vida.name)[1].lower()
             if extension_hoja not in listado_extensiones_hoja:
-                self.add_error('hoja_de_vida', 'El archivo no es válido. Debe ser un archivo PDF.')
+                self.add_error('hoja_de_vida', 'El archivo no es válido. Debe ser un archivo PDF o Word (.doc, .docx).')
 
             if Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exists():
                 self.add_error('hoja_de_vida', 'Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
@@ -449,14 +520,61 @@ class CandidateForm(forms.Form):
         label='IMAGEN DE PERFIL',
         required=False,
         widget=forms.ClearableFileInput(attrs={
-            'class': 'form-control form-control-solid'
-        })
+            'class': 'form-control form-control-solid',
+            'accept': 'image/png,image/jpeg,image/jpg'
+        }),
+        error_messages={
+            'invalid_image': 'El archivo debe ser una imagen válida en formato PNG o JPG.',
+        }
     )
+    
+    def clean_imagen_perfil(self):
+        imagen_perfil = self.cleaned_data.get('imagen_perfil')
+        
+        # Si el archivo ya se guardó exitosamente en la vista, no validar nada
+        if self.files_saved_in_request.get('imagen_perfil', False):
+            # El archivo ya se validó y guardó en la vista, no procesarlo de nuevo
+            # Retornar el archivo existente del candidato si existe, o None si no hay
+            if self.candidato and self.candidato.imagen_perfil:
+                return self.candidato.imagen_perfil
+            return None
+        
+        if imagen_perfil:
+            # Validar extensión
+            extension = os.path.splitext(imagen_perfil.name)[1].lower()
+            if extension not in ['.jpg', '.jpeg', '.png']:
+                raise forms.ValidationError('El archivo debe ser una imagen en formato PNG o JPG.')
+            
+            # Validar tamaño
+            tamanio_maximo = 5 * 1024 * 1024  # 5 MB
+            if imagen_perfil.size > tamanio_maximo:
+                raise forms.ValidationError('El tamaño del archivo no debe superar los 5 MB.')
+            
+            # Intentar validar que sea una imagen válida
+            try:
+                from PIL import Image
+                # Resetear el puntero del archivo antes de validar
+                if hasattr(imagen_perfil, 'seek'):
+                    imagen_perfil.seek(0)
+                img = Image.open(imagen_perfil)
+                img.verify()  # Verificar que sea una imagen válida
+                # Resetear nuevamente para que se pueda leer después
+                if hasattr(imagen_perfil, 'seek'):
+                    imagen_perfil.seek(0)
+            except (IOError, OSError, Image.UnidentifiedImageError) as e:
+                # Si la imagen no se puede abrir, es inválida
+                raise forms.ValidationError('El archivo debe ser una imagen válida en formato PNG o JPG.')
+            except Exception as e:
+                # Otros errores también indican que la imagen es inválida
+                raise forms.ValidationError('El archivo debe ser una imagen válida en formato PNG o JPG.')
+        
+        return imagen_perfil
     hoja_de_vida = forms.FileField(
         label='HOJA DE VIDA',
         required=False,
         widget=forms.ClearableFileInput(attrs={
-            'class': 'form-control form-control-solid'
+            'class': 'form-control form-control-solid',
+            'accept': '.pdf,.doc,.docx'  # Acepta PDF y Word
         })
     )
     video_perfil = forms.FileField(
@@ -505,17 +623,17 @@ class CandidateForm(forms.Form):
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=1).order_by('id'),
             label='Estilo trabajo predominante en el área:',
             to_field_name='id',
-            widget=forms.RadioSelect(attrs={
+            widget=RadioSelectWithDescription(attrs={
                 'class': 'form-check-input', # Clase para el input del radio
             }),
-            required=False # Si quieres que la selección sea opcional
+            required=True # Si quieres que la selección sea opcional
         )
     
     grupo_fit_2 = forms.ModelChoiceField(
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=2).order_by('id'),
             label='Tipo de liderazgo presente:',
             to_field_name='id',
-            widget=forms.RadioSelect(attrs={
+            widget=RadioSelectWithDescription(attrs={
                 'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
@@ -525,7 +643,7 @@ class CandidateForm(forms.Form):
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=3).order_by('id'),
             label='Comunicación organizacional:',
             to_field_name='id',
-            widget=forms.RadioSelect(attrs={
+            widget=RadioSelectWithDescription(attrs={
                 'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
@@ -535,7 +653,7 @@ class CandidateForm(forms.Form):
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=4).order_by('id'),
             label='Ritmo de trabajo:',
             to_field_name='id',
-            widget=forms.RadioSelect(attrs={
+            widget=RadioSelectWithDescription(attrs={
                 'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
@@ -545,7 +663,7 @@ class CandidateForm(forms.Form):
             queryset=Cli077FitCultural.objects.filter(estado=1, grupo=5).order_by('id'),
             label='Estilo toma de decisiones:',
             to_field_name='id',
-            widget=forms.RadioSelect(attrs={
+            widget=RadioSelectWithDescription(attrs={
                 'class': 'form-check-input', # Clase para el input del radio
             }),
             required=False # Si quieres que la selección sea opcional
@@ -553,10 +671,11 @@ class CandidateForm(forms.Form):
     
 
 
-    def __init__(self, *args, instance=None, **kwargs):
+    def __init__(self, *args, instance=None, files_saved_in_request=None, **kwargs):
         super().__init__(*args, **kwargs)
         
         self.candidato = instance  # guardamos el candidato si se va a editar
+        self.files_saved_in_request = files_saved_in_request or {}  # archivos ya guardados exitosamente
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -751,16 +870,16 @@ class CandidateForm(forms.Form):
                 self.add_error('imagen_perfil','Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
 
         # validacion hoja de vida
-        tamanio_maximo_hoja = 2 * 1024 * 1024  # 2 MB
-        listado_extensiones_hoja = ['.pdf']
+        tamanio_maximo_hoja = 5 * 1024 * 1024  # 5 MB (aumentado para Word)
+        listado_extensiones_hoja = ['.pdf', '.doc', '.docx']
 
         if hoja_de_vida:
             if hoja_de_vida.size > tamanio_maximo_hoja:
-                self.add_error('hoja_de_vida', 'El tamaño del archivo supera el tamaño permitido.')
+                self.add_error('hoja_de_vida', 'El tamaño del archivo supera el tamaño permitido (máximo 5MB).')
 
             extension_hoja = os.path.splitext(hoja_de_vida.name)[1].lower()
             if extension_hoja not in listado_extensiones_hoja:
-                self.add_error('hoja_de_vida', 'El archivo no es válido. Debe ser un archivo PDF.')
+                self.add_error('hoja_de_vida', 'El archivo no es válido. Debe ser un archivo PDF o Word (.doc, .docx).')
 
             # Verificar duplicados excluyendo el candidato actual si existe
             candidato = getattr(self, 'candidato', None)
@@ -823,16 +942,28 @@ class CandidateForm(forms.Form):
         if motivadores_count > 2:
             self.add_error('motivadores', 'Solo puede seleccionar máximo dos opciones de motivadores.')
         
-        # Validación fit cultural - asegurar que no se escoja más de una opción por grupo
-        # Aunque ModelChoiceField solo permite una selección, validamos que no se envíe una lista accidentalmente
+        # Validación fit cultural - asegurar que se seleccione al menos una opción por cada grupo
+        grupos_labels = {
+            1: 'Estilo trabajo predominante en el área',
+            2: 'Tipo de liderazgo presente',
+            3: 'Comunicación organizacional',
+            4: 'Ritmo de trabajo',
+            5: 'Estilo toma de decisiones'
+        }
+        
         for i in range(1, 6):
             grupo_field = f'grupo_fit_{i}'
             value = cleaned_data.get(grupo_field)
-            if value and isinstance(value, list):
+            
+            # Validar que se haya seleccionado al menos una opción por grupo
+            if not value:
+                self.add_error(grupo_field, f'Debe seleccionar al menos una opción para: {grupos_labels[i]}')
+            elif isinstance(value, list):
+                # Si por alguna razón viene como lista, validar y convertir
                 if len(value) > 1:
                     self.add_error(grupo_field, 'Solo puede seleccionar una opción por grupo.')
                 elif len(value) == 1:
-                    # Si por alguna razón viene como lista de un solo elemento, lo convertimos al objeto
+                    # Si viene como lista de un solo elemento, lo convertimos al objeto
                     cleaned_data[grupo_field] = value[0]
 
         return cleaned_data

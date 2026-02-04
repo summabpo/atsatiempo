@@ -23,7 +23,6 @@ urlpatterns = [
     
     path( url_principal+'informacion/skills/borrar/<int:pk>', candidate_views.candidate_info_skills_delete, name='candidato_info_habilidades_borrar'),
     path( url_principal+'informacion/redes/borrar/<int:pk>', candidate_views.canidate_info_social_network_delete, name='candidato_info_redes_borrar'),
-    path( url_principal+'info/', candidate_views.candidate_info_wizard, name='candidato_info_wizard'),
 
     #apis
     path( url_principal+'informacion/skills/api/', api_views.api_suggestions_skills, name='api_sugerencias_habilidades'),

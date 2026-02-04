@@ -1,8 +1,24 @@
 {% load static %}
+<style>
+    .info-panel-card.active {
+        border: 1px solid #B10022 !important;
+        box-shadow: 0 0 5px rgba(177, 0, 34, 0.3) !important;
+        transform: translateY(-5px);
+        transition: all 0.3s ease;
+    }
+    .info-panel-card.active .card-body {
+        background-color: rgba(177, 0, 34, 0.05);
+    }
+    .info-panel-card.active .card-footer .btn {
+        background-color: #B10022 !important;
+        color: white !important;
+        font-weight: 600;
+    }
+</style>
 <div class="row">
     <!-- Información Básica -->
     <div class="col-md-2 mb-4">
-        <div class="card bg-white border-0 rounded-3 shadow-sm h-100">
+        <div class="card bg-white border-0 rounded-3 shadow-sm h-100 info-panel-card {% if active_section == 'personal' %}active{% endif %}">
             <div class="card-body p-3 text-center">
                 <div class="mb-3">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">person</span>
@@ -19,16 +35,16 @@
                 <small class="text-muted d-block mt-2">{{ porcentajes.info_personal.campos.llenos }}/{{ porcentajes.info_personal.campos.total }} campos</small>
             </div>
             <div class="card-footer">
-                <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100 section-nav-btn" data-section="section-info-personal">
+                <a href="{% url 'candidatos:candidato_info_personal' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                     {% if porcentajes.info_personal.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}
-                </button>
+                </a>
             </div>
         </div>
     </div>
 
     <!-- Información Académica -->
     <div class="col-md-2 mb-4">
-        <div class="card bg-white border-0 rounded-3 shadow-sm h-100">
+        <div class="card bg-white border-0 rounded-3 shadow-sm h-100 info-panel-card {% if active_section == 'academica' %}active{% endif %}">
             <div class="card-body p-3 text-center">
                 <div class="mb-3">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">school</span>
@@ -45,16 +61,16 @@
                 <small class="text-muted d-block mt-2">{{ porcentajes.educacion.campos.llenos }} registro(s)</small>
             </div>
             <div class="card-footer">
-                <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100 section-nav-btn" data-section="section-info-academica">
+                <a href="{% url 'candidatos:candidato_info_academica' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                     {% if porcentajes.educacion.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}
-                </button>
+                </a>
             </div>
         </div>
     </div>
 
     <!-- Información Laboral -->
     <div class="col-md-2 mb-4">
-        <div class="card bg-white border-0 rounded-3 shadow-sm h-100">
+        <div class="card bg-white border-0 rounded-3 shadow-sm h-100 info-panel-card {% if active_section == 'laboral' %}active{% endif %}">
             <div class="card-body p-3 text-center">
                 <div class="mb-3">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">work</span>
@@ -71,16 +87,16 @@
                 <small class="text-muted d-block mt-2">{{ porcentajes.experiencia.campos.llenos }} registro(s)</small>
             </div>
             <div class="card-footer">
-                <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100 section-nav-btn" data-section="section-info-laboral">
+                <a href="{% url 'candidatos:candidato_info_laboral' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                     {% if porcentajes.experiencia.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}
-                </button>
+                </a>
             </div>
         </div>
     </div>
 
     <!-- Habilidades -->
     <div class="col-md-2 mb-4">
-        <div class="card bg-white border-0 rounded-3 shadow-sm h-100">
+        <div class="card bg-white border-0 rounded-3 shadow-sm h-100 info-panel-card {% if active_section == 'habilidades' %}active{% endif %}">
             <div class="card-body p-3 text-center">
                 <div class="mb-3">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">psychology</span>
@@ -97,16 +113,16 @@
                 <small class="text-muted d-block mt-2">{{ porcentajes.skills.campos.llenos }} habilidad(es)</small>
             </div>
             <div class="card-footer">
-                <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100 section-nav-btn" data-section="section-info-habilidades">
+                <a href="{% url 'candidatos:candidato_info_habilidades' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                     {% if porcentajes.skills.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}
-                </button>
+                </a>
             </div>
         </div>
     </div>
 
     <!-- Redes Sociales -->
     <div class="col-md-2 mb-4">
-        <div class="card bg-white border-0 rounded-3 shadow-sm h-100">
+        <div class="card bg-white border-0 rounded-3 shadow-sm h-100 info-panel-card {% if active_section == 'redes' %}active{% endif %}">
             <div class="card-body p-3 text-center">
                 <div class="mb-3">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">share</span>
@@ -123,9 +139,9 @@
                 <small class="text-muted d-block mt-2">{{ porcentajes.redes_sociales.campos.llenos }} red(es)</small>
             </div>
             <div class="card-footer">
-                <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100 section-nav-btn" data-section="section-info-redes">
+                <a href="{% url 'candidatos:candidato_info_redes' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                     {% if porcentajes.redes_sociales.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}
-                </button>
+                </a>
             </div>
         </div>
     </div>
