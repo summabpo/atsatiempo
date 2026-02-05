@@ -44,24 +44,69 @@ def candidate_info(request):
         files_saved = False
         file_errors = {}
         
-        # Guardar archivos sin validaciones - permitir todos los archivos
+        # Validar y guardar imagen_perfil
         if 'imagen_perfil' in request.FILES:
             imagen_perfil = request.FILES['imagen_perfil']
-            candidato.imagen_perfil = imagen_perfil
-            files_saved = True
-            files_saved_in_request['imagen_perfil'] = True
+            
+            # Validar extensión (JPG, PNG)
+            import os
+            ext = os.path.splitext(imagen_perfil.name)[1].lower()
+            if ext not in ['.jpg', '.jpeg', '.png']:
+                file_errors['imagen_perfil'] = 'El archivo debe ser una imagen en formato JPG o PNG.'
+            # Validar tamaño (máximo 10 MB)
+            elif imagen_perfil.size > 10 * 1024 * 1024:  # 10 MB en bytes
+                file_errors['imagen_perfil'] = 'El archivo no puede superar los 10 MB.'
+            else:
+                # Validar que sea una imagen válida usando PIL
+                try:
+                    from PIL import Image
+                    imagen_perfil.seek(0)
+                    img = Image.open(imagen_perfil)
+                    img.verify()  # Verificar que sea una imagen válida
+                    imagen_perfil.seek(0)  # Resetear para guardar
+                    
+                    # Si pasa todas las validaciones, guardar
+                    candidato.imagen_perfil = imagen_perfil
+                    files_saved = True
+                    files_saved_in_request['imagen_perfil'] = True
+                except Exception as e:
+                    file_errors['imagen_perfil'] = 'El archivo debe ser una imagen válida.'
         
+        # Validar y guardar hoja_de_vida
         if 'hoja_de_vida' in request.FILES:
             hoja_de_vida = request.FILES['hoja_de_vida']
-            candidato.hoja_de_vida = hoja_de_vida
-            files_saved = True
-            files_saved_in_request['hoja_de_vida'] = True
+            
+            # Validar extensión (PDF, DOC, DOCX)
+            import os
+            ext = os.path.splitext(hoja_de_vida.name)[1].lower()
+            if ext not in ['.pdf', '.doc', '.docx']:
+                file_errors['hoja_de_vida'] = 'El archivo debe ser un documento en formato PDF o Word (.doc, .docx).'
+            # Validar tamaño (máximo 10 MB)
+            elif hoja_de_vida.size > 10 * 1024 * 1024:  # 10 MB en bytes
+                file_errors['hoja_de_vida'] = 'El archivo no puede superar los 10 MB.'
+            else:
+                # Si pasa todas las validaciones, guardar
+                candidato.hoja_de_vida = hoja_de_vida
+                files_saved = True
+                files_saved_in_request['hoja_de_vida'] = True
         
+        # Validar y guardar video_perfil
         if 'video_perfil' in request.FILES:
             video_perfil = request.FILES['video_perfil']
-            candidato.video_perfil = video_perfil
-            files_saved = True
-            files_saved_in_request['video_perfil'] = True
+            
+            # Validar extensión (MP4)
+            import os
+            ext = os.path.splitext(video_perfil.name)[1].lower()
+            if ext not in ['.mp4']:
+                file_errors['video_perfil'] = 'El archivo debe ser un video en formato MP4.'
+            # Validar tamaño (máximo 20 MB)
+            elif video_perfil.size > 20 * 1024 * 1024:  # 20 MB en bytes
+                file_errors['video_perfil'] = 'El archivo no puede superar los 20 MB.'
+            else:
+                # Si pasa todas las validaciones, guardar
+                candidato.video_perfil = video_perfil
+                files_saved = True
+                files_saved_in_request['video_perfil'] = True
         
         # Crear el formulario DESPUÉS de validar y guardar archivos, pasando files_saved_in_request actualizado
         form = CandidateForm(request.POST, request.FILES, instance=candidato, files_saved_in_request=files_saved_in_request)
@@ -71,13 +116,17 @@ def candidate_info(request):
             form.add_error(field, error_msg)
         
         # Si se guardaron archivos, guardar el candidato inmediatamente
+        # Esto asegura que la imagen se guarde en el registro incluso si hay errores en otros campos
         if files_saved:
             candidato.save()
             # Actualizar imagen de perfil en el usuario si se guardó una nueva
-            if 'imagen_perfil' in request.FILES and 'imagen_perfil' not in file_errors:
-                usuario = UsuarioBase.objects.get(id=request.session.get('user_login')['id'])
-                usuario.imagen_perfil = candidato.imagen_perfil
-                usuario.save()
+            if files_saved_in_request.get('imagen_perfil', False) and 'imagen_perfil' not in file_errors:
+                try:
+                    usuario = UsuarioBase.objects.get(id=request.session.get('user_login')['id'])
+                    usuario.imagen_perfil = candidato.imagen_perfil
+                    usuario.save()
+                except Exception as e:
+                    print(f"Error actualizando imagen de perfil en usuario: {e}")
             # Recargar el candidato para que el formulario tenga los archivos actualizados
             candidato.refresh_from_db()
             # NO mostrar mensaje aquí - solo se mostrará cuando el formulario se procese correctamente
@@ -157,6 +206,12 @@ def candidate_info(request):
             # Si hay error, recrear el formulario pero manteniendo los archivos de request.FILES
             # para que se puedan reutilizar en el siguiente envío
             form = CandidateForm(request.POST, request.FILES, instance=candidato, files_saved_in_request=files_saved_in_request)
+            
+            # Obtener el nombre del archivo de imagen si se guardó
+            imagen_perfil_nombre = None
+            if files_saved_in_request.get('imagen_perfil', False) and candidato.imagen_perfil:
+                import os
+                imagen_perfil_nombre = os.path.basename(candidato.imagen_perfil.name)
     else:
         initial_data = {
             'email': candidato.email,
@@ -199,6 +254,11 @@ def candidate_info(request):
                     continue
         
         form = CandidateForm(initial=initial_data, instance=candidato)
+        
+        # Inicializar nombres de archivos como None para el caso GET
+        imagen_perfil_nombre = None
+        hoja_de_vida_nombre = None
+        video_perfil_nombre = None
 
     # Obtener descripciones de fit cultural para tooltips
     from applications.cliente.models import Cli077FitCultural
@@ -248,13 +308,21 @@ def candidate_info(request):
             'imagen_perfil': False,
             'hoja_de_vida': False,
             'video_perfil': False,
-        }
+        },
+        'imagen_perfil_nombre': None
     }
     
     # Si se guardaron archivos en esta petición, indicarlo en el contexto
     if request.method == 'POST':
         if 'files_saved_in_request' in locals():
             context['files_saved_in_request'] = files_saved_in_request
+        # Si los archivos se guardaron pero hay errores, pasar los nombres de los archivos
+        if 'imagen_perfil_nombre' in locals() and imagen_perfil_nombre:
+            context['imagen_perfil_nombre'] = imagen_perfil_nombre
+        if 'hoja_de_vida_nombre' in locals() and hoja_de_vida_nombre:
+            context['hoja_de_vida_nombre'] = hoja_de_vida_nombre
+        if 'video_perfil_nombre' in locals() and video_perfil_nombre:
+            context['video_perfil_nombre'] = video_perfil_nombre
 
     return render(request, 'admin/candidate/candidate_user/info_personal.html', context)
 
@@ -270,36 +338,61 @@ def candidate_info_academy(request):
     if request.method == 'POST':
         form = candidateStudyForm(request.POST, request.FILES)
         if form.is_valid():
-            institucion = form.cleaned_data['institucion']
-            grado_en = form.cleaned_data['grado_en']
-            fecha_inicial = form.cleaned_data['fecha_inicial']
-            fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
-            titulo = form.cleaned_data['titulo'] if form.cleaned_data['titulo'] else None
-            # carrera = form.cleaned_data['carrera']
-            # fortaleza_adquiridas = form.cleaned_data['fortaleza_adquiridas']
-            candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
-            ciudad_obj_004 = form.cleaned_data['ciudad_id_004']
             tipo_estudio = form.cleaned_data['tipo_estudio']
-            if form.cleaned_data['certificacion']:
-                certificacion = form.cleaned_data['certificacion']
+            candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
             
-            profesion_estudio = form.cleaned_data['profesion_estudio'] if form.cleaned_data['profesion_estudio'] else None
-            
-            Can103Educacion.objects.create(
-                estado_id_001=Cat001Estado.objects.get(id=1),  # Cambia esto según tu lógica
-                institucion=institucion,
-                grado_en=grado_en,
-                fecha_inicial=fecha_inicial,
-                fecha_final=fecha_final,
-                titulo=titulo,
-                # carrera=carrera,
-                # fortaleza_adquiridas=fortaleza_adquiridas,
-                candidato_id_101=candidato_id_101,
-                ciudad_id_004=ciudad_obj_004,
-                tipo_estudio=tipo_estudio,
-                certificacion=certificacion if form.cleaned_data['certificacion'] else None,
-                profesion_estudio= profesion_estudio if profesion_estudio else None
-            )
+            # Si es "Sin estudios" (tipo_estudio == '1'), crear un registro mínimo
+            if tipo_estudio == '1':
+                from datetime import date
+                Can103Educacion.objects.create(
+                    estado_id_001=Cat001Estado.objects.get(id=1),
+                    institucion='Sin estudios',
+                    grado_en=False,
+                    fecha_inicial=date.today(),
+                    fecha_final=None,
+                    titulo=None,
+                    candidato_id_101=candidato_id_101,
+                    ciudad_id_004=None,
+                    tipo_estudio=tipo_estudio,
+                    certificacion=None,
+                    profesion_estudio=None
+                )
+            else:
+                # Si no es "Sin estudios", crear el registro con todos los datos
+                institucion = form.cleaned_data['institucion']
+                fecha_inicial = form.cleaned_data['fecha_inicial']
+                fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
+                titulo = form.cleaned_data['titulo'] if form.cleaned_data['titulo'] else None
+                # carrera = form.cleaned_data['carrera']
+                # fortaleza_adquiridas = form.cleaned_data['fortaleza_adquiridas']
+                ciudad_obj_004 = form.cleaned_data['ciudad_id_004']
+                if form.cleaned_data['certificacion']:
+                    certificacion = form.cleaned_data['certificacion']
+                else:
+                    certificacion = None
+                
+                profesion_estudio = form.cleaned_data['profesion_estudio'] if form.cleaned_data['profesion_estudio'] else None
+                estado_estudios = form.cleaned_data.get('estado_estudios', None)
+                
+                # Determinar grado_en basado en estado_estudios
+                grado_en = (estado_estudios == 'G')
+                
+                Can103Educacion.objects.create(
+                    estado_id_001=Cat001Estado.objects.get(id=1),  # Cambia esto según tu lógica
+                    institucion=institucion,
+                    grado_en=grado_en,
+                    fecha_inicial=fecha_inicial,
+                    fecha_final=fecha_final,
+                    titulo=titulo,
+                    # carrera=carrera,
+                    # fortaleza_adquiridas=fortaleza_adquiridas,
+                    candidato_id_101=candidato_id_101,
+                    ciudad_id_004=ciudad_obj_004,
+                    tipo_estudio=tipo_estudio,
+                    certificacion=certificacion,
+                    profesion_estudio=profesion_estudio if profesion_estudio else None,
+                    estado_estudios=estado_estudios
+                )
             
             messages.success(request, 'Información académica actualizada exitosamente.')
             return redirect('candidatos:candidato_info_academica')
@@ -358,7 +451,6 @@ def candidate_info_academy_edit(request, pk):
         'institucion': study.institucion,
         'fecha_inicial': study.fecha_inicial.strftime('%Y-%m-%d') if study.fecha_inicial else '',
         'fecha_final': study.fecha_final.strftime('%Y-%m-%d') if study.fecha_final else '',
-        'grado_en': study.grado_en,
         'titulo': study.titulo,
         # 'carrera': study.carrera,
         # 'fortaleza_adquiridas': study.fortaleza_adquiridas,
@@ -366,6 +458,7 @@ def candidate_info_academy_edit(request, pk):
         'tipo_estudio': study.tipo_estudio,
         'certificacion': study.certificacion,
         'profesion_estudio': study.profesion_estudio.id if study.profesion_estudio else None,
+        'estado_estudios': study.estado_estudios,
     }
 
     if request.method == 'POST':
@@ -385,6 +478,7 @@ def candidate_info_academy_edit(request, pk):
             if form.cleaned_data['certificacion']:
                 study.certificacion = form.cleaned_data['certificacion']
             study.profesion_estudio = form.cleaned_data['profesion_estudio'] if form.cleaned_data['profesion_estudio'] else None
+            study.estado_estudios = form.cleaned_data.get('estado_estudios', None)
             study.save()
 
             messages.success(request, 'Información académica actualizada exitosamente.')
@@ -412,34 +506,58 @@ def candidate_info_job(request):
     if request.method == 'POST':
         form = candidateJobForm(request.POST)
         if form.is_valid():
-            entidad = form.cleaned_data['entidad']
-            sector = form.cleaned_data['sector']
-            fecha_inicial = form.cleaned_data['fecha_inicial']
-            fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
-            activo = form.cleaned_data['activo']
-            logro = form.cleaned_data['logro']
+            experiencia_laboral = form.cleaned_data.get('experiencia_laboral', False)
             candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
-            cargo = form.cleaned_data['cargo']
-            motivo_salida = form.cleaned_data['motivo_salida']
-            salario = form.cleaned_data['salario'] if form.cleaned_data['salario'] else None
-            modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
-            nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
+            
+            # Si está marcado "Sin experiencia laboral", crear un registro mínimo
+            if experiencia_laboral:
+                from datetime import date
+                Can102Experiencia.objects.create(
+                    estado_id_001=Cat001Estado.objects.get(id=1),
+                    entidad='Sin experiencia laboral',
+                    sector='',
+                    fecha_inicial=date.today(),
+                    fecha_final=None,
+                    activo=False,
+                    logro=None,
+                    candidato_id_101=candidato_id_101,
+                    cargo='',
+                    motivo_salida=None,
+                    salario=None,
+                    modalidad_trabajo=None,
+                    nombre_jefe=None,
+                    experiencia_laboral=True
+                )
+            else:
+                # Si no está marcado, crear el registro con todos los datos
+                entidad = form.cleaned_data['entidad']
+                sector = form.cleaned_data['sector']
+                fecha_inicial = form.cleaned_data['fecha_inicial']
+                fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
+                activo = form.cleaned_data['activo']
+                logro = form.cleaned_data['logro']
+                cargo = form.cleaned_data['cargo']
+                motivo_salida = form.cleaned_data['motivo_salida']
+                salario = form.cleaned_data['salario'] if form.cleaned_data['salario'] else None
+                modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
+                nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
 
-            Can102Experiencia.objects.create(
-                estado_id_001=Cat001Estado.objects.get(id=1),  # Cambia esto según tu lógica
-                entidad=entidad,
-                sector=sector,
-                fecha_inicial=fecha_inicial,
-                fecha_final=fecha_final,
-                activo=activo,
-                logro=logro,
-                candidato_id_101=candidato_id_101,
-                cargo=cargo,
-                motivo_salida=motivo_salida,
-                salario=salario,
-                modalidad_trabajo=modalidad_trabajo,
-                nombre_jefe=nombre_jefe
-            )
+                Can102Experiencia.objects.create(
+                    estado_id_001=Cat001Estado.objects.get(id=1),  # Cambia esto según tu lógica
+                    entidad=entidad,
+                    sector=sector,
+                    fecha_inicial=fecha_inicial,
+                    fecha_final=fecha_final,
+                    activo=activo,
+                    logro=logro,
+                    candidato_id_101=candidato_id_101,
+                    cargo=cargo,
+                    motivo_salida=motivo_salida,
+                    salario=salario,
+                    modalidad_trabajo=modalidad_trabajo,
+                    nombre_jefe=nombre_jefe,
+                    experiencia_laboral=False
+                )
             
             messages.success(request, 'Información laboral actualizada exitosamente.')
             return redirect('candidatos:candidato_info_laboral')
@@ -511,6 +629,7 @@ def candidate_info_job_edit(request, pk):
         'salario': job.salario,
         'modalidad_trabajo': job.modalidad_trabajo,
         'nombre_jefe': job.nombre_jefe,
+        'experiencia_laboral': job.experiencia_laboral,
     }
 
     
@@ -518,18 +637,38 @@ def candidate_info_job_edit(request, pk):
     if request.method == 'POST':
         form = candidateJobForm(request.POST, initial=initial, instance=True)
         if form.is_valid():
-            # Actualizar la experiencia laboral con los datos del formulario
-            job.entidad = form.cleaned_data['entidad']
-            job.sector = form.cleaned_data['sector']
-            job.fecha_inicial = form.cleaned_data['fecha_inicial']
-            job.fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
-            job.activo = form.cleaned_data['activo']
-            job.logro = form.cleaned_data['logro']
-            job.cargo = form.cleaned_data['cargo']
-            job.motivo_salida = form.cleaned_data['motivo_salida']
-            job.salario = form.cleaned_data['salario'] if form.cleaned_data['salario'] else None
-            job.modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
-            job.nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
+            experiencia_laboral = form.cleaned_data.get('experiencia_laboral', False)
+            
+            # Si está marcado "Sin experiencia laboral", actualizar con valores mínimos
+            if experiencia_laboral:
+                from datetime import date
+                job.entidad = 'Sin experiencia laboral'
+                job.sector = ''
+                job.fecha_inicial = date.today()
+                job.fecha_final = None
+                job.activo = False
+                job.logro = None
+                job.cargo = ''
+                job.motivo_salida = None
+                job.salario = None
+                job.modalidad_trabajo = None
+                job.nombre_jefe = None
+                job.experiencia_laboral = True
+            else:
+                # Si no está marcado, actualizar con todos los datos
+                job.entidad = form.cleaned_data['entidad']
+                job.sector = form.cleaned_data['sector']
+                job.fecha_inicial = form.cleaned_data['fecha_inicial']
+                job.fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
+                job.activo = form.cleaned_data['activo']
+                job.logro = form.cleaned_data['logro']
+                job.cargo = form.cleaned_data['cargo']
+                job.motivo_salida = form.cleaned_data['motivo_salida']
+                job.salario = form.cleaned_data['salario'] if form.cleaned_data['salario'] else None
+                job.modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
+                job.nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
+                job.experiencia_laboral = False
+            
             job.save()
 
             messages.success(request, 'Información laboral actualizada exitosamente.')

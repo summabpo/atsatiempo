@@ -25,6 +25,7 @@
                         <h4 class="fs-14 fw-semibold mb-0">{{ vacante.fecha_creacion|date:"F d, Y" }}</h4>
                     </div>
                 </div>
+                {% if not is_candidato %}
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0 position-relative">
                         <img src="{% static 'admin/images/schedule2.png' %}" style="width: 30px; height: 30px;" alt="schedule2">
@@ -34,9 +35,11 @@
                         <h4 class="fs-14 fw-semibold mb-0">{{ vacante.fecha_presentacion|date:"F d, Y" }}</h4>
                     </div>
                 </div>
+                {% endif %}
             </div>
 
             <div class="d-flex flex-wrap justify-content-between gap-3 rounded-3 bg-body-bg p-3 px-sm-4 mb-4">
+                {% if not is_candidato %}
                 <div class="text-center">
                     <span class="fs-12 d-block mb-1 text-body"># vacantes</span>
                     <h3 class="mb-0 fw-semibold fs-14">{{vacante.numero_posiciones}}</h3>
@@ -45,14 +48,17 @@
                     <span class="fs-12 d-block mb-1 text-body">Presentar</span>
                     <h3 class="mb-0 fw-semibold fs-14">{{vacante.cantidad_presentar}}</h3>
                 </div>
+                {% endif %}
                 <div class="text-center">
                     <span class="fs-12 d-block mb-1 text-body">Ciudad</span>
                     <h3 class="mb-0 fw-semibold fs-14">{{vacante.perfil_vacante.lugar_trabajo.nombre}}</h3>
                 </div>
             </div>
 
+            {% if not is_candidato %}
             <h3 class="mb-3">Descripción</h3>
             <p class="ps-0 mb-md-5 mb-4 list-unstyled">{{vacante.descripcion_vacante}}</p>
+            {% endif %}
 
             <h3 class="mb-3">Ubicación</h3>
             <iframe src="{{vacante.perfil_vacante.url_mapa}}" class="d-block w-100 rounded-3 mb-md-5 mb-4" style="height: 250px;"></iframe>

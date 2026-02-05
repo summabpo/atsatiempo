@@ -1,6 +1,6 @@
 from django.db import models
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.services.choices import GENERO_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, MOTIVO_SALIDA_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, NIVEL_HABILIDAD_CHOICES_STATIC, TIPO_HABILIDAD_CHOICES_STATIC
+from applications.services.choices import GENERO_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, MOTIVO_SALIDA_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, NIVEL_HABILIDAD_CHOICES_STATIC, TIPO_HABILIDAD_CHOICES_STATIC, ESTADO_ESTUDIOS_CHOICES_STATIC
 # Create your models here.
 class Can101Candidato(models.Model):
 
@@ -82,6 +82,7 @@ class Can102Experiencia(models.Model):
     salario = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     modalidad_trabajo = models.CharField(max_length=1, blank=True, null=True, choices=MODALIDAD_CHOICES_STATIC)
     nombre_jefe = models.CharField(max_length=100, blank=True, null=True)
+    experiencia_laboral = models.BooleanField(default=False)
 
     def __str__(self):
         return self.entidad
@@ -107,9 +108,13 @@ class Can103Educacion(models.Model):
     tipo_estudio = models.CharField(max_length=2, choices=NIVEL_ESTUDIO_CHOICES_STATIC, blank=True, null=True)
     certificacion = models.FileField(upload_to='media_uploads/media_uploads/certificaciones/', blank=True, null=True, verbose_name="Certificación")
     profesion_estudio = models.ForeignKey('vacante.Cli055ProfesionEstudio', on_delete=models.CASCADE, db_column='profesion_estudio_id_055', blank=True, null=True, verbose_name="Profesión/Estudio")
-
+    estado_estudios = models.CharField(max_length=1, choices=ESTADO_ESTUDIOS_CHOICES_STATIC, blank=True, null=True)
+    
     def mostrar_tipo_estudio(self):
         return dict(NIVEL_ESTUDIO_CHOICES_STATIC).get(self.tipo_estudio, "No especificado")
+    
+    def mostrar_estado_estudios(self):
+        return dict(ESTADO_ESTUDIOS_CHOICES_STATIC).get(self.estado_estudios, "No especificado")
 
     def __str__(self):
         return self.institucion

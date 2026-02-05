@@ -104,6 +104,13 @@ NIVEL_ESTUDIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     
 ]
 
+ESTADO_ESTUDIOS_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
+    ('G', 'Graduado'),
+    ('C', 'En curso'),
+    ('A', 'Aplazado'),
+]
+
+
 TIPO_HORARIO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     ('HF', 'Horario Fijo'),
     ('HX', 'Horario Flexible'),

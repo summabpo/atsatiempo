@@ -534,7 +534,18 @@ class CandidateForm(forms.Form):
                 return self.candidato.imagen_perfil
             return None
         
-        # Sin restricciones de validación - permitir cualquier archivo
+        # Validar solo si hay un nuevo archivo
+        if imagen_perfil:
+            # Validar extensión (JPG, PNG)
+            import os
+            ext = os.path.splitext(imagen_perfil.name)[1].lower()
+            if ext not in ['.jpg', '.jpeg', '.png']:
+                raise forms.ValidationError('El archivo debe ser una imagen en formato JPG o PNG.')
+            
+            # Validar tamaño (máximo 10 MB)
+            if imagen_perfil.size > 10 * 1024 * 1024:  # 10 MB en bytes
+                raise forms.ValidationError('El archivo no puede superar los 10 MB.')
+        
         return imagen_perfil
     hoja_de_vida = forms.FileField(
         label='HOJA DE VIDA',
@@ -543,6 +554,31 @@ class CandidateForm(forms.Form):
             'class': 'form-control form-control-solid'
         })
     )
+    
+    def clean_hoja_de_vida(self):
+        hoja_de_vida = self.cleaned_data.get('hoja_de_vida')
+        
+        # Si el archivo ya se guardó exitosamente en la vista, no validar nada
+        if self.files_saved_in_request.get('hoja_de_vida', False):
+            # El archivo ya se guardó en la vista, no procesarlo de nuevo
+            if self.candidato and self.candidato.hoja_de_vida:
+                return self.candidato.hoja_de_vida
+            return None
+        
+        # Validar solo si hay un nuevo archivo
+        if hoja_de_vida:
+            # Validar extensión (PDF, DOC, DOCX)
+            import os
+            ext = os.path.splitext(hoja_de_vida.name)[1].lower()
+            if ext not in ['.pdf', '.doc', '.docx']:
+                raise forms.ValidationError('El archivo debe ser un documento en formato PDF o Word (.doc, .docx).')
+            
+            # Validar tamaño (máximo 10 MB)
+            if hoja_de_vida.size > 10 * 1024 * 1024:  # 10 MB en bytes
+                raise forms.ValidationError('El archivo no puede superar los 10 MB.')
+        
+        return hoja_de_vida
+    
     video_perfil = forms.FileField(
         label='VIDEO DE PERFIL',
         required=False,
@@ -550,6 +586,30 @@ class CandidateForm(forms.Form):
             'class': 'form-control form-control-solid'
         })
     )
+    
+    def clean_video_perfil(self):
+        video_perfil = self.cleaned_data.get('video_perfil')
+        
+        # Si el archivo ya se guardó exitosamente en la vista, no validar nada
+        if self.files_saved_in_request.get('video_perfil', False):
+            # El archivo ya se guardó en la vista, no procesarlo de nuevo
+            if self.candidato and self.candidato.video_perfil:
+                return self.candidato.video_perfil
+            return None
+        
+        # Validar solo si hay un nuevo archivo
+        if video_perfil:
+            # Validar extensión (MP4)
+            import os
+            ext = os.path.splitext(video_perfil.name)[1].lower()
+            if ext not in ['.mp4']:
+                raise forms.ValidationError('El archivo debe ser un video en formato MP4.')
+            
+            # Validar tamaño (máximo 20 MB)
+            if video_perfil.size > 20 * 1024 * 1024:  # 20 MB en bytes
+                raise forms.ValidationError('El archivo no puede superar los 20 MB.')
+        
+        return video_perfil
 
     perfil = forms.CharField(
         label='Mi perfil',

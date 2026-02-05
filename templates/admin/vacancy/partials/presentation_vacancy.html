@@ -107,6 +107,7 @@
                     </div>
 
                     <!-- Descripción del cargo -->
+                    {% if not is_candidato %}
                     <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
                         <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
                             <p class="text-primary my-2 fs-6 fw-semibold">
@@ -124,6 +125,7 @@
                             </p>
                         </div>
                     </div>
+                    {% endif %}
 
                     <!-- Responsabilidades del cargo -->
                     <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
@@ -595,6 +597,7 @@
                                     <div class="table-responsive">
                                         <table class="table table-borderless align-middle mb-0" style="background: #f8fafc; border-radius: 0.75rem; overflow: hidden;">
                                             <tbody>
+                                                {% if not is_candidato %}
                                                 <tr>
                                                     <td class="py-3 px-4" style="width: 60%;">
                                                         <div class="d-flex align-items-center">
@@ -617,6 +620,7 @@
                                                         <span class="fw-semibold">{{ vacante.cantidad_presentar|default:"N/A" }}</span>
                                                     </td>
                                                 </tr>
+                                                {% endif %}
                                                 <tr>
                                                     <td class="py-3 px-4">
                                                         <div class="d-flex align-items-center">

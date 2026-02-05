@@ -10,7 +10,7 @@ from applications.candidato.models import Can101Candidato, Can103Educacion
 
 from crispy_forms.layout import Layout, Layout, Div, Submit, HTML, Row, Column, Fieldset
 
-from applications.services.choices import NIVEL_ESTUDIO_CHOICES_STATIC
+from applications.services.choices import NIVEL_ESTUDIO_CHOICES_STATIC, ESTADO_ESTUDIOS_CHOICES_STATIC
 from applications.vacante.models import Cli055ProfesionEstudio
 
 class EstudioCandidatoForm(forms.Form):
@@ -201,13 +201,6 @@ class candidateStudyForm(forms.Form):
         required=False,
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
     )
-    grado_en = forms.BooleanField(
-        label='¿GRADUADO?',
-        required=False,
-        widget=forms.CheckboxInput(attrs={
-            'class': 'form-check-input',
-        })
-    )
     titulo = forms.CharField(
         label='TÍTULO (Se refiere a la denominación oficial o el grado académico que se obtiene al completar exitosamente un programa de estudios y cumplir con todos los requisitos de graduación.)',
         max_length=100,
@@ -234,6 +227,7 @@ class candidateStudyForm(forms.Form):
                 'class': 'form-select', 
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
+                'data-dropdown-parent': '#estudios_candidato',
             }
         )
     )
@@ -246,6 +240,7 @@ class candidateStudyForm(forms.Form):
                 'class': 'form-select',
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
+                'data-dropdown-parent': '#estudios_candidato',
             }
         )
     )
@@ -259,13 +254,27 @@ class candidateStudyForm(forms.Form):
                 'class': 'form-select',
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
+                'data-dropdown-parent': '#estudios_candidato',
             }
         )
     )
     certificacion = forms.FileField(
         label='CERTIFICACIÓN',
-        required=True,
+        required=False,
         widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
+    estado_estudios = forms.ChoiceField(
+        label='ESTADO DEL ESTUDIO',
+        choices=ESTADO_ESTUDIOS_CHOICES_STATIC,
+        required=False,
+        widget=forms.Select(
+            attrs={
+                'class': 'form-select',
+                'data-control': 'select2',
+                'data-placeholder': 'Seleccione una opción',
+                'data-dropdown-parent': '#estudios_candidato',
+            }
+        )
     )
 
     
@@ -281,7 +290,7 @@ class candidateStudyForm(forms.Form):
         
         if is_editing:
             # Quitamos 'data-dropdown-parent' de los widgets select
-            select_fields = ['tipo_estudio', 'ciudad_id_004', 'profesion_estudio']
+            select_fields = ['tipo_estudio', 'ciudad_id_004', 'profesion_estudio', 'estado_estudios']
             for field_name in select_fields:
                 field = self.fields.get(field_name)
                 if field and hasattr(field.widget, 'attrs'):
@@ -289,6 +298,37 @@ class candidateStudyForm(forms.Form):
             
             # Hacer el campo de certificación opcional cuando se está editando
             self.fields['certificacion'].required = False
+        
+        # Si tipo_estudio es "Sin estudios" ('1'), hacer los demás campos opcionales
+        tipo_estudio_value = None
+        if self.data and 'tipo_estudio' in self.data:
+            tipo_estudio_value = self.data.get('tipo_estudio')
+        elif self.initial and 'tipo_estudio' in self.initial:
+            tipo_estudio_value = self.initial.get('tipo_estudio')
+        
+        if tipo_estudio_value == '1':
+            # Hacer todos los campos opcionales excepto tipo_estudio
+            self.fields['institucion'].required = False
+            self.fields['fecha_inicial'].required = False
+            self.fields['ciudad_id_004'].required = False
+            self.fields['certificacion'].required = False
+        
+        # Ajustar campos según estado_estudios
+        estado_estudios_value = None
+        if self.data and 'estado_estudios' in self.data:
+            estado_estudios_value = self.data.get('estado_estudios')
+        elif self.initial and 'estado_estudios' in self.initial:
+            estado_estudios_value = self.initial.get('estado_estudios')
+        
+        if estado_estudios_value == 'G':
+            # Si es Graduado, hacer obligatorios título, fecha_final
+            self.fields['titulo'].required = True
+            self.fields['fecha_final'].required = True
+            # Certificación será validada en clean()
+        elif estado_estudios_value in ['C', 'A']:
+            # Si está en curso o aplazado, hacer opcionales título y fecha_final
+            self.fields['titulo'].required = False
+            self.fields['fecha_final'].required = False
         
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -300,7 +340,7 @@ class candidateStudyForm(forms.Form):
                     Div('institucion', css_class='col-12'),
                     Div('tipo_estudio', css_class='col-12'),
                     Div('profesion_estudio', css_class='col-12'),
-                    Div('grado_en', css_class='col-12'),
+                    Div('estado_estudios', css_class='col-12'),
                     Div('titulo', css_class='col-12 campo-graduado'),
                     Div('fecha_inicial', css_class='col-6'),
                     Div('fecha_final', css_class='col-6 campo-graduado'),
@@ -318,56 +358,62 @@ class candidateStudyForm(forms.Form):
     
     def clean(self):
         cleaned_data = super().clean()
-
+        tipo_estudio = cleaned_data.get('tipo_estudio')
+        
+        # Si es "Sin estudios" (tipo_estudio == '1'), no validar los demás campos
+        if tipo_estudio == '1':
+            # Permitir guardar sin validar los demás campos
+            return cleaned_data
+        
+        # Si no es "Sin estudios", validar todos los campos normalmente
         institucion = cleaned_data.get('institucion')
         fecha_inicial = cleaned_data.get('fecha_inicial')
         fecha_final = cleaned_data.get('fecha_final')
-        grado_en = cleaned_data.get('grado_en')
         titulo = cleaned_data.get('titulo')
+        estado_estudios = cleaned_data.get('estado_estudios')
         # carrera = cleaned_data.get('carrera')
         # fortaleza_adquiridas = cleaned_data.get('fortaleza_adquiridas')
-        tipo_estudio = cleaned_data.get('tipo_estudio')
         ciudad_id_004 = cleaned_data.get('ciudad_id_004')
         certificacion = cleaned_data.get('certificacion')
         profesion_estudio = cleaned_data.get('profesion_estudio')
 
-        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', institucion):
+        if institucion and not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', institucion):
             self.add_error('institucion', "La Instirución solo puede contener letras.")
-        else:
+        elif institucion:
             self.cleaned_data['institucion'] = institucion.upper()
 
         fecha_actual = timezone.now().date()
 
-        if fecha_inicial > fecha_actual:
+        if fecha_inicial and fecha_inicial > fecha_actual:
             self.add_error('fecha_inicial', "La fecha inicial no puede ser mayor que la fecha actual.")
 
-        if grado_en:
+        # Si el estado es "Graduado" (G), validar campos obligatorios
+        if estado_estudios == 'G':
             if fecha_final is None or fecha_final == '':
-                self.add_error('fecha_final', "La fecha final no puede ir vacía si esta graduado.")
+                self.add_error('fecha_final', "La fecha final es obligatoria si el estado es Graduado.")
             elif fecha_final < fecha_inicial:
                 self.add_error('fecha_final', "La fecha final no puede ser menor que la fecha inicial.")
 
             if titulo is None or titulo == '':
-                self.add_error('titulo', "El título no puede ir vacío si esta graduado.")
+                self.add_error('titulo', "El título es obligatorio si el estado es Graduado.")
 
-            if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', titulo):
+            if titulo and not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', titulo):
                 self.add_error('titulo', "El titulo solo puede contener letras.")
-            else:
+            elif titulo:
                 self.cleaned_data['titulo'] = titulo.upper()
+            
+            # Certificado obligatorio si está graduado
+            is_editing = bool(self.initial)
+            if not certificacion and not is_editing:
+                self.add_error('certificacion', 'El archivo de certificación es obligatorio si el estado es Graduado.')
+        elif estado_estudios in ['C', 'A']:
+            # Si está en curso o aplazado, no debe tener título ni fecha final
+            if titulo:
+                self.add_error('titulo', "El título no debe estar presente si el estado es En curso o Aplazado.")
+            if fecha_final:
+                self.add_error('fecha_final', "La fecha final no debe estar presente si el estado es En curso o Aplazado.")
 
-        # if carrera and not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', carrera):
-        #     self.add_error('carrera', "La Carrera solo puede contener letras.")
-        # elif carrera:
-        #     self.cleaned_data['carrera'] = carrera.upper()
-        
-        # if fortaleza_adquiridas:
-        #     if len(fortaleza_adquiridas.split()) < 5:
-        #         self.add_error('fortaleza_adquiridas', 'La descripción debe contener al menos 5 palabras')
-
-        # Validar archivo de certificación
-        # Si estamos editando (hay datos iniciales), la certificación es opcional
-        is_editing = bool(self.initial)
-        
+        # Validar archivo de certificación si está presente
         if certificacion:
             if hasattr(certificacion, 'content_type'):
                 if certificacion.content_type != 'application/pdf':
@@ -375,9 +421,6 @@ class candidateStudyForm(forms.Form):
             if hasattr(certificacion, 'size'):
                 if certificacion.size > 5 * 1024 * 1024:
                     self.add_error('certificacion', 'El archivo no debe pesar más de 5 MB.')
-        elif not is_editing:
-            # Solo es obligatorio si no estamos editando
-            self.add_error('certificacion', 'El archivo de certificación es obligatorio.')
 
         if not profesion_estudio:
             self.add_error('profesion_estudio', 'Debe seleccionar una profesión o estudio.')

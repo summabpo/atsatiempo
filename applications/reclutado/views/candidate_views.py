@@ -71,11 +71,17 @@ def confirm_apply_vacancy_recruited(request, pk):
         centinel_vacante = True
         # return redirect('reclutados_detalle_cliente', pk=pk)
 
+    # Verificar si el usuario es de tipo candidato
+    tipo_usuario = request.session.get('tipo_usuario', '')
+    grupo_id = request.session.get('grupo_id', None)
+    is_candidato = (tipo_usuario == 'Candidato' or grupo_id == 2)
+    
     context = {
         'vacante': vacante,
         'candidato': candidato,
         'centinel_vacante': centinel_vacante,
-        'form': form
+        'form': form,
+        'is_candidato': is_candidato
     }
 
     return render(request, 'admin/candidate/candidate_user/recluited_confirm.html', context)

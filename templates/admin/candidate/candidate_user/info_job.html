@@ -34,13 +34,13 @@ Información Básica | Talent Tray
 
 	<!-- Start Your Code -->
     <div class="row">
-		<div class="col-8">
+		<div class="col-md-8">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
                     
                     <!-- Button trigger modal -->
                     <div class="d-flex justify-content-center w-100">
-                        <button type="button" class="btn btn-primary py-2 px-4 text-white fw-semibold" data-bs-toggle="modal" data-bs-target="#trabajos_candidato">
+                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#trabajos_candidato">
                             Crear Experiencia Laboral
                         </button>
                     </div>
@@ -95,8 +95,8 @@ Información Básica | Talent Tray
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center align-items-center gap-1">
                                                 <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
-                                                    <a href="{% url 'candidatos:candidato_info_laboral_editar' e.id %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
-                                                        <i class="material-symbols-outlined fs-16 text-danger">edit</i>
+                                                    <a href="{% url 'candidatos:candidato_info_laboral_editar' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
+                                                        <i class="material-symbols-outlined fs-16 text-primary">edit</i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -111,7 +111,7 @@ Información Básica | Talent Tray
             </div>
         </div>
 
-        <div class="col-4">
+        <div class="col-md-4">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
                     <div>
@@ -163,7 +163,7 @@ Información Básica | Talent Tray
     {% endif %}
 
     $(document).ready(function () {
-        function toggleGraduationFields() {
+        function toggleActivoFields() {
             if ($('#id_activo').is(':checked')) {
                 $('.campo-activo').hide();
             } else {
@@ -171,11 +171,56 @@ Información Básica | Talent Tray
             }
         }
 
-        // Ejecutar al cargar
-        toggleGraduationFields();
+        // Función para manejar "Sin experiencia laboral"
+        function toggleSinExperienciaFields() {
+            var sinExperiencia = $('#id_experiencia_laboral').is(':checked');
+            
+            // Campos a ocultar/mostrar cuando es "Sin experiencia laboral"
+            var camposAfectados = [
+                '#div_id_entidad',
+                '#div_id_sector',
+                '#div_id_cargo',
+                '#div_id_activo',
+                '#div_id_fecha_inicial',
+                '#div_id_fecha_final',
+                '#div_id_motivo_salida',
+                '#div_id_salario',
+                '#div_id_modalidad_trabajo',
+                '#div_id_nombre_jefe',
+                '#div_id_logro'
+            ];
+            
+            camposAfectados.forEach(function(selector) {
+                var $campo = $(selector);
+                if (sinExperiencia) {
+                    $campo.hide();
+                    // Hacer los campos opcionales
+                    var fieldId = selector.replace('#div_id_', 'id_');
+                    $('#' + fieldId).removeAttr('required');
+                } else {
+                    $campo.show();
+                    // Restaurar campos requeridos según la definición del formulario
+                    var fieldId = selector.replace('#div_id_', 'id_');
+                    // No restaurar required aquí, el formulario lo maneja
+                }
+            });
+        }
 
-        // Ejecutar al cambiar el checkbox
-        $('#id_activo').change(toggleGraduationFields);
+        // Ejecutar al cargar
+        toggleActivoFields();
+        toggleSinExperienciaFields();
+
+        // Ejecutar al cambiar el checkbox de activo
+        $('#id_activo').change(toggleActivoFields);
+        
+        // Ejecutar al cambiar el checkbox de sin experiencia laboral
+        $('#id_experiencia_laboral').change(function() {
+            toggleSinExperienciaFields();
+            // Si no está marcado, también verificar el campo activo
+            if (!$(this).is(':checked')) {
+                toggleActivoFields();
+            }
+        });
     });
 
     initializeSelect2('#id_motivo_salida');

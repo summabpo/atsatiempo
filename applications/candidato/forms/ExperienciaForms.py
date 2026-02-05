@@ -221,9 +221,29 @@ class candidateJobForm(forms.Form):
         widget=forms.TextInput(attrs={'placeholder': 'Nombre del jefe directo'})
     )
 
+    experiencia_laboral = forms.BooleanField(
+        label='Sin experiencia laboral',
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
         super().__init__(*args, **kwargs)
+
+        # Si experiencia_laboral está marcado, hacer los demás campos opcionales
+        experiencia_laboral_value = False
+        if self.data and 'experiencia_laboral' in self.data:
+            experiencia_laboral_value = self.data.get('experiencia_laboral') == 'on' or self.data.get('experiencia_laboral') == True
+        elif self.initial and 'experiencia_laboral' in self.initial:
+            experiencia_laboral_value = self.initial.get('experiencia_laboral', False)
+        
+        if experiencia_laboral_value:
+            # Hacer todos los campos opcionales excepto experiencia_laboral
+            self.fields['entidad'].required = False
+            self.fields['sector'].required = False
+            self.fields['fecha_inicial'].required = False
+            self.fields['cargo'].required = False
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -238,17 +258,18 @@ class candidateJobForm(forms.Form):
             Div(
             Div(
                 HTML("<h4 class='mb-3 text-primary'>Información Laboral</h4>"),
-                Div('entidad', css_class='col-12'),
-                Div('sector', css_class='col-12'),
-                Div('cargo', css_class='col-12'),
-                Div('activo', css_class='col-12'),
-                Div('fecha_inicial', css_class='col-6'),
-                Div('fecha_final', css_class='col-6 campo-activo'),
-                Div('motivo_salida', css_class='col-12 campo-activo'),
-                Div('salario', css_class='col-6 campo-activo'),
-                Div('modalidad_trabajo', css_class='col-6 campo-activo'),
-                Div('nombre_jefe', css_class='col-12 campo-activo'),
-                Div('logro', css_class='col-12'),
+                Div('experiencia_laboral', css_class='col-12'),
+                Div('entidad', css_class='col-12 campo-experiencia'),
+                Div('sector', css_class='col-12 campo-experiencia'),
+                Div('cargo', css_class='col-12 campo-experiencia'),
+                Div('activo', css_class='col-12 campo-experiencia'),
+                Div('fecha_inicial', css_class='col-6 campo-experiencia'),
+                Div('fecha_final', css_class='col-6 campo-activo campo-experiencia'),
+                Div('motivo_salida', css_class='col-12 campo-activo campo-experiencia'),
+                Div('salario', css_class='col-6 campo-activo campo-experiencia'),
+                Div('modalidad_trabajo', css_class='col-6 campo-activo campo-experiencia'),
+                Div('nombre_jefe', css_class='col-12 campo-activo campo-experiencia'),
+                Div('logro', css_class='col-12 campo-experiencia'),
                 css_class='row'
             ),
             css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -257,7 +278,14 @@ class candidateJobForm(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-
+        experiencia_laboral = cleaned_data.get('experiencia_laboral')
+        
+        # Si está marcado "Sin experiencia laboral", no validar los demás campos
+        if experiencia_laboral:
+            # Permitir guardar sin validar los demás campos
+            return cleaned_data
+        
+        # Si no está marcado, validar todos los campos normalmente
         entidad = cleaned_data.get('entidad')
         sector = cleaned_data.get('sector')
         fecha_inicial = cleaned_data.get('fecha_inicial')
@@ -270,17 +298,17 @@ class candidateJobForm(forms.Form):
         if motivo_salida == '':
             cleaned_data['motivo_salida'] = None
 
-
-        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', entidad):
+        if entidad and not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', entidad):
             self.add_error('entidad', "La entidad solo puede contener letras.")
-        else:
+        elif entidad:
             self.cleaned_data['entidad'] = entidad.upper()
             
-        self.cleaned_data['cargo'] = cargo.upper()
+        if cargo:
+            self.cleaned_data['cargo'] = cargo.upper()
 
-        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', sector):
+        if sector and not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', sector):
             self.add_error('sector', "La entidad solo puede contener letras.")
-        else:
+        elif sector:
             self.cleaned_data['sector'] = sector.upper()
 
         if fecha_inicial and fecha_final and fecha_final < fecha_inicial:
@@ -290,9 +318,9 @@ class candidateJobForm(forms.Form):
         if activo:
             if fecha_final:
                 self.add_error('fecha_final', "No debe proporcionar una fecha final si el trabajo está activo.")
-        elif not fecha_final:
+        elif fecha_inicial and not fecha_final:
             self.add_error('fecha_final', "La fecha final no puede ir vacía si el trabajo no está activo.")
-        elif fecha_final < fecha_inicial:
+        elif fecha_inicial and fecha_final and fecha_final < fecha_inicial:
             self.add_error('fecha_final', "La fecha final no puede ser menor que la fecha inicial.")
         elif fecha_inicial and fecha_inicial > fecha_actual:
             self.add_error('fecha_inicial', "La fecha inicial no puede ser mayor que la fecha actual.")

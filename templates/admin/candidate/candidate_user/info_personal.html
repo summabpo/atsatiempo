@@ -50,18 +50,18 @@ Información Básica | Talent Tray
     #id_video_perfil ~ a,
     .col-md-4:has(#id_imagen_perfil) a[href*="media_uploads"],
     .col-md-4:has(#id_hoja_de_vida) a[href*="media_uploads"],
-    .col-md-4:has(#id_video_perfil) a[href*="media_uploads"] {
+    .col-md-4:has(#id_video_perfil) a[href*="media_uploads"],
+    .col-md-4:has(#id_imagen_perfil) a[href*="imagen_perfil"],
+    .col-md-4:has(#id_imagen_perfil) a[href*="candidato"],
+    .col-md-4:has(#id_imagen_perfil) a[href*="/"],
+    .col-md-4:has(#id_imagen_perfil) a,
+    .col-md-4:has(#id_imagen_perfil) label[for*="clear"] {
         display: none !important;
     }
     
-    /* Ocultar cualquier texto que contenga "Actualmente" o rutas de archivos */
-    .col-md-4:has(#id_imagen_perfil) small:contains("Actualmente"),
-    .col-md-4:has(#id_hoja_de_vida) small:contains("Actualmente"),
-    .col-md-4:has(#id_video_perfil) small:contains("Actualmente"),
-    .col-md-4:has(#id_imagen_perfil) span:contains("Actualmente"),
-    .col-md-4:has(#id_hoja_de_vida) span:contains("Actualmente"),
-    .col-md-4:has(#id_video_perfil) span:contains("Actualmente") {
-        display: none !important;
+    /* Ocultar texto "Actualmente:", "Limpiar", "Modificar:" */
+    .col-md-4:has(#id_imagen_perfil) * {
+        /* Se ocultará con JavaScript */
     }
     
     .custom-file-label {
@@ -347,10 +347,11 @@ Información Básica | Talent Tray
                                     {% if form.imagen_perfil.errors %}
                                         <div class="text-danger small">{{ form.imagen_perfil.errors }}</div>
                                     {% endif %}
-                                    <!-- Botón único para ver archivo (nuevo o existente) -->
+                                    <!-- Botón y nombre del archivo cuando la imagen se guarda pero hay errores en otros campos -->
                                     <div id="file_info_imagen_perfil" class="file-info-display mt-2" style="display: none;">
-                                        <div class="d-flex justify-content-end align-items-center">
-                                            <button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary" data-bs-toggle="modal" data-bs-target="#modal_imagen_perfil" id="btn_ver_imagen_perfil">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="text-muted small" id="nombre_archivo_imagen_perfil"></div>
+                                            <button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary" data-bs-toggle="modal" data-bs-target="#modal_imagen_perfil_current" id="btn_ver_imagen_perfil">
                                                 <i class="ri-eye-line me-1"></i> Ver
                                             </button>
                                         </div>
@@ -367,10 +368,11 @@ Información Básica | Talent Tray
                                     {% if form.hoja_de_vida.errors %}
                                         <div class="text-danger small">{{ form.hoja_de_vida.errors }}</div>
                                     {% endif %}
-                                    <!-- Botón único para ver archivo (nuevo o existente) -->
+                                    <!-- Botón y nombre del archivo cuando la hoja de vida se guarda pero hay errores en otros campos -->
                                     <div id="file_info_hoja_de_vida" class="file-info-display mt-2" style="display: none;">
-                                        <div class="d-flex justify-content-end align-items-center">
-                                            <button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary" data-bs-toggle="modal" data-bs-target="#modal_hoja_de_vida" id="btn_ver_hoja_de_vida">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="text-muted small" id="nombre_archivo_hoja_de_vida"></div>
+                                            <button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary" data-bs-toggle="modal" data-bs-target="#modal_hoja_de_vida_current" id="btn_ver_hoja_de_vida">
                                                 <i class="ri-eye-line me-1"></i> Ver
                                             </button>
                                         </div>
@@ -390,10 +392,11 @@ Información Básica | Talent Tray
                                     {% if form.video_perfil.errors %}
                                         <div class="text-danger small">{{ form.video_perfil.errors }}</div>
                                     {% endif %}
-                                    <!-- Botón único para ver archivo (nuevo o existente) -->
+                                    <!-- Botón y nombre del archivo cuando el video se guarda pero hay errores en otros campos -->
                                     <div id="file_info_video_perfil" class="file-info-display mt-2" style="display: none;">
-                                        <div class="d-flex justify-content-end align-items-center">
-                                            <button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary" data-bs-toggle="modal" data-bs-target="#modal_video_perfil" id="btn_ver_video_perfil">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="text-muted small" id="nombre_archivo_video_perfil"></div>
+                                            <button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary" data-bs-toggle="modal" data-bs-target="#modal_video_perfil_current" id="btn_ver_video_perfil">
                                                 <i class="ri-eye-line me-1"></i> Ver
                                             </button>
                                         </div>
@@ -650,6 +653,255 @@ Lo que elijas nos ayudará a ubicarte en una empresa donde encuentres no solo un
     $(document).ready(function() {
         setTimeout(initializeFitCulturalTooltips, 300);
         
+        // Función para ocultar todas las rutas de archivos y elementos de ClearableFileInput
+        function ocultarRutasArchivos() {
+            // Procesar imagen_perfil
+            var $containerImagen = $('.col-md-4:has(#id_imagen_perfil)');
+            $containerImagen.find('a').hide();
+            
+            // Procesar hoja_de_vida
+            var $containerHoja = $('.col-md-4:has(#id_hoja_de_vida)');
+            $containerHoja.find('a').hide();
+            
+            // Procesar video_perfil
+            var $containerVideo = $('.col-md-4:has(#id_video_perfil)');
+            $containerVideo.find('a').hide();
+            
+            // Procesar imagen_perfil
+            var $container = $containerImagen;
+            
+            // Ocultar checkboxes de "Limpiar" y todo su contenedor
+            $container.find('input[type="checkbox"][id*="clear"]').closest('*').hide();
+            $container.find('input[type="checkbox"][id*="clear"]').hide();
+            
+            // Ocultar labels que contengan "Limpiar" o "Modificar" (excepto el label principal)
+            $container.find('label').each(function() {
+                var $label = $(this);
+                var text = $label.text().trim() || '';
+                var forAttr = $label.attr('for') || '';
+                // No ocultar el label principal del campo
+                if (forAttr === 'id_imagen_perfil') {
+                    return;
+                }
+                // Ocultar cualquier otro label
+                if (text.includes('Limpiar') || text.includes('Modificar') || 
+                    forAttr.includes('clear') || text === 'Limpiar' || text === 'Modificar') {
+                    $label.hide();
+                }
+            });
+            
+            // Ocultar cualquier elemento que contenga "Actualmente:", "Limpiar", "Modificar:" o rutas
+            $container.find('*').each(function() {
+                var $elem = $(this);
+                // No ocultar nuestros contenedores personalizados, el input, ni el label principal
+                if ($elem.closest('.file-info-display, .custom-file-label, .modal, .text-danger, .field-error-message, .position-relative').length > 0 ||
+                    $elem.is('input, label[for="id_imagen_perfil"], #id_imagen_perfil')) {
+                    return;
+                }
+                
+                var text = $elem.text().trim() || '';
+                var html = $elem.html() || '';
+                
+                // Ocultar si contiene "Actualmente", "Limpiar", "Modificar" o rutas
+                if (text.includes('Actualmente') || text.includes('Limpiar') || 
+                    text.includes('Modificar') || text.includes('media_uploads') || 
+                    text.includes('imagen_perfil') || (text.includes('/') && text.includes('.')) ||
+                    html.includes('Actualmente') || html.includes('Limpiar') || 
+                    html.includes('Modificar') || text === 'Limpiar' || text === 'Modificar' ||
+                    text.startsWith('Actualmente') || text === 'Actualmente:' || 
+                    text === 'Modificar:') {
+                    $elem.hide();
+                }
+            });
+            
+            // Ocultar elementos que estén antes del input (como "Actualmente:" y "Modificar:")
+            var $input = $('#id_imagen_perfil');
+            if ($input.length > 0) {
+                $input.prevAll().each(function() {
+                    var $elem = $(this);
+                    // No ocultar el label principal ni nuestros contenedores
+                    if ($elem.is('label[for="id_imagen_perfil"]') || 
+                        $elem.closest('.position-relative, .custom-file-label, .file-info-display').length > 0) {
+                        return;
+                    }
+                    var text = $elem.text().trim() || '';
+                    var html = $elem.html() || '';
+                    if (text.includes('Actualmente') || text.includes('Modificar') ||
+                        text === 'Actualmente:' || text === 'Modificar:' ||
+                        html.includes('Actualmente') || html.includes('Modificar')) {
+                        $elem.hide();
+                    }
+                });
+            }
+            
+            // Ocultar elementos que estén después del label pero antes del input
+            var $label = $('label[for="id_imagen_perfil"]');
+            if ($label.length > 0) {
+                $label.nextUntil('#id_imagen_perfil, .position-relative').each(function() {
+                    var $elem = $(this);
+                    var text = $elem.text().trim() || '';
+                    var html = $elem.html() || '';
+                    if (text.includes('Actualmente') || text.includes('Modificar') ||
+                        text === 'Actualmente:' || text === 'Modificar:' ||
+                        html.includes('Actualmente') || html.includes('Modificar')) {
+                        $elem.hide();
+                    }
+                });
+            }
+            
+            // Ocultar elementos que estén al mismo nivel que el input dentro del contenedor
+            $container.children().each(function() {
+                var $elem = $(this);
+                // No ocultar nuestros contenedores personalizados
+                if ($elem.hasClass('position-relative') || $elem.hasClass('file-info-display') ||
+                    $elem.is('label[for="id_imagen_perfil"]')) {
+                    return;
+                }
+                var text = $elem.text().trim() || '';
+                var html = $elem.html() || '';
+                if (text.includes('Actualmente') || text.includes('Modificar') ||
+                    text === 'Actualmente:' || text === 'Modificar:' ||
+                    html.includes('Actualmente') || html.includes('Modificar')) {
+                    $elem.hide();
+                }
+            });
+            
+            // Procesar hoja_de_vida
+            $containerHoja.find('input[type="checkbox"][id*="clear"]').closest('*').hide();
+            $containerHoja.find('input[type="checkbox"][id*="clear"]').hide();
+            $containerHoja.find('label').each(function() {
+                var $label = $(this);
+                var text = $label.text().trim() || '';
+                var forAttr = $label.attr('for') || '';
+                if (forAttr === 'id_hoja_de_vida') {
+                    return;
+                }
+                if (text.includes('Limpiar') || text.includes('Modificar') || 
+                    forAttr.includes('clear') || text === 'Limpiar' || text === 'Modificar') {
+                    $label.hide();
+                }
+            });
+            $containerHoja.find('*').each(function() {
+                var $elem = $(this);
+                if ($elem.closest('.file-info-display, .custom-file-label, .modal, .text-danger, .field-error-message, .position-relative').length > 0 ||
+                    $elem.is('input, label[for="id_hoja_de_vida"], #id_hoja_de_vida')) {
+                    return;
+                }
+                var text = $elem.text().trim() || '';
+                var html = $elem.html() || '';
+                if (text.includes('Actualmente') || text.includes('Limpiar') || 
+                    text.includes('Modificar') || text.includes('media_uploads') || 
+                    text.includes('hoja_de_vida') || (text.includes('/') && text.includes('.')) ||
+                    html.includes('Actualmente') || html.includes('Limpiar') || 
+                    html.includes('Modificar') || text === 'Limpiar' || text === 'Modificar' ||
+                    text.startsWith('Actualmente') || text === 'Actualmente:' || 
+                    text === 'Modificar:') {
+                    $elem.hide();
+                }
+            });
+            var $inputHoja = $('#id_hoja_de_vida');
+            if ($inputHoja.length > 0) {
+                $inputHoja.prevAll().each(function() {
+                    var $elem = $(this);
+                    if ($elem.is('label[for="id_hoja_de_vida"]') || 
+                        $elem.closest('.position-relative, .custom-file-label').length > 0) {
+                        return;
+                    }
+                    var text = $elem.text().trim() || '';
+                    var html = $elem.html() || '';
+                    if (text.includes('Actualmente') || text.includes('Modificar') ||
+                        text === 'Actualmente:' || text === 'Modificar:' ||
+                        html.includes('Actualmente') || html.includes('Modificar')) {
+                        $elem.hide();
+                    }
+                });
+            }
+            var $labelHoja = $('label[for="id_hoja_de_vida"]');
+            if ($labelHoja.length > 0) {
+                $labelHoja.nextUntil('#id_hoja_de_vida, .position-relative').each(function() {
+                    var $elem = $(this);
+                    var text = $elem.text().trim() || '';
+                    var html = $elem.html() || '';
+                    if (text.includes('Actualmente') || text.includes('Modificar') ||
+                        text === 'Actualmente:' || text === 'Modificar:' ||
+                        html.includes('Actualmente') || html.includes('Modificar')) {
+                        $elem.hide();
+                    }
+                });
+            }
+            
+            // Procesar video_perfil
+            $containerVideo.find('input[type="checkbox"][id*="clear"]').closest('*').hide();
+            $containerVideo.find('input[type="checkbox"][id*="clear"]').hide();
+            $containerVideo.find('label').each(function() {
+                var $label = $(this);
+                var text = $label.text().trim() || '';
+                var forAttr = $label.attr('for') || '';
+                if (forAttr === 'id_video_perfil') {
+                    return;
+                }
+                if (text.includes('Limpiar') || text.includes('Modificar') || 
+                    forAttr.includes('clear') || text === 'Limpiar' || text === 'Modificar') {
+                    $label.hide();
+                }
+            });
+            $containerVideo.find('*').each(function() {
+                var $elem = $(this);
+                if ($elem.closest('.file-info-display, .custom-file-label, .modal, .text-danger, .field-error-message, .position-relative').length > 0 ||
+                    $elem.is('input, label[for="id_video_perfil"], #id_video_perfil')) {
+                    return;
+                }
+                var text = $elem.text().trim() || '';
+                var html = $elem.html() || '';
+                if (text.includes('Actualmente') || text.includes('Limpiar') || 
+                    text.includes('Modificar') || text.includes('media_uploads') || 
+                    text.includes('video_perfil') || (text.includes('/') && text.includes('.')) ||
+                    html.includes('Actualmente') || html.includes('Limpiar') || 
+                    html.includes('Modificar') || text === 'Limpiar' || text === 'Modificar' ||
+                    text.startsWith('Actualmente') || text === 'Actualmente:' || 
+                    text === 'Modificar:') {
+                    $elem.hide();
+                }
+            });
+            var $inputVideo = $('#id_video_perfil');
+            if ($inputVideo.length > 0) {
+                $inputVideo.prevAll().each(function() {
+                    var $elem = $(this);
+                    if ($elem.is('label[for="id_video_perfil"]') || 
+                        $elem.closest('.position-relative, .custom-file-label').length > 0) {
+                        return;
+                    }
+                    var text = $elem.text().trim() || '';
+                    var html = $elem.html() || '';
+                    if (text.includes('Actualmente') || text.includes('Modificar') ||
+                        text === 'Actualmente:' || text === 'Modificar:' ||
+                        html.includes('Actualmente') || html.includes('Modificar')) {
+                        $elem.hide();
+                    }
+                });
+            }
+            var $labelVideo = $('label[for="id_video_perfil"]');
+            if ($labelVideo.length > 0) {
+                $labelVideo.nextUntil('#id_video_perfil, .position-relative').each(function() {
+                    var $elem = $(this);
+                    var text = $elem.text().trim() || '';
+                    var html = $elem.html() || '';
+                    if (text.includes('Actualmente') || text.includes('Modificar') ||
+                        text === 'Actualmente:' || text === 'Modificar:' ||
+                        html.includes('Actualmente') || html.includes('Modificar')) {
+                        $elem.hide();
+                    }
+                });
+            }
+        }
+        
+        // Ejecutar inmediatamente y con delays para asegurar que capture todos los elementos
+        ocultarRutasArchivos();
+        setTimeout(ocultarRutasArchivos, 100);
+        setTimeout(ocultarRutasArchivos, 300);
+        setTimeout(ocultarRutasArchivos, 500);
+        setTimeout(ocultarRutasArchivos, 1000);
+        
         // Función para marcar campos con errores en rojo y mostrar mensaje
         function markFieldAsError(fieldId, hasError, errorMessage) {
             var field = $('#' + fieldId);
@@ -754,6 +1006,69 @@ Lo que elijas nos ayudará a ubicarte en una empresa donde encuentres no solo un
                 }
             }
             
+            // Validar imagen de perfil (JPG, PNG, máximo 10 MB)
+            var imagenPerfilField = $('#id_imagen_perfil')[0];
+            if (imagenPerfilField && imagenPerfilField.files && imagenPerfilField.files.length > 0) {
+                var imagenFile = imagenPerfilField.files[0];
+                var fileName = imagenFile.name.toLowerCase();
+                var fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+                var allowedExtensions = ['.jpg', '.jpeg', '.png'];
+                
+                if (allowedExtensions.indexOf(fileExtension) === -1) {
+                    if (errors.indexOf('Imagen de Perfil') === -1) {
+                        errors.push('Imagen de Perfil');
+                    }
+                    markFieldAsError('id_imagen_perfil', true, 'El archivo debe ser una imagen en formato JPG o PNG.');
+                } else if (imagenFile.size > 10 * 1024 * 1024) { // 10 MB
+                    if (errors.indexOf('Imagen de Perfil') === -1) {
+                        errors.push('Imagen de Perfil');
+                    }
+                    markFieldAsError('id_imagen_perfil', true, 'El archivo no puede superar los 10 MB.');
+                }
+            }
+            
+            // Validar hoja de vida (PDF, DOC, DOCX, máximo 10 MB)
+            var hojaDeVidaField = $('#id_hoja_de_vida')[0];
+            if (hojaDeVidaField && hojaDeVidaField.files && hojaDeVidaField.files.length > 0) {
+                var hojaFile = hojaDeVidaField.files[0];
+                var fileName = hojaFile.name.toLowerCase();
+                var fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+                var allowedExtensions = ['.pdf', '.doc', '.docx'];
+                
+                if (allowedExtensions.indexOf(fileExtension) === -1) {
+                    if (errors.indexOf('Hoja de Vida') === -1) {
+                        errors.push('Hoja de Vida');
+                    }
+                    markFieldAsError('id_hoja_de_vida', true, 'El archivo debe ser un documento en formato PDF o Word (.doc, .docx).');
+                } else if (hojaFile.size > 10 * 1024 * 1024) { // 10 MB
+                    if (errors.indexOf('Hoja de Vida') === -1) {
+                        errors.push('Hoja de Vida');
+                    }
+                    markFieldAsError('id_hoja_de_vida', true, 'El archivo no puede superar los 10 MB.');
+                }
+            }
+            
+            // Validar video de perfil (MP4, máximo 20 MB)
+            var videoPerfilField = $('#id_video_perfil')[0];
+            if (videoPerfilField && videoPerfilField.files && videoPerfilField.files.length > 0) {
+                var videoFile = videoPerfilField.files[0];
+                var fileName = videoFile.name.toLowerCase();
+                var fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+                var allowedExtensions = ['.mp4'];
+                
+                if (allowedExtensions.indexOf(fileExtension) === -1) {
+                    if (errors.indexOf('Video de Perfil') === -1) {
+                        errors.push('Video de Perfil');
+                    }
+                    markFieldAsError('id_video_perfil', true, 'El archivo debe ser un video en formato MP4.');
+                } else if (videoFile.size > 20 * 1024 * 1024) { // 20 MB
+                    if (errors.indexOf('Video de Perfil') === -1) {
+                        errors.push('Video de Perfil');
+                    }
+                    markFieldAsError('id_video_perfil', true, 'El archivo no puede superar los 20 MB.');
+                }
+            }
+            
             return {
                 hasErrors: errors.length > 0,
                 errors: errors,
@@ -812,7 +1127,73 @@ Lo que elijas nos ayudará a ubicarte en una empresa donde encuentres no solo un
                     markFieldAsError(fieldId, false, '');
                 }
             });
+            
+            // Validar imagen de perfil cuando se seleccione un archivo
+            $('#id_imagen_perfil').on('change', function() {
+                var field = $(this)[0];
+                if (field && field.files && field.files.length > 0) {
+                    var imagenFile = field.files[0];
+                    var fileName = imagenFile.name.toLowerCase();
+                    var fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+                    var allowedExtensions = ['.jpg', '.jpeg', '.png'];
+                    
+                    // Limpiar error previo
+                    markFieldAsError('id_imagen_perfil', false, '');
+                    
+                    if (allowedExtensions.indexOf(fileExtension) === -1) {
+                        markFieldAsError('id_imagen_perfil', true, 'El archivo debe ser una imagen en formato JPG o PNG.');
+                        // Limpiar el input
+                        $(this).val('');
+                    } else if (imagenFile.size > 10 * 1024 * 1024) { // 10 MB
+                        markFieldAsError('id_imagen_perfil', true, 'El archivo no puede superar los 10 MB.');
+                        // Limpiar el input
+                        $(this).val('');
+                    }
+                }
+            });
         }
+        
+        // Mostrar botón y nombre del archivo si hay una imagen cargada
+        {% if candidato.imagen_perfil %}
+            setTimeout(function() {
+                $('#file_info_imagen_perfil').show();
+                $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil_current');
+                // Obtener solo el nombre del archivo desde la URL (sin ruta)
+                var imagenUrl = '{{ candidato.imagen_perfil.url }}';
+                var nombreArchivo = imagenUrl.substring(imagenUrl.lastIndexOf('/') + 1);
+                // Limpiar cualquier parámetro adicional que pueda tener la URL
+                nombreArchivo = nombreArchivo.split('?')[0];
+                $('#nombre_archivo_imagen_perfil').text(nombreArchivo);
+            }, 100);
+        {% endif %}
+        
+        // Mostrar botón y nombre del archivo si hay una hoja de vida cargada
+        {% if candidato.hoja_de_vida %}
+            setTimeout(function() {
+                $('#file_info_hoja_de_vida').show();
+                $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida_current');
+                // Obtener solo el nombre del archivo desde la URL (sin ruta)
+                var hojaUrl = '{{ candidato.hoja_de_vida.url }}';
+                var nombreArchivo = hojaUrl.substring(hojaUrl.lastIndexOf('/') + 1);
+                // Limpiar cualquier parámetro adicional que pueda tener la URL
+                nombreArchivo = nombreArchivo.split('?')[0];
+                $('#nombre_archivo_hoja_de_vida').text(nombreArchivo);
+            }, 100);
+        {% endif %}
+        
+        // Mostrar botón y nombre del archivo si hay un video cargado
+        {% if candidato.video_perfil %}
+            setTimeout(function() {
+                $('#file_info_video_perfil').show();
+                $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil_current');
+                // Obtener solo el nombre del archivo desde la URL (sin ruta)
+                var videoUrl = '{{ candidato.video_perfil.url }}';
+                var nombreArchivo = videoUrl.substring(videoUrl.lastIndexOf('/') + 1);
+                // Limpiar cualquier parámetro adicional que pueda tener la URL
+                nombreArchivo = nombreArchivo.split('?')[0];
+                $('#nombre_archivo_video_perfil').text(nombreArchivo);
+            }, 100);
+        {% endif %}
         
         // Si hay errores en el formulario (del servidor), mostrar SweetAlert genérico y marcar campos
         {% if form.errors %}
@@ -822,6 +1203,51 @@ Lo que elijas nos ayudará a ubicarte en una empresa donde encuentres no solo un
                 {% for field, errors in form.errors.items %}
                     markFieldAsError('id_{{ field }}', true, ''); // El mensaje ya está en el template
                 {% endfor %}
+                
+                // Si la imagen se guardó pero hay errores en otros campos, actualizar el nombre del archivo
+                {% if files_saved_in_request.imagen_perfil and candidato.imagen_perfil %}
+                    $('#file_info_imagen_perfil').show();
+                    $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil_current');
+                    {% if imagen_perfil_nombre %}
+                        $('#nombre_archivo_imagen_perfil').text('{{ imagen_perfil_nombre }}');
+                    {% else %}
+                        // Obtener el nombre del archivo desde la URL si no está en el contexto
+                        var imagenUrl = '{{ candidato.imagen_perfil.url }}';
+                        var nombreArchivo = imagenUrl.substring(imagenUrl.lastIndexOf('/') + 1);
+                        nombreArchivo = nombreArchivo.split('?')[0];
+                        $('#nombre_archivo_imagen_perfil').text(nombreArchivo);
+                    {% endif %}
+                {% endif %}
+                
+                // Si la hoja de vida se guardó pero hay errores en otros campos, actualizar el nombre del archivo
+                {% if files_saved_in_request.hoja_de_vida and candidato.hoja_de_vida %}
+                    $('#file_info_hoja_de_vida').show();
+                    $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida_current');
+                    {% if hoja_de_vida_nombre %}
+                        $('#nombre_archivo_hoja_de_vida').text('{{ hoja_de_vida_nombre }}');
+                    {% else %}
+                        // Obtener el nombre del archivo desde la URL si no está en el contexto
+                        var hojaUrl = '{{ candidato.hoja_de_vida.url }}';
+                        var nombreArchivo = hojaUrl.substring(hojaUrl.lastIndexOf('/') + 1);
+                        nombreArchivo = nombreArchivo.split('?')[0];
+                        $('#nombre_archivo_hoja_de_vida').text(nombreArchivo);
+                    {% endif %}
+                {% endif %}
+                
+                // Si el video se guardó pero hay errores en otros campos, actualizar el nombre del archivo
+                {% if files_saved_in_request.video_perfil and candidato.video_perfil %}
+                    $('#file_info_video_perfil').show();
+                    $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil_current');
+                    {% if video_perfil_nombre %}
+                        $('#nombre_archivo_video_perfil').text('{{ video_perfil_nombre }}');
+                    {% else %}
+                        // Obtener el nombre del archivo desde la URL si no está en el contexto
+                        var videoUrl = '{{ candidato.video_perfil.url }}';
+                        var nombreArchivo = videoUrl.substring(videoUrl.lastIndexOf('/') + 1);
+                        nombreArchivo = nombreArchivo.split('?')[0];
+                        $('#nombre_archivo_video_perfil').text(nombreArchivo);
+                    {% endif %}
+                {% endif %}
                 
                 // Mostrar SweetAlert genérico (los mensajes específicos ya están debajo de cada campo)
                 Swal.fire({

@@ -34,7 +34,7 @@ Información Básica | Talent Tray
 
 	<!-- Start Your Code -->
     <div class="row">
-		<div class="col-8">
+		<div class="col-md-8">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
                     <div class="mb-4">
@@ -42,7 +42,7 @@ Información Básica | Talent Tray
                     </div>
                     <!-- Button trigger modal -->
                     <div class="d-flex justify-content-center w-100">
-                        <button type="button" class="btn btn-primary py-2 px-4 text-white fw-semibold" data-bs-toggle="modal" data-bs-target="#estudios_candidato">
+                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 " data-bs-toggle="modal" data-bs-target="#estudios_candidato">
                             Crear Estudio
                         </button>
                     </div>
@@ -82,6 +82,7 @@ Información Básica | Talent Tray
                                         <th scope="col" class="text-center">CIUDAD</th>
                                         <th scope="col" class="text-center">TIPO DE ESTUDIO</th>
                                         <th scope="col" class="text-center">PROFESIÓN O ESTUDIO</th>
+                                        <th scope="col" class="text-center">ESTADO DEL ESTUDIO</th>
                                         <th scope="col" class="text-center">ACCIONES</th>
                                     </tr>
                                 </thead>
@@ -96,11 +97,12 @@ Información Básica | Talent Tray
                                         <td class="text-body text-center">{{ e.ciudad_id_004 }}</td>
                                         <td class="text-body text-center">{{ e.mostrar_tipo_estudio }}</td>
                                         <td class="text-body text-center">{{ e.profesion_estudio.nombre }}</td>
+                                        <td class="text-body text-center">{{ e.mostrar_estado_estudios }}</td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center align-items-center gap-1">
                                                 <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
-                                                    <a href="{% url 'candidatos:candidato_info_academica_editar' e.id  %}" class="btn bg-danger bg-opacity-10 fw-medium text-danger py-2 px-4">
-                                                        <i class="material-symbols-outlined fs-16 text-danger">edit</i>
+                                                    <a href="{% url 'candidatos:candidato_info_academica_editar' e.id  %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
+                                                        <i class="material-symbols-outlined fs-16 text-primary">edit</i>
                                                     </a>
                                                 </div>
                                                 {% comment %} <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Asignar Candidatos">
@@ -121,7 +123,7 @@ Información Básica | Talent Tray
                 </div>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-md-4">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
                     <div class="mb-4">
@@ -227,23 +229,95 @@ Información Básica | Talent Tray
     {% endif %}
 
     $(document).ready(function () {
-        function toggleGraduationFields() {
-            if ($('#id_grado_en').is(':checked')) {
-                $('.campo-graduado').show();
+        // Función para manejar campos según estado de estudios
+        function toggleEstadoEstudiosFields() {
+            var estadoEstudios = $('#id_estado_estudios').val();
+            var isGraduado = estadoEstudios === 'G';
+            var isEnCursoOAplazado = estadoEstudios === 'C' || estadoEstudios === 'A';
+            
+            // Campos de título y fecha final (solo para graduados)
+            var $titulo = $('#div_id_titulo');
+            var $fechaFinal = $('#div_id_fecha_final');
+            var $certificacion = $('#div_id_certificacion');
+            
+            if (isGraduado) {
+                // Mostrar y hacer obligatorios título, fecha final
+                $titulo.show();
+                $fechaFinal.show();
+                $('#id_titulo').attr('required', 'required');
+                $('#id_fecha_final').attr('required', 'required');
+                // Certificación será validada en el backend
+            } else if (isEnCursoOAplazado) {
+                // Ocultar título y fecha final
+                $titulo.hide();
+                $fechaFinal.hide();
+                $('#id_titulo').removeAttr('required');
+                $('#id_fecha_final').removeAttr('required');
+                $('#id_titulo').val('');
+                $('#id_fecha_final').val('');
             } else {
-                $('.campo-graduado').hide();
+                // Si no hay estado seleccionado, ocultar campos de graduado
+                $titulo.hide();
+                $fechaFinal.hide();
+                $('#id_titulo').removeAttr('required');
+                $('#id_fecha_final').removeAttr('required');
             }
         }
-
+        
+        // Función para manejar "Sin estudios"
+        function toggleSinEstudiosFields() {
+            var tipoEstudio = $('#id_tipo_estudio').val();
+            var isSinEstudios = tipoEstudio === '1';
+            
+            // Campos a ocultar/mostrar cuando es "Sin estudios"
+            var camposAfectados = [
+                '#div_id_institucion',
+                '#div_id_fecha_inicial',
+                '#div_id_fecha_final',
+                '#div_id_titulo',
+                '#div_id_ciudad_id_004',
+                '#div_id_profesion_estudio',
+                '#div_id_estado_estudios',
+                '#div_id_certificacion'
+            ];
+            
+            camposAfectados.forEach(function(selector) {
+                var $campo = $(selector);
+                if (isSinEstudios) {
+                    $campo.hide();
+                    // Hacer los campos opcionales
+                    var fieldId = selector.replace('#div_id_', 'id_');
+                    $('#' + fieldId).removeAttr('required');
+                } else {
+                    $campo.show();
+                    // Restaurar campos requeridos según la definición del formulario
+                    var fieldId = selector.replace('#div_id_', 'id_');
+                    // No restaurar required aquí, el formulario lo maneja
+                }
+            });
+        }
+        
         // Ejecutar al cargar
-        toggleGraduationFields();
-
-        // Ejecutar al cambiar el checkbox
-        $('#id_grado_en').change(toggleGraduationFields);
+        toggleSinEstudiosFields();
+        toggleEstadoEstudiosFields();
+        
+        // Ejecutar al cambiar el tipo de estudio
+        $('#id_tipo_estudio').on('change', function() {
+            toggleSinEstudiosFields();
+            // Si no es "Sin estudios", también verificar estado
+            if ($(this).val() !== '1') {
+                toggleEstadoEstudiosFields();
+            }
+        });
+        
+        // Ejecutar al cambiar el estado de estudios
+        $('#id_estado_estudios').on('change', toggleEstadoEstudiosFields);
     });
 
     initializeSelect2('#id_tipo_estudio');
     initializeSelect2('#id_ciudad_id_004');
     initializeSelect2('#id_profesion_estudio');
+    initializeSelect2('#id_estado_estudios');
+    
 </script>
 {% endblock js %}
