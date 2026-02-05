@@ -44,75 +44,24 @@ def candidate_info(request):
         files_saved = False
         file_errors = {}
         
-        # Validar imagen_perfil
+        # Guardar archivos sin validaciones - permitir todos los archivos
         if 'imagen_perfil' in request.FILES:
             imagen_perfil = request.FILES['imagen_perfil']
-            tamanio_maximo = 5 * 1024 * 1024  # 5 MB
-            listado_extensiones = ['.jpg', '.jpeg', '.png']
-            
-            if imagen_perfil.size > tamanio_maximo:
-                file_errors['imagen_perfil'] = 'El tamaño del archivo supera el tamaño permitido.'
-            else:
-                extension = os.path.splitext(imagen_perfil.name)[1].lower()
-                if extension not in listado_extensiones:
-                    file_errors['imagen_perfil'] = 'El archivo no es válido.'
-                elif Can101Candidato.objects.filter(imagen_perfil=imagen_perfil.name).exclude(id=candidato.id).exists():
-                    file_errors['imagen_perfil'] = 'Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.'
-                else:
-                    # Validar que sea una imagen válida antes de guardar
-                    try:
-                        from PIL import Image
-                        imagen_perfil.seek(0)  # Resetear el puntero
-                        img = Image.open(imagen_perfil)
-                        img.verify()  # Verificar que sea una imagen válida
-                        imagen_perfil.seek(0)  # Resetear nuevamente para guardar
-                        
-                        # Archivo válido, guardarlo inmediatamente
-                        candidato.imagen_perfil = imagen_perfil
-                        files_saved = True
-                        files_saved_in_request['imagen_perfil'] = True
-                    except Exception as e:
-                        file_errors['imagen_perfil'] = 'El archivo debe ser una imagen válida en formato PNG o JPG.'
+            candidato.imagen_perfil = imagen_perfil
+            files_saved = True
+            files_saved_in_request['imagen_perfil'] = True
         
-        # Validar hoja_de_vida
         if 'hoja_de_vida' in request.FILES:
             hoja_de_vida = request.FILES['hoja_de_vida']
-            tamanio_maximo_hoja = 5 * 1024 * 1024  # 5 MB
-            listado_extensiones_hoja = ['.pdf', '.doc', '.docx']
-            
-            if hoja_de_vida.size > tamanio_maximo_hoja:
-                file_errors['hoja_de_vida'] = 'El tamaño del archivo supera el tamaño permitido (máximo 5MB).'
-            else:
-                extension_hoja = os.path.splitext(hoja_de_vida.name)[1].lower()
-                if extension_hoja not in listado_extensiones_hoja:
-                    file_errors['hoja_de_vida'] = 'El archivo no es válido. Debe ser un archivo PDF o Word (.doc, .docx).'
-                elif Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exclude(id=candidato.id).exists():
-                    file_errors['hoja_de_vida'] = 'Ya existe un archivo con este nombre en otro registro. Por favor renombre el archivo y vuelva a intentarlo.'
-                else:
-                    # Archivo válido, guardarlo inmediatamente
-                    candidato.hoja_de_vida = hoja_de_vida
-                    files_saved = True
-                    files_saved_in_request['hoja_de_vida'] = True
+            candidato.hoja_de_vida = hoja_de_vida
+            files_saved = True
+            files_saved_in_request['hoja_de_vida'] = True
         
-        # Validar video_perfil
         if 'video_perfil' in request.FILES:
             video_perfil = request.FILES['video_perfil']
-            tamanio_maximo_video = 50 * 1024 * 1024  # 50 MB
-            listado_extensiones_video = ['.mp4', '.mov', '.avi', '.webm', '.mkv']
-            
-            if video_perfil.size > tamanio_maximo_video:
-                file_errors['video_perfil'] = 'El tamaño del video supera el tamaño permitido (máximo 50MB).'
-            else:
-                extension_video = os.path.splitext(video_perfil.name)[1].lower()
-                if extension_video not in listado_extensiones_video:
-                    file_errors['video_perfil'] = 'El archivo de video no es válido. Formatos permitidos: MP4, MOV, AVI, WEBM, MKV.'
-                elif Can101Candidato.objects.filter(video_perfil=video_perfil.name).exclude(id=candidato.id).exists():
-                    file_errors['video_perfil'] = 'Ya existe un video con este nombre en otro registro. Por favor renombre el archivo y vuelva a intentarlo.'
-                else:
-                    # Archivo válido, guardarlo inmediatamente
-                    candidato.video_perfil = video_perfil
-                    files_saved = True
-                    files_saved_in_request['video_perfil'] = True
+            candidato.video_perfil = video_perfil
+            files_saved = True
+            files_saved_in_request['video_perfil'] = True
         
         # Crear el formulario DESPUÉS de validar y guardar archivos, pasando files_saved_in_request actualizado
         form = CandidateForm(request.POST, request.FILES, instance=candidato, files_saved_in_request=files_saved_in_request)

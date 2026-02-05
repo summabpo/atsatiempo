@@ -9,6 +9,28 @@ Información Básica | Talent Tray
 
 {% block styles %}
 <style>
+    /* Estilos para campos con errores */
+    .is-invalid {
+        border-color: #dc3545 !important;
+        background-color: #fff5f5 !important;
+    }
+    
+    .is-invalid:focus {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+    }
+    
+    .has-error label {
+        color: #dc3545 !important;
+        font-weight: 600;
+    }
+    
+    .has-error .text-danger {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+    }
+    
     /* Ocultar input file nativo */
     .custom-file-input {
         position: absolute !important;
@@ -202,7 +224,7 @@ Información Básica | Talent Tray
 		<div class="col-12">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
-                    <form method="post" id="form_info_personal"enctype="multipart/form-data">
+                    <form method="post" id="form_info_personal" enctype="multipart/form-data" novalidate>
                         {% csrf_token %}
                         {% comment %} {% crispy form %} {% endcomment %}
                         <!-- INSERT_YOUR_CODE -->
@@ -623,689 +645,195 @@ Lo que elijas nos ayudará a ubicarte en una empresa donde encuentres no solo un
         });
     }
     
-    // Función para formatear tamaño de archivo
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        var k = 1024;
-        var sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        var i = Math.floor(Math.log(bytes) / Math.log(k));
-        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-    }
     
-    // Función para obtener extensión de archivo
-    function getFileExtension(filename) {
-        return filename.split('.').pop().toLowerCase();
-    }
-    
-    // Función para validar imagen de perfil
-    function validarImagenPerfil(file) {
-        var errores = [];
+    // Event listeners para vista previa de archivos
+    $(document).ready(function() {
+        setTimeout(initializeFitCulturalTooltips, 300);
         
-        // Validar formato: solo PNG y JPG (sin importar mayúsculas/minúsculas)
-        var extensionesPermitidas = ['png', 'jpg', 'jpeg'];
-        var extension = getFileExtension(file.name); // Ya convierte a minúsculas
-        
-        // Validar por extensión
-        var extensionValida = extensionesPermitidas.indexOf(extension) !== -1;
-        
-        // También validar por tipo MIME como respaldo
-        var tiposMimePermitidos = ['image/png', 'image/jpeg', 'image/jpg'];
-        var tipoMime = (file.type || '').toLowerCase();
-        var tipoMimeValido = tiposMimePermitidos.indexOf(tipoMime) !== -1;
-        
-        // Si no pasa ninguna de las dos validaciones, es un error
-        if (!extensionValida && !tipoMimeValido) {
-            errores.push('El archivo debe ser una imagen en formato PNG o JPG.');
-        }
-        
-        // Validar tamaño: máximo 5 MB
-        var tamanioMaximo = 5 * 1024 * 1024; // 5 MB en bytes
-        if (file.size > tamanioMaximo) {
-            errores.push('El tamaño del archivo no debe superar los 5 MB.');
-        }
-        
-        return errores;
-    }
-    
-    // Función para mostrar información de imagen
-    function previewImagen(input) {
-        if (input.files && input.files[0]) {
-            var file = input.files[0];
+        // Función para marcar campos con errores en rojo y mostrar mensaje
+        function markFieldAsError(fieldId, hasError, errorMessage) {
+            var field = $('#' + fieldId);
+            var fieldContainer = field.closest('.col-md-3, .col-md-4, .col-md-6, .col-md-12, .mb-3');
             
-            // Validar el archivo antes de procesarlo
-            var errores = validarImagenPerfil(file);
-            if (errores.length > 0) {
-                // Mostrar SweetAlert con los errores
+            // Buscar o crear el contenedor de mensaje de error
+            var errorContainer = fieldContainer.find('.field-error-message');
+            if (errorContainer.length === 0) {
+                errorContainer = $('<div class="text-danger small field-error-message"></div>');
+                fieldContainer.append(errorContainer);
+            }
+            
+            if (hasError) {
+                field.addClass('is-invalid');
+                field.removeClass('is-valid');
+                fieldContainer.addClass('has-error');
+                if (errorMessage) {
+                    errorContainer.html(errorMessage).show();
+                }
+            } else {
+                field.removeClass('is-invalid');
+                fieldContainer.removeClass('has-error');
+                errorContainer.hide().html('');
+            }
+        }
+        
+        // Función para limpiar todos los errores visuales
+        function clearAllErrors() {
+            $('.is-invalid').removeClass('is-invalid');
+            $('.has-error').removeClass('has-error');
+            $('.field-error-message').hide().html('');
+        }
+        
+        // Función para validar campos requeridos
+        function validateRequiredFields() {
+            clearAllErrors();
+            var errors = [];
+            var errorFields = [];
+            
+            // Campos requeridos según el formulario
+            var requiredFields = {
+                'id_email': 'Email',
+                'id_primer_nombre': 'Primer Nombre',
+                'id_primer_apellido': 'Primer Apellido',
+                'id_numero_documento': 'Número de Documento',
+                'id_ciudad_id_004': 'Ciudad',
+                'id_sexo': 'Género',
+                'id_fecha_nacimiento': 'Fecha de Nacimiento',
+                'id_telefono': 'Teléfono',
+                'id_direccion': 'Dirección'
+            };
+            
+            // Validar cada campo requerido
+            for (var fieldId in requiredFields) {
+                var field = $('#' + fieldId);
+                var fieldName = requiredFields[fieldId];
+                var value = field.val();
+                
+                if (!value || (typeof value === 'string' && value.trim() === '')) {
+                    errors.push(fieldName);
+                    errorFields.push(fieldId);
+                    markFieldAsError(fieldId, true, 'Este campo es obligatorio.');
+                }
+            }
+            
+            // Validar formato de email
+            var emailField = $('#id_email');
+            var emailValue = emailField.val();
+            if (emailValue && emailValue.trim() !== '') {
+                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(emailValue)) {
+                    if (errors.indexOf('Email') === -1) {
+                        errors.push('Email');
+                    }
+                    markFieldAsError('id_email', true, 'Ingrese un email válido.');
+                }
+            }
+            
+            // Validar formato de teléfono (10 dígitos)
+            var telefonoField = $('#id_telefono');
+            var telefonoValue = telefonoField.val();
+            if (telefonoValue && telefonoValue.trim() !== '') {
+                var telefonoRegex = /^\d{10}$/;
+                if (!telefonoRegex.test(telefonoValue)) {
+                    if (errors.indexOf('Teléfono') === -1) {
+                        errors.push('Teléfono');
+                    }
+                    markFieldAsError('id_telefono', true, 'El teléfono debe contener solo números y tener 10 dígitos.');
+                }
+            }
+            
+            // Validar formato de número de documento (solo números)
+            var numeroDocField = $('#id_numero_documento');
+            var numeroDocValue = numeroDocField.val();
+            if (numeroDocValue && numeroDocValue.trim() !== '') {
+                var numeroDocRegex = /^\d+$/;
+                if (!numeroDocRegex.test(numeroDocValue)) {
+                    if (errors.indexOf('Número de Documento') === -1) {
+                        errors.push('Número de Documento');
+                    }
+                    markFieldAsError('id_numero_documento', true, 'El número de documento debe contener solo números.');
+                }
+            }
+            
+            return {
+                hasErrors: errors.length > 0,
+                errors: errors,
+                errorFields: errorFields
+            };
+        }
+        
+        // Prevenir el scroll automático del navegador cuando hay errores de validación
+        var form = document.getElementById('form_info_personal');
+        if (form) {
+            // Interceptar el submit para validar manualmente y prevenir el scroll automático
+            form.addEventListener('submit', function(e) {
+                // Guardar la posición actual del scroll
+                var scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // Validar campos requeridos
+                var validation = validateRequiredFields();
+                
+                if (validation.hasErrors) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Restaurar la posición del scroll inmediatamente
+                    window.scrollTo(0, scrollPosition);
+                    
+                    // También prevenir cualquier scroll que pueda ocurrir después
+                    setTimeout(function() {
+                        window.scrollTo(0, scrollPosition);
+                    }, 0);
+                    setTimeout(function() {
+                        window.scrollTo(0, scrollPosition);
+                    }, 10);
+                    setTimeout(function() {
+                        window.scrollTo(0, scrollPosition);
+                    }, 50);
+                    
+                    // Mostrar SweetAlert genérico (los mensajes específicos ya están debajo de cada campo)
+                    Swal.fire({
+                        title: 'Error en el formulario',
+                        html: 'Por favor, revisa los campos marcados en rojo y corrige los errores antes de continuar.',
+                        icon: 'error',
+                        confirmButtonText: 'Entendido',
+                        confirmButtonColor: '#B10022',
+                        allowOutsideClick: false,
+                        allowEscapeKey: true
+                    });
+                    
+                    return false;
+                }
+            });
+            
+            // Limpiar errores visuales cuando el usuario empiece a escribir
+            $('input, select, textarea').on('input change', function() {
+                var fieldId = $(this).attr('id');
+                if (fieldId) {
+                    markFieldAsError(fieldId, false, '');
+                }
+            });
+        }
+        
+        // Si hay errores en el formulario (del servidor), mostrar SweetAlert genérico y marcar campos
+        {% if form.errors %}
+            // Esperar a que el DOM esté completamente cargado antes de marcar campos
+            setTimeout(function() {
+                // Marcar campos con errores del servidor (los mensajes ya están en el template debajo de cada campo)
+                {% for field, errors in form.errors.items %}
+                    markFieldAsError('id_{{ field }}', true, ''); // El mensaje ya está en el template
+                {% endfor %}
+                
+                // Mostrar SweetAlert genérico (los mensajes específicos ya están debajo de cada campo)
                 Swal.fire({
-                    title: 'Error al cargar imagen',
-                    html: errores.join('<br>'),
+                    title: 'Error en el formulario',
+                    html: 'Por favor, revisa los campos marcados en rojo y corrige los errores antes de continuar.',
                     icon: 'error',
                     confirmButtonText: 'Entendido',
                     confirmButtonColor: '#B10022',
                     allowOutsideClick: false,
                     allowEscapeKey: true
                 });
-                
-                // Limpiar el input y ocultar el botón de ver
-                input.value = '';
-                $('#file_info_imagen_perfil').hide();
-                
-                // Limpiar de memoria y sessionStorage
-                if (window.attachedFiles['imagen_perfil']) {
-                    delete window.attachedFiles['imagen_perfil'];
-                }
-                sessionStorage.removeItem('file_imagen_perfil');
-                sessionStorage.removeItem('preview_imagen_perfil');
-                sessionStorage.removeItem('has_file_imagen_perfil');
-                sessionStorage.removeItem('is_new_imagen_perfil');
-                
-                return; // Detener el procesamiento
-            }
-            
-            // Si pasa la validación, procesar el archivo
-            console.log('Archivo válido, procesando:', file.name, 'Tipo:', file.type, 'Tamaño:', file.size);
-            // Guardar archivo en memoria inmediatamente - CRÍTICO para persistencia
-            window.attachedFiles['imagen_perfil'] = file;
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                // Mostrar botón de ver y configurar para archivo nuevo
-                $('#file_info_imagen_perfil').show();
-                $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil');
-                // Configurar modal para archivo nuevo
-                $('#modal_img_imagen_perfil').attr('src', e.target.result);
-                // Guardar en sessionStorage - CRÍTICO para persistencia
-                saveFileToSession('imagen_perfil', file);
-                // Marcar que hay un archivo nuevo cargado - CRÍTICO para persistencia
-                sessionStorage.setItem('has_file_imagen_perfil', 'true');
-                sessionStorage.setItem('is_new_imagen_perfil', 'true');
-            };
-            reader.readAsDataURL(file);
-        } else {
-            // Si no hay archivo nuevo, verificar si hay uno en memoria o en el servidor
-            if (!window.attachedFiles['imagen_perfil']) {
-                var hasNewFile = sessionStorage.getItem('is_new_imagen_perfil');
-                if (hasNewFile !== 'true') {
-                    // No hay archivo nuevo, verificar si hay uno en el servidor
-                    {% if candidato.imagen_perfil %}
-                        $('#file_info_imagen_perfil').show();
-                        $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil_current');
-                    {% else %}
-                        $('#file_info_imagen_perfil').hide();
-                    {% endif %}
-                } else {
-                    // Hay un archivo nuevo en sessionStorage, restaurarlo
-                    restoreFilesFromSession();
-                }
-            }
-        }
-    }
-    
-    // Función para mostrar información de hoja de vida
-    function previewHojaVida(input) {
-        if (input.files && input.files[0]) {
-            var file = input.files[0];
-            // Guardar archivo en memoria inmediatamente - CRÍTICO para persistencia
-            window.attachedFiles['hoja_de_vida'] = file;
-            var extension = getFileExtension(file.name);
-            
-            // Mostrar botón de ver y configurar para archivo nuevo
-            $('#file_info_hoja_de_vida').show();
-            $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida');
-            // Marcar que hay un archivo nuevo cargado - CRÍTICO para persistencia
-            sessionStorage.setItem('has_file_hoja_de_vida', 'true');
-            sessionStorage.setItem('is_new_hoja_de_vida', 'true');
-            
-            // Guardar datos del archivo para el modal
-            var fileReader = new FileReader();
-            fileReader.onload = function(e) {
-                // Guardar en variable global para usar cuando se abra el modal
-                window.hojaDeVidaPreview = {
-                    data: e.target.result,
-                    extension: extension
-                };
-            };
-            fileReader.readAsDataURL(file);
-            
-            // Configurar el modal cuando se abra
-            $('#modal_hoja_de_vida').off('show.bs.modal').on('show.bs.modal', function() {
-                if (window.hojaDeVidaPreview) {
-                    if (window.hojaDeVidaPreview.extension === 'pdf') {
-                        $('#modal_iframe_hoja_de_vida').attr('src', window.hojaDeVidaPreview.data).show();
-                        $('#modal_body_hoja_de_vida').find('.alert').remove();
-                    } else {
-                        $('#modal_iframe_hoja_de_vida').hide();
-                        if ($('#modal_body_hoja_de_vida').find('.alert').length === 0) {
-                            $('#modal_body_hoja_de_vida').append(
-                                '<div class="alert alert-info"><p>Para visualizar archivos Word, por favor descárgalo después de guardar el formulario.</p></div>'
-                            );
-                        }
-                    }
-                }
-            });
-            
-            // Guardar en sessionStorage - CRÍTICO para persistencia
-            saveFileToSession('hoja_de_vida', file);
-        } else {
-            // Si no hay archivo nuevo, verificar si hay uno en memoria o en el servidor
-            if (!window.attachedFiles['hoja_de_vida']) {
-                var hasNewFile = sessionStorage.getItem('is_new_hoja_de_vida');
-                if (hasNewFile !== 'true') {
-                    // No hay archivo nuevo, verificar si hay uno en el servidor
-                    {% if candidato.hoja_de_vida %}
-                        $('#file_info_hoja_de_vida').show();
-                        $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida_current');
-                    {% else %}
-                        $('#file_info_hoja_de_vida').hide();
-                    {% endif %}
-                } else {
-                    // Hay un archivo nuevo en sessionStorage, restaurarlo
-                    restoreFilesFromSession();
-                }
-            }
-        }
-    }
-    
-    // Función para mostrar información de video
-    function previewVideo(input) {
-        if (input.files && input.files[0]) {
-            var file = input.files[0];
-            // Guardar archivo en memoria inmediatamente - CRÍTICO para persistencia
-            window.attachedFiles['video_perfil'] = file;
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                // Mostrar botón de ver y configurar para archivo nuevo
-                $('#file_info_video_perfil').show();
-                $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil');
-                // Configurar modal para archivo nuevo
-                $('#modal_video_video_perfil').attr('src', e.target.result);
-                // Guardar en sessionStorage - CRÍTICO para persistencia
-                saveFileToSession('video_perfil', file);
-                // Marcar que hay un archivo nuevo cargado - CRÍTICO para persistencia
-                sessionStorage.setItem('has_file_video_perfil', 'true');
-                sessionStorage.setItem('is_new_video_perfil', 'true');
-            };
-            reader.readAsDataURL(file);
-        } else {
-            // Si no hay archivo nuevo, verificar si hay uno en memoria o en el servidor
-            if (!window.attachedFiles['video_perfil']) {
-                var hasNewFile = sessionStorage.getItem('is_new_video_perfil');
-                if (hasNewFile !== 'true') {
-                    // No hay archivo nuevo, verificar si hay uno en el servidor
-                    {% if candidato.video_perfil %}
-                        $('#file_info_video_perfil').show();
-                        $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil_current');
-                    {% else %}
-                        $('#file_info_video_perfil').hide();
-                    {% endif %}
-                } else {
-                    // Hay un archivo nuevo en sessionStorage, restaurarlo
-                    restoreFilesFromSession();
-                }
-            }
-        }
-    }
-    
-    // Almacenar archivos en memoria para mantenerlos adjuntos
-    window.attachedFiles = window.attachedFiles || {};
-    
-    // Función para guardar archivo en sessionStorage y en memoria
-    function saveFileToSession(fieldName, file) {
-        try {
-            // Guardar el archivo en memoria para mantenerlo adjunto
-            window.attachedFiles[fieldName] = file;
-            
-            var fileData = {
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                lastModified: file.lastModified
-            };
-            sessionStorage.setItem('file_' + fieldName, JSON.stringify(fileData));
-            // También guardar la vista previa si es una imagen
-            if (fieldName === 'imagen_perfil' && file.type.startsWith('image/')) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    sessionStorage.setItem('preview_' + fieldName, e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        } catch(e) {
-            console.error('Error guardando archivo en sessionStorage:', e);
-        }
-    }
-    
-    // Función para reasignar archivos al formulario cuando hay errores
-    function reattachFilesToForm() {
-        ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
-            var file = window.attachedFiles[fieldName];
-            var hasFile = sessionStorage.getItem('has_file_' + fieldName);
-            var isNewFile = sessionStorage.getItem('is_new_' + fieldName);
-            
-            if (file && hasFile === 'true' && isNewFile === 'true') {
-                try {
-                    var input = document.getElementById('id_' + fieldName);
-                    if (input) {
-                        // Crear un nuevo DataTransfer para asignar el archivo
-                        var dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(file);
-                        input.files = dataTransfer.files;
-                        
-                        // Disparar evento change para actualizar la vista y mantener el estado visual
-                        setTimeout(function() {
-                            $(input).trigger('change');
-                        }, 50);
-                    }
-                } catch(e) {
-                    console.log('No se pudo reasignar archivo ' + fieldName + ':', e);
-                    // Aunque no se pueda reasignar, mantener la visualización
-                    if (hasFile === 'true') {
-                        if (fieldName === 'imagen_perfil') {
-                            $('#file_info_imagen_perfil').show();
-                            $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil');
-                            var previewData = sessionStorage.getItem('preview_imagen_perfil');
-                            if (previewData) {
-                                $('#modal_img_imagen_perfil').attr('src', previewData);
-                            }
-                        } else if (fieldName === 'hoja_de_vida') {
-                            $('#file_info_hoja_de_vida').show();
-                            $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida');
-                        } else if (fieldName === 'video_perfil') {
-                            $('#file_info_video_perfil').show();
-                            $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil');
-                        }
-                    }
-                }
-            }
-        });
-    }
-    
-    // Función para restaurar archivo desde el servidor (cuando hay error de validación)
-    function restoreFileFromServer(fieldName, fileData) {
-        if (fileData && fileData.name) {
-            // Mostrar que el archivo está cargado
-            if (fieldName === 'imagen_perfil') {
-                $('#file_info_imagen_perfil').show();
-                // Si hay preview guardado, usarlo
-                var previewData = sessionStorage.getItem('preview_imagen_perfil');
-                if (previewData) {
-                    $('#modal_img_imagen_perfil').attr('src', previewData);
-                }
-            } else if (fieldName === 'hoja_de_vida') {
-                $('#file_info_hoja_de_vida').show();
-            } else if (fieldName === 'video_perfil') {
-                $('#file_info_video_perfil').show();
-            }
-        }
-    }
-    
-    // Función para restaurar archivos desde sessionStorage (solo mostrar info, no el archivo real)
-    function restoreFilesFromSession() {
-        ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
-            try {
-                var fileData = sessionStorage.getItem('file_' + fieldName);
-                var hasFile = sessionStorage.getItem('has_file_' + fieldName);
-                var isNewFile = sessionStorage.getItem('is_new_' + fieldName);
-                
-                // Si hay archivo nuevo en sessionStorage o en memoria, mostrarlo
-                if ((fileData || hasFile === 'true' || window.attachedFiles[fieldName]) && isNewFile === 'true') {
-                    if (fieldName === 'imagen_perfil') {
-                        // Intentar restaurar la vista previa de la imagen
-                        var previewData = sessionStorage.getItem('preview_' + fieldName);
-                        if (previewData) {
-                            $('#modal_img_imagen_perfil').attr('src', previewData);
-                        }
-                        $('#file_info_imagen_perfil').show();
-                        $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil');
-                    } else if (fieldName === 'hoja_de_vida') {
-                        if (fileData) {
-                            var data = JSON.parse(fileData);
-                            var extension = getFileExtension(data.name);
-                            // Recrear el objeto de preview
-                            window.hojaDeVidaPreview = {
-                                extension: extension
-                            };
-                        }
-                        $('#file_info_hoja_de_vida').show();
-                        $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida');
-                    } else if (fieldName === 'video_perfil') {
-                        $('#file_info_video_perfil').show();
-                        $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil');
-                    }
-                }
-            } catch(e) {
-                console.error('Error restaurando archivo desde sessionStorage:', e);
-            }
-        });
-    }
-    
-    // Limpiar sessionStorage cuando el formulario se envía exitosamente
-    function clearFileSession() {
-        ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
-            sessionStorage.removeItem('file_' + fieldName);
-        });
-    }
-    
-    // Event listeners para vista previa de archivos
-    $(document).ready(function() {
-        setTimeout(initializeFitCulturalTooltips, 300);
-        
-        // Ocultar inputs file nativos
-        $('#id_imagen_perfil, #id_hoja_de_vida, #id_video_perfil').addClass('custom-file-input');
-        
-        // Función para ocultar rutas y enlaces de archivos
-        function hideFilePaths() {
-            // Ocultar enlaces que muestran archivos actuales
-            $('#id_imagen_perfil, #id_hoja_de_vida, #id_video_perfil').each(function() {
-                var $input = $(this);
-                var $parent = $input.closest('.col-md-4');
-                
-                // Ocultar enlaces después del input
-                $input.next('a').hide();
-                $input.siblings('a').hide();
-                
-                // Ocultar enlaces dentro del mismo contenedor que contengan rutas
-                $parent.find('a[href*="media_uploads"]').hide();
-                $parent.find('a[href*="hoja_de_vida"]').hide();
-                $parent.find('a[href*="candidato"]').hide();
-                $parent.find('a[href*="videos_candidato"]').hide();
-                
-                // Ocultar texto que contenga "Actualmente" o rutas
-                $parent.find('small, span, div, p').each(function() {
-                    var text = $(this).text().trim();
-                    if (text.includes('Actualmente') || 
-                        text.includes('media_uploads') || 
-                        text.includes('hoja_de_vida') || 
-                        text.includes('candidato') || 
-                        text.includes('videos_candidato')) {
-                        // Solo ocultar si no es parte de nuestros contenedores personalizados
-                        if (!$(this).closest('.file-info-display, .custom-file-label, .modal, label').length) {
-                            $(this).hide();
-                        }
-                    }
-                });
-            });
-        }
-        
-        // Ejecutar inmediatamente y con delays para asegurar que capture todos los elementos
-        hideFilePaths();
-        setTimeout(hideFilePaths, 100);
-        setTimeout(hideFilePaths, 300);
-        setTimeout(hideFilePaths, 500);
-        setTimeout(hideFilePaths, 1000);
-        
-        // Vista previa de imagen de perfil
-        $('#id_imagen_perfil').on('change', function() {
-            previewImagen(this);
-        });
-        
-        // Vista previa de hoja de vida
-        $('#id_hoja_de_vida').on('change', function() {
-            previewHojaVida(this);
-        });
-        
-        // Vista previa de video
-        $('#id_video_perfil').on('change', function() {
-            previewVideo(this);
-        });
-        
-        // Interceptar el envío del formulario para mantener archivos adjuntos
-        var formSubmitted = false;
-        $('#form_info_personal').on('submit', function(e) {
-            if (!formSubmitted) {
-                // Guardar archivos seleccionados antes de enviar
-                ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
-                    var input = document.getElementById('id_' + fieldName);
-                    if (input && input.files && input.files[0]) {
-                        // Guardar el archivo en memoria y sessionStorage
-                        var file = input.files[0];
-                        window.attachedFiles[fieldName] = file;
-                        saveFileToSession(fieldName, file);
-                        sessionStorage.setItem('has_file_' + fieldName, 'true');
-                        sessionStorage.setItem('is_new_' + fieldName, 'true');
-                    } else {
-                        // Si no hay archivo nuevo pero hay uno en memoria, mantenerlo
-                        if (window.attachedFiles[fieldName]) {
-                            try {
-                                // Intentar reasignar el archivo al input antes de enviar
-                                var dataTransfer = new DataTransfer();
-                                dataTransfer.items.add(window.attachedFiles[fieldName]);
-                                input.files = dataTransfer.files;
-                                sessionStorage.setItem('has_file_' + fieldName, 'true');
-                                sessionStorage.setItem('is_new_' + fieldName, 'true');
-                            } catch(err) {
-                                console.log('No se pudo reasignar archivo antes de enviar:', err);
-                                // Mantener al menos la referencia en memoria
-                                sessionStorage.setItem('has_file_' + fieldName, 'true');
-                                sessionStorage.setItem('is_new_' + fieldName, 'true');
-                            }
-                        }
-                    }
-                });
-                formSubmitted = true;
-            }
-        });
-        
-        // Si hay errores en el formulario, restaurar archivos desde sessionStorage y memoria
-        {% if form.errors %}
-            formSubmitted = false; // Permitir reenvío
-            
-            // Mostrar SweetAlert indicando que hay errores
-            Swal.fire({
-                title: 'Error en el formulario',
-                html: 'Por favor, revisa los campos marcados en rojo y corrige los errores antes de continuar.',
-                icon: 'error',
-                confirmButtonText: 'Entendido',
-                confirmButtonColor: '#B10022',
-                allowOutsideClick: false,
-                allowEscapeKey: true
-            });
-            
-            // Restaurar archivos que se cargaron pero el formulario falló
-            setTimeout(function() {
-                restoreFilesFromSession();
-                // Intentar reasignar archivos al formulario múltiples veces para asegurar que funcione
-                reattachFilesToForm();
-                setTimeout(function() {
-                    reattachFilesToForm();
-                }, 200);
-                setTimeout(function() {
-                    reattachFilesToForm();
-                }, 500);
-                setTimeout(function() {
-                    reattachFilesToForm();
-                }, 1000);
             }, 100);
-        {% endif %}
-        
-        // Si hay archivos guardados en esta petición Y el formulario se procesó correctamente
-        {% if files_saved_in_request and not form.errors %}
-            setTimeout(function() {
-                {% if files_saved_in_request.imagen_perfil %}
-                    // Limpiar archivos de memoria y sessionStorage
-                    if (window.attachedFiles['imagen_perfil']) {
-                        delete window.attachedFiles['imagen_perfil'];
-                    }
-                    sessionStorage.removeItem('file_imagen_perfil');
-                    sessionStorage.removeItem('preview_imagen_perfil');
-                    sessionStorage.removeItem('has_file_imagen_perfil');
-                    sessionStorage.removeItem('is_new_imagen_perfil');
-                    
-                    // Mostrar el botón apuntando al archivo guardado en el servidor
-                    {% if candidato.imagen_perfil %}
-                        $('#file_info_imagen_perfil').show();
-                        $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil_current');
-                    {% endif %}
-                {% endif %}
-                {% if files_saved_in_request.hoja_de_vida %}
-                    // Limpiar archivos de memoria y sessionStorage
-                    if (window.attachedFiles['hoja_de_vida']) {
-                        delete window.attachedFiles['hoja_de_vida'];
-                    }
-                    sessionStorage.removeItem('file_hoja_de_vida');
-                    sessionStorage.removeItem('has_file_hoja_de_vida');
-                    sessionStorage.removeItem('is_new_hoja_de_vida');
-                    
-                    // Mostrar el botón apuntando al archivo guardado en el servidor
-                    {% if candidato.hoja_de_vida %}
-                        $('#file_info_hoja_de_vida').show();
-                        $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida_current');
-                    {% endif %}
-                {% endif %}
-                {% if files_saved_in_request.video_perfil %}
-                    // Limpiar archivos de memoria y sessionStorage
-                    if (window.attachedFiles['video_perfil']) {
-                        delete window.attachedFiles['video_perfil'];
-                    }
-                    sessionStorage.removeItem('file_video_perfil');
-                    sessionStorage.removeItem('has_file_video_perfil');
-                    sessionStorage.removeItem('is_new_video_perfil');
-                    
-                    // Mostrar el botón apuntando al archivo guardado en el servidor
-                    {% if candidato.video_perfil %}
-                        $('#file_info_video_perfil').show();
-                        $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil_current');
-                    {% endif %}
-                {% endif %}
-            }, 300);
-        {% endif %}
-        
-        // Inicializar botones según archivos existentes en el servidor
-        setTimeout(function() {
-            {% if candidato.imagen_perfil %}
-                // Verificar que realmente hay un archivo (no solo un string vacío)
-                var imagenPerfil = '{{ candidato.imagen_perfil|default:"" }}';
-                if (imagenPerfil && imagenPerfil.trim() !== '') {
-                    var hasNewFile = sessionStorage.getItem('is_new_imagen_perfil');
-                    if (hasNewFile !== 'true') {
-                        $('#file_info_imagen_perfil').show();
-                        $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil_current');
-                    }
-                } else {
-                    $('#file_info_imagen_perfil').hide();
-                }
-            {% else %}
-                $('#file_info_imagen_perfil').hide();
-            {% endif %}
-            {% if candidato.hoja_de_vida %}
-                var hojaVida = '{{ candidato.hoja_de_vida|default:"" }}';
-                if (hojaVida && hojaVida.trim() !== '') {
-                    var hasNewFile = sessionStorage.getItem('is_new_hoja_de_vida');
-                    if (hasNewFile !== 'true') {
-                        $('#file_info_hoja_de_vida').show();
-                        $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida_current');
-                    }
-                } else {
-                    $('#file_info_hoja_de_vida').hide();
-                }
-            {% else %}
-                $('#file_info_hoja_de_vida').hide();
-            {% endif %}
-            {% if candidato.video_perfil %}
-                var videoPerfil = '{{ candidato.video_perfil|default:"" }}';
-                if (videoPerfil && videoPerfil.trim() !== '') {
-                    var hasNewFile = sessionStorage.getItem('is_new_video_perfil');
-                    if (hasNewFile !== 'true') {
-                        $('#file_info_video_perfil').show();
-                        $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil_current');
-                    }
-                } else {
-                    $('#file_info_video_perfil').hide();
-                }
-            {% else %}
-                $('#file_info_video_perfil').hide();
-            {% endif %}
-        }, 100);
-        
-        // Verificar sessionStorage al cargar la página para mantener archivos visibles y adjuntos
-        setTimeout(function() {
-            ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
-                var hasFile = sessionStorage.getItem('has_file_' + fieldName);
-                var isNewFile = sessionStorage.getItem('is_new_' + fieldName);
-                
-                // Solo mostrar si realmente hay un archivo nuevo en sessionStorage Y en memoria
-                if (hasFile === 'true' && isNewFile === 'true' && window.attachedFiles[fieldName]) {
-                    // Hay un archivo nuevo adjunto
-                    if (fieldName === 'imagen_perfil') {
-                        $('#file_info_imagen_perfil').show();
-                        $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil');
-                        var previewData = sessionStorage.getItem('preview_imagen_perfil');
-                        if (previewData) {
-                            $('#modal_img_imagen_perfil').attr('src', previewData);
-                        }
-                    } else if (fieldName === 'hoja_de_vida') {
-                        $('#file_info_hoja_de_vida').show();
-                        $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida');
-                    } else if (fieldName === 'video_perfil') {
-                        $('#file_info_video_perfil').show();
-                        $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil');
-                    }
-                    
-                    // Intentar reasignar el archivo si está en memoria
-                    var input = document.getElementById('id_' + fieldName);
-                    if (input) {
-                        try {
-                            var dataTransfer = new DataTransfer();
-                            dataTransfer.items.add(window.attachedFiles[fieldName]);
-                            input.files = dataTransfer.files;
-                            // Disparar evento change para actualizar la vista
-                            $(input).trigger('change');
-                        } catch(e) {
-                            console.log('No se pudo reasignar archivo directamente:', e);
-                        }
-                    }
-                } else if (hasFile === 'true' && isNewFile === 'true' && !window.attachedFiles[fieldName]) {
-                    // Si hay referencia en sessionStorage pero no en memoria, limpiar sessionStorage
-                    sessionStorage.removeItem('has_file_' + fieldName);
-                    sessionStorage.removeItem('is_new_' + fieldName);
-                    if (fieldName === 'imagen_perfil') {
-                        $('#file_info_imagen_perfil').hide();
-                    } else if (fieldName === 'hoja_de_vida') {
-                        $('#file_info_hoja_de_vida').hide();
-                    } else if (fieldName === 'video_perfil') {
-                        $('#file_info_video_perfil').hide();
-                    }
-                }
-            });
-        }, 300);
-        
-        // Si no hay errores y el formulario se procesó correctamente, limpiar archivos de memoria y apuntar al servidor
-        {% if not form.errors %}
-            // Limpiar solo si no hay errores (formulario procesado correctamente)
-            setTimeout(function() {
-                var hasErrors = $('.text-danger').length > 0;
-                if (!hasErrors) {
-                    // Limpiar archivos de memoria y sessionStorage que ya se guardaron
-                    ['imagen_perfil', 'hoja_de_vida', 'video_perfil'].forEach(function(fieldName) {
-                        // Limpiar de memoria
-                        if (window.attachedFiles[fieldName]) {
-                            delete window.attachedFiles[fieldName];
-                        }
-                        // Limpiar sessionStorage de archivos nuevos
-                        sessionStorage.removeItem('file_' + fieldName);
-                        sessionStorage.removeItem('preview_' + fieldName);
-                        sessionStorage.removeItem('has_file_' + fieldName);
-                        sessionStorage.removeItem('is_new_' + fieldName);
-                        
-                        // Asegurar que el botón apunte al archivo guardado en el servidor
-                        if (fieldName === 'imagen_perfil') {
-                            {% if candidato.imagen_perfil %}
-                                $('#file_info_imagen_perfil').show();
-                                $('#btn_ver_imagen_perfil').attr('data-bs-target', '#modal_imagen_perfil_current');
-                            {% endif %}
-                        } else if (fieldName === 'hoja_de_vida') {
-                            {% if candidato.hoja_de_vida %}
-                                $('#file_info_hoja_de_vida').show();
-                                $('#btn_ver_hoja_de_vida').attr('data-bs-target', '#modal_hoja_de_vida_current');
-                            {% endif %}
-                        } else if (fieldName === 'video_perfil') {
-                            {% if candidato.video_perfil %}
-                                $('#file_info_video_perfil').show();
-                                $('#btn_ver_video_perfil').attr('data-bs-target', '#modal_video_perfil_current');
-                            {% endif %}
-                        }
-                    });
-                }
-            }, 500);
         {% endif %}
     });
 </script>  

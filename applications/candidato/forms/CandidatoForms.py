@@ -520,12 +520,8 @@ class CandidateForm(forms.Form):
         label='IMAGEN DE PERFIL',
         required=False,
         widget=forms.ClearableFileInput(attrs={
-            'class': 'form-control form-control-solid',
-            'accept': 'image/png,image/jpeg,image/jpg'
-        }),
-        error_messages={
-            'invalid_image': 'El archivo debe ser una imagen válida en formato PNG o JPG.',
-        }
+            'class': 'form-control form-control-solid'
+        })
     )
     
     def clean_imagen_perfil(self):
@@ -533,58 +529,26 @@ class CandidateForm(forms.Form):
         
         # Si el archivo ya se guardó exitosamente en la vista, no validar nada
         if self.files_saved_in_request.get('imagen_perfil', False):
-            # El archivo ya se validó y guardó en la vista, no procesarlo de nuevo
-            # Retornar el archivo existente del candidato si existe, o None si no hay
+            # El archivo ya se guardó en la vista, no procesarlo de nuevo
             if self.candidato and self.candidato.imagen_perfil:
                 return self.candidato.imagen_perfil
             return None
         
-        if imagen_perfil:
-            # Validar extensión
-            extension = os.path.splitext(imagen_perfil.name)[1].lower()
-            if extension not in ['.jpg', '.jpeg', '.png']:
-                raise forms.ValidationError('El archivo debe ser una imagen en formato PNG o JPG.')
-            
-            # Validar tamaño
-            tamanio_maximo = 5 * 1024 * 1024  # 5 MB
-            if imagen_perfil.size > tamanio_maximo:
-                raise forms.ValidationError('El tamaño del archivo no debe superar los 5 MB.')
-            
-            # Intentar validar que sea una imagen válida
-            try:
-                from PIL import Image
-                # Resetear el puntero del archivo antes de validar
-                if hasattr(imagen_perfil, 'seek'):
-                    imagen_perfil.seek(0)
-                img = Image.open(imagen_perfil)
-                img.verify()  # Verificar que sea una imagen válida
-                # Resetear nuevamente para que se pueda leer después
-                if hasattr(imagen_perfil, 'seek'):
-                    imagen_perfil.seek(0)
-            except (IOError, OSError, Image.UnidentifiedImageError) as e:
-                # Si la imagen no se puede abrir, es inválida
-                raise forms.ValidationError('El archivo debe ser una imagen válida en formato PNG o JPG.')
-            except Exception as e:
-                # Otros errores también indican que la imagen es inválida
-                raise forms.ValidationError('El archivo debe ser una imagen válida en formato PNG o JPG.')
-        
+        # Sin restricciones de validación - permitir cualquier archivo
         return imagen_perfil
     hoja_de_vida = forms.FileField(
         label='HOJA DE VIDA',
         required=False,
         widget=forms.ClearableFileInput(attrs={
-            'class': 'form-control form-control-solid',
-            'accept': '.pdf,.doc,.docx'  # Acepta PDF y Word
+            'class': 'form-control form-control-solid'
         })
     )
     video_perfil = forms.FileField(
         label='VIDEO DE PERFIL',
         required=False,
         widget=forms.ClearableFileInput(attrs={
-            'class': 'form-control form-control-solid',
-            'accept': 'video/*'  # Acepta solo archivos de video
-        }),
-        help_text='Sube un video desde tu dispositivo móvil o web (máximo 50MB, formatos: MP4, MOV, AVI)'
+            'class': 'form-control form-control-solid'
+        })
     )
 
     perfil = forms.CharField(
@@ -626,7 +590,7 @@ class CandidateForm(forms.Form):
             widget=RadioSelectWithDescription(attrs={
                 'class': 'form-check-input', # Clase para el input del radio
             }),
-            required=True # Si quieres que la selección sea opcional
+            required=False # Si quieres que la selección sea opcional
         )
     
     grupo_fit_2 = forms.ModelChoiceField(
@@ -679,75 +643,75 @@ class CandidateForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.layout = Layout(
-            Div(
-                Div(
-                    HTML("<h4 class='mb-3 text-primary'>Datos Personales</h4>"),
-                    Div('primer_nombre', css_class='col-md-3'),
-                    Div('segundo_nombre', css_class='col-md-3'),
-                    Div('primer_apellido', css_class='col-md-3'),
-                    Div('segundo_apellido', css_class='col-md-3'),
-                    Div('numero_documento', css_class='col-md-3'),
-                    Div('fecha_nacimiento', css_class='col-md-3'),
-                    Div('sexo', css_class='col-md-3'),
-                    Div('aspiracion_salarial', css_class='col-md-3'),
-                    css_class='row'
-                ),
-                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
-            ),
-            Div(
-                Div(
-                    HTML("<h4 class='mb-3 text-primary'>Contacto</h4>"),
-                    Div('email', css_class='col-md-6'),
-                    Div('telefono', css_class='col-md-6'),
-                    Div('ciudad_id_004', css_class='col-md-6'),
-                    Div('direccion', css_class='col-md-6'),
-                    css_class='row'
-                ),
-                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
-            ),
-            Div(
-                Div(
-                    HTML("<h4 class='mb-3 text-primary'>Perfil</h4>"),
-                    Div('perfil', css_class='col-md-12'),
-                    css_class='row'
-                ),
-                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
-            ),
-            Div(
-                Div(
-                    HTML("<h4 class='mb-3 text-primary'>Documentos</h4>"),
+        # self.helper.layout = Layout(
+        #     Div(
+        #         Div(
+        #             HTML("<h4 class='mb-3 text-primary'>Datos Personales</h4>"),
+        #             Div('primer_nombre', css_class='col-md-3'),
+        #             Div('segundo_nombre', css_class='col-md-3'),
+        #             Div('primer_apellido', css_class='col-md-3'),
+        #             Div('segundo_apellido', css_class='col-md-3'),
+        #             Div('numero_documento', css_class='col-md-3'),
+        #             Div('fecha_nacimiento', css_class='col-md-3'),
+        #             Div('sexo', css_class='col-md-3'),
+        #             Div('aspiracion_salarial', css_class='col-md-3'),
+        #             css_class='row'
+        #         ),
+        #         css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+        #     ),
+        #     Div(
+        #         Div(
+        #             HTML("<h4 class='mb-3 text-primary'>Contacto</h4>"),
+        #             Div('email', css_class='col-md-6'),
+        #             Div('telefono', css_class='col-md-6'),
+        #             Div('ciudad_id_004', css_class='col-md-6'),
+        #             Div('direccion', css_class='col-md-6'),
+        #             css_class='row'
+        #         ),
+        #         css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+        #     ),
+        #     Div(
+        #         Div(
+        #             HTML("<h4 class='mb-3 text-primary'>Perfil</h4>"),
+        #             Div('perfil', css_class='col-md-12'),
+        #             css_class='row'
+        #         ),
+        #         css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+        #     ),
+        #     Div(
+        #         Div(
+        #             HTML("<h4 class='mb-3 text-primary'>Documentos</h4>"),
                     
-                    Div('imagen_perfil', css_class='col-md-4'),
-                    Div('hoja_de_vida', css_class='col-md-4'),
-                    Div('video_perfil', css_class='col-md-4'),
-                    css_class='row'
-                ),
-                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
-            ),
-            Div(
-                HTML("<h4 class='mb-3 text-primary'>Fit Cultural</h4>"),
-                HTML("<p class='text-muted mb-3'>Selecciona una opción por cada categoría. Marca lo que más se ajusta a tu realidad.</p>"),
-                Div(
-                    Div('grupo_fit_1', css_class='col-md-6 mb-3'),
-                    Div('grupo_fit_2', css_class='col-md-6 mb-3'),
-                    Div('grupo_fit_3', css_class='col-md-6 mb-3'),
-                    Div('grupo_fit_4', css_class='col-md-6 mb-3'),
-                    Div('grupo_fit_5', css_class='col-md-6 mb-3'),
-                    css_class='row'
-                ),
-                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
-            ),
-            Div(
-                HTML("<h4 class='mb-3 text-primary'>Motivadores</h4>"),
-                HTML("<p class='text-muted mb-3'>Selecciona máximo 2 motivadores que sean más importantes para ti en tu vida laboral.</p>"),
-                Div(
-                    Div('motivadores', css_class='col-md-12 motivadores'),
-                    css_class='row'
-                ),
-                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
-            ),
-        )
+        #             Div('imagen_perfil', css_class='col-md-4'),
+        #             Div('hoja_de_vida', css_class='col-md-4'),
+        #             Div('video_perfil', css_class='col-md-4'),
+        #             css_class='row'
+        #         ),
+        #         css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+        #     ),
+        #     Div(
+        #         HTML("<h4 class='mb-3 text-primary'>Fit Cultural</h4>"),
+        #         HTML("<p class='text-muted mb-3'>Selecciona una opción por cada categoría. Marca lo que más se ajusta a tu realidad.</p>"),
+        #         Div(
+        #             Div('grupo_fit_1', css_class='col-md-6 mb-3'),
+        #             Div('grupo_fit_2', css_class='col-md-6 mb-3'),
+        #             Div('grupo_fit_3', css_class='col-md-6 mb-3'),
+        #             Div('grupo_fit_4', css_class='col-md-6 mb-3'),
+        #             Div('grupo_fit_5', css_class='col-md-6 mb-3'),
+        #             css_class='row'
+        #         ),
+        #         css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+        #     ),
+        #     Div(
+        #         HTML("<h4 class='mb-3 text-primary'>Motivadores</h4>"),
+        #         HTML("<p class='text-muted mb-3'>Selecciona máximo 2 motivadores que sean más importantes para ti en tu vida laboral.</p>"),
+        #         Div(
+        #             Div('motivadores', css_class='col-md-12 motivadores'),
+        #             css_class='row'
+        #         ),
+        #         css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+        #     ),
+        # )
 
     def clean(self):
         cleaned_data =  super().clean() 
@@ -789,7 +753,8 @@ class CandidateForm(forms.Form):
                 self.add_error('numero_documento', 'El número de documento debe contener solo números.')
             elif Can101Candidato.objects.filter(numero_documento=numero_documento).exclude(id=self.candidato.id if self.candidato else None).exists():
                 self.add_error('numero_documento', 'Este número de documento ya está registrado en otro registro.')
-                
+        else:
+            self.add_error('numero_documento', 'El número de documento es obligatorio.')
 
         # Validación de Dirección
         if direccion:
@@ -854,74 +819,8 @@ class CandidateForm(forms.Form):
         if not ciudad_id_004:
             self.add_error('ciudad_id_004', "Este campo es obligatorio.")
         
-        # validacion imagen logo
-        tamanio_maximo = 5 * 1024 * 1024  # 5 MB
-        listado_extensiones = ['.jpg', '.jpeg', '.png']
+        # Sin validaciones de archivos - se permiten todos los archivos sin restricciones
 
-        if imagen_perfil:
-            if imagen_perfil.size > tamanio_maximo:
-                self.add_error('imagen_perfil','El tamaño del archivo supera el tamaño permitido.')
-
-            extension = os.path.splitext(imagen_perfil.name)[1].lower()
-            if extension not in listado_extensiones:
-                self.add_error('imagen_perfil','El archivo no es válido.')
-
-            if Can101Candidato.objects.filter(imagen_perfil=imagen_perfil.name).exists():
-                self.add_error('imagen_perfil','Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
-
-        # validacion hoja de vida
-        tamanio_maximo_hoja = 5 * 1024 * 1024  # 5 MB (aumentado para Word)
-        listado_extensiones_hoja = ['.pdf', '.doc', '.docx']
-
-        if hoja_de_vida:
-            if hoja_de_vida.size > tamanio_maximo_hoja:
-                self.add_error('hoja_de_vida', 'El tamaño del archivo supera el tamaño permitido (máximo 5MB).')
-
-            extension_hoja = os.path.splitext(hoja_de_vida.name)[1].lower()
-            if extension_hoja not in listado_extensiones_hoja:
-                self.add_error('hoja_de_vida', 'El archivo no es válido. Debe ser un archivo PDF o Word (.doc, .docx).')
-
-            # Verificar duplicados excluyendo el candidato actual si existe
-            candidato = getattr(self, 'candidato', None)
-            if candidato:
-                if Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exclude(id=candidato.id).exists():
-                    self.add_error('hoja_de_vida', 'Ya existe un archivo con este nombre en otro registro. Por favor renombre el archivo y vuelva a intentarlo.')
-            else:
-                if Can101Candidato.objects.filter(hoja_de_vida=hoja_de_vida.name).exists():
-                    self.add_error('hoja_de_vida', 'Ya existe un archivo con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
-        else:
-            # Solo pedir hoja de vida si no hay una ya registrada en el candidato
-            candidato = getattr(self, 'candidato', None)
-            tiene_hoja_de_vida = False
-            if candidato:
-                # Verificar si el candidato ya tiene una hoja de vida registrada
-                hoja_de_vida_actual = candidato.hoja_de_vida
-                if hoja_de_vida_actual and hoja_de_vida_actual.name:
-                    tiene_hoja_de_vida = True
-            
-            if not tiene_hoja_de_vida:
-                self.add_error('hoja_de_vida', 'La hoja de vida es un campo obligatorio.')
-
-        # validación video de perfil
-        tamanio_maximo_video = 50 * 1024 * 1024  # 50 MB
-        listado_extensiones_video = ['.mp4', '.mov', '.avi', '.webm', '.mkv']
-
-        if video_perfil:
-            if video_perfil.size > tamanio_maximo_video:
-                self.add_error('video_perfil', 'El tamaño del video supera el tamaño permitido (máximo 50MB).')
-
-            extension_video = os.path.splitext(video_perfil.name)[1].lower()
-            if extension_video not in listado_extensiones_video:
-                self.add_error('video_perfil', 'El archivo de video no es válido. Formatos permitidos: MP4, MOV, AVI, WEBM, MKV.')
-
-            # Verificar duplicados excluyendo el candidato actual si existe
-            candidato = getattr(self, 'candidato', None)
-            if candidato:
-                if Can101Candidato.objects.filter(video_perfil=video_perfil.name).exclude(id=candidato.id).exists():
-                    self.add_error('video_perfil', 'Ya existe un video con este nombre en otro registro. Por favor renombre el archivo y vuelva a intentarlo.')
-            else:
-                if Can101Candidato.objects.filter(video_perfil=video_perfil.name).exists():
-                    self.add_error('video_perfil', 'Ya existe un video con este nombre. Por favor renombre el archivo y vuelva a intentarlo.')
 
         # validación motivadores
         # motivadores puede venir como QuerySet, lista de objetos, o lista de dicts (cuando se inicializa desde JSON)
@@ -939,6 +838,9 @@ class CandidateForm(forms.Form):
                 motivadores_count = 1
             elif isinstance(motivadores, list) and motivadores and isinstance(motivadores[0], dict):
                 motivadores_count = len(motivadores)
+        else:
+            self.add_error('motivadores', 'Debe seleccionar al menos una opción de motivadores.')
+            
         if motivadores_count > 2:
             self.add_error('motivadores', 'Solo puede seleccionar máximo dos opciones de motivadores.')
         
@@ -965,6 +867,7 @@ class CandidateForm(forms.Form):
                 elif len(value) == 1:
                     # Si viene como lista de un solo elemento, lo convertimos al objeto
                     cleaned_data[grupo_field] = value[0]
+        
 
         return cleaned_data
 
