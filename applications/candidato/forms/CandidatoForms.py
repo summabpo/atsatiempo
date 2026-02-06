@@ -605,9 +605,9 @@ class CandidateForm(forms.Form):
             if ext not in ['.mp4']:
                 raise forms.ValidationError('El archivo debe ser un video en formato MP4.')
             
-            # Validar tamaño (máximo 20 MB)
-            if video_perfil.size > 20 * 1024 * 1024:  # 20 MB en bytes
-                raise forms.ValidationError('El archivo no puede superar los 20 MB.')
+            # Validar tamaño (máximo 150 MB)
+            if video_perfil.size > 150 * 1024 * 1024:  # 150 MB en bytes
+                raise forms.ValidationError('El archivo no puede superar los 150 MB.')
         
         return video_perfil
 

@@ -62,24 +62,171 @@ Información Básica | Talent Tray
 {% block js %} 
 <script>
     // Check if there are form errors and show the modal if true
+    {% if form.errors %}
+        // Mostrar errores si los hay
+    {% endif %}
+
     $(document).ready(function () {
-        function toggleGraduationFields() {
-            if ($('#id_grado_en').is(':checked')) {
-                $('.campo-graduado').show();
+        // Función para manejar campos según estado de estudios
+        function toggleEstadoEstudiosFields() {
+            var estadoEstudios = $('#id_estado_estudios').val();
+            var isGraduado = estadoEstudios === 'G';
+            var isAplazado = estadoEstudios === 'A';
+            var isEnCurso = estadoEstudios === 'C';
+            
+            // Campos
+            var $titulo = $('#div_id_titulo');
+            var $fechaInicial = $('#div_id_fecha_inicial');
+            var $fechaFinal = $('#div_id_fecha_final');
+            var $certificacion = $('#div_id_certificacion');
+            
+            if (isGraduado) {
+                // Si es Graduado: mostrar título, fecha_inicial, fecha_final, certificacion
+                $titulo.show();
+                $fechaInicial.show();
+                $fechaFinal.show();
+                $certificacion.show();
+                $('#id_titulo').attr('required', 'required');
+                $('#id_fecha_inicial').attr('required', 'required');
+                $('#id_fecha_final').attr('required', 'required');
+            } else if (isAplazado) {
+                // Si es Aplazado: ocultar título, ocultar fecha_inicial, mostrar fecha_final, ocultar certificacion
+                $titulo.hide();
+                $fechaInicial.hide();
+                $fechaFinal.show();
+                $certificacion.hide();
+                $('#id_titulo').removeAttr('required');
+                $('#id_fecha_inicial').removeAttr('required');
+                $('#id_fecha_final').attr('required', 'required');
+                $('#id_titulo').val('');
+                $('#id_fecha_inicial').val('');
+                // No limpiar certificacion si ya existe (para edición)
+            } else if (isEnCurso) {
+                // Si está En curso: ocultar título, mostrar fecha_inicial, ocultar fecha_final, ocultar certificacion
+                $titulo.hide();
+                $fechaInicial.show();
+                $fechaFinal.hide();
+                $certificacion.hide();
+                $('#id_titulo').removeAttr('required');
+                $('#id_fecha_inicial').attr('required', 'required');
+                $('#id_fecha_final').removeAttr('required');
+                $('#id_titulo').val('');
+                $('#id_fecha_final').val('');
+                // No limpiar certificacion si ya existe (para edición)
             } else {
-                $('.campo-graduado').hide();
+                // Si no hay estado seleccionado, ocultar campos de graduado
+                $titulo.hide();
+                $fechaInicial.show();
+                $fechaFinal.hide();
+                $certificacion.hide();
+                $('#id_titulo').removeAttr('required');
+                $('#id_fecha_final').removeAttr('required');
             }
         }
-
+        
+        // Función para manejar "Sin estudios"
+        function toggleSinEstudiosFields() {
+            var tipoEstudio = $('#id_tipo_estudio').val();
+            var isSinEstudios = tipoEstudio === '1';
+            
+            // Campos a ocultar/mostrar cuando es "Sin estudios"
+            var camposAfectados = [
+                '#div_id_institucion',
+                '#div_id_fecha_inicial',
+                '#div_id_fecha_final',
+                '#div_id_titulo',
+                '#div_id_ciudad_id_004',
+                '#div_id_profesion_estudio',
+                '#div_id_estado_estudios',
+                '#div_id_certificacion'
+            ];
+            
+            camposAfectados.forEach(function(selector) {
+                var $campo = $(selector);
+                if (isSinEstudios) {
+                    $campo.hide();
+                    // Hacer los campos opcionales
+                    var fieldId = selector.replace('#div_id_', 'id_');
+                    $('#' + fieldId).removeAttr('required');
+                } else {
+                    $campo.show();
+                    // Restaurar campos requeridos según la definición del formulario
+                    var fieldId = selector.replace('#div_id_', 'id_');
+                    // No restaurar required aquí, el formulario lo maneja
+                }
+            });
+        }
+        
         // Ejecutar al cargar
-        toggleGraduationFields();
+        toggleSinEstudiosFields();
+        toggleEstadoEstudiosFields();
 
-        // Ejecutar al cambiar el checkbox
-        $('#id_grado_en').change(toggleGraduationFields);
+        // Ejecutar al cambiar el tipo de estudio
+        $('#id_tipo_estudio').on('change', function() {
+            toggleSinEstudiosFields();
+            // Si no es "Sin estudios", también verificar estado
+            if ($(this).val() !== '1') {
+                toggleEstadoEstudiosFields();
+            }
+        });
+        
+        // Ejecutar al cambiar el estado de estudios
+        $('#id_estado_estudios').on('change', toggleEstadoEstudiosFields);
     });
 
-    initializeSelect2('#id_tipo_estudio');
-    initializeSelect2('#id_ciudad_id_004');
-    initializeSelect2('#id_profesion_estudio');
+    // Inicializar Select2 después de que el DOM esté listo y los campos estén renderizados
+    $(document).ready(function() {
+        // Esperar a que los campos estén completamente renderizados
+        setTimeout(function() {
+            // Verificar si los campos existen antes de inicializar
+            if ($('#id_tipo_estudio').length) {
+                if (typeof initializeSelect2 === 'function') {
+                    initializeSelect2('#id_tipo_estudio');
+                } else {
+                    $('#id_tipo_estudio').select2({
+                        width: '100%',
+                        placeholder: "Seleccione una opción",
+                        allowClear: true,
+                    });
+                }
+            }
+            
+            if ($('#id_ciudad_id_004').length) {
+                if (typeof initializeSelect2 === 'function') {
+                    initializeSelect2('#id_ciudad_id_004');
+                } else {
+                    $('#id_ciudad_id_004').select2({
+                        width: '100%',
+                        placeholder: "Seleccione una opción",
+                        allowClear: true,
+                    });
+                }
+            }
+            
+            if ($('#id_profesion_estudio').length) {
+                if (typeof initializeSelect2 === 'function') {
+                    initializeSelect2('#id_profesion_estudio');
+                } else {
+                    $('#id_profesion_estudio').select2({
+                        width: '100%',
+                        placeholder: "Seleccione una opción",
+                        allowClear: true,
+                    });
+                }
+            }
+            
+            if ($('#id_estado_estudios').length) {
+                if (typeof initializeSelect2 === 'function') {
+                    initializeSelect2('#id_estado_estudios');
+                } else {
+                    $('#id_estado_estudios').select2({
+                        width: '100%',
+                        placeholder: "Seleccione una opción",
+                        allowClear: true,
+                    });
+                }
+            }
+        }, 300);
+    });
 </script>
 {% endblock js %}

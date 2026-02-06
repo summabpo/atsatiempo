@@ -34,7 +34,7 @@ Información Básica | Talent Tray
 
 	<!-- Start Your Code -->
     <div class="row">
-		<div class="col-4">
+		<div class="col-md-4">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
                     <form method="post" id="form_trabajo">
@@ -50,11 +50,11 @@ Información Básica | Talent Tray
             </div>
         </div>
 
-        <div class="col-8">
+        <div class="col-md-8">
             <div class="row justify-content">
                 
                 {% for red in redes %}
-                    <div class="col-xxl-4 col-lg-4 col-sm-4">
+                    <div class="col-md-4">
                         <div class="card bg-white border-0 rounded-3 mb-4">
                             <div class="d-flex">
                                 <div class="flex-shrink-0">
@@ -70,9 +70,9 @@ Información Básica | Talent Tray
                             <div class="card-body p-4">
                                 
                                 <div class="d-flex align-items-center w-100">
-                                    <a href="{{ red.url }}" target="_blank" class="btn btn-success text-white py-2 fw-medium me-2 flex-fill">Ver</a>
-                                    <a href="{% url 'candidatos:candidato_info_redes_editar' red.id %}" class="btn btn-primary py-2 fw-medium me-2 flex-fill">Editar</a>
-                                    <a href="#" class="btn btn-danger text-white py-2 fw-medium flex-fill btn-borrar-red" data-id="{{ red.id }}">Borrar</a>
+                                    <a href="{{ red.url }}" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 me-2 flex-fill">Ver</a>
+                                    <a href="{% url 'candidatos:candidato_info_redes_editar' red.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 me-2 flex-fill">Editar</a>
+                                    <a href="#" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 flex-fill btn-borrar-red" data-id="{{ red.id }}">Borrar</a>
                                 </div>
                             </div>
                         </div>

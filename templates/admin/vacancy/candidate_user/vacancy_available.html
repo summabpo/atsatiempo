@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load crispy_forms_tags %}
+{% load custom_tags %}
 
 {% block title %}
 Inicio | Dashboard
@@ -193,18 +194,57 @@ Inicio | Dashboard
                                                     <h5 class="job-title">{{ vacante.titulo|upper }}</h5>
                                                     <p class="job-meta"><b>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}</b>. - Hace {{ vacante.fecha_creacion|timesince }}</p>
                                                     <p class="job-meta">{{vacante.perfil_vacante.lugar_trabajo.nombre}}</p>
-                                                    <p class="job-description">{{ vacante.descripcion_vacante }}</p>
-                                                    <p class="job-description"></p>
-
-                                                    <div class="job-tags">
-                                                        {% if vacante.soft_skills_id_053.all %}
-                                                            {% for skill in vacante.soft_skills_id_053.all %}
-                                                                <span class="badge bg-opacity-10 bg-primary py-1 px-2 text-primary rounded-1 fw-medium fs-12">{{skill.nombre}}</span>
+                                                    {% if vacante.descripcion_vacante %}
+                                                    {% with sections=vacante.descripcion_vacante|extract_vacancy_sections %}
+                                                        {% if sections %}
+                                                        <div class="job-description text-secondary">
+                                                            {% for section in sections %}
+                                                                <div class="mb-3">
+                                                                    <strong class="d-block mb-2">{{ section.title }}</strong>
+                                                                    <ul class="mb-0 ps-3">
+                                                                        {% for item in section.items %}
+                                                                            <li>{{ item }}</li>
+                                                                        {% endfor %}
+                                                                    </ul>
+                                                                </div>
                                                             {% endfor %}
+                                                        </div>
                                                         {% endif %}
+                                                    {% endwith %}
+                                                    {% endif %}
+                                                    
+                                                    
 
-                                                        {% if vacante.hard_skills_id_054.all %}
-                                                            {% for skill in vacante.hard_skills_id_054.all %}
+                                                    <!-- Idiomas -->
+                                                    {% if vacante.perfil_vacante.idiomas %}
+                                                    <div class="job-languages mt-3 mb-3">
+                                                        <strong class="text-secondary d-block mb-2">Idiomas:</strong>
+                                                        <ul class="mb-0 ps-3 text-secondary">
+                                                            {% for idioma in vacante.perfil_vacante.idiomas|parse_idiomas %}
+                                                                <li>
+                                                                    <strong>{{ idioma.nombre }}</strong>
+                                                                    {% if idioma.nivel %}
+                                                                        - Nivel: {{ idioma.nivel }}
+                                                                    {% endif %}
+                                                                    {% if idioma.certificado %}
+                                                                        <span class="badge bg-success-subtle text-success ms-2" style="font-size: 0.7rem;">Certificado</span>
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                    {% endif %}
+
+                                                    <!-- Habilidades -->
+                                                    <div class="job-skills mt-3 mb-3">
+                                                        <strong class="text-secondary d-block mb-2">
+                                                            <span class="material-symbols-outlined align-middle text-primary" style="font-size: 1.1em;">psychology_alt</span>
+                                                            Skills
+                                                        </strong>
+                                                    </div>
+                                                    <div class="job-tags">
+                                                        {% if vacante.habilidades.all %}
+                                                            {% for skill in vacante.habilidades.all %}
                                                                 <span class="badge bg-opacity-10 bg-primary py-1 px-2 text-primary rounded-1 fw-medium fs-12">{{skill.nombre}}</span>
                                                             {% endfor %}
                                                         {% endif %}

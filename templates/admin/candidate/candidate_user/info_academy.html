@@ -34,16 +34,19 @@ Información Básica | Talent Tray
 
 	<!-- Start Your Code -->
     <div class="row">
-		<div class="col-md-8">
+		<div class="col-12">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
                     <div class="mb-4">
                         <h3 class="mb-0">Listado Estudios</h3>
                     </div>
                     <!-- Button trigger modal -->
-                    <div class="d-flex justify-content-center w-100">
-                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 " data-bs-toggle="modal" data-bs-target="#estudios_candidato">
+                    <div class="d-flex justify-content-between w-100 align-items-center mb-3">
+                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#estudios_candidato">
                             Crear Estudio
+                        </button>
+                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#lineaTiempoAcademicaModal">
+                            Línea del Tiempo
                         </button>
                     </div>
 
@@ -105,11 +108,13 @@ Información Básica | Talent Tray
                                                         <i class="material-symbols-outlined fs-16 text-primary">edit</i>
                                                     </a>
                                                 </div>
-                                                {% comment %} <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Asignar Candidatos">
-                                                    <a href="{% url 'vacantes:vacantes_asignar_analista_cliente' e.id  %}" class="btn bg-info bg-opacity-10 fw-medium text-info py-2 px-4">
-                                                        <i class="material-symbols-outlined fs-16 text-info">assignment_ind</i>
-                                                    </a>
-                                                </div> {% endcomment %}
+                                                {% if e.certificacion %}
+                                                <div class="d-flex justify-content-center align-items-center gap-1" alt="Ver Certificación" title="Ver Certificación">
+                                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary-2 px-4" data-bs-toggle="modal" data-bs-target="#certModal{{ e.id }}">
+                                                        <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                                    </button>
+                                                </div>
+                                                {% endif %}
                                             </div>
                                         </td> 
 
@@ -123,96 +128,89 @@ Información Básica | Talent Tray
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card bg-white border-0 rounded-3 mb-4">
-				<div class="card-body p-4">
-                    <div class="mb-4">
-                        <h3 class="mb-0">Resumen</h3>
-                    </div>
-                    {% for educacion in studies %}
-                        <div class="position-relative timeline-item dot-3">
-                            <span class="time-line-date">{{ educacion.fecha_inicial|date:"Y M" }}</span> {# Formatea la fecha inicial #}
-                            <div class="border-style-for-timeline dot-3">
-                                <h4 class="fs-14 fw-medium mb-2 text-primary">{{ educacion.institucion }}</h4> {# Nombre de la institución #}
-                                <p class="fs-13">
-                                    {% if educacion.grado_en %}
-                                        Grado en: <b>{{ educacion.titulo }} - {{ educacion.carrera }}</b>
-                                    {% else %}
-                                        Carrera: <b>{{ educacion.carrera }}</b>
-                                    {% endif %}
-                                </p>
-                                <p>
-                                    Fecha Final: {% if educacion.fecha_final %}
-                                        <b>{{ educacion.fecha_final|date:"Y M" }}</b>
-                                    {% else %}
-                                        <b>Actualmente</b>
-                                    {% endif %}
-                                </p>
-                                <p>
-                                    Tipo de Estudio: <b>{{ educacion.get_tipo_estudio_display }}</b> {# Muestra el nombre legible del tipo de estudio #}
-                                </p>
-                                <p>
-                                    Ciudad: <b>{{ educacion.ciudad_id_004.nombre }}</b> {# Asumiendo que Cat004Ciudad tiene un campo 'nombre' #}
-                                </p>
-                                {% if educacion.certificacion %}
-                                    <p>
-                                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" data-bs-toggle="modal" data-bs-target="#certModal{{ educacion.id }}">
-                                            Ver Certificación
-                                        </button>
-                                    </p>
-                                    <!-- Modal para mostrar PDF -->
-                                    <div class="modal fade" id="certModal{{ educacion.id }}" tabindex="-1" aria-labelledby="certModalLabel{{ educacion.id }}" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered modal-xl">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="certModalLabel{{ educacion.id }}">Certificación</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                                </div>
-                                                <div class="modal-body" style="height:80vh;">
-                                                    <iframe src="{{ educacion.certificacion.url }}" width="100%" height="100%" style="border:none;"></iframe>
-                                                </div>
-                                            </div>
-                                        </div>
+
+        <!-- Modales para ver certificaciones -->
+        {% for e in studies %}
+            {% if e.certificacion %}
+            <div class="modal fade" id="certModal{{ e.id }}" tabindex="-1" aria-labelledby="certModalLabel{{ e.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="certModalLabel{{ e.id }}">Certificación - {{ e.institucion }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="min-height: 500px;">
+                            {% with filename=e.certificacion.name|lower %}
+                                {% if ".pdf" in filename %}
+                                    <iframe src="{{ e.certificacion.url }}" style="width: 100%; height: 600px; border: none;"></iframe>
+                                {% else %}
+                                    <div class="text-center">
+                                        <img src="{{ e.certificacion.url }}" alt="Certificación" class="img-fluid" style="max-height: 600px; border: 1px solid #dee2e6; border-radius: 4px;">
                                     </div>
                                 {% endif %}
-                            </div>
+                            {% endwith %}
                         </div>
-                    {% endfor %}
-                    {% comment %} <div class="position-relative timeline-item">
-                        <span class="time-line-date">Just now</span>
-                        <div class="border-style-for-timeline">
-                            <h4 class="fs-14 fw-medium mb-2">Weekly Stand-Up Meetings:</h4>
-                            <p class="fs-13 mb-4">We continued our weekly stand-up meetings where team members provided updates on their current tasks, discussed any roadblocks, and coordinated efforts for the week ahead.</p>
-                            <p>By: <span class="text-primary">Olivia Rodriguez</span></p>
+                        <div class="modal-footer">
+                            <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-dismiss="modal">Cerrar</button>
                         </div>
                     </div>
-                    <div class="position-relative timeline-item">
-                        <span class="time-line-date">1 day ago</span>
-                        
-                        <div class="border-style-for-timeline dot-2">
-                            <h4 class="fs-14 fw-medium mb-2">Project Kickoff Session:</h4>
-                            <p class="fs-13">The session included introductions, a review of project goals and objectives, and initial planning discussions.</p>
-                            <p>By: <span class="text-primary">Isabella Cooper</span></p>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Modal Línea del Tiempo Académica -->
+        <div class="modal fade" id="lineaTiempoAcademicaModal" tabindex="-1" aria-labelledby="lineaTiempoAcademicaModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="lineaTiempoAcademicaModalLabel">Línea del Tiempo de Estudios</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="timeline">
+                            {% for educacion in studies %}
+                                <div class="position-relative timeline-item dot-3 mb-4">
+                                    <span class="time-line-date">{{ educacion.fecha_inicial|date:"Y M" }}</span>
+                                    <div class="border-style-for-timeline dot-3">
+                                        <h4 class="fs-14 fw-medium mb-2 text-primary">{{ educacion.institucion }}</h4>
+                                        <p class="fs-13 mb-1">
+                                            {% if educacion.grado_en %}
+                                                Grado en: <b>{{ educacion.titulo }} - {{ educacion.carrera }}</b>
+                                            {% else %}
+                                                Carrera: <b>{{ educacion.carrera }}</b>
+                                            {% endif %}
+                                        </p>
+                                        <p class="fs-13 mb-1">
+                                            Fecha Final: {% if educacion.fecha_final %}
+                                                <b>{{ educacion.fecha_final|date:"Y M" }}</b>
+                                            {% else %}
+                                                <b>Actualmente</b>
+                                            {% endif %}
+                                        </p>
+                                        <p class="fs-13 mb-1">
+                                            Tipo de Estudio: <b>{{ educacion.get_tipo_estudio_display }}</b>
+                                        </p>
+                                        <p class="fs-13 mb-1">
+                                            Ciudad: <b>{{ educacion.ciudad_id_004.nombre }}</b>
+                                        </p>
+                                        {% if educacion.certificacion %}
+                                        <div class="mt-2">
+                                            <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" data-bs-toggle="modal" data-bs-target="#certModal{{ educacion.id }}" data-bs-dismiss="modal">
+                                                <i class="material-symbols-outlined fs-14 text-primary">visibility</i> Ver Certificación
+                                            </button>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted">No hay estudios registrados.</p>
+                            {% endfor %}
                         </div>
                     </div>
-                    <div class="position-relative timeline-item">
-                        <span class="time-line-date">2 days ago</span>
-                        
-                        <div class="border-style-for-timeline dot-3">
-                            <h4 class="fs-14 fw-medium mb-2">Team Building Workshop:</h4>
-                            <p class="fs-13 mb-4">Last Friday, we conducted a team building workshop focused on improving communication and collaboration among team members. Activities included team challenges, icebreakers, and open discussions.</p>
-                            <p>By: <span class="text-primary">Lucas Morgan</span></p>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-dismiss="modal">Cerrar</button>
                     </div>
-                    <div class="position-relative timeline-item">
-                        <span class="time-line-date">3 days ago</span>
-                        
-                        <div class="border-style-for-timeline dot-4 pb-0">
-                            <h4 class="fs-14 fw-medium mb-2">Lunch and Learn Session:</h4>
-                            <p class="fs-13">We organized a lunch and learn session on March 15th where a guest speaker from the industry discussed emerging trends in our field. It was an insightful session that sparked valuable discussions among team members.</p>
-                            <p>By: <span class="text-primary">Ethan Parker</span></p>
-                        </div>
-                    </div> {% endcomment %}
                 </div>
             </div>
         </div>
@@ -233,32 +231,54 @@ Información Básica | Talent Tray
         function toggleEstadoEstudiosFields() {
             var estadoEstudios = $('#id_estado_estudios').val();
             var isGraduado = estadoEstudios === 'G';
-            var isEnCursoOAplazado = estadoEstudios === 'C' || estadoEstudios === 'A';
+            var isAplazado = estadoEstudios === 'A';
+            var isEnCurso = estadoEstudios === 'C';
             
-            // Campos de título y fecha final (solo para graduados)
+            // Campos
             var $titulo = $('#div_id_titulo');
+            var $fechaInicial = $('#div_id_fecha_inicial');
             var $fechaFinal = $('#div_id_fecha_final');
             var $certificacion = $('#div_id_certificacion');
             
             if (isGraduado) {
-                // Mostrar y hacer obligatorios título, fecha final
+                // Si es Graduado: mostrar título, fecha_inicial, fecha_final, certificacion
                 $titulo.show();
+                $fechaInicial.show();
                 $fechaFinal.show();
+                $certificacion.show();
                 $('#id_titulo').attr('required', 'required');
+                $('#id_fecha_inicial').attr('required', 'required');
                 $('#id_fecha_final').attr('required', 'required');
-                // Certificación será validada en el backend
-            } else if (isEnCursoOAplazado) {
-                // Ocultar título y fecha final
+            } else if (isAplazado) {
+                // Si es Aplazado: ocultar título, ocultar fecha_inicial, mostrar fecha_final, ocultar certificacion
                 $titulo.hide();
-                $fechaFinal.hide();
+                $fechaInicial.hide();
+                $fechaFinal.show();
+                $certificacion.hide();
                 $('#id_titulo').removeAttr('required');
+                $('#id_fecha_inicial').removeAttr('required');
+                $('#id_fecha_final').attr('required', 'required');
+                $('#id_titulo').val('');
+                $('#id_fecha_inicial').val('');
+                $('#id_certificacion').val('');
+            } else if (isEnCurso) {
+                // Si está En curso: ocultar título, mostrar fecha_inicial, ocultar fecha_final, ocultar certificacion
+                $titulo.hide();
+                $fechaInicial.show();
+                $fechaFinal.hide();
+                $certificacion.hide();
+                $('#id_titulo').removeAttr('required');
+                $('#id_fecha_inicial').attr('required', 'required');
                 $('#id_fecha_final').removeAttr('required');
                 $('#id_titulo').val('');
                 $('#id_fecha_final').val('');
+                $('#id_certificacion').val('');
             } else {
                 // Si no hay estado seleccionado, ocultar campos de graduado
                 $titulo.hide();
+                $fechaInicial.show();
                 $fechaFinal.hide();
+                $certificacion.hide();
                 $('#id_titulo').removeAttr('required');
                 $('#id_fecha_final').removeAttr('required');
             }

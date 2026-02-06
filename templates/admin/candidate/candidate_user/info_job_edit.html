@@ -40,7 +40,7 @@ Información Básica | Talent Tray
 		<div class="col-8">
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-body p-4">
-                    <form method="post" id="form_trabajo">
+                    <form method="post" id="form_trabajo" enctype="multipart/form-data">
                         <div class="modal-body">
                             {% csrf_token %}
                             {% crispy form %}
@@ -66,7 +66,7 @@ Información Básica | Talent Tray
     {% endif %}
 
     $(document).ready(function () {
-        function toggleGraduationFields() {
+        function toggleActivoFields() {
             if ($('#id_activo').is(':checked')) {
                 $('.campo-activo').hide();
             } else {
@@ -74,11 +74,54 @@ Información Básica | Talent Tray
             }
         }
 
-        // Ejecutar al cargar
-        toggleGraduationFields();
+        // Función para manejar "Sin experiencia laboral"
+        function toggleSinExperienciaFields() {
+            var sinExperiencia = $('#id_experiencia_laboral').is(':checked');
+            
+            // Campos a ocultar/mostrar cuando es "Sin experiencia laboral"
+            var camposAfectados = [
+                '#div_id_entidad',
+                '#div_id_sector',
+                '#div_id_cargo',
+                '#div_id_activo',
+                '#div_id_fecha_inicial',
+                '#div_id_fecha_final',
+                '#div_id_motivo_salida',
+                '#div_id_salario',
+                '#div_id_modalidad_trabajo',
+                '#div_id_nombre_jefe',
+                '#div_id_logro',
+                '#div_id_certificado_laboral'
+            ];
+            
+            camposAfectados.forEach(function(selector) {
+                var $campo = $(selector);
+                if (sinExperiencia) {
+                    $campo.hide();
+                    // Hacer los campos opcionales
+                    var fieldId = selector.replace('#div_id_', 'id_');
+                    $('#' + fieldId).removeAttr('required');
+                } else {
+                    $campo.show();
+                }
+            });
+        }
 
-        // Ejecutar al cambiar el checkbox
-        $('#id_activo').change(toggleGraduationFields);
+        // Ejecutar al cargar
+        toggleActivoFields();
+        toggleSinExperienciaFields();
+
+        // Ejecutar al cambiar el checkbox de activo
+        $('#id_activo').change(toggleActivoFields);
+        
+        // Ejecutar al cambiar el checkbox de sin experiencia laboral
+        $('#id_experiencia_laboral').change(function() {
+            toggleSinExperienciaFields();
+            // Si no está marcado, también verificar el campo activo
+            if (!$(this).is(':checked')) {
+                toggleActivoFields();
+            }
+        });
     });
 
     initializeSelect2('#id_motivo_salida');

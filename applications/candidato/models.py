@@ -83,6 +83,7 @@ class Can102Experiencia(models.Model):
     modalidad_trabajo = models.CharField(max_length=1, blank=True, null=True, choices=MODALIDAD_CHOICES_STATIC)
     nombre_jefe = models.CharField(max_length=100, blank=True, null=True)
     experiencia_laboral = models.BooleanField(default=False)
+    certificado_laboral = models.FileField(upload_to='media_uploads/media_uploads/certificados_laborales/', blank=True, null=True, verbose_name="Certificado de Laboral")
 
     def __str__(self):
         return self.entidad

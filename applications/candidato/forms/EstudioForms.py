@@ -324,11 +324,20 @@ class candidateStudyForm(forms.Form):
             # Si es Graduado, hacer obligatorios título, fecha_final
             self.fields['titulo'].required = True
             self.fields['fecha_final'].required = True
+            self.fields['fecha_inicial'].required = True
             # Certificación será validada en clean()
-        elif estado_estudios_value in ['C', 'A']:
-            # Si está en curso o aplazado, hacer opcionales título y fecha_final
+        elif estado_estudios_value == 'A':
+            # Si es Aplazado, hacer obligatoria fecha_final y ocultar fecha_inicial
+            self.fields['fecha_final'].required = True
+            self.fields['fecha_inicial'].required = False
+            self.fields['titulo'].required = False
+            self.fields['certificacion'].required = False
+        elif estado_estudios_value == 'C':
+            # Si está en curso, hacer opcionales título y fecha_final
             self.fields['titulo'].required = False
             self.fields['fecha_final'].required = False
+            self.fields['fecha_inicial'].required = True
+            self.fields['certificacion'].required = False
         
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -342,11 +351,11 @@ class candidateStudyForm(forms.Form):
                     Div('profesion_estudio', css_class='col-12'),
                     Div('estado_estudios', css_class='col-12'),
                     Div('titulo', css_class='col-12 campo-graduado'),
-                    Div('fecha_inicial', css_class='col-6'),
-                    Div('fecha_final', css_class='col-6 campo-graduado'),
+                    Div('fecha_inicial', css_class='col-6 campo-no-aplazado'),
+                    Div('fecha_final', css_class='col-6 campo-graduado campo-aplazado'),
                     Div('ciudad_id_004', css_class='col-12'),
                     # Div('carrera', css_class='col-12'),
-                    Div('certificacion', css_class='col-12'),
+                    Div('certificacion', css_class='col-12 campo-graduado'),
                     # Div('fortaleza_adquiridas', css_class='col-12'),
                     css_class='row'
                 ),
@@ -384,11 +393,15 @@ class candidateStudyForm(forms.Form):
 
         fecha_actual = timezone.now().date()
 
-        if fecha_inicial and fecha_inicial > fecha_actual:
-            self.add_error('fecha_inicial', "La fecha inicial no puede ser mayor que la fecha actual.")
+        # Validar fecha_inicial solo si está presente y no es Aplazado
+        if fecha_inicial and estado_estudios != 'A':
+            if fecha_inicial > fecha_actual:
+                self.add_error('fecha_inicial', "La fecha inicial no puede ser mayor que la fecha actual.")
 
         # Si el estado es "Graduado" (G), validar campos obligatorios
         if estado_estudios == 'G':
+            if fecha_inicial is None or fecha_inicial == '':
+                self.add_error('fecha_inicial', "La fecha inicial es obligatoria si el estado es Graduado.")
             if fecha_final is None or fecha_final == '':
                 self.add_error('fecha_final', "La fecha final es obligatoria si el estado es Graduado.")
             elif fecha_final < fecha_inicial:
@@ -406,12 +419,47 @@ class candidateStudyForm(forms.Form):
             is_editing = bool(self.initial)
             if not certificacion and not is_editing:
                 self.add_error('certificacion', 'El archivo de certificación es obligatorio si el estado es Graduado.')
-        elif estado_estudios in ['C', 'A']:
-            # Si está en curso o aplazado, no debe tener título ni fecha final
+            
+            # Si está graduado, no debe tener fecha_inicial oculta
+            if not fecha_inicial:
+                self.add_error('fecha_inicial', "La fecha inicial es obligatoria si el estado es Graduado.")
+                
+        elif estado_estudios == 'A':
+            # Si es Aplazado, fecha_final es obligatoria
+            if fecha_final is None or fecha_final == '':
+                self.add_error('fecha_final', "La fecha final es obligatoria si el estado es Aplazado.")
+            
+            # Si fecha_inicial está presente (aunque esté oculto), validar que no sea mayor que fecha_final
+            if fecha_inicial and fecha_final:
+                if fecha_inicial > fecha_final:
+                    self.add_error('fecha_final', "La fecha final no puede ser menor que la fecha inicial.")
+            
             if titulo:
-                self.add_error('titulo', "El título no debe estar presente si el estado es En curso o Aplazado.")
+                self.add_error('titulo', "El título no debe estar presente si el estado es Aplazado.")
+            
+            # Certificación no debe estar presente si está aplazado
+            # Si se está editando y hay una certificación existente, permitir que se elimine
+            is_editing = bool(self.initial)
+            if certificacion and not is_editing:
+                self.add_error('certificacion', "La certificación no debe estar presente si el estado es Aplazado.")
+            
+            # Si no hay fecha_inicial, usar fecha_final como fecha_inicial (se manejará en la vista)
+            if not fecha_inicial and fecha_final:
+                # Permitir que se use fecha_final como fecha_inicial en la vista
+                pass
+                
+        elif estado_estudios == 'C':
+            # Si está en curso, no debe tener título ni fecha final
+            if titulo:
+                self.add_error('titulo', "El título no debe estar presente si el estado es En curso.")
             if fecha_final:
-                self.add_error('fecha_final', "La fecha final no debe estar presente si el estado es En curso o Aplazado.")
+                self.add_error('fecha_final', "La fecha final no debe estar presente si el estado es En curso.")
+            
+            # Certificación no debe estar presente si está en curso
+            # Si se está editando y hay una certificación existente, permitir que se elimine
+            is_editing = bool(self.initial)
+            if certificacion and not is_editing:
+                self.add_error('certificacion', "La certificación no debe estar presente si el estado es En curso.")
 
         # Validar archivo de certificación si está presente
         if certificacion:

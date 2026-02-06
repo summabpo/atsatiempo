@@ -433,27 +433,33 @@
                         </div>
                         <div class="card-body">
                             <p class="card-text">Horarios de trabajo que requieren esta vacante.</p>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                {% if vacante.perfil_vacante.horario %}
+                            {% if vacante.perfil_vacante.horario %}
+                                {% with horarios_data=vacante.perfil_vacante.horario|parse_horarios_json %}
+                                    {% if horarios_data.tipo_display %}
+                                    <p class="mb-3">
+                                        <strong class="text-primary">Tipo de Horario:</strong> 
+                                        <span class="text-secondary">{{ horarios_data.tipo_display }}</span>
+                                    </p>
+                                    {% endif %}
+                                    {% if horarios_data.bloques %}
                                     <ul class="list-group list-group-flush">
-                                        {% for horario in vacante.perfil_vacante.horario|parse_horarios_json %}
+                                        {% for bloque in horarios_data.bloques %}
                                             <li class="list-group-item">
-                                                <b>{{ horario.rango_dias }}</b>
+                                                <b>{{ bloque.rango_dias }}</b>
                                                 <span class="badge bg-primary bg-opacity-10 text-primary float-end" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
                                                     <span class="material-symbols-outlined align-middle me-1" style="font-size: 18px;">schedule</span>
-                                                    {{ horario.hora_inicio }} - {{ horario.hora_final }}
+                                                    {{ bloque.hora_inicio }} - {{ bloque.hora_final }}
                                                 </span>
                                             </li>
-                                        {% empty %}
-                                            <span class="text-muted fst-italic">No hay horarios específicos registrados para esta vacante.</span>
                                         {% endfor %}
                                     </ul>
-                                {% else %}
-                                    <span class="text-muted fst-italic">No hay horarios específicos registrados para esta vacante.</span>
-                                {% endif %}
-                                </li>
-                            </ul>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">No hay horarios específicos registrados para esta vacante.</span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                <span class="text-muted fst-italic">No hay horarios específicos registrados para esta vacante.</span>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -468,19 +474,24 @@
                         <div class="card-body">
                             <p class="card-text">Estudios o conocimientos complementarios que requieren esta vacante.</p>
                             {% if vacante.perfil_vacante.estudio_complementario %}
-                            <ul class="list-group list-group-flush">
-                                {% for estudio in vacante.perfil_vacante.estudio_complementario %}
-                                <li class="list-group-item"> <b>{{ estudio.estudio|upper }}</b> 
-                                    {% if estudio.certificado == "True" or estudio.certificado == True %}
-                                        <span class="badge bg-success-subtle text-success float-end" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
-                                            <span class="material-symbols-outlined align-middle me-1" style="font-size: 18px;">verified</span>Certificado
-                                        </span>
+                                {% with estudios=vacante.perfil_vacante.estudio_complementario|parse_estudios_complementarios %}
+                                    {% if estudios %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for estudio in estudios %}
+                                        <li class="list-group-item">
+                                            <b>{{ estudio.estudio|upper }}</b>
+                                            {% if estudio.certificado %}
+                                                <span class="badge bg-success-subtle text-success float-end" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 18px;">verified</span>Certificado
+                                                </span>
+                                            {% endif %}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
                                     {% else %}
-                                        
+                                        <span class="text-muted fst-italic">No hay estudios complementarios registrados para esta vacante.</span>
                                     {% endif %}
-                                </li>
-                                {% endfor %}
-                            </ul>
+                                {% endwith %}
                             {% else %}
                                 <span class="text-muted fst-italic">No hay estudios complementarios registrados para esta vacante.</span>
                             {% endif %}

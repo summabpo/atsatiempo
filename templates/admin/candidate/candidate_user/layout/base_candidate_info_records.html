@@ -14,16 +14,110 @@
         color: white !important;
         font-weight: 600;
     }
+    
+    /* Estilos responsive para móviles */
+    @media (max-width: 768px) {
+        .info-panel-card .card-body,
+        .card:not(.info-panel-card) .card-body {
+            padding: 0.5rem !important;
+        }
+        
+        .info-panel-card .card-body .material-symbols-outlined,
+        .card:not(.info-panel-card) .card-body .material-symbols-outlined {
+            font-size: 20px !important;
+        }
+        
+        .info-panel-card .card-body h3,
+        .card:not(.info-panel-card) .card-body h3 {
+            font-size: 1.1rem !important;
+        }
+        
+        /* Ocultar barra de progreso en móviles */
+        .info-panel-card .progress,
+        .card:not(.info-panel-card) .progress {
+            display: none !important;
+        }
+        
+        .info-panel-card .card-body p.small,
+        .card:not(.info-panel-card) .card-body p.small {
+            font-size: 0.65rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+        
+        .info-panel-card .card-body small,
+        .card:not(.info-panel-card) .card-body small {
+            font-size: 0.6rem !important;
+            margin-top: 0.25rem !important;
+        }
+        
+        .info-panel-card .card-footer,
+        .card:not(.info-panel-card) .card-footer {
+            padding: 0.375rem !important;
+        }
+        
+        .info-panel-card .card-footer .btn,
+        .card:not(.info-panel-card) .card-footer .btn {
+            padding: 0.25rem 0.5rem !important;
+            font-size: 0.7rem !important;
+        }
+        
+        /* Reducir altura de los paneles */
+        .info-panel-card,
+        .card:not(.info-panel-card) {
+            min-height: auto !important;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .info-panel-card .card-body,
+        .card:not(.info-panel-card) .card-body {
+            padding: 0.4rem !important;
+        }
+        
+        .info-panel-card .card-body .material-symbols-outlined,
+        .card:not(.info-panel-card) .card-body .material-symbols-outlined {
+            font-size: 18px !important;
+        }
+        
+        .info-panel-card .card-body h3,
+        .card:not(.info-panel-card) .card-body h3 {
+            font-size: 1rem !important;
+        }
+        
+        .info-panel-card .card-body p.small,
+        .card:not(.info-panel-card) .card-body p.small {
+            font-size: 0.6rem !important;
+            margin-bottom: 0.15rem !important;
+        }
+        
+        .info-panel-card .card-body small,
+        .card:not(.info-panel-card) .card-body small {
+            font-size: 0.55rem !important;
+            margin-top: 0.15rem !important;
+        }
+        
+        .info-panel-card .card-footer,
+        .card:not(.info-panel-card) .card-footer {
+            padding: 0.3rem !important;
+        }
+        
+        .info-panel-card .card-footer .btn,
+        .card:not(.info-panel-card) .card-footer .btn {
+            padding: 0.2rem 0.4rem !important;
+            font-size: 0.65rem !important;
+        }
+    }
 </style>
 <div class="row">
     <!-- Información Básica -->
-    <div class="col-md-2 mb-4">
+    <div class="col-6 col-md-2 mb-3 mb-md-4">
+        
         <div class="card bg-white border-0 rounded-3 shadow-sm h-100 info-panel-card {% if active_section == 'personal' %}active{% endif %}">
             <div class="card-body p-3 text-center">
-                <div class="mb-3">
+                <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">person</span>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.info_personal.porcentaje }}%</h3>
                 </div>
-                <h3 class="mb-2 fw-bold text-primary">{{ porcentajes.info_personal.porcentaje }}%</h3>
                 <p class="small text-secondary mb-2 fw-medium">Información Básica</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
@@ -43,13 +137,13 @@
     </div>
 
     <!-- Información Académica -->
-    <div class="col-md-2 mb-4">
+    <div class="col-6 col-md-2 mb-3 mb-md-4">
         <div class="card bg-white border-0 rounded-3 shadow-sm h-100 info-panel-card {% if active_section == 'academica' %}active{% endif %}">
             <div class="card-body p-3 text-center">
-                <div class="mb-3">
+                <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">school</span>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.educacion.porcentaje }}%</h3>
                 </div>
-                <h3 class="mb-2 fw-bold text-primary">{{ porcentajes.educacion.porcentaje }}%</h3>
                 <p class="small text-secondary mb-2 fw-medium">Información Académica</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
@@ -69,13 +163,13 @@
     </div>
 
     <!-- Información Laboral -->
-    <div class="col-md-2 mb-4">
+    <div class="col-6 col-md-2 mb-3 mb-md-4">
         <div class="card bg-white border-0 rounded-3 shadow-sm h-100 info-panel-card {% if active_section == 'laboral' %}active{% endif %}">
             <div class="card-body p-3 text-center">
-                <div class="mb-3">
+                <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">work</span>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.experiencia.porcentaje }}%</h3>
                 </div>
-                <h3 class="mb-2 fw-bold text-primary">{{ porcentajes.experiencia.porcentaje }}%</h3>
                 <p class="small text-secondary mb-2 fw-medium">Información Laboral</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
@@ -95,13 +189,13 @@
     </div>
 
     <!-- Habilidades -->
-    <div class="col-md-2 mb-4">
+    <div class="col-6 col-md-2 mb-3 mb-md-4">
         <div class="card bg-white border-0 rounded-3 shadow-sm h-100 info-panel-card {% if active_section == 'habilidades' %}active{% endif %}">
             <div class="card-body p-3 text-center">
-                <div class="mb-3">
+                <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">psychology</span>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.skills.porcentaje }}%</h3>
                 </div>
-                <h3 class="mb-2 fw-bold text-primary">{{ porcentajes.skills.porcentaje }}%</h3>
                 <p class="small text-secondary mb-2 fw-medium">Habilidades</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
@@ -121,13 +215,13 @@
     </div>
 
     <!-- Redes Sociales -->
-    <div class="col-md-2 mb-4">
+    <div class="col-6 col-md-2 mb-3 mb-md-4">
         <div class="card bg-white border-0 rounded-3 shadow-sm h-100 info-panel-card {% if active_section == 'redes' %}active{% endif %}">
             <div class="card-body p-3 text-center">
-                <div class="mb-3">
+                <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">share</span>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.redes_sociales.porcentaje }}%</h3>
                 </div>
-                <h3 class="mb-2 fw-bold text-primary">{{ porcentajes.redes_sociales.porcentaje }}%</h3>
                 <p class="small text-secondary mb-2 fw-medium">Redes Sociales</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
@@ -147,14 +241,14 @@
     </div>
 
     <!-- Porcentaje Total -->
-    <div class="col-md-2 mb-4">
+    <div class="col-6 col-md-2 mb-3 mb-md-4">
         <div class="card bg-white border-0 rounded-3 shadow-sm h-100">
             <div class="card-body p-3 text-center">
-                <div class="mb-3">
+                <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">check_circle</span>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.porcentaje_total }}%</h3>
                 </div>
-                <h3 class="mb-2 fw-bold text-primary">{{ porcentajes.porcentaje_total }}%</h3>
-                <p class="small text-secondary mb-2 fw-medium">Completitud Total</p>
+                <p class="small text-secondary mb-2 fw-medium">Perfil Completado</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
                         style="width: {{ porcentajes.porcentaje_total }}%" 

@@ -34,14 +34,17 @@ Información Básica | Talent Tray
 
 	<!-- Start Your Code -->
     <div class="row">
-		<div class="col-md-8">
+		<div class="col-12">
             <div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-body p-4">
                     
                     <!-- Button trigger modal -->
-                    <div class="d-flex justify-content-center w-100">
+                    <div class="d-flex justify-content-between w-100 align-items-center mb-3">
                         <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#trabajos_candidato">
                             Crear Experiencia Laboral
+                        </button>
+                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#lineaTiempoModal">
+                            Línea del Tiempo
                         </button>
                     </div>
 
@@ -54,7 +57,7 @@ Información Básica | Talent Tray
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
 
-                                <form method="post" id="form_trabajo">
+                                <form method="post" id="form_trabajo" enctype="multipart/form-data">
                                     <div class="modal-body">
                                         {% csrf_token %}
                                         {% crispy form %}
@@ -99,6 +102,13 @@ Información Básica | Talent Tray
                                                         <i class="material-symbols-outlined fs-16 text-primary">edit</i>
                                                     </a>
                                                 </div>
+                                                {% if e.certificado_laboral %}
+                                                <div class="d-flex justify-content-center align-items-center gap-1" alt="Ver Certificado" title="Ver Certificado">
+                                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary-2 px-4" data-bs-toggle="modal" data-bs-target="#modalCertificado{{ e.id }}">
+                                                        <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                                    </button>
+                                                </div>
+                                                {% endif %}
                                             </div>
                                         </td>
                                     </tr>
@@ -111,11 +121,45 @@ Información Básica | Talent Tray
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card bg-white border-0 rounded-3 mb-4">
-				<div class="card-body p-4">
-                    <div>
-                        <h4 class="mb-4">Línea del Tiempo de Experiencia Laboral</h4>
+        <!-- Modales para ver certificados -->
+        {% for e in jobs %}
+            {% if e.certificado_laboral %}
+            <div class="modal fade" id="modalCertificado{{ e.id }}" tabindex="-1" aria-labelledby="modalCertificadoLabel{{ e.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalCertificadoLabel{{ e.id }}">Certificado Laboral - {{ e.entidad }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="min-height: 500px;">
+                            {% with filename=e.certificado_laboral.name|lower %}
+                                {% if ".pdf" in filename %}
+                                    <iframe src="{{ e.certificado_laboral.url }}" style="width: 100%; height: 600px; border: none;"></iframe>
+                                {% else %}
+                                    <div class="text-center">
+                                        <img src="{{ e.certificado_laboral.url }}" alt="Certificado Laboral" class="img-fluid" style="max-height: 600px; border: 1px solid #dee2e6; border-radius: 4px;">
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Modal Línea del Tiempo -->
+        <div class="modal fade" id="lineaTiempoModal" tabindex="-1" aria-labelledby="lineaTiempoModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="lineaTiempoModalLabel">Línea del Tiempo de Experiencia Laboral</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
                         <div class="timeline">
                             {% for exp in jobs %}
                                 <div class="position-relative timeline-item dot-3 mb-4">
@@ -133,19 +177,29 @@ Información Básica | Talent Tray
                                         </p> {% endcomment %}
                                         <p class="fs-13 mb-1">
                                             {% if exp.activo %}
-                                                <span class="badge bg-success">Actualmente</span>
+                                                <span class="badge bg-success bg-opacity-10 fw-medium text-success py-2 px-4 w-100">Actualmente</span>
                                             {% else %}
                                                 Fecha Final: <b>{{ exp.fecha_final|date:"Y M" }}</b>
                                                 <br>
                                                 Motivo de Salida: <b>{{ exp.get_motivo_salida_display }}</b>
                                             {% endif %}
                                         </p>
+                                        {% if exp.certificado_laboral %}
+                                        <div class="mt-2">
+                                            <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" data-bs-toggle="modal" data-bs-target="#modalCertificado{{ exp.id }}" data-bs-dismiss="modal">
+                                                <i class="material-symbols-outlined fs-14 text-primary">visibility</i> Ver Certificado
+                                            </button>
+                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             {% empty %}
                                 <p class="text-muted">No hay experiencias laborales registradas.</p>
                             {% endfor %}
                         </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>
@@ -187,7 +241,8 @@ Información Básica | Talent Tray
                 '#div_id_salario',
                 '#div_id_modalidad_trabajo',
                 '#div_id_nombre_jefe',
-                '#div_id_logro'
+                '#div_id_logro',
+                '#div_id_certificado_laboral'
             ];
             
             camposAfectados.forEach(function(selector) {

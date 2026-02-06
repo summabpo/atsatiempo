@@ -227,6 +227,15 @@ class candidateJobForm(forms.Form):
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
 
+    certificado_laboral = forms.FileField(
+        label='Certificado Laboral',
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control',
+            'accept': '.pdf,.jpg,.jpeg,.png'
+        })
+    )
+
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
         super().__init__(*args, **kwargs)
@@ -270,6 +279,7 @@ class candidateJobForm(forms.Form):
                 Div('modalidad_trabajo', css_class='col-6 campo-activo campo-experiencia'),
                 Div('nombre_jefe', css_class='col-12 campo-activo campo-experiencia'),
                 Div('logro', css_class='col-12 campo-experiencia'),
+                Div('certificado_laboral', css_class='col-12 campo-experiencia'),
                 css_class='row'
             ),
             css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -328,6 +338,28 @@ class candidateJobForm(forms.Form):
         if logro:
             if len(logro.split()) > 500:
                 self.add_error('logro','La descripción debe contener máximo 500 palabras')
+
+        # Validación del certificado laboral
+        certificado_laboral = cleaned_data.get('certificado_laboral')
+        if certificado_laboral:
+            # Validar tamaño (máximo 10 MB)
+            max_size_mb = 10
+            if certificado_laboral.size > max_size_mb * 1024 * 1024:
+                self.add_error('certificado_laboral', f'El archivo no debe superar los {max_size_mb} MB.')
+            
+            # Validar tipo de archivo (PDF, JPG, PNG)
+            import os
+            allowed_extensions = ['.pdf', '.jpg', '.jpeg', '.png']
+            extension = os.path.splitext(certificado_laboral.name)[1].lower()
+            
+            if extension not in allowed_extensions:
+                self.add_error('certificado_laboral', 'Tipo de archivo no permitido. Solo se permiten archivos PDF, JPG o PNG.')
+            
+            # Validar también por content_type como respaldo
+            allowed_types = ['application/pdf', 'image/jpeg', 'image/png']
+            if hasattr(certificado_laboral, 'content_type') and certificado_laboral.content_type:
+                if certificado_laboral.content_type not in allowed_types:
+                    self.add_error('certificado_laboral', 'Tipo de archivo no permitido. Solo se permiten archivos PDF, JPG o PNG.')
 
         return cleaned_data
         
