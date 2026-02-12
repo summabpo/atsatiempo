@@ -22,7 +22,7 @@ Mis Vacantes aplicadas
                     <span class="fw-medium">Listado de Vacantes</span>
                 </li>
             </ol>
-        </nav>
+        </nav> 
     </div>
     <div class="card bg-white border-0 rounded-3 mb-4">
         <div class="card-body p-4">
@@ -41,6 +41,7 @@ Mis Vacantes aplicadas
                     <table class="table align-middle text-center" id="myTable">
                         <thead class="align-middle">
                             <tr>
+                                <th scope="col">Acciones</th>
                                 <th scope="col">ID</th>
                                 <th scope="col">Estado</th>
                                 <th scope="col">Fecha Aplicación</th>
@@ -49,12 +50,21 @@ Mis Vacantes aplicadas
                                 <th scope="col">Cargo</th>
                                 <th scope="col">Analista Asignado</th>
                                 <th scope="col">Fecha Actualización</th>
-                                <th scope="col">Acciones</th>
+                                
                             </tr>
                         </thead>
                         <tbody class="align-middle">
                             {% for e in vacancy %}
                             <tr>
+                                <td>
+                                    <div class="d-flex justify-content-center align-items-center gap-1">
+                                        <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
+                                            <a href="{% url 'vacantes:vacante_candidato_aplicadas_detalle' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td class="text-body">{{e.id}}</td>
                                 <td class="text-secondary">
                                     <span class="badge bg-{{e.obtener_estado_con_color.color}} bg-opacity-10 text-{{e.obtener_estado_con_color.color}} p-2 fs-12 fw-normal">

@@ -628,18 +628,32 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             # Esto borra las habilidades viejas y agrega las nuevas automáticamente.
             vacante.habilidades.set(skills_seleccionadas)
             
-            # 3. Actualizar Soft Skills usando tabla intermedia (igual que en create_vacanty_v2)
+            # 3. Actualizar Soft Skills usando tabla intermedia
+            # Los skills_seleccionadas son Can104Skill, pero necesitamos Cli053SoftSkill
             # 1. Elimina las relaciones existentes para esta vacante.
             Cli052VacanteSoftSkillsId053.objects.filter(cli052vacante=vacante).delete()
 
-            # 2. Prepara una lista de los nuevos objetos a crear.
-            objetos_a_crear = [
-                Cli052VacanteSoftSkillsId053(
-                    cli052vacante=vacante,
-                    cli053softskill_id=skill_obj.id 
-                )
-                for skill_obj in skills_seleccionadas 
-            ]
+            # 2. Convertir Can104Skill a Cli053SoftSkill y crear los registros
+            estado_id = Cat001Estado.objects.get(id=1)
+            objetos_a_crear = []
+            
+            for skill_obj in skills_seleccionadas:
+                # Obtener o crear el Cli053SoftSkill correspondiente usando el nombre
+                try:
+                    soft_skill, created = Cli053SoftSkill.objects.get_or_create(
+                        nombre=skill_obj.nombre,
+                        defaults={'estado_id_001': estado_id}
+                    )
+                    objetos_a_crear.append(
+                        Cli052VacanteSoftSkillsId053(
+                            cli052vacante=vacante,
+                            cli053softskill=soft_skill
+                        )
+                    )
+                except Exception as e:
+                    # Si hay algún error, continuar con el siguiente skill
+                    print(f"Error al procesar skill {skill_obj.nombre}: {e}")
+                    continue
 
             # 3. Inserta todos los nuevos registros en una sola consulta (si la lista no está vacía).
             if objetos_a_crear:

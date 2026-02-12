@@ -52,6 +52,7 @@ def apply_vacancy_detail(request, pk):
         'vacancy': vacancy,
         'vacante': vacante,
         'historial': historico_vacante,
+        'is_candidato': True,  # Indicar que es candidato para restringir información
     }
 
     return render(request, 'admin/vacancy/candidate_user/apply_vacancy_detail.html', context)

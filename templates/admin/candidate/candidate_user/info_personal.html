@@ -404,6 +404,68 @@ Información Básica | Talent Tray
                                 </div>
                             </div>
                         </div>
+                        <div class="mb-4 p-3 border rounded bg-primary bg-opacity-10">
+                            <div class="d-flex align-items-center my-4">
+                                <h6 class="mb-0 pe-3 text-primary fw-bold">IDIOMAS</h6>
+                                <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                            </div>
+                            <div class="row">
+                                <!-- Bloque 1 de idiomas - siempre visible -->
+                                <div class="row" id="idiomas_bloque_1">
+                                    <div class="d-flex align-items-center my-4">
+                                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Idioma 1</p>
+                                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        {{ form.idioma_1.label_tag }} {{ form.idioma_1 }}
+                                        {% if form.idioma_1.errors %}
+                                            <div class="text-danger small">{{ form.idioma_1.errors }}</div>
+                                        {% endif %}
+                                    </div> 
+                                    <div class="col-md-8 mb-3">
+                                        {{ form.nivel_idioma_1.label_tag }} {{ form.nivel_idioma_1 }}
+                                        {% if form.nivel_idioma_1.errors %}
+                                            <div class="text-danger small">{{ form.nivel_idioma_1.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Bloque 2 de idiomas - oculto por defecto -->
+                                <div class="row d-none" id="idiomas_bloque_2">
+                                    <div class="d-flex align-items-center my-4">
+                                        <div class="w-100 d-flex align-items-center" style="position: relative;">
+                                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                                            <p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Idioma 2</p>
+                                            <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        {{ form.idioma_2.label_tag }} {{ form.idioma_2 }}
+                                        {% if form.idioma_2.errors %}
+                                            <div class="text-danger small">{{ form.idioma_2.errors }}</div>
+                                        {% endif %}
+                                    </div> 
+                                    <div class="col-md-8 mb-3">
+                                        {{ form.nivel_idioma_2.label_tag }} {{ form.nivel_idioma_2 }}
+                                        {% if form.nivel_idioma_2.errors %}
+                                            <div class="text-danger small">{{ form.nivel_idioma_2.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Botón para agregar Idioma 2 -->
+                                <div class="row" id="boton_idiomas_2">
+                                    <div class="col-md-12 text-center">
+                                        <button type="button" class="btn btn-outline-primary" id="agregar_idiomas_2">
+                                            <i class="fas fa-plus me-2"></i>Agregar Idioma 2 (Opcional)
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 						<div class="mb-4 p-3 border rounded bg-primary bg-opacity-10">
 							<div class="d-flex align-items-center my-4">
 								<h6 class="mb-0 pe-3 text-primary fw-bold">FIT CULTURAL</h6>
@@ -596,6 +658,42 @@ Lo que elijas nos ayudará a ubicarte en una empresa donde encuentres no solo un
 <script>
     initializeSelect2('#id_sexo');
     initializeSelect2('#id_ciudad_id_004');
+    initializeSelect2('#id_idioma_1');
+    initializeSelect2('#id_idioma_2');
+    initializeSelect2('#id_nivel_idioma_1');
+    initializeSelect2('#id_nivel_idioma_2');
+    
+    // Funcionalidad para bloques de idiomas
+    function toggleBloquesIdiomas() {
+        // El bloque 1 siempre está visible
+        $('#idiomas_bloque_1').removeClass('d-none');
+        
+        // Verificar si hay datos en el bloque 2 para mostrar automáticamente
+        const tieneIdioma2 = ($('#id_idioma_2').val() && $('#id_idioma_2').val().trim() !== '') || 
+                           ($('#id_nivel_idioma_2').val() && $('#id_nivel_idioma_2').val().trim() !== '');
+        
+        if (tieneIdioma2) {
+            $('#idiomas_bloque_2').removeClass('d-none');
+            $('#boton_idiomas_2').addClass('d-none');
+        } else {
+            $('#idiomas_bloque_2').addClass('d-none');
+            $('#boton_idiomas_2').removeClass('d-none');
+        }
+    }
+
+    // Event listener para agregar idioma 2
+    $('#agregar_idiomas_2').on('click', function() {
+        $('#idiomas_bloque_2').removeClass('d-none');
+        $('#boton_idiomas_2').addClass('d-none');
+        
+        // Hacer focus al primer campo del bloque 2
+        setTimeout(function() {
+            $('#id_idioma_2').focus();
+        }, 100);
+    });
+
+    // Ejecutar al cargar la página
+    toggleBloquesIdiomas();
     
     // Diccionario de descripciones de fit cultural desde el servidor
     var fitCulturalDescriptions = {{ fit_cultural_descriptions|safe }};

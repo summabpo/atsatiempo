@@ -5,9 +5,10 @@ from django.utils.html import format_html, escape
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Layout, Div, Submit, HTML, Row, Column, Fieldset
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.services.choices import GENERO_CHOICES_STATIC
+from applications.services.choices import GENERO_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC
 from ..models import Can101Candidato
 from applications.cliente.models import Cli078MotivadoresCandidato, Cli077FitCultural
+import json
 
 
 class RadioSelectWithDescription(forms.RadioSelect):
@@ -106,43 +107,116 @@ class CandidatoForm(forms.Form):
             self.fields['imagen_perfil'].initial = self.instance.imagen_perfil
             self.fields['hoja_de_vida'].initial = self.instance.hoja_de_vida
 
+        # Agregar campos dinámicos de idiomas (similar a la vacante)
+        for i in range(1, 3):  # Crearemos hasta 2 pares de campos
+            idioma_field = f'idioma_{i}'
+            nivel_field = f'nivel_idioma_{i}'
+            
+            # Crear y añadir el campo 'idioma'
+            self.fields[idioma_field] = forms.ChoiceField(
+                label=f'Idioma {i}',
+                choices=IDIOMA_CHOICES_STATIC,
+                widget=forms.Select(attrs={'class': 'form-select'}),
+                required=False
+            )
+            # Crear y añadir el campo 'nivel_idioma'
+            self.fields[nivel_field] = forms.ChoiceField(
+                label='Nivel',
+                choices=NIVEL_IDIOMA_CHOICES_STATIC,
+                widget=forms.Select(attrs={'class': 'form-select'}),
+                required=False
+            )
+            
+            # Inicializar desde el JSON de idiomas si existe
+            if self.instance and self.instance.idiomas:
+                try:
+                    idiomas_data = self.instance.idiomas if isinstance(self.instance.idiomas, list) else json.loads(self.instance.idiomas)
+                    if isinstance(idiomas_data, list) and len(idiomas_data) >= i:
+                        idioma_item = idiomas_data[i-1]
+                        if isinstance(idioma_item, dict):
+                            # Buscar por bloque o por índice
+                            idioma_val = None
+                            nivel_val = None
+                            
+                            # Si tiene campo 'bloque', buscar por bloque
+                            if 'bloque' in idioma_item:
+                                for item in idiomas_data:
+                                    if item.get('bloque') == i:
+                                        idioma_val = item.get('idioma') or item.get('id') or item.get('nombre')
+                                        nivel_val = item.get('nivel') or item.get('nivel_idioma')
+                                        break
+                            else:
+                                # Si no tiene bloque, usar el índice
+                                idioma_val = idioma_item.get('idioma') or idioma_item.get('id') or idioma_item.get('nombre')
+                                nivel_val = idioma_item.get('nivel') or idioma_item.get('nivel_idioma')
+                            
+                            if idioma_val:
+                                self.fields[idioma_field].initial = idioma_val
+                            if nivel_val:
+                                self.fields[nivel_field].initial = nivel_val
+                except (json.JSONDecodeError, TypeError, AttributeError, IndexError):
+                    pass
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'container'
         self.helper.layout = Layout(
-            Div(
+            Fieldset(
+                'Información Básica',
                 Div(
-                    Div('primer_nombre', css_class='col form-control-solid mb-3 mb-lg-0'),
-                    Div('segundo_nombre', css_class='col'),
-                    Div('primer_apellido', css_class='col'),
-                    Div('segundo_apellido', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('email', css_class='col'),
-                    Div('telefono', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('fecha_nacimiento', css_class='col'),
-                    Div('sexo', css_class='col'),
-                    Div('ciudad_id_004', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('imagen_perfil', css_class='col'),
-                    css_class='row'
-                ),
-                Div(
-                    Div('hoja_de_vida', css_class='col'),
-                    css_class='row'
-                ),
-                # Div(
-                #     Div('estado_id_001', css_class='col'),
-                #     css_class='row'
-                # ),
+                    Div(
+                        Div('primer_nombre', css_class='col form-control-solid mb-3 mb-lg-0'),
+                        Div('segundo_nombre', css_class='col'),
+                        Div('primer_apellido', css_class='col'),
+                        Div('segundo_apellido', css_class='col'),
+                        css_class='row'
+                    ),
+                    Div(
+                        Div('email', css_class='col'),
+                        Div('telefono', css_class='col'),
+                        css_class='row'
+                    ),
+                    Div(
+                        Div('fecha_nacimiento', css_class='col'),
+                        Div('sexo', css_class='col'),
+                        Div('ciudad_id_004', css_class='col'),
+                        css_class='row'
+                    ),
+                    Div(
+                        Div('imagen_perfil', css_class='col'),
+                        css_class='row'
+                    ),
+                    Div(
+                        Div('hoja_de_vida', css_class='col'),
+                        css_class='row'
+                    ),
+                    # Sección de Idiomas
+                    HTML('<div class="d-flex align-items-center my-4"><h6 class="mb-0 pe-3 text-primary fw-bold">Idiomas</h6><hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20"></div>'),
+                    # Bloque 1 de idiomas - siempre visible
+                    HTML('<div class="row" id="idiomas_bloque_1"><div class="d-flex align-items-center my-4"><div class="w-100 d-flex align-items-center" style="position: relative;"><hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20"><p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Idioma 1</p><hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20"></div></div>'),
+                    Div(
+                        Div('idioma_1', css_class='col-md-4'),
+                        Div('nivel_idioma_1', css_class='col-md-8'),
+                        css_class='row'
+                    ),
+                    HTML('</div>'),
+                    # Bloque 2 de idiomas - oculto por defecto
+                    HTML('<div class="row d-none" id="idiomas_bloque_2"><div class="d-flex align-items-center my-4"><div class="w-100 d-flex align-items-center" style="position: relative;"><hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20"><p class="position-absolute start-50 translate-middle-x mb-0 px-3 bg-white text-primary" style="z-index:1;">Idioma 2</p><hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20"></div></div>'),
+                    Div(
+                        Div('idioma_2', css_class='col-md-4'),
+                        Div('nivel_idioma_2', css_class='col-md-8'),
+                        css_class='row'
+                    ),
+                    HTML('</div>'),
+                    # Botón para agregar Idioma 2
+                    HTML('<div class="row" id="boton_idiomas_2"><div class="col-md-12 text-center"><button type="button" class="btn btn-outline-primary" id="agregar_idiomas_2"><i class="fas fa-plus me-2"></i>Agregar Idioma 2 (Opcional)</button></div></div>'),
+                    # Div(
+                    #     Div('estado_id_001', css_class='col'),
+                    #     css_class='row'
+                    # ),
 
-                Submit('submit_candidato', 'Guardar Empleado', css_class='btn btn-primary mt-3'),
+                    Submit('submit_candidato', 'Guardar Empleado', css_class='btn btn-primary mt-3'),
+                )
             )
         )
 
@@ -239,7 +313,25 @@ class CandidatoForm(forms.Form):
         candidato.fecha_nacimiento = self.cleaned_data['fecha_nacimiento']
         candidato.imagen_perfil = self.cleaned_data['imagen_perfil']
         candidato.hoja_de_vida = self.cleaned_data['hoja_de_vida']
-
+        
+        # Guardar idiomas en formato JSON
+        idiomas_data = []
+        for i in range(1, 3):  # Hasta 2 bloques de idiomas
+            idioma = self.cleaned_data.get(f'idioma_{i}')
+            nivel_idioma = self.cleaned_data.get(f'nivel_idioma_{i}')
+            
+            if idioma and nivel_idioma:
+                # Obtener el nombre del idioma desde las opciones
+                idioma_nombre = dict(IDIOMA_CHOICES_STATIC).get(idioma, idioma)
+                nivel_nombre = dict(NIVEL_IDIOMA_CHOICES_STATIC).get(nivel_idioma, nivel_idioma)
+                
+                idiomas_data.append({
+                    'id': idioma,  # ID del idioma (valor del choice)
+                    'nombre': idioma_nombre,  # Nombre del idioma (texto)
+                    'nivel': nivel_idioma  # Nivel del idioma
+                })
+        
+        candidato.idiomas = idiomas_data if idiomas_data else None
 
         candidato.save()
 
@@ -523,6 +615,8 @@ class CandidateForm(forms.Form):
             'class': 'form-control form-control-solid'
         })
     )
+
+    
     
     def clean_imagen_perfil(self):
         imagen_perfil = self.cleaned_data.get('imagen_perfil')
@@ -530,21 +624,27 @@ class CandidateForm(forms.Form):
         # Si el archivo ya se guardó exitosamente en la vista, no validar nada
         if self.files_saved_in_request.get('imagen_perfil', False):
             # El archivo ya se guardó en la vista, no procesarlo de nuevo
-            if self.candidato and self.candidato.imagen_perfil:
-                return self.candidato.imagen_perfil
+            # Retornar None para que Django no intente procesar el archivo nuevamente
             return None
         
-        # Validar solo si hay un nuevo archivo
-        if imagen_perfil:
-            # Validar extensión (JPG, PNG)
-            import os
-            ext = os.path.splitext(imagen_perfil.name)[1].lower()
-            if ext not in ['.jpg', '.jpeg', '.png']:
-                raise forms.ValidationError('El archivo debe ser una imagen en formato JPG o PNG.')
-            
-            # Validar tamaño (máximo 10 MB)
-            if imagen_perfil.size > 10 * 1024 * 1024:  # 10 MB en bytes
-                raise forms.ValidationError('El archivo no puede superar los 10 MB.')
+        # Si no hay archivo nuevo, retornar None (no es requerido)
+        if not imagen_perfil:
+            return None
+        
+        # Validar solo si hay un nuevo archivo que no fue guardado previamente
+        # Validar extensión (JPG, PNG)
+        import os
+        ext = os.path.splitext(imagen_perfil.name)[1].lower()
+        if ext not in ['.jpg', '.jpeg', '.png']:
+            raise forms.ValidationError('El archivo debe ser una imagen en formato JPG o PNG.')
+        
+        # Validar tamaño (máximo 10 MB)
+        if imagen_perfil.size > 10 * 1024 * 1024:  # 10 MB en bytes
+            raise forms.ValidationError('El archivo no puede superar los 10 MB.')
+        
+        # Django ImageField ya valida automáticamente que sea una imagen válida
+        # No necesitamos validar con PIL aquí para evitar problemas con el archivo cerrado
+        # Si la imagen es inválida, Django lanzará un error automáticamente
         
         return imagen_perfil
     hoja_de_vida = forms.FileField(
@@ -700,6 +800,56 @@ class CandidateForm(forms.Form):
         
         self.candidato = instance  # guardamos el candidato si se va a editar
         self.files_saved_in_request = files_saved_in_request or {}  # archivos ya guardados exitosamente
+
+        # Agregar campos dinámicos de idiomas (similar a la vacante)
+        for i in range(1, 3):  # Crearemos hasta 2 pares de campos
+            idioma_field = f'idioma_{i}'
+            nivel_field = f'nivel_idioma_{i}'
+            
+            # Crear y añadir el campo 'idioma'
+            self.fields[idioma_field] = forms.ChoiceField(
+                label=f'Idioma {i}',
+                choices=IDIOMA_CHOICES_STATIC,
+                widget=forms.Select(attrs={'class': 'form-select form-select-solid'}),
+                required=False
+            )
+            # Crear y añadir el campo 'nivel_idioma'
+            self.fields[nivel_field] = forms.ChoiceField(
+                label='Nivel',
+                choices=NIVEL_IDIOMA_CHOICES_STATIC,
+                widget=forms.Select(attrs={'class': 'form-select form-select-solid'}),
+                required=False
+            )
+            
+            # Inicializar desde el JSON de idiomas si existe
+            if self.candidato and self.candidato.idiomas:
+                try:
+                    idiomas_data = self.candidato.idiomas if isinstance(self.candidato.idiomas, list) else json.loads(self.candidato.idiomas)
+                    if isinstance(idiomas_data, list) and len(idiomas_data) >= i:
+                        idioma_item = idiomas_data[i-1]
+                        if isinstance(idioma_item, dict):
+                            # Buscar por bloque o por índice
+                            idioma_val = None
+                            nivel_val = None
+                            
+                            # Si tiene campo 'bloque', buscar por bloque
+                            if 'bloque' in idioma_item:
+                                for item in idiomas_data:
+                                    if item.get('bloque') == i:
+                                        idioma_val = item.get('idioma') or item.get('id')
+                                        nivel_val = item.get('nivel') or item.get('nivel_idioma')
+                                        break
+                            else:
+                                # Si no tiene bloque, usar el índice
+                                idioma_val = idioma_item.get('idioma') or idioma_item.get('id')
+                                nivel_val = idioma_item.get('nivel') or idioma_item.get('nivel_idioma')
+                            
+                            if idioma_val:
+                                self.fields[idioma_field].initial = idioma_val
+                            if nivel_val:
+                                self.fields[nivel_field].initial = nivel_val
+                except (json.JSONDecodeError, TypeError, AttributeError, IndexError):
+                    pass
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
