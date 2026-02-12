@@ -24,6 +24,7 @@ class Can101Candidato(models.Model):
     aspiracion_salarial = models.IntegerField(blank=True, null=True, verbose_name="Aspiración Salarial")
     fit_cultural = models.JSONField(blank=True, null=True, verbose_name="Fit Cultural", help_text="Fit cultural en formato JSON")
     motivadores = models.JSONField(blank=True, null=True, verbose_name="Motivadores", help_text="Motivadores en formato JSON")
+    idiomas = models.JSONField(blank=True, null=True, verbose_name="Idiomas", help_text="Idiomas en formato JSON")
     
     
     def __str__(self):

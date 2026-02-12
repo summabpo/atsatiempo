@@ -58,20 +58,23 @@ def candidate_info(request):
             elif imagen_perfil.size > 10 * 1024 * 1024:  # 10 MB en bytes
                 file_errors['imagen_perfil'] = 'El archivo no puede superar los 10 MB.'
             else:
-                # Validar que sea una imagen válida usando PIL
+                # Si pasa las validaciones de extensión y tamaño, guardar la imagen inmediatamente
+                # Esto asegura que la imagen se mantenga incluso si hay errores en otros campos
                 try:
-                    from PIL import Image
-                    imagen_perfil.seek(0)
-                    img = Image.open(imagen_perfil)
-                    img.verify()  # Verificar que sea una imagen válida
-                    imagen_perfil.seek(0)  # Resetear para guardar
-                    
-                    # Si pasa todas las validaciones, guardar
                     candidato.imagen_perfil = imagen_perfil
+                    candidato.save(update_fields=['imagen_perfil'])  # Guardar solo el campo de imagen
                     files_saved = True
                     files_saved_in_request['imagen_perfil'] = True
+                    
+                    # Actualizar imagen de perfil en el usuario también
+                    try:
+                        usuario = UsuarioBase.objects.get(id=request.session.get('user_login')['id'])
+                        usuario.imagen_perfil = candidato.imagen_perfil
+                        usuario.save(update_fields=['imagen_perfil'])
+                    except Exception as e:
+                        print(f"Error actualizando imagen de perfil en usuario: {e}")
                 except Exception as e:
-                    file_errors['imagen_perfil'] = 'El archivo debe ser una imagen válida.'
+                    file_errors['imagen_perfil'] = 'Error al guardar la imagen. Por favor, intente nuevamente.'
         
         # Validar y guardar hoja_de_vida
         if 'hoja_de_vida' in request.FILES:
@@ -110,24 +113,30 @@ def candidate_info(request):
                 files_saved_in_request['video_perfil'] = True
         
         # Crear el formulario DESPUÉS de validar y guardar archivos, pasando files_saved_in_request actualizado
-        form = CandidateForm(request.POST, request.FILES, instance=candidato, files_saved_in_request=files_saved_in_request)
+        # Si la imagen ya fue guardada, no pasarla al formulario para evitar validación duplicada
+        files_for_form = request.FILES.copy() if hasattr(request, 'FILES') else {}
+        if files_saved_in_request.get('imagen_perfil', False):
+            # Remover la imagen de los archivos del formulario si ya fue guardada
+            if 'imagen_perfil' in files_for_form:
+                del files_for_form['imagen_perfil']
+        
+        form = CandidateForm(request.POST, files_for_form, instance=candidato, files_saved_in_request=files_saved_in_request)
         
         # Si hay errores en archivos, agregarlos al formulario
         for field, error_msg in file_errors.items():
             form.add_error(field, error_msg)
         
-        # Si se guardaron archivos, guardar el candidato inmediatamente
-        # Esto asegura que la imagen se guarde en el registro incluso si hay errores en otros campos
+        # Si se validaron archivos correctamente, guardarlos en el candidato
+        # La imagen_perfil ya se guardó arriba si era válida
         if files_saved:
-            candidato.save()
-            # Actualizar imagen de perfil en el usuario si se guardó una nueva
-            if files_saved_in_request.get('imagen_perfil', False) and 'imagen_perfil' not in file_errors:
-                try:
-                    usuario = UsuarioBase.objects.get(id=request.session.get('user_login')['id'])
-                    usuario.imagen_perfil = candidato.imagen_perfil
-                    usuario.save()
-                except Exception as e:
-                    print(f"Error actualizando imagen de perfil en usuario: {e}")
+            # Guardar hoja_de_vida y video_perfil si fueron validados
+            if files_saved_in_request.get('hoja_de_vida', False) and 'hoja_de_vida' not in file_errors:
+                candidato.hoja_de_vida = request.FILES['hoja_de_vida']
+            if files_saved_in_request.get('video_perfil', False) and 'video_perfil' not in file_errors:
+                candidato.video_perfil = request.FILES['video_perfil']
+            # Guardar solo si hay archivos nuevos (imagen ya se guardó arriba)
+            if files_saved_in_request.get('hoja_de_vida', False) or files_saved_in_request.get('video_perfil', False):
+                candidato.save()
             # Recargar el candidato para que el formulario tenga los archivos actualizados
             candidato.refresh_from_db()
             # NO mostrar mensaje aquí - solo se mostrará cuando el formulario se procese correctamente
@@ -143,17 +152,15 @@ def candidate_info(request):
             candidato.fecha_nacimiento = form.cleaned_data['fecha_nacimiento']
             candidato.telefono = form.cleaned_data['telefono']
             candidato.direccion = form.cleaned_data['direccion']
-            # Los archivos ya fueron guardados arriba si eran válidos, NO sobrescribirlos
-            # Solo actualizar si hay un nuevo archivo en el formulario que no se guardó antes
-            if 'imagen_perfil' in request.FILES and 'imagen_perfil' not in file_errors and not files_saved_in_request['imagen_perfil']:
-                # Hay un nuevo archivo que no se guardó antes, guardarlo ahora
-                candidato.imagen_perfil = request.FILES['imagen_perfil']
-            # Si ya se guardó antes, no hacer nada (mantener el que ya está guardado)
+            # Procesar archivos desde el formulario validado
+            # La imagen_perfil ya se guardó arriba si era válida, solo actualizar si hay una nueva que no se guardó antes
+            if form.cleaned_data.get('imagen_perfil') and not files_saved_in_request.get('imagen_perfil', False):
+                candidato.imagen_perfil = form.cleaned_data['imagen_perfil']
             
-            if 'hoja_de_vida' in request.FILES and 'hoja_de_vida' not in file_errors and not files_saved_in_request['hoja_de_vida']:
+            if 'hoja_de_vida' in request.FILES and 'hoja_de_vida' not in file_errors and not files_saved_in_request.get('hoja_de_vida', False):
                 candidato.hoja_de_vida = request.FILES['hoja_de_vida']
             
-            if 'video_perfil' in request.FILES and 'video_perfil' not in file_errors and not files_saved_in_request['video_perfil']:
+            if 'video_perfil' in request.FILES and 'video_perfil' not in file_errors and not files_saved_in_request.get('video_perfil', False):
                 candidato.video_perfil = request.FILES['video_perfil']
             
             candidato.email = form.cleaned_data['email']
@@ -186,10 +193,36 @@ def candidate_info(request):
             else:
                 candidato.motivadores = []
             
+            # Guardar idiomas en formato JSON
+            import json
+            idiomas_data = []
+            for i in range(1, 3):  # Hasta 2 bloques de idiomas
+                idioma = form.cleaned_data.get(f'idioma_{i}')
+                nivel_idioma = form.cleaned_data.get(f'nivel_idioma_{i}')
+                
+                if idioma and nivel_idioma:
+                    # Obtener el nombre del idioma desde las opciones
+                    from applications.services.choices import IDIOMA_CHOICES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC
+                    idioma_nombre = dict(IDIOMA_CHOICES_STATIC).get(idioma, idioma)
+                    nivel_nombre = dict(NIVEL_IDIOMA_CHOICES_STATIC).get(nivel_idioma, nivel_idioma)
+                    
+                    idiomas_data.append({
+                        'id': idioma,  # ID del idioma (valor del choice)
+                        'nombre': idioma_nombre,  # Nombre del idioma (texto)
+                        'nivel': nivel_idioma  # Nivel del idioma
+                    })
+            
+            candidato.idiomas = idiomas_data if idiomas_data else None
+            
             UsuarioBase.objects.get(id=request.session.get('user_login')['id']).candidato_id_101 = candidato
             usuario = UsuarioBase.objects.get(id=request.session.get('user_login')['id'])
             # Actualizar la imagen de perfil en el usuario si hay una nueva
-            if candidato.imagen_perfil:
+            # Si la imagen ya se guardó arriba, usar la del candidato; si no, usar la del formulario
+            if files_saved_in_request.get('imagen_perfil', False) and candidato.imagen_perfil:
+                usuario.imagen_perfil = candidato.imagen_perfil
+            elif form.cleaned_data.get('imagen_perfil'):
+                usuario.imagen_perfil = form.cleaned_data['imagen_perfil']
+            elif candidato.imagen_perfil:
                 usuario.imagen_perfil = candidato.imagen_perfil
             usuario.save()
             
@@ -241,6 +274,25 @@ def candidate_info(request):
             'hoja_de_vida': candidato.hoja_de_vida,
             'video_perfil': candidato.video_perfil,
         }
+        
+        # Inicializar campos de idiomas desde el JSON
+        if candidato.idiomas:
+            import json
+            try:
+                idiomas_data = candidato.idiomas if isinstance(candidato.idiomas, list) else json.loads(candidato.idiomas)
+                if isinstance(idiomas_data, list):
+                    for i, idioma_item in enumerate(idiomas_data[:2], start=1):  # Máximo 2 idiomas
+                        if isinstance(idioma_item, dict):
+                            # Buscar por bloque o por índice
+                            idioma_val = idioma_item.get('idioma') or idioma_item.get('id')
+                            nivel_val = idioma_item.get('nivel') or idioma_item.get('nivel_idioma')
+                            
+                            if idioma_val:
+                                initial_data[f'idioma_{i}'] = idioma_val
+                            if nivel_val:
+                                initial_data[f'nivel_idioma_{i}'] = nivel_val
+            except (json.JSONDecodeError, TypeError, AttributeError, KeyError):
+                pass
         
         # Distribuir los datos de fit_cultural en los campos correspondientes por grupo
         if candidato.fit_cultural:

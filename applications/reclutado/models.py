@@ -21,6 +21,7 @@ class Cli056AplicacionVacante(models.Model):
     estado_reclutamiento = models.IntegerField(choices=ESTADO_RECLUTADO_CHOICES_STATIC, default=1)
     usuario_reclutador = models.ForeignKey(UsuarioBase, on_delete=models.SET_NULL, null=True, blank=True, related_name='aplicaciones_reclutador')
     registro_reclutamiento = models.JSONField(null=True, blank=True)
+    json_match_inicial = models.JSONField(null=True, blank=True)
     def __str__(self):
         return str(self.id)
 

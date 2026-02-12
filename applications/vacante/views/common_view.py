@@ -1840,3 +1840,1046 @@ def get_match(candidato_id, vacante_id):
     return response
 
 
+# Funcion para obtener el match inicial de la aplicacion de la vacante con lo básico del candidato y la vacante
+def calcular_match_academico(candidato, vacante, ponderacion_educacion=25.0):
+    """
+    Calcula el porcentaje de match académico entre un candidato y una vacante.
+    
+    Reglas:
+    - El factor "Estudios" representa el porcentaje especificado del match total.
+    - Ponderación interna: Nivel (40%), Graduado (20%), Profesión (40%)
+    - Si el nivel no cumple el mínimo, el match es 0 automáticamente.
+    - Si hay múltiples estudios, se retorna el mayor puntaje obtenido.
+    
+    Args:
+        candidato: Instancia de Can101Candidato
+        vacante: Instancia de Cli052Vacante
+        ponderacion_educacion: float, porcentaje del match total para educación (default: 25.0)
+    
+    Returns:
+        dict: {
+            'porcentaje_match': float,  # Porcentaje final
+            'match_interno': float,     # Match interno (0-1)
+            'detalle': {
+                'nivel_estudio': {
+                    'coincide': bool,
+                    'valor': float,
+                    'peso': float
+                },
+                'graduado': {
+                    'coincide': bool,
+                    'valor': float,
+                    'peso': float
+                },
+                'profesion': {
+                    'coincide': bool,
+                    'valor': float,
+                    'peso': float,
+                    'tipo': str  # 'exacta', 'relacionada', 'no_coincide'
+                }
+            },
+            'mejor_educacion': {
+                'id': int,
+                'institucion': str,
+                'puntuacion': float
+            }
+        }
+    """
+    from applications.vacante.models import Cli055ProfesionEstudio
+    
+    # Constantes de ponderación
+    PESO_TOTAL_MATCH_ACADEMICO = ponderacion_educacion
+    PESO_NIVEL_ESTUDIO = 0.40  # 40% del match interno
+    PESO_GRADUADO = 0.20  # 20% del match interno
+    PESO_PROFESION = 0.40  # 40% del match interno
+    
+    # Mapeo de niveles de estudio para comparación jerárquica
+    # Valores más altos = mayor nivel educativo
+    NIVELES_ESTUDIO_ORDEN = {
+        '1': 1,  # Sin estudios
+        '2': 2,  # Primaria
+        '3': 3,  # Secundaria/Bachillerato
+        '4': 4,  # Técnico
+        '5': 5,  # Tecnólogo
+        '6': 6,  # Universitario
+        '7': 7,  # Postgrado
+        '8': 5,  # Diplomado (similar a Tecnólogo)
+        '9': 3,  # Curso (similar a Secundaria)
+    }
+    
+    perfil_vacante = vacante.perfil_vacante
+    if not perfil_vacante:
+        return {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {},
+            'mejor_educacion': None,
+            'mensaje': 'La vacante no tiene perfil académico definido'
+        }
+    
+    # Obtener requisitos de la vacante
+    nivel_estudio_requerido = perfil_vacante.nivel_estudio
+    requiere_graduado = perfil_vacante.estado_estudio  # True/False/None
+    tipo_profesion = perfil_vacante.tipo_profesion  # 'E', 'G', 'L'
+    profesion_especifica = perfil_vacante.profesion_estudio
+    grupo_profesion = perfil_vacante.grupo_profesion
+    profesion_listado = perfil_vacante.profesion_estudio_listado
+    
+    # Obtener estudios del candidato
+    estudios_candidato = Can103Educacion.objects.filter(
+        candidato_id_101=candidato,
+        estado_id_001=1  # Solo estudios activos
+    ).order_by('-fecha_inicial')
+    
+    if not estudios_candidato.exists():
+        return {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {},
+            'mejor_educacion': None,
+            'mensaje': 'El candidato no tiene estudios registrados'
+        }
+    
+    mejor_puntuacion = 0.0
+    mejor_detalle = None
+    mejor_educacion = None
+    
+    # Evaluar cada estudio del candidato
+    for estudio in estudios_candidato:
+        # 1. Evaluar nivel de estudio
+        nivel_candidato = estudio.tipo_estudio
+        nivel_coincide = False
+        nivel_valor = 0.0
+        
+        if nivel_estudio_requerido and nivel_candidato:
+            nivel_requerido_num = NIVELES_ESTUDIO_ORDEN.get(nivel_estudio_requerido, 0)
+            nivel_candidato_num = NIVELES_ESTUDIO_ORDEN.get(nivel_candidato, 0)
+            
+            # El candidato debe tener al menos el nivel requerido
+            if nivel_candidato_num >= nivel_requerido_num:
+                nivel_coincide = True
+                nivel_valor = 1.0
+            else:
+                # Si no cumple el mínimo, el match es 0 automáticamente
+                continue  # Saltar este estudio
+        
+        elif not nivel_estudio_requerido:
+            # Si la vacante no especifica nivel, se considera cumplido
+            nivel_coincide = True
+            nivel_valor = 1.0
+        
+        # 2. Evaluar graduación
+        es_graduado_candidato = estudio.estado_estudios == 'G'
+        graduado_coincide = False
+        graduado_valor = 0.0
+        
+        if requiere_graduado is True:
+            # La vacante requiere graduado
+            graduado_coincide = es_graduado_candidato
+            graduado_valor = 1.0 if es_graduado_candidato else 0.0
+        elif requiere_graduado is False:
+            # La vacante no requiere graduado, siempre coincide
+            graduado_coincide = True
+            graduado_valor = 1.0
+        else:
+            # La vacante no especifica, se considera cumplido
+            graduado_coincide = True
+            graduado_valor = 1.0
+        
+        # 3. Evaluar profesión
+        profesion_coincide = False
+        profesion_valor = 0.0
+        profesion_tipo = 'no_coincide'
+        
+        profesion_candidato = estudio.profesion_estudio
+        
+        if profesion_candidato:
+            if tipo_profesion == 'E':  # Profesión Específica
+                if profesion_especifica:
+                    if profesion_candidato.id == profesion_especifica.id:
+                        profesion_coincide = True
+                        profesion_valor = 1.0
+                        profesion_tipo = 'exacta'
+                    # TODO: Aquí se puede agregar lógica para profesiones relacionadas (0.5)
+                    # Por ahora solo evaluamos coincidencia exacta
+            
+            elif tipo_profesion == 'G':  # Grupo de Profesiones
+                if grupo_profesion:
+                    if profesion_candidato.grupo == grupo_profesion:
+                        profesion_coincide = True
+                        profesion_valor = 1.0
+                        profesion_tipo = 'exacta'
+                    # TODO: Aquí se puede agregar lógica para profesiones relacionadas (0.5)
+            
+            elif tipo_profesion == 'L':  # Listado Personalizado
+                if profesion_listado:
+                    try:
+                        listado_parsed = json.loads(profesion_listado) if isinstance(profesion_listado, str) else profesion_listado
+                        if isinstance(listado_parsed, list):
+                            for prof_item in listado_parsed:
+                                if isinstance(prof_item, dict):
+                                    prof_id = prof_item.get('id')
+                                    prof_nombre = prof_item.get('value', '')
+                                    # Comparar por ID si está disponible
+                                    if prof_id and profesion_candidato.id == prof_id:
+                                        profesion_coincide = True
+                                        profesion_valor = 1.0
+                                        profesion_tipo = 'exacta'
+                                        break
+                                    # Comparar por nombre si no hay ID
+                                    elif prof_nombre and profesion_candidato.nombre.lower() == prof_nombre.lower():
+                                        profesion_coincide = True
+                                        profesion_valor = 1.0
+                                        profesion_tipo = 'exacta'
+                                        break
+                    except (json.JSONDecodeError, TypeError, AttributeError):
+                        pass
+        
+        # Calcular match interno
+        match_interno = (
+            (nivel_valor * PESO_NIVEL_ESTUDIO) +
+            (graduado_valor * PESO_GRADUADO) +
+            (profesion_valor * PESO_PROFESION)
+        )
+        
+        # Escalar al peso real (25%)
+        porcentaje_match = match_interno * PESO_TOTAL_MATCH_ACADEMICO
+        
+        # Guardar el mejor resultado
+        if porcentaje_match > mejor_puntuacion:
+            mejor_puntuacion = porcentaje_match
+            mejor_detalle = {
+                'nivel_estudio': {
+                    'coincide': nivel_coincide,
+                    'valor': round(nivel_valor, 2),
+                    'peso': round(PESO_NIVEL_ESTUDIO, 2),
+                    'nivel_candidato': nivel_candidato,
+                    'nivel_requerido': nivel_estudio_requerido
+                },
+                'graduado': {
+                    'coincide': graduado_coincide,
+                    'valor': round(graduado_valor, 2),
+                    'peso': round(PESO_GRADUADO, 2),
+                    'candidato_graduado': es_graduado_candidato,
+                    'requiere_graduado': requiere_graduado
+                },
+                'profesion': {
+                    'coincide': profesion_coincide,
+                    'valor': round(profesion_valor, 2),
+                    'peso': round(PESO_PROFESION, 2),
+                    'tipo': profesion_tipo,
+                    'profesion_candidato': {
+                        'id': profesion_candidato.id if profesion_candidato else None,
+                        'nombre': profesion_candidato.nombre if profesion_candidato else None
+                    } if profesion_candidato else None
+                }
+            }
+            mejor_educacion = {
+                'id': estudio.id,
+                'institucion': estudio.institucion,
+                'puntuacion': round(porcentaje_match, 2),
+                'match_interno': round(match_interno, 2)
+            }
+    
+    # Calcular match_interno del mejor resultado usando los valores redondeados
+    match_interno_final = 0.0
+    if mejor_detalle:
+        match_interno_final = (
+            mejor_detalle['nivel_estudio']['valor'] * mejor_detalle['nivel_estudio']['peso'] +
+            mejor_detalle['graduado']['valor'] * mejor_detalle['graduado']['peso'] +
+            mejor_detalle['profesion']['valor'] * mejor_detalle['profesion']['peso']
+        )
+        match_interno_final = round(match_interno_final, 2)
+    
+    return {
+        'porcentaje_match': round(mejor_puntuacion, 2),
+        'match_interno': round(match_interno_final, 2),
+        'detalle': mejor_detalle if mejor_detalle else {},
+        'mejor_educacion': mejor_educacion,
+        'peso_total': round(PESO_TOTAL_MATCH_ACADEMICO, 2)
+    }
+
+
+def calcular_match_laboral(candidato, vacante, ponderacion_laboral=25.0):
+    """
+    Calcula el porcentaje de match laboral entre un candidato y una vacante.
+    
+    Reglas:
+    - Compara años de experiencia del candidato con el tiempo_experiencia requerido
+    - Compara cargos desempeñados con el cargo de la vacante
+    - Ponderación: Años de experiencia (50%), Cargo (50%)
+    
+    Args:
+        candidato: Instancia de Can101Candidato
+        vacante: Instancia de Cli052Vacante
+        ponderacion_laboral: float, porcentaje del match total para experiencia laboral (default: 25.0)
+    
+    Returns:
+        dict: {
+            'porcentaje_match': float,  # Porcentaje final
+            'match_interno': float,     # Match interno (0-1)
+            'detalle': {
+                'anos_experiencia': {
+                    'coincide': bool,
+                    'valor': float,
+                    'peso': float,
+                    'anos_candidato': float,
+                    'anos_requeridos': int
+                },
+                'cargo': {
+                    'coincide': bool,
+                    'valor': float,
+                    'peso': float,
+                    'cargos_candidato': list,
+                    'cargo_vacante': str
+                }
+            },
+            'experiencias': list  # Lista de experiencias del candidato
+        }
+    """
+    from datetime import date
+    from applications.candidato.models import Can102Experiencia
+    
+    # Constantes de ponderación
+    PESO_TOTAL_MATCH_LABORAL = ponderacion_laboral
+    PESO_ANOS_EXPERIENCIA = 0.50  # 50% del match interno
+    PESO_CARGO = 0.50  # 50% del match interno
+    
+    # Mapeo de tiempo_experiencia a años requeridos
+    # 6 = Sin Experiencia (0 años), 1 = 1 año, 2 = 2 años, etc.
+    TIEMPO_EXPERIENCIA_MAP = {
+        6: 0,   # Sin Experiencia
+        1: 1,   # 1 año
+        2: 2,   # 2 años
+        3: 3,   # 3 años
+        4: 4,   # 4 años
+        5: 5,   # 5 años o más (mínimo 5)
+    }
+    
+    perfil_vacante = vacante.perfil_vacante
+    if not perfil_vacante:
+        return {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {},
+            'experiencias': [],
+            'mensaje': 'La vacante no tiene perfil definido'
+        }
+    
+    # Obtener requisitos de la vacante
+    tiempo_experiencia_requerido = perfil_vacante.tiempo_experiencia
+    anos_requeridos = TIEMPO_EXPERIENCIA_MAP.get(tiempo_experiencia_requerido, 0) if tiempo_experiencia_requerido else 0
+    
+    cargo_vacante = vacante.cargo
+    cargo_vacante_nombre = cargo_vacante.nombre_cargo if cargo_vacante else None
+    
+    # Obtener experiencias del candidato
+    experiencias_candidato = Can102Experiencia.objects.filter(
+        candidato_id_101=candidato,
+        estado_id_001=1,  # Solo experiencias activas
+        experiencia_laboral=False  # Excluir registros marcados como "sin experiencia"
+    ).order_by('-fecha_inicial')
+    
+    if not experiencias_candidato.exists():
+        return {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {
+                'anos_experiencia': {
+                    'coincide': False,
+                    'valor': 0.0,
+                    'peso': round(PESO_ANOS_EXPERIENCIA, 2),
+                    'anos_candidato': 0.0,
+                    'anos_requeridos': anos_requeridos
+                },
+                'cargo': {
+                    'coincide': False,
+                    'valor': 0.0,
+                    'peso': round(PESO_CARGO, 2),
+                    'cargos_candidato': [],
+                    'cargo_vacante': cargo_vacante_nombre
+                }
+            },
+            'experiencias': [],
+            'mensaje': 'El candidato no tiene experiencias laborales registradas'
+        }
+    
+    # Calcular años totales de experiencia del candidato
+    anos_totales_candidato = 0.0
+    experiencias_json = []
+    cargos_candidato = []
+    
+    fecha_actual = date.today()
+    
+    for experiencia in experiencias_candidato:
+        if experiencia.fecha_inicial:
+            if experiencia.activo or not experiencia.fecha_final:
+                # Si está activo o no tiene fecha final, calcular hasta hoy
+                fecha_fin = fecha_actual
+            else:
+                fecha_fin = experiencia.fecha_final
+            
+            # Calcular diferencia en años (aproximada)
+            diferencia = fecha_fin - experiencia.fecha_inicial
+            anos_experiencia = diferencia.days / 365.25  # Considerar años bisiestos
+            anos_totales_candidato += anos_experiencia
+            
+            experiencias_json.append({
+                'id': experiencia.id,
+                'entidad': experiencia.entidad,
+                'cargo': experiencia.cargo,
+                'fecha_inicial': experiencia.fecha_inicial.strftime('%Y-%m-%d') if experiencia.fecha_inicial else None,
+                'fecha_final': experiencia.fecha_final.strftime('%Y-%m-%d') if experiencia.fecha_final else None,
+                'activo': experiencia.activo,
+                'anos_experiencia': round(anos_experiencia, 2)
+            })
+            
+            if experiencia.cargo:
+                cargos_candidato.append(experiencia.cargo)
+    
+    # Redondear años totales
+    anos_totales_candidato = round(anos_totales_candidato, 2)
+    
+    # 1. Evaluar años de experiencia
+    anos_coincide = False
+    anos_valor = 0.0
+    
+    if tiempo_experiencia_requerido:
+        if tiempo_experiencia_requerido == 6:  # Sin Experiencia
+            # Si requiere sin experiencia, el candidato debe tener 0 años
+            anos_coincide = (anos_totales_candidato == 0)
+            anos_valor = 1.0 if anos_coincide else 0.0
+        elif tiempo_experiencia_requerido == 5:  # 5 años o más
+            # El candidato debe tener al menos 5 años
+            anos_coincide = (anos_totales_candidato >= 5)
+            anos_valor = 1.0 if anos_coincide else 0.0
+        else:
+            # Para otros casos, el candidato debe tener al menos los años requeridos
+            anos_coincide = (anos_totales_candidato >= anos_requeridos)
+            anos_valor = 1.0 if anos_coincide else 0.0
+    else:
+        # Si la vacante no especifica, se considera cumplido
+        anos_coincide = True
+        anos_valor = 1.0
+    
+    # 2. Evaluar cargo
+    cargo_coincide = False
+    cargo_valor = 0.0
+    
+    if cargo_vacante_nombre and cargos_candidato:
+        # Comparar cargos (case-insensitive, buscar coincidencias parciales o exactas)
+        cargo_vacante_lower = cargo_vacante_nombre.lower().strip()
+        
+        for cargo_candidato in cargos_candidato:
+            if cargo_candidato:
+                cargo_candidato_lower = cargo_candidato.lower().strip()
+                # Coincidencia exacta
+                if cargo_candidato_lower == cargo_vacante_lower:
+                    cargo_coincide = True
+                    cargo_valor = 1.0
+                    break
+                # Coincidencia parcial (el cargo del candidato contiene el de la vacante o viceversa)
+                elif cargo_vacante_lower in cargo_candidato_lower or cargo_candidato_lower in cargo_vacante_lower:
+                    cargo_coincide = True
+                    cargo_valor = 0.5  # Coincidencia parcial
+                    break
+    elif not cargo_vacante_nombre:
+        # Si la vacante no especifica cargo, se considera cumplido
+        cargo_coincide = True
+        cargo_valor = 1.0
+    
+    # Calcular match interno
+    match_interno = (
+        (anos_valor * PESO_ANOS_EXPERIENCIA) +
+        (cargo_valor * PESO_CARGO)
+    )
+    
+    # Escalar al peso real (por ahora usamos 100% como base)
+    porcentaje_match = match_interno * PESO_TOTAL_MATCH_LABORAL
+    
+    return {
+        'porcentaje_match': round(porcentaje_match, 2),
+        'match_interno': round(match_interno, 2),
+        'detalle': {
+            'anos_experiencia': {
+                'coincide': anos_coincide,
+                'valor': round(anos_valor, 2),
+                'peso': round(PESO_ANOS_EXPERIENCIA, 2),
+                'anos_candidato': anos_totales_candidato,
+                'anos_requeridos': anos_requeridos,
+                'tiempo_experiencia_requerido': tiempo_experiencia_requerido
+            },
+            'cargo': {
+                'coincide': cargo_coincide,
+                'valor': round(cargo_valor, 2),
+                'peso': round(PESO_CARGO, 2),
+                'cargos_candidato': cargos_candidato,
+                'cargo_vacante': cargo_vacante_nombre
+            }
+        },
+        'experiencias': experiencias_json,
+        'anos_totales': anos_totales_candidato,
+        'peso_total': round(PESO_TOTAL_MATCH_LABORAL, 2)
+    }
+
+
+def calcular_match_idioma(candidato, vacante, ponderacion_idioma=25.0):
+    """
+    Calcula el porcentaje de match de idiomas entre un candidato y una vacante.
+    
+    Reglas:
+    - El factor "Idiomas" representa el porcentaje especificado del match total (ej. 25%).
+    - Ponderación interna: Coincidencia de idioma (50%), Nivel igual o superior (50%).
+    - Si hay múltiples idiomas requeridos, se evalúa cada uno y se retorna el mejor match.
+    - Si el candidato tiene múltiples idiomas, se compara cada uno con los requeridos.
+    
+    Args:
+        candidato: Instancia de Can101Candidato
+        vacante: Instancia de Cli052Vacante
+        ponderacion_idioma: Porcentaje del match total que representa los idiomas (default: 25.0)
+    
+    Returns:
+        dict: {
+            'porcentaje_match': float,  # Porcentaje final (0-25)
+            'match_interno': float,     # Match interno (0-1)
+            'detalle': {
+                'idioma': {
+                    'coincide': bool,
+                    'valor': float,
+                    'peso': float,
+                    'idiomas_candidato': list,
+                    'idiomas_vacante': list
+                },
+                'nivel': {
+                    'coincide': bool,
+                    'valor': float,
+                    'peso': float,
+                    'niveles_candidato': list,
+                    'niveles_vacante': list
+                }
+            },
+            'mejor_match': {
+                'idioma_candidato': str,
+                'idioma_vacante': str,
+                'nivel_candidato': str,
+                'nivel_vacante': str,
+                'puntuacion': float
+            },
+            'peso_total': float
+        }
+    """
+    from applications.services.choices import NIVEL_IDIOMA_CHOICES_STATIC
+    
+    PESO_TOTAL_MATCH_IDIOMA = ponderacion_idioma
+    PESO_IDIOMA = 0.50  # 50% del match interno
+    PESO_NIVEL = 0.50  # 50% del match interno
+    
+    # Orden jerárquico de niveles de idioma (de menor a mayor)
+    NIVELES_IDIOMA_ORDEN = {
+        'A1': 1,
+        'A2': 2,
+        'B1': 3,
+        'B2': 4,
+        'C1': 5,
+        'C2': 6
+    }
+    
+    perfil_vacante = vacante.perfil_vacante
+    if not perfil_vacante:
+        return {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {},
+            'mejor_match': None,
+            'peso_total': round(PESO_TOTAL_MATCH_IDIOMA, 2),
+            'mensaje': 'La vacante no tiene perfil de idiomas definido'
+        }
+    
+    # Obtener idiomas requeridos por la vacante
+    idiomas_vacante = perfil_vacante.idiomas if perfil_vacante.idiomas else []
+    
+    if not idiomas_vacante:
+        return {
+            'porcentaje_match': 0.0,  # Si no requiere idiomas, la ponderación es 0
+            'match_interno': 0.0,
+            'detalle': {},
+            'mejor_match': None,
+            'peso_total': round(PESO_TOTAL_MATCH_IDIOMA, 2),
+            'mensaje': 'La vacante no requiere idiomas específicos'
+        }
+    
+    # Obtener idiomas del candidato
+    idiomas_candidato = candidato.idiomas if candidato.idiomas else []
+    
+    if not idiomas_candidato:
+        return {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {},
+            'mejor_match': None,
+            'peso_total': round(PESO_TOTAL_MATCH_IDIOMA, 2),
+            'mensaje': 'El candidato no tiene idiomas registrados'
+        }
+    
+    # Normalizar idiomas de la vacante
+    idiomas_vacante_list = []
+    for idioma_vac in idiomas_vacante:
+        if isinstance(idioma_vac, dict):
+            idioma_codigo = idioma_vac.get('idioma', '')
+            nivel_requerido = idioma_vac.get('nivel', '')
+            if idioma_codigo and nivel_requerido:
+                idiomas_vacante_list.append({
+                    'idioma': idioma_codigo,
+                    'nivel': nivel_requerido
+                })
+    
+    if not idiomas_vacante_list:
+        return {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {},
+            'mejor_match': None,
+            'peso_total': round(PESO_TOTAL_MATCH_IDIOMA, 2),
+            'mensaje': 'La vacante no tiene idiomas válidos definidos'
+        }
+    
+    # Normalizar idiomas del candidato
+    idiomas_candidato_list = []
+    for idioma_cand in idiomas_candidato:
+        if isinstance(idioma_cand, dict):
+            idioma_codigo = idioma_cand.get('id') or idioma_cand.get('idioma', '')
+            nivel_candidato = idioma_cand.get('nivel', '')
+            if idioma_codigo and nivel_candidato:
+                idiomas_candidato_list.append({
+                    'idioma': idioma_codigo,
+                    'nivel': nivel_candidato
+                })
+    
+    if not idiomas_candidato_list:
+        return {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {},
+            'mejor_match': None,
+            'peso_total': round(PESO_TOTAL_MATCH_IDIOMA, 2),
+            'mensaje': 'El candidato no tiene idiomas válidos registrados'
+        }
+    
+    mejor_puntuacion = 0.0
+    mejor_detalle = None
+    mejor_match_info = None
+    
+    # Evaluar cada combinación de idioma requerido vs idioma del candidato
+    for idioma_vac in idiomas_vacante_list:
+        idioma_vac_codigo = idioma_vac['idioma']
+        nivel_vac_requerido = idioma_vac['nivel']
+        nivel_vac_orden = NIVELES_IDIOMA_ORDEN.get(nivel_vac_requerido, 0)
+        
+        for idioma_cand in idiomas_candidato_list:
+            idioma_cand_codigo = idioma_cand['idioma']
+            nivel_cand = idioma_cand['nivel']
+            nivel_cand_orden = NIVELES_IDIOMA_ORDEN.get(nivel_cand, 0)
+            
+            # 1. PRIMERO: Evaluar coincidencia de idioma
+            idioma_coincide = (idioma_vac_codigo == idioma_cand_codigo)
+            idioma_valor = 1.0 if idioma_coincide else 0.0
+            
+            # 2. DESPUÉS: Evaluar nivel (SOLO si el idioma coincide)
+            nivel_coincide = False
+            nivel_valor = 0.0
+            
+            if idioma_coincide:
+                # Solo si hay coincidencia de idioma, entonces cotejar el nivel
+                # El nivel del candidato debe ser igual o superior al requerido
+                if nivel_cand_orden >= nivel_vac_orden:
+                    nivel_coincide = True
+                    nivel_valor = 1.0
+                else:
+                    nivel_coincide = False
+                    nivel_valor = 0.0
+            else:
+                # Si no hay coincidencia de idioma, el nivel no se evalúa y es 0
+                nivel_coincide = False
+                nivel_valor = 0.0
+            
+            # Calcular match interno para esta combinación
+            match_interno = (
+                (idioma_valor * PESO_IDIOMA) +
+                (nivel_valor * PESO_NIVEL)
+            )
+            
+            # Escalar al peso real (25%)
+            porcentaje_match = match_interno * PESO_TOTAL_MATCH_IDIOMA
+            
+            # Guardar el mejor resultado (solo si hay alguna coincidencia real)
+            if porcentaje_match > mejor_puntuacion:
+                mejor_puntuacion = porcentaje_match
+                mejor_detalle = {
+                    'idioma': {
+                        'coincide': idioma_coincide,
+                        'valor': round(idioma_valor, 2),
+                        'peso': round(PESO_IDIOMA, 2),
+                        'idiomas_candidato': [idioma_cand_codigo],
+                        'idiomas_vacante': [idioma_vac_codigo]
+                    },
+                    'nivel': {
+                        'coincide': nivel_coincide,
+                        'valor': round(nivel_valor, 2),
+                        'peso': round(PESO_NIVEL, 2),
+                        'niveles_candidato': [nivel_cand],
+                        'niveles_vacante': [nivel_vac_requerido]
+                    }
+                }
+                mejor_match_info = {
+                    'idioma_candidato': idioma_cand_codigo,
+                    'idioma_vacante': idioma_vac_codigo,
+                    'nivel_candidato': nivel_cand,
+                    'nivel_vacante': nivel_vac_requerido,
+                    'puntuacion': round(porcentaje_match, 2)
+                }
+    
+    # Si no hubo ninguna coincidencia (mejor_puntuacion sigue en 0.0), retornar 0
+    if mejor_puntuacion == 0.0:
+        return {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {},
+            'mejor_match': None,
+            'peso_total': round(PESO_TOTAL_MATCH_IDIOMA, 2),
+            'mensaje': 'No se encontraron coincidencias de idiomas entre el candidato y la vacante'
+        }
+    
+    # Calcular match_interno del mejor resultado
+    match_interno_final = 0.0
+    if mejor_detalle:
+        match_interno_final = (
+            mejor_detalle['idioma']['valor'] * mejor_detalle['idioma']['peso'] +
+            mejor_detalle['nivel']['valor'] * mejor_detalle['nivel']['peso']
+        )
+    
+    return {
+        'porcentaje_match': round(mejor_puntuacion, 2),
+        'match_interno': round(match_interno_final, 2),
+        'detalle': mejor_detalle if mejor_detalle else {},
+        'mejor_match': mejor_match_info,
+        'peso_total': round(PESO_TOTAL_MATCH_IDIOMA, 2)
+    }
+
+
+def get_match_initial(candidato_id, vacante_id):
+    candidato = get_object_or_404(Can101Candidato, pk=candidato_id)
+    vacante = get_object_or_404(Cli052Vacante, pk=vacante_id)
+
+    aplicacion_vacante = Cli056AplicacionVacante.objects.get(candidato_101=candidato, vacante_id_052=vacante)
+
+    # Definir ponderaciones para cada sección del match
+    ponderacion_educacion = 25.0
+    ponderacion_laboral = 25.0
+    ponderacion_idioma = 25.0
+    ponderacion_ubicacion = 25.0
+
+    # INSERT_YOUR_CODE
+    # Traer registros académicos del candidato en un JSON
+    educaciones = Can103Educacion.objects.filter(candidato_id_101=candidato).order_by('-fecha_inicial')
+    
+    educaciones_json = []
+    for educacion in educaciones:
+        educacion_data = {
+            'id': educacion.id,
+            'institucion': educacion.institucion,
+            'fecha_inicial': educacion.fecha_inicial.strftime('%Y-%m-%d') if educacion.fecha_inicial else None,
+            'fecha_final': educacion.fecha_final.strftime('%Y-%m-%d') if educacion.fecha_final else None,
+            'grado_en': educacion.grado_en,
+            'titulo': educacion.titulo,
+            'carrera': educacion.carrera,
+            'fortaleza_adquiridas': educacion.fortaleza_adquiridas,
+            'tipo_estudio': educacion.tipo_estudio,
+            'tipo_estudio_display': educacion.mostrar_tipo_estudio(),
+            'estado_estudios': educacion.estado_estudios,
+            'estado_estudios_display': educacion.mostrar_estado_estudios(),
+            'certificacion': educacion.certificacion.url if educacion.certificacion else None,
+            'ciudad': {
+                'id': educacion.ciudad_id_004.id if educacion.ciudad_id_004 else None,
+                'nombre': str(educacion.ciudad_id_004) if educacion.ciudad_id_004 else None
+            },
+            'estado': {
+                'id': educacion.estado_id_001.id if educacion.estado_id_001 else None,
+                'nombre': str(educacion.estado_id_001) if educacion.estado_id_001 else None
+            },
+            'profesion_estudio': {
+                'id': educacion.profesion_estudio.id if educacion.profesion_estudio else None,
+                'nombre': educacion.profesion_estudio.nombre if educacion.profesion_estudio else None
+            }
+        }
+        educaciones_json.append(educacion_data)
+    
+    # Traer información académica de la vacante desde el perfil_vacante
+    perfil_vacante = vacante.perfil_vacante
+    info_academica_vacante = {}
+    nivel_estudio_display = None  # Inicializar para evitar errores
+    profesion_estudio_listado_parsed = None  # Inicializar para evitar errores
+    
+    if perfil_vacante:
+        # Obtener el display del nivel de estudio
+        from applications.services.choices import NIVEL_ESTUDIO_CHOICES_STATIC, TIPO_PROFESION_CHOICES_STATIC
+        nivel_estudio_display = dict(NIVEL_ESTUDIO_CHOICES_STATIC).get(perfil_vacante.nivel_estudio, None) if perfil_vacante.nivel_estudio else None
+        tipo_profesion_display = dict(TIPO_PROFESION_CHOICES_STATIC).get(perfil_vacante.tipo_profesion, None) if perfil_vacante.tipo_profesion else None
+        
+        # Parsear profesion_estudio_listado si existe
+        profesion_estudio_listado_parsed = None
+        if perfil_vacante.profesion_estudio_listado:
+            try:
+                profesion_estudio_listado_parsed = json.loads(perfil_vacante.profesion_estudio_listado)
+            except (json.JSONDecodeError, TypeError):
+                profesion_estudio_listado_parsed = None
+        
+        info_academica_vacante = {
+            'profesion_estudio': {
+                'id': perfil_vacante.profesion_estudio.id if perfil_vacante.profesion_estudio else None,
+                'nombre': perfil_vacante.profesion_estudio.nombre if perfil_vacante.profesion_estudio else None
+            },
+            'grupo_profesion': {
+                'id': perfil_vacante.grupo_profesion.id if perfil_vacante.grupo_profesion else None,
+                'nombre': perfil_vacante.grupo_profesion.nombre if perfil_vacante.grupo_profesion else None
+            },
+            'profesion_estudio_listado': profesion_estudio_listado_parsed,
+            'nivel_estudio': perfil_vacante.nivel_estudio,
+            'nivel_estudio_display': nivel_estudio_display,
+            'cantidad_semestres': perfil_vacante.cantidad_semestres,
+            'estado_estudio': perfil_vacante.estado_estudio,
+            'tipo_profesion': perfil_vacante.tipo_profesion,
+            'tipo_profesion_display': tipo_profesion_display,
+            'estudio_complementario': perfil_vacante.estudio_complementario if perfil_vacante.estudio_complementario else None
+        }
+    
+    # Información académica adicional de la vacante (no del perfil)
+    info_academica_vacante_adicional = {
+        'estudios_complementarios': vacante.estudios_complementarios,
+        'estudios_complementarios_certificado': vacante.estudios_complementarios_certificado
+    }
+    
+    # Validar coincidencias entre estudios del candidato y requisitos de la vacante
+    coincidencias_estudios = []
+    
+    if perfil_vacante and educaciones_json:
+        nivel_estudio_vacante = perfil_vacante.nivel_estudio
+        nivel_estudio_display_vacante = nivel_estudio_display
+        estado_estudio_vacante = perfil_vacante.estado_estudio  # Boolean: True = graduado, False = no graduado
+        tipo_profesion_vacante = perfil_vacante.tipo_profesion  # 'E' = Específica, 'G' = Grupo, 'L' = Listado
+        
+        for educacion in educaciones_json:
+            tipo_estudio_candidato = educacion.get('tipo_estudio')
+            tipo_estudio_display_candidato = educacion.get('tipo_estudio_display')
+            estado_estudios_candidato = educacion.get('estado_estudios')  # 'G' = Graduado, 'C' = En curso, 'A' = Aplazado
+            es_graduado_candidato = estado_estudios_candidato == 'G'
+            
+            # Evaluar coincidencia de tipo de estudio
+            coincide_tipo_estudio = False
+            if nivel_estudio_vacante and tipo_estudio_candidato:
+                coincide_tipo_estudio = (tipo_estudio_candidato == nivel_estudio_vacante)
+            
+            # Evaluar coincidencia de graduación
+            coincide_graduado = False
+            if estado_estudio_vacante is not None:
+                # Si la vacante requiere graduado (True), el candidato debe estar graduado ('G')
+                # Si la vacante no requiere graduado (False), no importa el estado del candidato
+                if estado_estudio_vacante:
+                    coincide_graduado = es_graduado_candidato
+                else:
+                    # Si la vacante no requiere graduado, siempre coincide
+                    coincide_graduado = True
+            else:
+                # Si la vacante no especifica estado, no se evalúa
+                coincide_graduado = None
+            
+            # Evaluar coincidencia de profesión de estudio
+            profesion_estudio_candidato = educacion.get('profesion_estudio')
+            profesion_id_candidato = profesion_estudio_candidato.get('id') if profesion_estudio_candidato else None
+            profesion_nombre_candidato = profesion_estudio_candidato.get('nombre') if profesion_estudio_candidato else None
+            
+            coincide_profesion = False
+            tipo_profesion_vacante_info = None
+            profesion_vacante_info = None
+            
+            if tipo_profesion_vacante and profesion_id_candidato:
+                # Obtener el objeto de profesión del candidato para validaciones
+                from applications.vacante.models import Cli055ProfesionEstudio
+                try:
+                    profesion_candidato_obj = Cli055ProfesionEstudio.objects.get(id=profesion_id_candidato)
+                except Cli055ProfesionEstudio.DoesNotExist:
+                    profesion_candidato_obj = None
+                
+                if tipo_profesion_vacante == 'E':  # Profesión Específica
+                    profesion_vacante_obj = perfil_vacante.profesion_estudio
+                    if profesion_vacante_obj and profesion_candidato_obj:
+                        coincide_profesion = (profesion_id_candidato == profesion_vacante_obj.id)
+                        tipo_profesion_vacante_info = 'Específica'
+                        profesion_vacante_info = {
+                            'id': profesion_vacante_obj.id,
+                            'nombre': profesion_vacante_obj.nombre,
+                            'tipo': 'Específica'
+                        }
+                
+                elif tipo_profesion_vacante == 'G':  # Grupo de Profesiones
+                    grupo_profesion_vacante = perfil_vacante.grupo_profesion
+                    if grupo_profesion_vacante and profesion_candidato_obj:
+                        coincide_profesion = (profesion_candidato_obj.grupo == grupo_profesion_vacante)
+                        tipo_profesion_vacante_info = 'Grupo'
+                        profesion_vacante_info = {
+                            'id': grupo_profesion_vacante.id,
+                            'nombre': grupo_profesion_vacante.nombre,
+                            'tipo': 'Grupo'
+                        }
+                
+                elif tipo_profesion_vacante == 'L':  # Listado Personalizado
+                    profesion_listado_parsed = profesion_estudio_listado_parsed
+                    if profesion_listado_parsed:
+                        # El listado puede ser una lista de objetos con 'value' e 'id'
+                        if isinstance(profesion_listado_parsed, list):
+                            # Buscar coincidencia por ID o por nombre
+                            for prof_item in profesion_listado_parsed:
+                                if isinstance(prof_item, dict):
+                                    prof_id = prof_item.get('id')
+                                    prof_nombre = prof_item.get('value', '')
+                                    # Comparar por ID si está disponible, sino por nombre
+                                    if prof_id and profesion_id_candidato:
+                                        if prof_id == profesion_id_candidato:
+                                            coincide_profesion = True
+                                            break
+                                    elif prof_nombre and profesion_nombre_candidato:
+                                        if prof_nombre.lower() == profesion_nombre_candidato.lower():
+                                            coincide_profesion = True
+                                            break
+                        tipo_profesion_vacante_info = 'Listado'
+                        profesion_vacante_info = {
+                            'listado': profesion_listado_parsed,
+                            'tipo': 'Listado'
+                        }
+            
+            # Determinar si hay coincidencia general
+            coincide_general = False
+            if nivel_estudio_vacante:
+                # Si hay requisito de nivel de estudio, debe coincidir
+                if coincide_tipo_estudio:
+                    if estado_estudio_vacante is not None:
+                        coincide_general = coincide_graduado
+                    else:
+                        coincide_general = True
+            else:
+                # Si no hay requisito de nivel de estudio, solo evaluar graduación si aplica
+                if estado_estudio_vacante is not None:
+                    coincide_general = coincide_graduado
+                else:
+                    coincide_general = None
+            
+            coincidencia = {
+                'educacion_id': educacion.get('id'),
+                'institucion': educacion.get('institucion'),
+                'candidato': {
+                    'tipo_estudio': tipo_estudio_candidato,
+                    'tipo_estudio_display': tipo_estudio_display_candidato,
+                    'estado_estudios': estado_estudios_candidato,
+                    'estado_estudios_display': educacion.get('estado_estudios_display'),
+                    'es_graduado': es_graduado_candidato,
+                    'profesion_estudio': {
+                        'id': profesion_id_candidato,
+                        'nombre': profesion_nombre_candidato
+                    }
+                },
+                'vacante': {
+                    'nivel_estudio': nivel_estudio_vacante,
+                    'nivel_estudio_display': nivel_estudio_display_vacante,
+                    'estado_estudio': estado_estudio_vacante,
+                    'requiere_graduado': estado_estudio_vacante if estado_estudio_vacante is not None else None,
+                    'tipo_profesion': tipo_profesion_vacante,
+                    'profesion_estudio': profesion_vacante_info
+                },
+                'coincidencias': {
+                    'tipo_estudio': {
+                        'coincide': coincide_tipo_estudio,
+                        'candidato': tipo_estudio_display_candidato,
+                        'vacante': nivel_estudio_display_vacante
+                    },
+                    'graduado': {
+                        'coincide': coincide_graduado,
+                        'candidato_graduado': es_graduado_candidato,
+                        'vacante_requiere_graduado': estado_estudio_vacante if estado_estudio_vacante is not None else None
+                    },
+                    'profesion_estudio': {
+                        'coincide': coincide_profesion,
+                        'candidato': {
+                            'id': profesion_id_candidato,
+                            'nombre': profesion_nombre_candidato
+                        },
+                        'vacante': {
+                            'tipo': tipo_profesion_vacante_info,
+                            'requisito': profesion_vacante_info
+                        }
+                    }
+                },
+                'coincide_general': coincide_general
+            }
+            
+            coincidencias_estudios.append(coincidencia)
+    
+    # Calcular el match académico usando la función especializada
+    resultado_match_academico = calcular_match_academico(candidato, vacante, ponderacion_educacion)
+    
+    # Calcular el match laboral usando la función especializada
+    resultado_match_laboral = calcular_match_laboral(candidato, vacante, ponderacion_laboral)
+    
+    # Calcular el match de idiomas usando la función especializada
+    resultado_match_idioma = calcular_match_idioma(candidato, vacante, ponderacion_idioma)
+    
+    # Combinar toda la información académica en un JSON estructurado con tags principales
+    info_academica_completa = {
+        'educacion': {
+            'candidato': {
+                'educaciones': educaciones_json
+            },
+            'vacante': {
+                'perfil_academico': info_academica_vacante,
+                'estudios_complementarios': info_academica_vacante_adicional
+            },
+            'coincidencias_estudios': coincidencias_estudios,
+            'match_academico': resultado_match_academico,
+            'ponderacion': round(resultado_match_academico.get('porcentaje_match', 0.0), 2)
+        },
+        'laboral': {
+            'candidato': {
+                'experiencias': resultado_match_laboral.get('experiencias', []),
+                'anos_totales': resultado_match_laboral.get('anos_totales', 0.0)
+            },
+            'vacante': {
+                'tiempo_experiencia_requerido': resultado_match_laboral.get('detalle', {}).get('anos_experiencia', {}).get('tiempo_experiencia_requerido'),
+                'anos_requeridos': resultado_match_laboral.get('detalle', {}).get('anos_experiencia', {}).get('anos_requeridos'),
+                'cargo': resultado_match_laboral.get('detalle', {}).get('cargo', {}).get('cargo_vacante')
+            },
+            'match_laboral': resultado_match_laboral,
+            'ponderacion': round(resultado_match_laboral.get('porcentaje_match', 0.0), 2)
+        },
+        'idioma': {
+            'candidato': {
+                'idiomas': candidato.idiomas if candidato.idiomas else []
+            },
+            'vacante': {
+                'idiomas': perfil_vacante.idiomas if perfil_vacante and perfil_vacante.idiomas else []
+            },
+            'match_idioma': resultado_match_idioma,
+            'ponderacion': round(resultado_match_idioma.get('porcentaje_match', 0.0), 2)
+        },
+        'ubicacion': {
+            'estado': 'pendiente',
+            'mensaje': 'Información de ubicación pendiente de implementar'
+        }
+    }
+    
+    
+
+    # Guardar el JSON de educación en el campo json_match_inicial de la aplicación de vacante
+    
+
+    # Retornar el JSON con la información académica completa
+    info_academica_json = json.dumps(info_academica_completa, indent=4, ensure_ascii=False, default=str)
+    
+    return info_academica_json

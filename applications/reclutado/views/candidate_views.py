@@ -9,7 +9,7 @@ from applications.services.service_vacanty import query_vacanty_with_skills_and_
 from applications.vacante.models import Cli052Vacante
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 from django.contrib import messages
-from applications.vacante.views.common_view import get_match
+from applications.vacante.views.common_view import get_match, get_match_initial
 from applications.usuarios.models import UsuarioBase
 
 def confirm_apply_vacancy_recruited(request, pk):
@@ -51,6 +51,7 @@ def confirm_apply_vacancy_recruited(request, pk):
             match_candidato_vacante = get_match(candidato.id, pk)
 
             asignacion_vacante.json_match = match_candidato_vacante
+            # asignacion_vacante.json_match_inicial = get_match_initial(candidato.id, pk)
             asignacion_vacante.save()
 
             #funcion para crear registro en el historial y actualizar estado de la aplicacion de la vcatente
@@ -125,3 +126,21 @@ def apply_vacancy_recruited_candidate(request, pk):
     messages.success(request, 'Aplicación a la vacante realizada con éxito.')
     
     return redirect('reclutados:reclutados_confirmar_aplicar_candidato', pk=pk)
+
+
+
+def test_match(request, pk):    
+
+    aplicacion_vacante = get_object_or_404(Cli056AplicacionVacante, pk=pk)
+    
+    candidato = aplicacion_vacante.candidato_101
+    vacante = aplicacion_vacante.vacante_id_052
+
+    json_match_inicial = get_match_initial(candidato.id, vacante.id)
+
+    context = {
+        'json_match_inicial': json_match_inicial,
+    }
+
+    return render(request, 'admin/test_dev/test_match_initial.html', context)
+
