@@ -108,11 +108,11 @@ def vacancies_assigned_recruiter_detail(request, pk, vacante_id):
         modal_id='modalAsignarEntrevistas'  # ID del modal para el dropdown-parent
     )
     
-    # Agrupar reclutados por estado de reclutamiento
-    reclutados_recibido = [r for r in reclutados if r.estado_reclutamiento == 1]
-    reclutados_seleccionado = [r for r in reclutados if r.estado_reclutamiento == 2]
-    reclutados_finalizalista = [r for r in reclutados if r.estado_reclutamiento == 3]
-    reclutados_descartado = [r for r in reclutados if r.estado_reclutamiento == 4]
+    # Agrupar reclutados por estado de reclutamiento y ordenar por fecha de aplicación ascendente
+    reclutados_recibido = sorted([r for r in reclutados if r.estado_reclutamiento == 1], key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
+    reclutados_seleccionado = sorted([r for r in reclutados if r.estado_reclutamiento == 2], key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
+    reclutados_finalizalista = sorted([r for r in reclutados if r.estado_reclutamiento == 3], key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
+    reclutados_descartado = sorted([r for r in reclutados if r.estado_reclutamiento == 4], key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
     
     # Procesar formulario de búsqueda para Recibidos
     form_busqueda = BusquedaRecibidosForm(request.GET)
@@ -205,7 +205,7 @@ def vacancies_assigned_recruiter_detail(request, pk, vacante_id):
                     reclutados_recibido_filtrados_puntaje.append(r)
             reclutados_recibido_filtrados = reclutados_recibido_filtrados_puntaje
         
-        reclutados_recibido = reclutados_recibido_filtrados
+        reclutados_recibido = sorted(reclutados_recibido_filtrados, key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
     
     context = {
         'data': data,
@@ -256,6 +256,19 @@ def detail_recruited(request, pk):
     else:
         json_match = {}
     
+    # Obtener el JSON match inicial
+    json_match_inicial_raw = asignacion_vacante.json_match_inicial
+    if json_match_inicial_raw:
+        try:
+            if isinstance(json_match_inicial_raw, str):
+                json_match_inicial = json.loads(json_match_inicial_raw)
+            else:
+                json_match_inicial = json_match_inicial_raw
+        except (json.JSONDecodeError, TypeError):
+            json_match_inicial = {}
+    else:
+        json_match_inicial = {}
+    
     # Obtener historial de cambios de estado
     registro_reclutamiento = asignacion_vacante.registro_reclutamiento
     historial_estados = []
@@ -286,6 +299,44 @@ def detail_recruited(request, pk):
     
     # Obtener las preguntas originales de la vacante para mostrar el contexto
     preguntas_vacante = get_vacanty_questions(vacante.id)
+    
+    # Obtener candidatos anterior y siguiente con el mismo estado de reclutamiento, ordenados por fecha de aplicación
+    estado_actual = asignacion_vacante.estado_reclutamiento
+    candidato_anterior = None
+    candidato_siguiente = None
+    
+    # Obtener todos los candidatos con el mismo estado de reclutamiento y la misma vacante, ordenados por fecha de aplicación
+    candidatos_mismo_estado = Cli056AplicacionVacante.objects.filter(
+        vacante_id_052=vacante,
+        estado_reclutamiento=estado_actual
+    ).order_by('fecha_aplicacion', 'id')  # Ordenar por fecha, y si hay empate, por ID
+    
+    # Obtener el candidato anterior (fecha anterior o misma fecha con ID menor)
+    fecha_actual = asignacion_vacante.fecha_aplicacion
+    if fecha_actual:
+        candidato_anterior_qs = candidatos_mismo_estado.filter(
+            Q(fecha_aplicacion__lt=fecha_actual) | 
+            (Q(fecha_aplicacion=fecha_actual) & Q(id__lt=asignacion_vacante.id))
+        ).order_by('-fecha_aplicacion', '-id')
+        if candidato_anterior_qs.exists():
+            candidato_anterior = candidato_anterior_qs.first()
+        
+        # Obtener el candidato siguiente (fecha posterior o misma fecha con ID mayor)
+        candidato_siguiente_qs = candidatos_mismo_estado.filter(
+            Q(fecha_aplicacion__gt=fecha_actual) | 
+            (Q(fecha_aplicacion=fecha_actual) & Q(id__gt=asignacion_vacante.id))
+        ).order_by('fecha_aplicacion', 'id')
+        if candidato_siguiente_qs.exists():
+            candidato_siguiente = candidato_siguiente_qs.first()
+    else:
+        # Si no hay fecha de aplicación, ordenar solo por ID
+        candidato_anterior_qs = candidatos_mismo_estado.filter(id__lt=asignacion_vacante.id).order_by('-id')
+        if candidato_anterior_qs.exists():
+            candidato_anterior = candidato_anterior_qs.first()
+        
+        candidato_siguiente_qs = candidatos_mismo_estado.filter(id__gt=asignacion_vacante.id).order_by('id')
+        if candidato_siguiente_qs.exists():
+            candidato_siguiente = candidato_siguiente_qs.first()
     
     # Inicializar formulario
     form = ActualizarEstadoReclutadoForm(estado_actual=asignacion_vacante.estado_reclutamiento)
@@ -334,10 +385,13 @@ def detail_recruited(request, pk):
         'vacante': vacante,
         'info_detalle_candidato': info_detalle_candidato,
         'json_match': json_match,
+        'json_match_inicial': json_match_inicial,
         'form': form,
         'historial_estados': historial_estados,
         'preguntas_reclutamiento': preguntas_reclutamiento,
         'preguntas_vacante': preguntas_vacante,
+        'candidato_anterior': candidato_anterior,
+        'candidato_siguiente': candidato_siguiente,
     }
     
     return render(request, 'admin/recruiter/client_recruiter/detail_recruited.html', context)

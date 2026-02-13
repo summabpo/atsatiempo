@@ -11,7 +11,34 @@ Detalle Candidato - Reclutador
 {% block content %}
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-		<h3 class="mb-0" style="color: #B10022;">DETALLE CANDIDATO</h3>
+		<div class="d-flex align-items-center gap-3">
+			<h3 class="mb-0" style="color: #B10022;">DETALLE CANDIDATO</h3>
+			<!-- Botones de navegación -->
+			<div class="d-flex gap-2">
+				{% if candidato_anterior %}
+				<a href="{% url 'reclutados:reclutados_detalle_reclutador' candidato_anterior.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center" title="Candidato Anterior">
+					<i class="ri-arrow-left-line me-2"></i>
+					<span>Anterior</span>
+				</a>
+				{% else %}
+				<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center" disabled title="No hay candidato anterior">
+					<i class="ri-arrow-left-line me-2"></i>
+					<span>Anterior</span>
+				</button>
+				{% endif %}
+				{% if candidato_siguiente %}
+				<a href="{% url 'reclutados:reclutados_detalle_reclutador' candidato_siguiente.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center" title="Candidato Siguiente">
+					<span>Siguiente</span>
+					<i class="ri-arrow-right-line ms-2"></i>
+				</a>
+				{% else %}
+				<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center" disabled title="No hay candidato siguiente">
+					<span>Siguiente</span>
+					<i class="ri-arrow-right-line ms-2"></i>
+				</button>
+				{% endif %}
+			</div>
+		</div>
 		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
 			<ol class="breadcrumb align-items-center mb-0 lh-1">
 				<li class="breadcrumb-item">
@@ -165,6 +192,9 @@ Detalle Candidato - Reclutador
 						<li class="nav-item" role="presentation">
 							<button class="nav-link" id="match-tab" data-bs-toggle="tab" data-bs-target="#match-tab-pane" type="button" role="tab" aria-controls="match-tab-pane" aria-selected="false">Match Candidato Vacante</button>
 						</li>
+						<li class="nav-item" role="presentation">
+							<button class="nav-link" id="match-inicial-tab" data-bs-toggle="tab" data-bs-target="#match-inicial-tab-pane" type="button" role="tab" aria-controls="match-inicial-tab-pane" aria-selected="false">Match Inicial</button>
+						</li>
 					</ul>
 					<div class="tab-content" id="myTabContent">
 						<!-- Tab Perfil -->
@@ -184,7 +214,7 @@ Detalle Candidato - Reclutador
 											<h5 class="fs-14 fw-semibold mb-3 text-primary">Información de Contacto</h5>
 											{% if candidato.hoja_de_vida %}
 											<div class="mb-3">
-												<button type="button" class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#modalHojaVida">
+												<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" data-bs-toggle="modal" data-bs-target="#modalHojaVida">
 													<i class="material-symbols-outlined me-2" style="vertical-align: middle;">description</i>
 													Ver Hoja de Vida
 												</button>
@@ -346,6 +376,341 @@ Detalle Candidato - Reclutador
 								</div>
 							{% endif %}
 						</div>
+						<!-- Tab Match Inicial -->
+						<div class="tab-pane fade" id="match-inicial-tab-pane" role="tabpanel" aria-labelledby="match-inicial-tab" tabindex="0">
+							{% if json_match_inicial %}
+								<!-- Resumen de Ponderaciones -->
+								{% if json_match_inicial.ponderaciones %}
+								<div class="card bg-white border-0 rounded-3 mb-4">
+									<div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+										<h5 class="text-primary my-2 fs-5 fw-semibold">Resumen de Ponderaciones</h5>
+									</div>
+									<div class="card-body p-4">
+										<div class="table-responsive">
+											<table class="table table-bordered">
+												<thead class="bg-primary bg-opacity-10">
+													<tr>
+														<th class="text-center">Criterio</th>
+														<th class="text-center">Porcentaje Obtenido</th>
+														<th class="text-center">Ponderación Máxima</th>
+													</tr>
+												</thead>
+												<tbody>
+													{% if json_match_inicial.ponderaciones.educacion %}
+													<tr>
+														<td class="fw-semibold">Educación</td>
+														<td class="text-center">
+															<span class="badge bg-info text-white">{{ json_match_inicial.ponderaciones.educacion.porcentaje|floatformat:2 }}%</span>
+														</td>
+														<td class="text-center">{{ json_match_inicial.ponderaciones.educacion.ponderacion_maxima|floatformat:2 }}%</td>
+													</tr>
+													{% endif %}
+													{% if json_match_inicial.ponderaciones.laboral %}
+													<tr>
+														<td class="fw-semibold">Laboral</td>
+														<td class="text-center">
+															<span class="badge bg-info text-white">{{ json_match_inicial.ponderaciones.laboral.porcentaje|floatformat:2 }}%</span>
+														</td>
+														<td class="text-center">{{ json_match_inicial.ponderaciones.laboral.ponderacion_maxima|floatformat:2 }}%</td>
+													</tr>
+													{% endif %}
+													{% if json_match_inicial.ponderaciones.idioma %}
+													<tr>
+														<td class="fw-semibold">Idioma</td>
+														<td class="text-center">
+															<span class="badge bg-info text-white">{{ json_match_inicial.ponderaciones.idioma.porcentaje|floatformat:2 }}%</span>
+														</td>
+														<td class="text-center">{{ json_match_inicial.ponderaciones.idioma.ponderacion_maxima|floatformat:2 }}%</td>
+													</tr>
+													{% endif %}
+													{% if json_match_inicial.ponderaciones.ubicacion %}
+													<tr>
+														<td class="fw-semibold">Ubicación</td>
+														<td class="text-center">
+															<span class="badge bg-info text-white">{{ json_match_inicial.ponderaciones.ubicacion.porcentaje|floatformat:2 }}%</span>
+														</td>
+														<td class="text-center">{{ json_match_inicial.ponderaciones.ubicacion.ponderacion_maxima|floatformat:2 }}%</td>
+													</tr>
+													{% endif %}
+													<tr class="table-primary">
+														<td class="fw-bold">TOTAL</td>
+														<td class="text-center">
+															<span class="badge bg-primary text-white fs-6">{{ json_match_inicial.ponderaciones.total|floatformat:2 }}%</span>
+														</td>
+														<td class="text-center fw-bold">{{ json_match_inicial.ponderaciones.total_maximo|floatformat:2 }}%</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+								{% endif %}
+
+								<!-- Coincidencias de Educación -->
+								{% if json_match_inicial.educacion and json_match_inicial.educacion.coincidencias_estudios %}
+								<div class="card bg-white border-0 rounded-3 mb-4">
+									<div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+										<h5 class="text-primary my-2 fs-5 fw-semibold">Coincidencias de Educación</h5>
+									</div>
+									<div class="card-body p-4">
+										{% if json_match_inicial.educacion.match_academico %}
+										<div class="mb-3 pb-3 border-bottom">
+											<p class="mb-2"><strong>Porcentaje Match:</strong> <span class="badge bg-success text-white">{{ json_match_inicial.educacion.match_academico.porcentaje_match|floatformat:2 }}%</span></p>
+										</div>
+										{% endif %}
+										{% for coincidencia in json_match_inicial.educacion.coincidencias_estudios %}
+										<div class="card border rounded-3 mb-3">
+											<div class="card-body p-4">
+												<h6 class="fw-semibold mb-3 text-primary">{{ coincidencia.institucion|default:"Institución no especificada" }}</h6>
+												<div class="row">
+													<div class="col-md-6">
+														<h6 class="fw-semibold mb-2">Candidato</h6>
+														<ul class="list-unstyled">
+															<li><strong>Tipo de Estudio:</strong> {{ coincidencia.candidato.tipo_estudio_display|default:"-" }}</li>
+															<li><strong>Estado:</strong> {{ coincidencia.candidato.estado_estudios_display|default:"-" }}</li>
+															<li><strong>Profesión:</strong> {{ coincidencia.candidato.profesion_estudio.nombre|default:"-" }}</li>
+														</ul>
+													</div>
+													<div class="col-md-6">
+														<h6 class="fw-semibold mb-2">Vacante</h6>
+														<ul class="list-unstyled">
+															<li><strong>Nivel Requerido:</strong> {{ coincidencia.vacante.nivel_estudio_display|default:"-" }}</li>
+															<li><strong>Requiere Graduado:</strong> {{ coincidencia.vacante.requiere_graduado|yesno:"Sí,No,No especificado" }}</li>
+															{% if coincidencia.vacante.profesion_estudio %}
+															<li><strong>Profesión:</strong> 
+																{% if coincidencia.vacante.profesion_estudio.tipo == 'Específica' %}
+																	{{ coincidencia.vacante.profesion_estudio.nombre }}
+																{% elif coincidencia.vacante.profesion_estudio.tipo == 'Grupo' %}
+																	Grupo: {{ coincidencia.vacante.profesion_estudio.nombre }}
+																{% elif coincidencia.vacante.profesion_estudio.tipo == 'Listado' %}
+																	Listado personalizado
+																{% endif %}
+															</li>
+															{% endif %}
+														</ul>
+													</div>
+												</div>
+												<div class="mt-3 pt-3 border-top">
+													<h6 class="fw-semibold mb-2">Coincidencias</h6>
+													<div class="row">
+														<div class="col-md-4">
+															<div class="d-flex align-items-center">
+																{% if coincidencia.coincidencias.tipo_estudio.coincide %}
+																<span class="badge bg-success text-white me-2"><i class="ri-check-line"></i></span>
+																{% else %}
+																<span class="badge bg-danger text-white me-2"><i class="ri-close-line"></i></span>
+																{% endif %}
+																<span><strong>Tipo de Estudio:</strong> {{ coincidencia.coincidencias.tipo_estudio.coincide|yesno:"Coincide,No coincide" }}</span>
+															</div>
+														</div>
+														<div class="col-md-4">
+															<div class="d-flex align-items-center">
+																{% if coincidencia.coincidencias.graduado.coincide %}
+																<span class="badge bg-success text-white me-2"><i class="ri-check-line"></i></span>
+																{% else %}
+																<span class="badge bg-danger text-white me-2"><i class="ri-close-line"></i></span>
+																{% endif %}
+																<span><strong>Graduado:</strong> {{ coincidencia.coincidencias.graduado.coincide|yesno:"Coincide,No coincide" }}</span>
+															</div>
+														</div>
+														<div class="col-md-4">
+															<div class="d-flex align-items-center">
+																{% if coincidencia.coincidencias.profesion.coincide %}
+																<span class="badge bg-success text-white me-2"><i class="ri-check-line"></i></span>
+																{% else %}
+																<span class="badge bg-danger text-white me-2"><i class="ri-close-line"></i></span>
+																{% endif %}
+																<span><strong>Profesión:</strong> {{ coincidencia.coincidencias.profesion.coincide|yesno:"Coincide,No coincide" }}</span>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										{% endfor %}
+									</div>
+								</div>
+								{% endif %}
+
+								<!-- Detalle de Laboral -->
+								{% if json_match_inicial.laboral %}
+								<div class="card bg-white border-0 rounded-3 mb-4">
+									<div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+										<h5 class="text-primary my-2 fs-5 fw-semibold">Experiencia Laboral</h5>
+									</div>
+									<div class="card-body p-4">
+										{% if json_match_inicial.laboral.match_laboral %}
+										<div class="mb-3 pb-3 border-bottom">
+											<p class="mb-2"><strong>Porcentaje Match:</strong> <span class="badge bg-success text-white">{{ json_match_inicial.laboral.match_laboral.porcentaje_match|floatformat:2 }}%</span></p>
+											<p class="mb-2"><strong>Años Totales de Experiencia:</strong> {{ json_match_inicial.laboral.match_laboral.anos_totales|floatformat:2 }} años</p>
+										</div>
+										{% endif %}
+										{% if json_match_inicial.laboral.candidato.experiencias %}
+										<h6 class="fw-semibold mb-3">Experiencias del Candidato</h6>
+										{% for experiencia in json_match_inicial.laboral.candidato.experiencias %}
+										<div class="card border rounded-3 mb-3">
+											<div class="card-body p-3">
+												<h6 class="fw-semibold mb-2">{{ experiencia.entidad|default:"Entidad no especificada" }}</h6>
+												<p class="mb-1"><strong>Cargo:</strong> {{ experiencia.cargo|default:"-" }}</p>
+												<p class="mb-1"><strong>Período:</strong> {{ experiencia.fecha_inicial|date:"Y"|default:"-" }} - {{ experiencia.fecha_final|date:"Y"|default:"Actual" }}</p>
+											</div>
+										</div>
+										{% endfor %}
+										{% endif %}
+										{% if json_match_inicial.laboral.match_laboral.detalle %}
+										<div class="mt-3 pt-3 border-top">
+											<h6 class="fw-semibold mb-2">Coincidencias</h6>
+											<div class="row">
+												{% if json_match_inicial.laboral.match_laboral.detalle.anos_experiencia %}
+												<div class="col-md-6">
+													<div class="d-flex align-items-center mb-2">
+														{% if json_match_inicial.laboral.match_laboral.detalle.anos_experiencia.coincide %}
+														<span class="badge bg-success text-white me-2"><i class="ri-check-line"></i></span>
+														{% else %}
+														<span class="badge bg-danger text-white me-2"><i class="ri-close-line"></i></span>
+														{% endif %}
+														<span><strong>Años de Experiencia:</strong> 
+															Candidato: {{ json_match_inicial.laboral.match_laboral.detalle.anos_experiencia.anos_candidato|floatformat:2 }}, 
+															Requerido: {{ json_match_inicial.laboral.match_laboral.detalle.anos_experiencia.anos_requeridos|floatformat:2 }}
+														</span>
+													</div>
+												</div>
+												{% endif %}
+												{% if json_match_inicial.laboral.match_laboral.detalle.cargo %}
+												<div class="col-md-6">
+													<div class="d-flex align-items-center mb-2">
+														{% if json_match_inicial.laboral.match_laboral.detalle.cargo.coincide %}
+														<span class="badge bg-success text-white me-2"><i class="ri-check-line"></i></span>
+														{% else %}
+														<span class="badge bg-danger text-white me-2"><i class="ri-close-line"></i></span>
+														{% endif %}
+														<span><strong>Cargo:</strong> {{ json_match_inicial.laboral.match_laboral.detalle.cargo.coincide|yesno:"Coincide,No coincide" }}</span>
+													</div>
+												</div>
+												{% endif %}
+											</div>
+										</div>
+										{% endif %}
+									</div>
+								</div>
+								{% endif %}
+
+								<!-- Detalle de Idioma -->
+								{% if json_match_inicial.idioma %}
+								<div class="card bg-white border-0 rounded-3 mb-4">
+									<div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+										<h5 class="text-primary my-2 fs-5 fw-semibold">Idiomas</h5>
+									</div>
+									<div class="card-body p-4">
+										{% if json_match_inicial.idioma.match_idioma %}
+										<div class="mb-3 pb-3 border-bottom">
+											<p class="mb-2"><strong>Porcentaje Match:</strong> <span class="badge bg-success text-white">{{ json_match_inicial.idioma.match_idioma.porcentaje_match|floatformat:2 }}%</span></p>
+										</div>
+										{% endif %}
+										<div class="row">
+											<div class="col-md-6">
+												<h6 class="fw-semibold mb-2">Idiomas del Candidato</h6>
+												{% if json_match_inicial.idioma.candidato.idiomas %}
+												<ul class="list-unstyled">
+													{% for idioma in json_match_inicial.idioma.candidato.idiomas %}
+													<li class="mb-2">
+														<span class="badge bg-info text-white me-2">{{ idioma.nombre|default:idioma.id }}</span>
+														<span>{{ idioma.nivel|default:"-" }}</span>
+													</li>
+													{% endfor %}
+												</ul>
+												{% else %}
+												<p class="text-muted">No hay idiomas registrados</p>
+												{% endif %}
+											</div>
+											<div class="col-md-6">
+												<h6 class="fw-semibold mb-2">Idiomas Requeridos por la Vacante</h6>
+												{% if json_match_inicial.idioma.vacante.idiomas %}
+												<ul class="list-unstyled">
+													{% for idioma in json_match_inicial.idioma.vacante.idiomas %}
+													<li class="mb-2">
+														<span class="badge bg-warning text-dark me-2">{{ idioma.nombre|default:idioma.idioma }}</span>
+														<span>{{ idioma.nivel|default:"-" }}</span>
+													</li>
+													{% endfor %}
+												</ul>
+												{% else %}
+												<p class="text-muted">No se requieren idiomas específicos</p>
+												{% endif %}
+											</div>
+										</div>
+										{% if json_match_inicial.idioma.match_idioma.mejor_match %}
+										<div class="mt-3 pt-3 border-top">
+											<h6 class="fw-semibold mb-2">Mejor Coincidencia</h6>
+											<div class="d-flex align-items-center">
+												{% if json_match_inicial.idioma.match_idioma.detalle.idioma.coincide %}
+												<span class="badge bg-success text-white me-2"><i class="ri-check-line"></i></span>
+												{% else %}
+												<span class="badge bg-danger text-white me-2"><i class="ri-close-line"></i></span>
+												{% endif %}
+												<span><strong>Idioma:</strong> {{ json_match_inicial.idioma.match_idioma.mejor_match.idioma_candidato|default:"-" }} vs {{ json_match_inicial.idioma.match_idioma.mejor_match.idioma_vacante|default:"-" }}</span>
+											</div>
+											<div class="d-flex align-items-center mt-2">
+												{% if json_match_inicial.idioma.match_idioma.detalle.nivel.coincide %}
+												<span class="badge bg-success text-white me-2"><i class="ri-check-line"></i></span>
+												{% else %}
+												<span class="badge bg-danger text-white me-2"><i class="ri-close-line"></i></span>
+												{% endif %}
+												<span><strong>Nivel:</strong> {{ json_match_inicial.idioma.match_idioma.mejor_match.nivel_candidato|default:"-" }} vs {{ json_match_inicial.idioma.match_idioma.mejor_match.nivel_vacante|default:"-" }}</span>
+											</div>
+										</div>
+										{% endif %}
+									</div>
+								</div>
+								{% endif %}
+
+								<!-- Detalle de Ubicación -->
+								{% if json_match_inicial.ubicacion %}
+								<div class="card bg-white border-0 rounded-3 mb-4">
+									<div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+										<h5 class="text-primary my-2 fs-5 fw-semibold">Ubicación</h5>
+									</div>
+									<div class="card-body p-4">
+										{% if json_match_inicial.ubicacion.match_ubicacion %}
+										<div class="mb-3 pb-3 border-bottom">
+											<p class="mb-2"><strong>Porcentaje Match:</strong> <span class="badge bg-success text-white">{{ json_match_inicial.ubicacion.match_ubicacion.porcentaje_match|floatformat:2 }}%</span></p>
+										</div>
+										{% endif %}
+										<div class="row">
+											<div class="col-md-6">
+												<h6 class="fw-semibold mb-2">Ciudad del Candidato</h6>
+												<p>{{ json_match_inicial.ubicacion.candidato.ciudad.nombre|default:"No especificada" }}</p>
+											</div>
+											<div class="col-md-6">
+												<h6 class="fw-semibold mb-2">Ciudad de la Vacante</h6>
+												<p>{{ json_match_inicial.ubicacion.vacante.ciudad.nombre|default:"No especificada" }}</p>
+											</div>
+										</div>
+										{% if json_match_inicial.ubicacion.match_ubicacion.detalle %}
+										<div class="mt-3 pt-3 border-top">
+											<div class="d-flex align-items-center">
+												{% if json_match_inicial.ubicacion.match_ubicacion.detalle.coincide %}
+												<span class="badge bg-success text-white me-2"><i class="ri-check-line"></i></span>
+												<span class="fw-semibold">Las ciudades coinciden</span>
+												{% else %}
+												<span class="badge bg-danger text-white me-2"><i class="ri-close-line"></i></span>
+												<span class="fw-semibold">Las ciudades no coinciden</span>
+												{% endif %}
+											</div>
+											{% if json_match_inicial.ubicacion.match_ubicacion.detalle.mensaje %}
+											<p class="text-muted mt-2 mb-0">{{ json_match_inicial.ubicacion.match_ubicacion.detalle.mensaje }}</p>
+											{% endif %}
+										</div>
+										{% endif %}
+									</div>
+								</div>
+								{% endif %}
+							{% else %}
+								<div class="alert alert-info">
+									<p class="mb-0">No hay información de match inicial disponible.</p>
+								</div>
+							{% endif %}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -423,15 +788,11 @@ Detalle Candidato - Reclutador
 				</div>
 			</div>
 			<div class="modal-footer">
-				<a href="{{ candidato.hoja_de_vida.url }}" target="_blank" class="btn btn-primary">
+				<a href="{{ candidato.hoja_de_vida.url }}" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
 					<i class="material-symbols-outlined me-2" style="vertical-align: middle;">open_in_new</i>
 					Abrir en nueva pestaña
 				</a>
-				<a href="{{ candidato.hoja_de_vida.url }}" download class="btn btn-success">
-					<i class="material-symbols-outlined me-2" style="vertical-align: middle;">download</i>
-					Descargar
-				</a>
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" data-bs-dismiss="modal">Cerrar</button>
 			</div>
 		</div>
 	</div>

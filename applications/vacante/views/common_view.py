@@ -2566,19 +2566,143 @@ def calcular_match_idioma(candidato, vacante, ponderacion_idioma=25.0):
     }
 
 
+def calcular_match_ubicacion(candidato, vacante, ponderacion_ubicacion=25.0):
+    """
+    Calcula el porcentaje de match de ubicación entre un candidato y una vacante.
+    
+    Reglas:
+    - El factor "Ubicación" representa el porcentaje especificado del match total (ej. 25%).
+    - Compara la ciudad del candidato con la ciudad de trabajo de la vacante.
+    - Si coinciden, retorna el 100% del match (25% del total).
+    - Si no coinciden, retorna 0%.
+    
+    Args:
+        candidato: Instancia de Can101Candidato
+        vacante: Instancia de Cli052Vacante
+        ponderacion_ubicacion: Porcentaje del match total que representa la ubicación (default: 25.0)
+    
+    Returns:
+        dict: {
+            'porcentaje_match': float,  # Porcentaje final (0-25)
+            'match_interno': float,     # Match interno (0-1)
+            'detalle': {
+                'ciudad_coincide': bool,
+                'ciudad_candidato': {
+                    'id': int,
+                    'nombre': str
+                },
+                'ciudad_vacante': {
+                    'id': int,
+                    'nombre': str
+                }
+            },
+            'peso_total': float
+        }
+    """
+    PESO_TOTAL_MATCH_UBICACION = ponderacion_ubicacion
+    
+    # Obtener ciudad del candidato
+    ciudad_candidato = candidato.ciudad_id_004
+    
+    # Obtener ciudad de la vacante desde el perfil
+    perfil_vacante = vacante.perfil_vacante
+    if not perfil_vacante:
+        return {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {},
+            'peso_total': round(PESO_TOTAL_MATCH_UBICACION, 2),
+            'mensaje': 'La vacante no tiene perfil de ubicación definido'
+        }
+    
+    ciudad_vacante = perfil_vacante.lugar_trabajo
+    
+    # Si alguna de las ciudades no está definida, retornar 0%
+    if not ciudad_candidato or not ciudad_vacante:
+        return {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {
+                'ciudad_coincide': False,
+                'ciudad_candidato': {
+                    'id': ciudad_candidato.id if ciudad_candidato else None,
+                    'nombre': str(ciudad_candidato) if ciudad_candidato else None
+                },
+                'ciudad_vacante': {
+                    'id': ciudad_vacante.id if ciudad_vacante else None,
+                    'nombre': str(ciudad_vacante) if ciudad_vacante else None
+                }
+            },
+            'peso_total': round(PESO_TOTAL_MATCH_UBICACION, 2),
+            'mensaje': 'Falta información de ciudad en el candidato o la vacante'
+        }
+    
+    # Comparar ciudades
+    ciudad_coincide = (ciudad_candidato.id == ciudad_vacante.id)
+    
+    # Si coinciden, retornar 100% del match (25% del total)
+    if ciudad_coincide:
+        match_interno = 1.0
+        porcentaje_match = PESO_TOTAL_MATCH_UBICACION
+    else:
+        match_interno = 0.0
+        porcentaje_match = 0.0
+    
+    return {
+        'porcentaje_match': round(porcentaje_match, 2),
+        'match_interno': round(match_interno, 2),
+        'detalle': {
+            'ciudad_coincide': ciudad_coincide,
+            'ciudad_candidato': {
+                'id': ciudad_candidato.id,
+                'nombre': str(ciudad_candidato)
+            },
+            'ciudad_vacante': {
+                'id': ciudad_vacante.id,
+                'nombre': str(ciudad_vacante)
+            }
+        },
+        'peso_total': round(PESO_TOTAL_MATCH_UBICACION, 2)
+    }
+
+
 def get_match_initial(candidato_id, vacante_id):
     candidato = get_object_or_404(Can101Candidato, pk=candidato_id)
     vacante = get_object_or_404(Cli052Vacante, pk=vacante_id)
 
     aplicacion_vacante = Cli056AplicacionVacante.objects.get(candidato_101=candidato, vacante_id_052=vacante)
 
-    # Definir ponderaciones para cada sección del match
-    ponderacion_educacion = 25.0
-    ponderacion_laboral = 25.0
-    ponderacion_idioma = 25.0
-    ponderacion_ubicacion = 25.0
+    # Validar si la vacante tiene idioma solicitado
+    perfil_vacante = vacante.perfil_vacante
+    tiene_idioma_solicitado = False
+    
+    if perfil_vacante and perfil_vacante.idiomas:
+        idiomas_vacante = perfil_vacante.idiomas
+        if isinstance(idiomas_vacante, list) and len(idiomas_vacante) > 0:
+            # Verificar si hay al menos un idioma válido
+            for idioma_vac in idiomas_vacante:
+                if isinstance(idioma_vac, dict):
+                    idioma_codigo = idioma_vac.get('idioma', '')
+                    nivel_requerido = idioma_vac.get('nivel', '')
+                    if idioma_codigo and nivel_requerido:
+                        tiene_idioma_solicitado = True
+                        break
 
-    # INSERT_YOUR_CODE
+    # Definir ponderaciones para cada sección del match
+    # Si la vacante NO tiene idioma solicitado, redistribuir el 25% del idioma
+    # equitativamente entre educación, laboral y ubicación (33.3% cada una)
+    if not tiene_idioma_solicitado:
+        ponderacion_educacion = round(100.0 / 3, 2)  # 33.33%
+        ponderacion_laboral = round(100.0 / 3, 2)    # 33.33%
+        ponderacion_idioma = 0.0                      # 0% (no se evalúa)
+        ponderacion_ubicacion = round(100.0 / 3, 2)   # 33.33%
+    else:
+        # Si tiene idioma solicitado, mantener las ponderaciones originales
+        ponderacion_educacion = 25.0
+        ponderacion_laboral = 25.0
+        ponderacion_idioma = 25.0
+        ponderacion_ubicacion = 25.0
+
     # Traer registros académicos del candidato en un JSON
     educaciones = Can103Educacion.objects.filter(candidato_id_101=candidato).order_by('-fecha_inicial')
     
@@ -2829,10 +2953,54 @@ def get_match_initial(candidato_id, vacante_id):
     resultado_match_laboral = calcular_match_laboral(candidato, vacante, ponderacion_laboral)
     
     # Calcular el match de idiomas usando la función especializada
-    resultado_match_idioma = calcular_match_idioma(candidato, vacante, ponderacion_idioma)
+    # Solo calcular si hay idioma solicitado (ponderacion_idioma > 0)
+    if ponderacion_idioma > 0:
+        resultado_match_idioma = calcular_match_idioma(candidato, vacante, ponderacion_idioma)
+    else:
+        # Si no hay idioma solicitado, retornar 0% pero mantener la estructura
+        resultado_match_idioma = {
+            'porcentaje_match': 0.0,
+            'match_interno': 0.0,
+            'detalle': {},
+            'mejor_match': None,
+            'peso_total': 0.0,
+            'mensaje': 'La vacante no requiere idiomas específicos, la ponderación se redistribuyó entre educación, laboral y ubicación'
+        }
+    
+    # Calcular el match de ubicación usando la función especializada
+    resultado_match_ubicacion = calcular_match_ubicacion(candidato, vacante, ponderacion_ubicacion)
+    
+    # Calcular el total de las ponderaciones
+    porcentaje_educacion = round(resultado_match_academico.get('porcentaje_match', 0.0), 2)
+    porcentaje_laboral = round(resultado_match_laboral.get('porcentaje_match', 0.0), 2)
+    porcentaje_idioma = round(resultado_match_idioma.get('porcentaje_match', 0.0), 2)
+    porcentaje_ubicacion = round(resultado_match_ubicacion.get('porcentaje_match', 0.0), 2)
+    
+    # Calcular el total del match
+    total_match = round(porcentaje_educacion + porcentaje_laboral + porcentaje_idioma + porcentaje_ubicacion, 2)
     
     # Combinar toda la información académica en un JSON estructurado con tags principales
     info_academica_completa = {
+        'ponderaciones': {
+            'educacion': {
+                'porcentaje': porcentaje_educacion,
+                'ponderacion_maxima': round(ponderacion_educacion, 2)
+            },
+            'laboral': {
+                'porcentaje': porcentaje_laboral,
+                'ponderacion_maxima': round(ponderacion_laboral, 2)
+            },
+            'idioma': {
+                'porcentaje': porcentaje_idioma,
+                'ponderacion_maxima': round(ponderacion_idioma, 2)
+            },
+            'ubicacion': {
+                'porcentaje': porcentaje_ubicacion,
+                'ponderacion_maxima': round(ponderacion_ubicacion, 2)
+            },
+            'total': total_match,
+            'total_maximo': round(ponderacion_educacion + ponderacion_laboral + ponderacion_idioma + ponderacion_ubicacion, 2)
+        },
         'educacion': {
             'candidato': {
                 'educaciones': educaciones_json
@@ -2869,8 +3037,20 @@ def get_match_initial(candidato_id, vacante_id):
             'ponderacion': round(resultado_match_idioma.get('porcentaje_match', 0.0), 2)
         },
         'ubicacion': {
-            'estado': 'pendiente',
-            'mensaje': 'Información de ubicación pendiente de implementar'
+            'candidato': {
+                'ciudad': {
+                    'id': candidato.ciudad_id_004.id if candidato.ciudad_id_004 else None,
+                    'nombre': str(candidato.ciudad_id_004) if candidato.ciudad_id_004 else None
+                }
+            },
+            'vacante': {
+                'ciudad': {
+                    'id': perfil_vacante.lugar_trabajo.id if perfil_vacante and perfil_vacante.lugar_trabajo else None,
+                    'nombre': str(perfil_vacante.lugar_trabajo) if perfil_vacante and perfil_vacante.lugar_trabajo else None
+                }
+            },
+            'match_ubicacion': resultado_match_ubicacion,
+            'ponderacion': round(resultado_match_ubicacion.get('porcentaje_match', 0.0), 2)
         }
     }
     

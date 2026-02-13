@@ -49,9 +49,29 @@ def confirm_apply_vacancy_recruited(request, pk):
             )
             
             match_candidato_vacante = get_match(candidato.id, pk)
+            match_inicial = get_match_initial(candidato.id, pk)
+            
+            # Convertir a formato JSON (diccionario Python) para guardar en JSONField
+            import json
+            try:
+                # Si get_match retorna un string JSON, parsearlo a diccionario
+                if isinstance(match_candidato_vacante, str):
+                    match_candidato_vacante = json.loads(match_candidato_vacante)
+            except (json.JSONDecodeError, TypeError):
+                # Si ya es un diccionario o hay error, usar tal cual
+                pass
+            
+            try:
+                # Si get_match_initial retorna un string JSON, parsearlo a diccionario
+                if isinstance(match_inicial, str):
+                    match_inicial = json.loads(match_inicial)
+            except (json.JSONDecodeError, TypeError):
+                # Si ya es un diccionario o hay error, usar tal cual
+                pass
 
             asignacion_vacante.json_match = match_candidato_vacante
-            # asignacion_vacante.json_match_inicial = get_match_initial(candidato.id, pk)
+            asignacion_vacante.json_match_inicial = match_inicial
+
             asignacion_vacante.save()
 
             #funcion para crear registro en el historial y actualizar estado de la aplicacion de la vcatente
