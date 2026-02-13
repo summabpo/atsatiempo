@@ -236,6 +236,32 @@ def get_match_porcentaje(json_match):
     except (json.JSONDecodeError, TypeError, AttributeError):
         return None
 
+@register.filter(name='get_match_inicial_porcentaje')
+def get_match_inicial_porcentaje(json_match_inicial):
+    """
+    Filtro para obtener el total del match inicial desde json_match_inicial.ponderaciones.total
+    Maneja tanto si es un diccionario como si es un string JSON
+    """
+    if not json_match_inicial:
+        return None
+    
+    try:
+        # Si es un string JSON, parsearlo
+        if isinstance(json_match_inicial, str):
+            data = json.loads(json_match_inicial)
+        else:
+            data = json_match_inicial
+        
+        # Acceder al total desde ponderaciones
+        if isinstance(data, dict) and 'ponderaciones' in data:
+            ponderaciones = data.get('ponderaciones', {})
+            if isinstance(ponderaciones, dict) and 'total' in ponderaciones:
+                return ponderaciones.get('total')
+        
+        return None
+    except (json.JSONDecodeError, TypeError, AttributeError):
+        return None
+
 @register.filter(name='get_tipo_horario_display')
 def get_tipo_horario_display(value):
     """

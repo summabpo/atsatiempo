@@ -143,7 +143,7 @@ class ActualizarEstadoReclutadoForm(forms.Form):
                 Div('estado_reclutamiento', css_class='col-12 mb-3'),
                 Div('comentario', css_class='col-12 mb-3'),
                 Div(
-                    Submit('submit', 'Actualizar Estado', css_class='btn btn-primary w-100'),
+                    Submit('submit', 'Actualizar Estado', css_class='btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100'),
                     css_class='col-12'
                 ),
                 css_class='row'

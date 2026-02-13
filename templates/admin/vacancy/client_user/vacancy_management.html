@@ -85,6 +85,7 @@ Vacantes Propias
                                                 <th scope="col" class="text-center">Edad</th>
                                                 <th scope="col" class="text-center">Nivel de Estudio</th>
                                                 <th scope="col" class="text-center">Puntaje Match</th>
+                                                <th scope="col" class="text-center">Match Inicial</th>
                                                 <th scope="col" class="text-center">Acciones</th>
                                             </tr>
                                         </thead>
@@ -138,6 +139,23 @@ Vacantes Propias
                                                                 <span class="badge bg-info text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
                                                             {% else %}
                                                                 <span class="badge bg-secondary text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <span class="text-muted">-</span>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </td>
+                                                <td class="text-center">
+                                                    {% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}
+                                                        {% if porcentaje_inicial %}
+                                                            {% if porcentaje_inicial >= 80 %}
+                                                                <span class="badge bg-success text-white p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
+                                                            {% elif porcentaje_inicial >= 60 %}
+                                                                <span class="badge bg-warning text-dark p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
+                                                            {% elif porcentaje_inicial >= 40 %}
+                                                                <span class="badge bg-info text-white p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary text-white p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
                                                             {% endif %}
                                                         {% else %}
                                                             <span class="text-muted">-</span>
