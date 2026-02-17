@@ -178,6 +178,7 @@ def parse_horarios_json(value):
                     dia_inicio = dias_abreviados.get(bloque.get('dia_inicio', ''), bloque.get('dia_inicio', ''))
                     dia_final = dias_abreviados.get(bloque.get('dia_final', ''), bloque.get('dia_final', ''))
                     
+                    # Formatear hora (quitar segundos si existen)
                     hora_inicio = bloque.get('hora_inicio', '')
                     if hora_inicio and len(hora_inicio) > 5:
                         hora_inicio = hora_inicio[:5]
@@ -186,6 +187,7 @@ def parse_horarios_json(value):
                     if hora_final and len(hora_final) > 5:
                         hora_final = hora_final[:5]
                     
+                    # Determinar el rango de días
                     if dia_inicio == dia_final:
                         rango_dias = dia_inicio
                     else:
@@ -207,8 +209,16 @@ def parse_horarios_json(value):
             }
         
         return {'tipo': None, 'tipo_display': None, 'bloques': []}
+    
     except (json.JSONDecodeError, TypeError, AttributeError):
         return {'tipo': None, 'tipo_display': None, 'bloques': []}
+
+@register.filter(name='get_item')
+def get_item(dictionary, key):
+    """Obtener un elemento de un diccionario por su clave"""
+    if isinstance(dictionary, dict):
+        return dictionary.get(str(key))
+    return None
 
 @register.filter(name='get_match_porcentaje')
 def get_match_porcentaje(json_match):

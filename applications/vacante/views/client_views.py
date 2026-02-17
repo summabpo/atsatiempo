@@ -507,7 +507,9 @@ def vacancy_management_from_client(request, pk, vacante_id):
     reclutados = query_recruited_vacancy_id(vacante.id).filter(estado_aplicacion=8)
     
     # Para este template solo mostramos finalistas (estado_aplicacion = 8)
-    reclutados_finalizalista = list(reclutados)
+    # Ordenar por fecha de aplicación ascendente
+    from django.utils import timezone
+    reclutados_finalizalista = sorted(list(reclutados), key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
     
     # Mantener las otras listas vacías para compatibilidad con el template
     reclutados_recibido = []

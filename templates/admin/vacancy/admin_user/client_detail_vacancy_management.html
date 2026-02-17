@@ -204,6 +204,22 @@ Vacantes Propias
                                                             {% endwith %}
                                                         </td>
                                                         <td class="text-center">
+                                                            {% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}
+                                                                {% if porcentaje_inicial %}
+                                                                    {% if porcentaje_inicial >= 80 %}
+                                                                        <span class="badge bg-success text-white p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
+                                                                    {% elif porcentaje_inicial >= 60 %}
+                                                                        <span class="badge bg-warning text-dark p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
+                                                                    {% elif porcentaje_inicial >= 40 %}
+                                                                    {% else %}
+                                                                        <span class="badge bg-info text-white p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
+                                                                    {% endif %}
+                                                                {% else %}
+                                                                    <span class="text-muted">-</span>
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                        </td>
+                                                        <td class="text-center">
                                                             <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                                                                 <i class="material-symbols-outlined fs-14">visibility</i> Ver
                                                             </a>
@@ -287,6 +303,23 @@ Vacantes Propias
                                                                         <span class="badge bg-info text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
                                                                     {% else %}
                                                                         <span class="badge bg-secondary text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
+                                                                    {% endif %}
+                                                                {% else %}
+                                                                    <span class="text-muted">-</span>
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            {% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}
+                                                                {% if porcentaje_inicial %}
+                                                                    {% if porcentaje_inicial >= 80 %}
+                                                                        <span class="badge bg-success text-white p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
+                                                                    {% elif porcentaje_inicial >= 60 %}
+                                                                        <span class="badge bg-warning text-dark p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
+                                                                    {% elif porcentaje_inicial >= 40 %}
+                                                                    {% else %}
+                                                                        <span class="badge bg-secondary text-white p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
                                                                     {% endif %}
                                                                 {% else %}
                                                                     <span class="text-muted">-</span>
@@ -502,18 +535,34 @@ Vacantes Propias
                                                             {% endwith %}
                                                         </td>
                                                         <td class="text-center">
+                                                            {% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}
+                                                                {% if porcentaje_inicial %}
+                                                                    {% if porcentaje_inicial >= 80 %}
+                                                                        <span class="badge bg-success text-white p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
+                                                                    {% elif porcentaje_inicial >= 60 %}
+                                                                        <span class="badge bg-warning text-dark p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
+                                                                    {% elif porcentaje_inicial >= 40 %}
+                                                                    {% else %}
+                                                                        <span class="badge bg-secondary text-white p-2">{{ porcentaje_inicial|floatformat:1 }}%</span>
+                                                                    {% endif %}
+                                                                {% else %}
+                                                                    <span class="text-muted">-</span>
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                        </td>
+                                                        <td class="text-center">
                                                             <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
                                                                 <i class="material-symbols-outlined fs-14">visibility</i> Ver
                                                             </a>
-                                                </td> 
-                                            </tr>
+                                                        </td> 
+                                                    </tr>
                                                     {% empty %}
                                                     <tr>
                                                         <td colspan="7" class="text-center text-muted">No hay candidatos en este estado</td>
                                                     </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>

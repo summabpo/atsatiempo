@@ -168,6 +168,7 @@ class Cli066PruebasPsicologicas(models.Model):
 class Cli067PoliticasInternas(models.Model):
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
+    respuestas_politica = models.JSONField(null=True, blank=True)
     descripcion = models.TextField()
 
     def __str__(self):
@@ -264,7 +265,7 @@ class Cli071AsignacionPrueba(models.Model):
 
     def __str__(self):
         return f"{self.cliente_prueba} - {self.fecha_asignacion}"
-    
+
 class Cli076GrupoFitCultural(models.Model):
     nombre = models.CharField(max_length=100, verbose_name="Nombre del Grupo de Fit Cultural")
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, db_column='estado_id_001')
