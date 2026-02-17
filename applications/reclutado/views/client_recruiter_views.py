@@ -374,7 +374,7 @@ def detail_recruited(request, pk):
             asignacion_vacante.registro_reclutamiento = historial_estados
             asignacion_vacante.save()
             
-            messages.success(request, f'Estado actualizado de "{estado_anterior_nombre}" a "{estado_nuevo_nombre}" exitosamente.')
+            messages.success(request, f'Estado actualizado de {estado_anterior_nombre} a {estado_nuevo_nombre} exitosamente.')
             return redirect('reclutados:reclutados_detalle_reclutador', pk=pk)
         else:
             messages.error(request, 'Error al actualizar el estado. Verifique los datos.')

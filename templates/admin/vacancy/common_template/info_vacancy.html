@@ -1,7 +1,10 @@
 {% load static %}
 {% load custom_tags %}
 <div class="mb-4">
-    <div class="card border-0 rounded-2 p-4 bg-white mb-4">
+    <div class="card border-0 rounded-2 bg-white mb-4">
+        <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+            <h2 class="fs-18 fw-semibold mb-0 text-primary">Información Vacante</h2>
+        </div>
         <div class="card-body p-4">
             <div class="d-flex align-items-center mb-4">
                 <div class="flex-shrink-0 position-relative">
@@ -124,19 +127,26 @@
 
             <!-- Idiomas -->
             {% if vacante.perfil_vacante.idiomas %}
-            <div class="mb-4">
-                <h3 class="mb-3">Idiomas</h3>
-                <ul class="mb-0 ps-3 text-secondary">
-                    {% for idioma in vacante.perfil_vacante.idiomas|parse_idiomas %}
-                        <li>
-                            <strong>{{ idioma.idioma_display }}</strong>: {{ idioma.nivel_display }}
-                            {% if idioma.certificado %}
-                                <span class="badge bg-success-subtle text-success ms-2" style="font-size: 0.7rem;">Certificado</span>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                {% with idiomas_parseados=vacante.perfil_vacante.idiomas|parse_idiomas %}
+                    {% if idiomas_parseados %}
+                    <div class="mb-4">
+                        <h3 class="mb-3">Idiomas</h3>
+                        <ul class="mb-0 ps-3 text-secondary">
+                            {% for idioma in idiomas_parseados %}
+                                <li>
+                                    <strong>{{ idioma.nombre }}</strong>
+                                    {% if idioma.nivel %}
+                                        : {{ idioma.nivel }}
+                                    {% endif %}
+                                    {% if idioma.certificado %}
+                                        <span class="badge bg-success-subtle text-success ms-2" style="font-size: 0.7rem;">Certificado</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                {% endwith %}
             {% endif %}
 
             <!-- Habilidades -->

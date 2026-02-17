@@ -3,6 +3,7 @@ from datetime import date
 import json
 
 #models
+from applications.cliente.models import Cli051ClientePoliticas, Cli070AsignacionRequisito, Cli071AsignacionPrueba
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.services.service_vacanty import get_vacanty_questions
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio
@@ -3063,3 +3064,25 @@ def get_match_initial(candidato_id, vacante_id):
     info_academica_json = json.dumps(info_academica_completa, indent=4, ensure_ascii=False, default=str)
     
     return info_academica_json
+
+
+def get_pruebas(aplicacion_vacante):
+    pruebas = Cli071AsignacionPrueba.objects.filter(cargo=aplicacion_vacante.vacante_id_052.cargo)
+    return pruebas
+
+def get_requisitos(aplicacion_vacante):
+    requisitos = Cli070AsignacionRequisito.objects.filter(cargo=aplicacion_vacante.vacante_id_052.cargo)
+    return requisitos
+
+def get_politicas_internas(aplicacion_vacante):
+    # Cli051ClientePoliticas tiene un campo 'cliente', no 'cargo'
+    # El cliente se obtiene desde: aplicacion_vacante.vacante_id_052.cargo.cliente
+    if aplicacion_vacante.vacante_id_052.cargo and aplicacion_vacante.vacante_id_052.cargo.cliente:
+        politicas_internas = Cli051ClientePoliticas.objects.filter(
+            cliente=aplicacion_vacante.vacante_id_052.cargo.cliente,
+            estado_id=1
+        ).select_related('politica_interna')
+    else:
+        politicas_internas = Cli051ClientePoliticas.objects.none()
+    return politicas_internas
+

@@ -44,6 +44,9 @@ urlpatterns = [
     #client_candidate_user
     path( url_principal+'aplicadas/candidato/', candidate_views.apply_vacancy, name='vacante_candidato_aplicadas'),
     path( url_principal+'aplicadas/detalle/<int:pk>', candidate_views.apply_vacancy_detail, name='vacante_candidato_aplicadas_detalle'),
+    path( url_principal+'aplicadas/<int:aplicacion_id>/requisito/<int:requisito_id>/cargar/', candidate_views.upload_requisito_document, name='upload_requisito_document'),
+    path( url_principal+'aplicadas/<int:aplicacion_id>/politicas/guardar/', candidate_views.guardar_respuestas_politicas, name='guardar_respuestas_politicas'),
+    
     path( url_principal+'disponibles/', candidate_views.vacancy_available, name='vacante_candidato_disponibles'),
     path( url_principal+'filtros/opciones/', candidate_views.get_filter_options, name='vacante_filtros_opciones'),
     path( url_principal+'filtros/estadisticas/', candidate_views.get_filter_stats, name='vacante_filtros_estadisticas'),
@@ -54,6 +57,7 @@ urlpatterns = [
 
     #commons
     path( url_principal+'match/<int:candidato_id>/<int:vacante_id>/', common_view.match, name='match'),
+    path( url_principal+'aplicadas/politicas/documento/<int:aplicacion_id>/', candidate_views.generar_declaracion_pdf, name='generar_declaracion_pdf'),
 
 
 

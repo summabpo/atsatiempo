@@ -618,12 +618,12 @@ $(document).ready(function() {
         },
         "columnDefs": [
             {
-                "targets": [0, 6], // Columna de Imagen y Acciones
+                "targets": [0, 7], // Columna de Imagen (0) y Acciones (7)
                 "orderable": false,
                 "searchable": false
             }
         ],
-        "order": [[2, "desc"]], // Ordenar por Fecha Registro descendente
+        "order": [[2, "asc"]], // Ordenar por Fecha Registro ascendente
         "responsive": true,
         "autoWidth": false,
         "pageLength": 10,
@@ -655,6 +655,9 @@ $(document).ready(function() {
 
         if (!$.fn.DataTable.isDataTable('#' + tableId)) {
             try {
+                // Obtener el número de columnas esperado del header
+                var columnCount = tableElement.find('thead tr th').length;
+                
                 // Limpiar cualquier fila con colspan que pueda causar problemas
                 var tbody = tableElement.find('tbody');
                 tbody.find('tr').each(function() {
@@ -665,8 +668,50 @@ $(document).ready(function() {
                     }
                 });
                 
-                var table = tableElement.DataTable(dataTableConfig);
-                console.log('DataTable inicializado para: ' + tableId);
+                // Validar y corregir que todas las filas tengan el mismo número de columnas
+                var tbodyRows = tableElement.find('tbody tr');
+                tbodyRows.each(function() {
+                    var $row = $(this);
+                    var tdCount = $row.find('td').length;
+                    if (tdCount !== columnCount) {
+                        console.warn('Fila con número incorrecto de columnas en ' + tableId + ': esperado ' + columnCount + ', encontrado ' + tdCount);
+                        // Ajustar la fila agregando o removiendo columnas según sea necesario
+                        while ($row.find('td').length < columnCount) {
+                            $row.append('<td class="text-center"></td>');
+                        }
+                        while ($row.find('td').length > columnCount) {
+                            $row.find('td').last().remove();
+                        }
+                    }
+                });
+                
+                // Configuración específica según la tabla
+                var config = $.extend({}, dataTableConfig);
+                
+                // tablefinalista tiene una columna adicional de checkbox (9 columnas)
+                if (tableId === 'tablefinalista') {
+                    config.columnDefs = [
+                        {
+                            "targets": [0, 1, 8], // Columna de Checkbox (0), Imagen (1) y Acciones (8)
+                            "orderable": false,
+                            "searchable": false
+                        }
+                    ];
+                    config.order = [[3, "asc"]]; // Ordenar por Fecha Registro (columna 3) ascendente
+                } else {
+                    // Para las demás tablas (8 columnas: Imagen, Candidato, Fecha, Edad, Nivel, Match, Match Inicial, Acciones)
+                    config.columnDefs = [
+                        {
+                            "targets": [0, 7], // Columna de Imagen (0) y Acciones (7)
+                            "orderable": false,
+                            "searchable": false
+                        }
+                    ];
+                    config.order = [[2, "asc"]]; // Ordenar por Fecha Registro (columna 2) ascendente
+                }
+                
+                var table = tableElement.DataTable(config);
+                console.log('DataTable inicializado para: ' + tableId + ' con ' + columnCount + ' columnas');
                 return table;
             } catch (error) {
                 console.error('Error al inicializar DataTable para ' + tableId + ':', error);

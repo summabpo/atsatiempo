@@ -1,10 +1,11 @@
 from django.shortcuts import render
+from applications.cliente.models import Cli069Requisito, Cli070AsignacionRequisito, Cli071AsignacionPrueba, Cli051ClientePoliticas
 from applications.common.views.EnvioCorreo import enviar_correo
 from applications.services.service_candidate import personal_information_calculation
 from applications.services.service_recruited import consultar_historial_aplicacion_vacante, query_recruited_vacancy_id, consultar_historial_aplicacion_vacante_candidate
 from applications.vacante.forms.BuscarVacanteForm import VacanteFiltro
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones
-from applications.reclutado.models import Cli056AplicacionVacante
+from applications.reclutado.models import Cli056AplicacionVacante, Cli079RequisitosCargado, Cli080DocumentoFirmadoAplicacionVacante
 from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import Permiso, UsuarioBase
 from applications.common.models import Cat001Estado, Cat004Ciudad
@@ -16,6 +17,20 @@ from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 from django.db.models.functions import Concat
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from django.conf import settings
+from django.contrib.staticfiles import finders
+from io import BytesIO
+from datetime import datetime
+import os
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as RLImage
+from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_JUSTIFY
+
+from applications.vacante.views.common_view import get_politicas_internas, get_pruebas, get_requisitos
 
 @login_required
 @validar_permisos('acceso_candidato')
@@ -43,16 +58,65 @@ def apply_vacancy_detail(request, pk):
         vacancy = Cli056AplicacionVacante.objects.get(id=pk, candidato_101=candidato_id)
         vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), id=vacancy.vacante_id_052.id, estado_id_001=1)
         historico_vacante = consultar_historial_aplicacion_vacante_candidate(vacancy.id)
+
+        print(vacancy.vacante_id_052.cargo.id)
+
+        requisito =get_requisitos(vacancy)
+        pruebas = get_pruebas(vacancy)
+        politicas_internas = get_politicas_internas(vacancy)
+        print(politicas_internas)
+        
+        # Obtener los requisitos cargados en estado 1
+        requisitos_cargados = Cli079RequisitosCargado.objects.filter(
+            aplicacion_vacante_056=vacancy,
+            estado_id=1
+        ).select_related('asignacion_requisito_070', 'usuario_cargado')
+        
+        # Crear un diccionario para acceso rápido por asignacion_requisito_070.id
+        requisitos_cargados_dict = {
+            req.asignacion_requisito_070.id: req 
+            for req in requisitos_cargados
+        }
+        
+        # Agregar información de requisito cargado a cada requisito
+        requisitos_con_info = []
+        for req in requisito:
+            requisito_info = {
+                'requisito': req,
+                'cargado': requisitos_cargados_dict.get(req.id)
+            }
+            requisitos_con_info.append(requisito_info)
+
     except Cli056AplicacionVacante.DoesNotExist:
         messages.error(request, "La aplicación de vacante no existe o no pertenece al candidato.")
         return redirect('vacantes:vacante_candidato_aplicadas')
         
+        
 
+    # Asegurar que json_politicas_internas sea un diccionario
+    json_politicas_internas = vacancy.json_politicas_internas if vacancy.json_politicas_internas else {}
+    
+    # Calcular estado de políticas: finalizada si todas las políticas tienen respuestas
+    politicas_finalizadas = False
+    if politicas_internas and json_politicas_internas:
+        politicas_con_respuesta = 0
+        for politica in politicas_internas:
+            politica_id = str(politica.politica_interna.id)
+            if politica_id in json_politicas_internas and json_politicas_internas[politica_id].get('respuesta'):
+                politicas_con_respuesta += 1
+        politicas_finalizadas = politicas_con_respuesta == len(politicas_internas)
+    
     context = {
         'vacancy': vacancy,
         'vacante': vacante,
+        'requisito': requisito,
+        'requisitos_con_info': requisitos_con_info,
+        'pruebas': pruebas,
+        'politicas_internas': politicas_internas,
         'historial': historico_vacante,
         'is_candidato': True,  # Indicar que es candidato para restringir información
+        'json_politicas_internas': json_politicas_internas,
+        'politicas_finalizadas': politicas_finalizadas,
     }
 
     return render(request, 'admin/vacancy/candidate_user/apply_vacancy_detail.html', context)
@@ -298,3 +362,485 @@ def get_filter_stats(request):
     }
     
     return JsonResponse(response_data)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def upload_requisito_document(request, aplicacion_id, requisito_id):
+    """Vista para cargar documentos de requisitos"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
+    
+    try:
+        # Obtener el ID del candidato desde la sesión
+        candidato_id = request.session.get('candidato_id')
+        
+        # Verificar que la aplicación pertenece al candidato
+        aplicacion = get_object_or_404(
+            Cli056AplicacionVacante, 
+            id=aplicacion_id, 
+            candidato_101=candidato_id
+        )
+        
+        # Obtener la asignación del requisito
+        asignacion_requisito = get_object_or_404(Cli070AsignacionRequisito, id=requisito_id)
+        
+        # Verificar que el archivo fue enviado
+        if 'archivo_requisito' not in request.FILES:
+            return JsonResponse({'success': False, 'error': 'No se envió ningún archivo'}, status=400)
+        
+        archivo = request.FILES['archivo_requisito']
+        
+        # Validar tipo de archivo (solo PDF, JPG, PNG)
+        import os
+        ext = os.path.splitext(archivo.name)[1].lower()
+        extensiones_permitidas = ['.pdf', '.jpg', '.png']
+        if ext not in extensiones_permitidas:
+            return JsonResponse({
+                'success': False, 
+                'error': 'Solo se permiten archivos PDF, JPG y PNG'
+            }, status=400)
+        
+        # Validar tamaño del archivo (máximo 10 MB)
+        if archivo.size > 10 * 1024 * 1024:
+            return JsonResponse({'success': False, 'error': 'El archivo no puede superar los 10 MB'}, status=400)
+        
+        # Obtener el estado activo (id=1)
+        estado = get_object_or_404(Cat001Estado, id=1)
+        
+        # Obtener el usuario logueado
+        usuario = request.user
+        
+        # Crear o actualizar el requisito cargado
+        requisito_cargado, created = Cli079RequisitosCargado.objects.update_or_create(
+            aplicacion_vacante_056=aplicacion,
+            asignacion_requisito_070=asignacion_requisito,
+            defaults={
+                'archivo_requisito': archivo,
+                'usuario_cargado': usuario,
+                'estado': estado,
+            }
+        )
+        
+        mensaje = 'Documento cargado exitosamente' if created else 'Documento actualizado exitosamente'
+        
+        return JsonResponse({
+            'success': True,
+            'message': mensaje,
+            'requisito_id': requisito_cargado.id
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'Error al cargar el documento: {str(e)}'
+        }, status=500)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def guardar_respuestas_politicas(request, aplicacion_id):
+    """Vista para guardar las respuestas de políticas internas"""
+    try:
+        # Obtener el ID del candidato desde la sesión
+        candidato_id = request.session.get('candidato_id')
+        
+        # Verificar que la aplicación pertenece al candidato
+        aplicacion = get_object_or_404(
+            Cli056AplicacionVacante, 
+            id=aplicacion_id, 
+            candidato_101=candidato_id
+        )
+        
+        if request.method == 'POST':
+            import json
+            
+            # Obtener datos del FormData
+            respuestas_json_str = request.POST.get('respuestas', '{}')
+            respuestas = json.loads(respuestas_json_str) if respuestas_json_str else {}
+            
+            # Obtener la imagen de la firma
+            firma_file = request.FILES.get('firma')
+            
+            # Obtener o inicializar json_politicas_internas
+            politicas_guardadas = aplicacion.json_politicas_internas if aplicacion.json_politicas_internas else {}
+            if not isinstance(politicas_guardadas, dict):
+                politicas_guardadas = {}
+            
+            # Guardar todas las respuestas
+            from applications.cliente.models import Cli067PoliticasInternas
+            for politica_id_str, politica_data in respuestas.items():
+                try:
+                    politica_id = int(politica_id_str)
+                    politica_obj = Cli067PoliticasInternas.objects.get(id=politica_id)
+                    respuestas_json = politica_obj.respuestas_politica
+                    respuesta = politica_data.get('respuesta', '')
+                    preguntas = politica_data.get('preguntas', {})
+                    
+                    # Construir la estructura de respuesta según el JSON de la política
+                    respuesta_estructurada = {}
+                    
+                    if respuestas_json and isinstance(respuestas_json, dict):
+                        # Si tiene estructura si/no
+                        if "si" in respuestas_json or "no" in respuestas_json:
+                            respuesta_estructurada['respuesta'] = respuesta
+                            # Si la respuesta es "si" y hay preguntas, guardarlas
+                            if respuesta == "si" and preguntas:
+                                respuesta_estructurada['preguntas'] = preguntas
+                        else:
+                            # Si no tiene estructura si/no, guardar como texto
+                            respuesta_estructurada['respuesta'] = respuesta
+                    else:
+                        # Si no hay JSON, guardar como texto
+                        respuesta_estructurada['respuesta'] = respuesta
+                    
+                    # Guardar la respuesta para esta política
+                    politicas_guardadas[str(politica_id)] = respuesta_estructurada
+                    
+                except (Cli067PoliticasInternas.DoesNotExist, ValueError):
+                    # Si no se encuentra la política o hay error, guardar de forma simple
+                    politicas_guardadas[politica_id_str] = {
+                        'respuesta': politica_data.get('respuesta', ''),
+                        'preguntas': politica_data.get('preguntas', {})
+                    }
+            
+            # Guardar en el campo json_politicas_internas
+            aplicacion.json_politicas_internas = politicas_guardadas
+            aplicacion.save()
+            
+            # Guardar la firma en Cli080DocumentoFirmadoAplicacionVacante
+            if firma_file:
+                # Obtener o crear el documento firmado
+                documento_firmado, created = Cli080DocumentoFirmadoAplicacionVacante.objects.get_or_create(
+                    aplicacion_vacante_056=aplicacion,
+                    defaults={
+                        'usuario_firmante': request.user,
+                        'estado': get_object_or_404(Cat001Estado, pk=1),
+                        'ip_firmante': request.META.get('REMOTE_ADDR', '')
+                    }
+                )
+                
+                # Si ya existe, actualizar
+                if not created:
+                    documento_firmado.usuario_firmante = request.user
+                    documento_firmado.ip_firmante = request.META.get('REMOTE_ADDR', '')
+                
+                # Guardar la firma
+                documento_firmado.imagen_firmada.save(
+                    f'firma_{aplicacion.id}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png',
+                    firma_file,
+                    save=True
+                )
+                
+                documento_firmado.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Respuestas de políticas guardadas exitosamente.'
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'error': 'Método no permitido'
+            }, status=405)
+            
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'Error al guardar las respuestas: {str(e)}'
+        }, status=500)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def generar_declaracion_pdf(request, aplicacion_id):
+    """Vista para generar el PDF de declaración del candidato"""
+    try:
+        # Obtener el ID del candidato desde la sesión
+        candidato_id = request.session.get('candidato_id')
+        
+        # Verificar que la aplicación pertenece al candidato
+        aplicacion = get_object_or_404(
+            Cli056AplicacionVacante, 
+            id=aplicacion_id, 
+            candidato_101=candidato_id
+        )
+        
+        # Obtener información del candidato
+        candidato = aplicacion.candidato_101
+        nombre_completo = candidato.nombre_completo()
+        numero_documento = candidato.numero_documento or "N/A"
+        tipo_documento = "Cédula de Ciudadanía"  # Valor por defecto, puede ajustarse según necesidad
+        ciudad_documento = candidato.ciudad_id_004.nombre if candidato.ciudad_id_004 else "N/A"
+        fecha_nacimiento = candidato.fecha_nacimiento.strftime("%d/%m/%Y") if candidato.fecha_nacimiento else "N/A"
+        
+        # Obtener información de la vacante y cargo
+        vacante = aplicacion.vacante_id_052
+        cargo_postulado = vacante.cargo.nombre_cargo if vacante.cargo else "N/A"
+        
+        # Obtener información del cliente
+        cliente = vacante.cargo.cliente if vacante.cargo and vacante.cargo.cliente else None
+        nombre_empresa = cliente.razon_social if cliente else "N/A"
+        
+        # Ciudad de firma (usar ciudad del candidato)
+        ciudad_firma = ciudad_documento
+        
+        # Fecha actual
+        fecha_actual = datetime.now()
+        dia_firma = fecha_actual.day
+        meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+        mes_firma = meses[fecha_actual.month - 1]
+        anio_firma = fecha_actual.year
+        
+        # Información del responsable (usuario reclutador o usuario logueado)
+        responsable = aplicacion.usuario_reclutador if aplicacion.usuario_reclutador else request.user
+        nombre_responsable = responsable.get_full_name() if hasattr(responsable, 'get_full_name') and responsable.get_full_name() else responsable.username
+        cargo_responsable = "Responsable del Proceso de Selección"  # Valor por defecto
+        
+        # Obtener políticas internas del cliente
+        politicas_internas = []
+        if cliente:
+            politicas_internas = Cli051ClientePoliticas.objects.filter(
+                cliente=cliente,
+                estado_id=1
+            ).select_related('politica_interna')
+        
+        # Construir texto de políticas internas
+        texto_politicas = ""
+        if politicas_internas:
+            for politica in politicas_internas:
+                nombre_politica = politica.politica_interna.nombre
+                descripcion = politica.politica_interna.descripcion
+                respuestas_json = politica.politica_interna.respuestas_politica
+                
+                # Agregar la descripción de la política
+                texto_politicas += f"""
+                            
+                            {descripcion}"""
+                
+                # Verificar si hay opciones en el JSON
+                if respuestas_json and isinstance(respuestas_json, dict):
+                    try:
+                        # Verificar si tiene estructura con "si" y "no"
+                        if "si" in respuestas_json or "no" in respuestas_json:
+                            # Mostrar opciones Sí/No
+                            texto_politicas += f"""
+                            
+                            Respuesta: {{Sí}} {{No}}"""
+                            
+                            # Si hay preguntas adicionales para "si", mostrarlas
+                            if "si" in respuestas_json and isinstance(respuestas_json["si"], dict):
+                                preguntas_si = respuestas_json["si"]
+                                # Ordenar las preguntas por clave (pregunta1, pregunta2, etc.)
+                                preguntas_ordenadas = sorted(
+                                    [(k, v) for k, v in preguntas_si.items() if k.startswith("pregunta")],
+                                    key=lambda x: int(x[0].replace("pregunta", "")) if x[0].replace("pregunta", "").isdigit() else 999
+                                )
+                                
+                                for pregunta_key, pregunta_data in preguntas_ordenadas:
+                                    if isinstance(pregunta_data, dict):
+                                        pregunta_texto = pregunta_data.get("pregunta", "")
+                                        ayuda = pregunta_data.get("ayuda", "")
+                                        
+                                        if pregunta_texto:
+                                            if ayuda:
+                                                texto_politicas += f"""
+                            Si la respuesta es "Sí": {pregunta_texto} ({ayuda}): __________"""
+                                            else:
+                                                texto_politicas += f"""
+                            Si la respuesta es "Sí": {pregunta_texto}: __________"""
+                        else:
+                            # Si no tiene estructura si/no, mostrar solo línea
+                            texto_politicas += f"""
+                            
+                            Respuesta: __________"""
+                    except Exception as e:
+                        # Si hay error, mostrar solo línea
+                        texto_politicas += f"""
+                            
+                            Respuesta: __________"""
+                else:
+                    # Si no hay JSON, mostrar solo línea para escribir
+                    texto_politicas += f"""
+                            
+                            Respuesta: __________"""
+        
+        # Texto del documento con variables reemplazadas
+        texto_documento = f"""YO, {nombre_completo}, identificado(a) con {tipo_documento} No. {numero_documento} de {ciudad_documento}, nacido(a) el {fecha_nacimiento}, aspirando al cargo {cargo_postulado}, declaro que la información suministrada en este documento es verdadera y corresponde a mi situación actual.
+
+                            Autorizo a {nombre_empresa} para utilizar esta información en el proceso de selección y para realizar las verificaciones que considere necesarias, de acuerdo con la normatividad vigente y sus políticas internas.{texto_politicas}
+                            
+                            Entiendo que cualquier información falsa u omitida puede ser motivo de retiro del proceso de selección o de terminación de la relación laboral, si llegare a ser contratado(a).
+                            
+                            Firmo en {ciudad_firma}, a los {dia_firma} días del mes de {mes_firma} de {anio_firma}.
+
+                            _______________________________________________________
+                            Candidato: {nombre_completo}
+                            {tipo_documento} {numero_documento}
+                            
+
+                            _______________________________________________________
+                            Responsable del proceso
+                            Nombre: {nombre_responsable}
+                            Cargo: {cargo_responsable}"""
+
+        
+        
+        # Crear el buffer para el PDF
+        buffer = BytesIO()
+        
+        # Crear el documento PDF con márgenes más angostas y margen superior reducido
+        doc = SimpleDocTemplate(buffer, pagesize=A4,
+                                rightMargin=36, leftMargin=36,
+                                topMargin=30, bottomMargin=36)
+        
+        # Contenedor para los elementos del PDF
+        elements = []
+        
+        # Estilos
+        styles = getSampleStyleSheet()
+        
+        # Colores de la aplicación
+        color_primary = colors.HexColor('#B10022')
+        color_bg_primary_opacity = colors.HexColor('#F7E6E9')
+        
+        # ========== ENCABEZADO CON LOGO ==========
+        # Obtener el logo de TalentTray desde static
+        logo_path = os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo-talent-tray.png')
+        
+        # Crear tabla para el encabezado con logo más pequeño
+        header_data = []
+        if logo_path and os.path.exists(logo_path):
+            try:
+                # Logo más pequeño: 0.8*inch de ancho, 0.35*inch de alto
+                logo_img = RLImage(logo_path, width=0.8*inch, height=0.35*inch)
+                header_data.append([logo_img, ''])
+            except:
+                header_data.append(['', ''])
+        else:
+            header_data.append(['', ''])
+        
+        # Ancho total de la página A4 menos márgenes: 8.27*inch - 0.5*inch (36pt cada lado) = 7.77*inch
+        header_table = Table(header_data, colWidths=[1*inch, 6.77*inch])
+        header_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (0, 0), 0),
+            ('RIGHTPADDING', (0, 0), (0, 0), 0),
+            ('TOPPADDING', (0, 0), (-1, -1), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ]))
+        
+        elements.append(header_table)
+        elements.append(Spacer(1, 0.05*inch))  # Reducido a 0.05*inch
+        
+        # Línea divisoria con ancho ajustado al nuevo ancho de página
+        line_table = Table([['']], colWidths=[7.77*inch], rowHeights=[0.015*inch])
+        line_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, 0), color_primary),
+            ('TOPPADDING', (0, 0), (0, 0), 0),
+            ('BOTTOMPADDING', (0, 0), (0, 0), 0),
+        ]))
+        elements.append(line_table)
+        elements.append(Spacer(1, 0.1*inch))  # Reducido a 0.1*inch
+        
+        # Estilo personalizado para el título (más pequeño)
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=14,
+            textColor=color_primary,
+            spaceAfter=15,
+            alignment=TA_CENTER,
+            fontName='Helvetica-Bold'
+        )
+        
+        # Estilo para el cuerpo del texto
+        body_style = ParagraphStyle(
+            'CustomBody',
+            parent=styles['Normal'],
+            fontSize=11,
+            leading=16,
+            alignment=TA_JUSTIFY,
+            spaceAfter=12,
+            fontName='Helvetica'
+        )
+        
+        # Estilo para las firmas
+        signature_style = ParagraphStyle(
+            'CustomSignature',
+            parent=styles['Normal'],
+            fontSize=11,
+            leading=14,
+            alignment=TA_LEFT,
+            spaceAfter=6,
+            spaceBefore=20,
+            fontName='Helvetica'
+        )
+        
+        # Estilo para títulos de políticas (en rojo)
+        politica_titulo_style = ParagraphStyle(
+            'PoliticaTituloStyle',
+            parent=styles['Heading2'],
+            fontSize=12,
+            textColor=color_primary,
+            spaceAfter=8,
+            spaceBefore=15,
+            alignment=TA_LEFT,
+            fontName='Helvetica-Bold'
+        )
+        
+        # Título del documento
+        documento_title_style = ParagraphStyle(
+            'DocumentoTitle',
+            parent=styles['Heading1'],
+            fontSize=16,
+            textColor=color_primary,
+            spaceAfter=20,
+            alignment=TA_CENTER,
+            fontName='Helvetica-Bold'
+        )
+        
+        # Título de sección
+        title = Paragraph("POLÍTICAS INTERNAS", title_style)
+        elements.append(title)
+        elements.append(Spacer(1, 0.15*inch))
+        
+        # Cuerpo del documento
+        parrafos = texto_documento.split('\n\n')
+        for i, parrafo in enumerate(parrafos):
+            if parrafo.strip():
+                # Detectar si es una sección de firma o espacio para respuesta
+                if parrafo.startswith('Firma') or parrafo.startswith('________________________________') or parrafo.startswith('Espacio para') or parrafo.startswith('Candidato:') or parrafo.startswith('Responsable'):
+                    p = Paragraph(parrafo.replace('\n', '<br/>'), signature_style)
+                    elements.append(p)
+                    elements.append(Spacer(1, 0.15*inch))
+                # Detectar si es una respuesta seguida de una pregunta (reducir espacio)
+                elif 'Respuesta:' in parrafo and i + 1 < len(parrafos) and 'Si la respuesta es' in parrafos[i + 1]:
+                    p = Paragraph(parrafo.replace('\n', '<br/>'), body_style)
+                    elements.append(p)
+                    elements.append(Spacer(1, 0.05*inch))  # Espacio reducido entre respuesta y pregunta
+                # Detectar si es una pregunta adicional (reducir espacio)
+                elif 'Si la respuesta es' in parrafo:
+                    p = Paragraph(parrafo.replace('\n', '<br/>'), body_style)
+                    elements.append(p)
+                    elements.append(Spacer(1, 0.05*inch))  # Espacio reducido
+                else:
+                    p = Paragraph(parrafo.replace('\n', '<br/>'), body_style)
+                    elements.append(p)
+                    elements.append(Spacer(1, 0.15*inch))
+        
+        # Construir el PDF
+        doc.build(elements)
+        
+        # Obtener el valor del buffer y crear la respuesta HTTP
+        pdf = buffer.getvalue()
+        buffer.close()
+        
+        # Crear la respuesta HTTP
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="declaracion_{aplicacion_id}_{datetime.now().strftime("%Y%m%d")}.pdf"'
+        response.write(pdf)
+        
+        return response
+        
+    except Exception as e:
+        messages.error(request, f'Error al generar el PDF: {str(e)}')
+        return redirect('vacantes:vacante_candidato_aplicadas_detalle', pk=aplicacion_id)

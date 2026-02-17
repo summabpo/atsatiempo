@@ -1,6 +1,7 @@
 {% extends 'admin/layout/dashboard_base.html' %} 
 {% load static %}
 {% load crispy_forms_tags %}
+{% load custom_tags %}
 
 {% block title %}
 Mis Vacantes aplicadas
@@ -10,6 +11,14 @@ Mis Vacantes aplicadas
 <div class="main-content-container overflow-hidden">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
         <h3 class="mb-0" style="color: #B10022;">DETALLE VACANTE APLICADO</h3>
+        <div class="d-flex gap-2">
+            <a href="{% url 'vacantes:generar_declaracion_pdf' vacancy.id %}" 
+               class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-inline-flex align-items-center gap-2"
+               target="_blank">
+                <span class="material-symbols-outlined">picture_as_pdf</span>
+                <span>Generar Declaración PDF</span>
+            </a>
+        </div>
         <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
             <ol class="breadcrumb align-items-center mb-0 lh-1">
                 <li class="breadcrumb-item">
@@ -29,21 +38,296 @@ Mis Vacantes aplicadas
             </ol>
         </nav>
     </div>
-    <div class="card bg-white border-0 rounded-3 mb-4">
-        <div class="card-body p-4">
-            
-        </div>
-    </div>
     <div class="row">
-		<div class="col-md-6">
+		<div class="col-md-4">
             {% include "admin/vacancy/common_template/info_vacancy.html" %}
         </div>
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                    <h2 class="fs-18 fw-semibold mb-0 text-primary">Políticas Internas</h2>
+                </div>
+                <div class="card-body p-4">
+                    {% if politicas_internas %}
+                        <ul class="ps-0 mb-3 list-unstyled">
+                            <li class="d-flex align-items-center justify-content-between mb-3 p-3 border rounded">
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex align-items-center">
+                                        <span class="material-symbols-outlined me-2 text-primary">policy</span>
+                                        <span class="fw-medium">Políticas Internas a Responder<small class="text-muted ms-4 mt-1">
+                                            {% if politicas_finalizadas %}
+                                                <span class="badge bg-success">Finalizada</span>
+                                            {% else %}
+                                                <span class="badge bg-primary">Pendiente</span>
+                                            {% endif %}
+                                        </small></span>
+                                    </div>
+                                </small>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalPoliticasInternas">
+                                        {% if politicas_finalizadas %}
+                                            Ver Respuestas
+                                        {% else %}
+                                            Responder
+                                        {% endif %}
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                        
+                        <!-- Modal único para todas las políticas -->
+                        <div class="modal fade" id="modalPoliticasInternas" tabindex="-1" aria-labelledby="modalPoliticasInternasLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalPoliticasInternasLabel">
+                                            Políticas Internas
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form id="formPoliticasInternas" data-aplicacion-id="{{ vacancy.id }}">
+                                        {% csrf_token %}
+                                        <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                                            {% for politica in politicas_internas %}
+                                                {% with politica_id=politica.politica_interna.id respuestas_guardadas=json_politicas_internas %}
+                                                <div class="mb-4 p-3 border rounded politica-item" data-politica-id="{{ politica_id }}">
+                                                    <div class="mb-3">
+                                                        <h6 class="fw-semibold mb-2 text-primary">{{ politica.politica_interna.nombre }}</h6>
+                                                        <p class="text-secondary small mb-3">{{ politica.politica_interna.descripcion }}</p>
+                                                    </div>
+                                                    
+                                                    {% if politica.politica_interna.respuestas_politica %}
+                                                        {% with respuestas_json=politica.politica_interna.respuestas_politica %}
+                                                            {% if respuestas_json.si or respuestas_json.no %}
+                                                                <!-- Formulario con opciones Sí/No -->
+                                                                <div class="mb-3">
+                                                                    <label class="form-label fw-semibold">Respuesta:</label>
+                                                                    <div class="d-flex gap-3">
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input politica-respuesta-si-no" 
+                                                                                   type="radio" 
+                                                                                   name="politica_{{ politica_id }}_respuesta" 
+                                                                                   id="politica_{{ politica_id }}_si" 
+                                                                                   value="si"
+                                                                                   {% if respuestas_guardadas|get_item:politica_id and respuestas_guardadas|get_item:politica_id.respuesta == "si" %}checked{% endif %}>
+                                                                            <label class="form-check-label" for="politica_{{ politica_id }}_si">
+                                                                                Sí
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input politica-respuesta-si-no" 
+                                                                                   type="radio" 
+                                                                                   name="politica_{{ politica_id }}_respuesta" 
+                                                                                   id="politica_{{ politica_id }}_no" 
+                                                                                   value="no"
+                                                                                   {% if respuestas_guardadas|get_item:politica_id and respuestas_guardadas|get_item:politica_id.respuesta == "no" %}checked{% endif %}>
+                                                                            <label class="form-check-label" for="politica_{{ politica_id }}_no">
+                                                                                No
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <!-- Preguntas adicionales si la respuesta es "Sí" -->
+                                                                {% if respuestas_json.si %}
+                                                                    <div class="preguntas-si" style="display: {% if respuestas_guardadas|get_item:politica_id and respuestas_guardadas|get_item:politica_id.respuesta == "si" %}block{% else %}none{% endif %};">
+                                                                        {% for key, pregunta_data in respuestas_json.si.items %}
+                                                                            {% if key|slice:":8" == "pregunta" %}
+                                                                                <div class="mb-3">
+                                                                                    <label class="form-label fw-semibold">
+                                                                                        Si la respuesta es "Sí": {{ pregunta_data.pregunta }}
+                                                                                        {% if pregunta_data.ayuda %}
+                                                                                            <small class="text-muted">({{ pregunta_data.ayuda }})</small>
+                                                                                        {% endif %}
+                                                                                    </label>
+                                                                                    <input type="text" 
+                                                                                           class="form-control politica-pregunta-si" 
+                                                                                           name="politica_{{ politica_id }}_pregunta_{{ key }}"
+                                                                                           value="{% if respuestas_guardadas|get_item:politica_id and respuestas_guardadas|get_item:politica_id.preguntas %}{{ respuestas_guardadas|get_item:politica_id.preguntas|get_item:key }}{% endif %}"
+                                                                                           placeholder="Ingrese su respuesta">
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% else %}
+                                                                <!-- Campo de texto simple si no hay estructura si/no -->
+                                                                <div class="mb-3">
+                                                                    <label class="form-label fw-semibold">Respuesta:</label>
+                                                                    <input type="text" 
+                                                                           class="form-control politica-respuesta-texto" 
+                                                                           name="politica_{{ politica_id }}_respuesta"
+                                                                           value="{% if respuestas_guardadas|get_item:politica_id %}{{ respuestas_guardadas|get_item:politica_id.respuesta }}{% endif %}"
+                                                                           placeholder="Ingrese su respuesta">
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endwith %}
+                                                    {% else %}
+                                                        <!-- Campo de texto simple si no hay JSON -->
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold">Respuesta:</label>
+                                                            <input type="text" 
+                                                                   class="form-control politica-respuesta-texto" 
+                                                                   name="politica_{{ politica_id }}_respuesta"
+                                                                   value="{% if respuestas_guardadas|get_item:politica_id %}{{ respuestas_guardadas|get_item:politica_id.respuesta }}{% endif %}"
+                                                                   placeholder="Ingrese su respuesta">
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                {% endwith %}
+                                            {% endfor %}
+                                            
+                                            <!-- Sección de Firma -->
+                                            <div class="mt-4 p-3 border rounded bg-light">
+                                                <h6 class="fw-semibold mb-3">Firma</h6>
+                                                
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-semibold">Firma:</label>
+                                                    <div class="border rounded p-2 bg-white">
+                                                        <canvas id="canvasFirma" style="border: 1px solid #ddd; cursor: crosshair; width: 100%; max-width: 100%; height: 200px;"></canvas>
+                                                    </div>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="btnLimpiarFirma">Limpiar Firma</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div id="mensajePoliticasInternas" class="alert d-none" role="alert"></div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">Guardar Todas las Respuestas</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No hay políticas internas disponibles.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                    <h2 class="fs-18 fw-semibold mb-0 text-primary">Requisitos</h2>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="ps-0 mb-3 list-unstyled">
+                        {% for req_info in requisitos_con_info %}
+                            {% with r=req_info.requisito requisito_cargado=req_info.cargado %}
+                            <li class="d-flex align-items-center justify-content-between mb-3 p-3 border rounded">
+                                <div class="d-flex align-items-center">
+                                    <span class="material-symbols-outlined me-2 text-primary">check</span>
+                                    <span class="fw-medium">{{ r.requisito.nombre|upper }}</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    {% if requisito_cargado and requisito_cargado.archivo_requisito %}
+                                        <button type="button" class="btn bg-success bg-opacity-10 fw-medium text-success py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalVerRequisito{{ r.id }}">
+                                            Ver Documento
+                                        </button>
+                                    {% endif %}
+                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalRequisito{{ r.id }}">
+                                        {% if requisito_cargado and requisito_cargado.archivo_requisito %}
+                                            Actualizar Documento
+                                        {% else %}
+                                            Cargar Documento
+                                        {% endif %}
+                                    </button>
+                                </div>
+                            </li>
+                            
+                            <!-- Modal para ver documento cargado -->
+                            {% if requisito_cargado and requisito_cargado.archivo_requisito %}
+                            <div class="modal fade" id="modalVerRequisito{{ r.id }}" tabindex="-1" aria-labelledby="modalVerRequisitoLabel{{ r.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalVerRequisitoLabel{{ r.id }}">Ver Documento - {{ r.requisito.nombre|upper }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <p class="mb-3"><strong>Fecha de carga:</strong> {{ requisito_cargado.fecha_cargado|date:"d/m/Y H:i" }}</p>
+                                            </div>
+                                            <div class="border rounded p-3" style="min-height: 400px;">
+                                                {% with archivo_url=requisito_cargado.archivo_requisito.url %}
+                                                    {% if archivo_url|slice:"-4:" == ".pdf" or archivo_url|slice:"-4:" == ".PDF" %}
+                                                        <iframe src="{{ archivo_url }}" width="100%" height="600px" style="border: none;"></iframe>
+                                                    {% elif archivo_url|slice:"-4:" == ".jpg" or archivo_url|slice:"-4:" == ".JPG" or archivo_url|slice:"-4:" == ".png" or archivo_url|slice:"-4:" == ".PNG" %}
+                                                        <img src="{{ archivo_url }}" alt="Documento" class="img-fluid" style="max-width: 100%; height: auto;">
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="{{ requisito_cargado.archivo_requisito.url }}" class="btn btn-primary" download>Descargar</a>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Modal para cargar/actualizar documento -->
+                            <div class="modal fade" id="modalRequisito{{ r.id }}" tabindex="-1" aria-labelledby="modalRequisitoLabel{{ r.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalRequisitoLabel{{ r.id }}">
+                                                {% if requisito_cargado and requisito_cargado.archivo_requisito %}
+                                                    Actualizar Documento - {{ r.requisito.nombre|upper }}
+                                                {% else %}
+                                                    Cargar Documento - {{ r.requisito.nombre|upper }}
+                                                {% endif %}
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form id="formRequisito{{ r.id }}" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                {% if requisito_cargado and requisito_cargado.archivo_requisito %}
+                                                    <div class="alert alert-info mb-3">
+                                                        <small>Ya existe un documento cargado. Al seleccionar un nuevo archivo, se reemplazará el documento actual.</small>
+                                                    </div>
+                                                {% endif %}
+                                                <div class="mb-3">
+                                                    <label for="archivoRequisito{{ r.id }}" class="form-label">Seleccionar Archivo</label>
+                                                    <input type="file" class="form-control" id="archivoRequisito{{ r.id }}" name="archivo_requisito" accept=".pdf,.jpg,.png" required>
+                                                    <small class="form-text text-muted">Formatos permitidos: PDF, JPG, PNG. Tamaño máximo: 10 MB</small>
+                                                </div>
+                                                <div id="mensajeRequisito{{ r.id }}" class="alert d-none" role="alert"></div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">Guardar Documento</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+            </div>
+
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                    <h2 class="fs-18 fw-semibold mb-0 text-primary">Pruebas</h2>
+                </div>
+                <div class="card-body p-4">
+                    
+                </div>
+            </div>
+            
+
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                    <h2 class="fs-18 fw-semibold mb-0 text-primary">Historial de Aplicación</h2>
+                </div>
                 <div class="card-body p-4">
                     <div class="mb-4">
-                        <h3 class="mb-0 text-primary">Historial de Aplicación</h3>
-                    </div>
                     <div class="timeline-wrap">
                         {% for h in historial %}
                             <div class="timeline-item-2 mb-5">
@@ -90,7 +374,290 @@ Mis Vacantes aplicadas
 {% endblock %}
 
 {% block js %} 
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Manejar el envío de formularios de requisitos
+        {% for req_info in requisitos_con_info %}
+        {% with r=req_info.requisito %}
+        document.getElementById('formRequisito{{ r.id }}').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const formData = new FormData(form);
+            const mensajeDiv = document.getElementById('mensajeRequisito{{ r.id }}');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // Deshabilitar el botón durante el envío
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Guardando...';
+            
+            // Limpiar mensajes anteriores
+            mensajeDiv.classList.add('d-none');
+            mensajeDiv.classList.remove('alert-success', 'alert-danger');
+            
+            fetch('{% url "vacantes:upload_requisito_document" vacancy.id r.id %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mensajeDiv.textContent = data.message;
+                    mensajeDiv.classList.remove('d-none');
+                    mensajeDiv.classList.add('alert-success');
+                    
+                    // Cerrar el modal después de 1.5 segundos y recargar la página
+                    setTimeout(function() {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('modalRequisito{{ r.id }}'));
+                        modal.hide();
+                        form.reset();
+                        mensajeDiv.classList.add('d-none');
+                        // Recargar la página para mostrar el botón "Ver Documento"
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    mensajeDiv.textContent = data.error || 'Error al cargar el documento';
+                    mensajeDiv.classList.remove('d-none');
+                    mensajeDiv.classList.add('alert-danger');
+                }
+            })
+            .catch(error => {
+                mensajeDiv.textContent = 'Error de conexión. Por favor, intente nuevamente.';
+                mensajeDiv.classList.remove('d-none');
+                mensajeDiv.classList.add('alert-danger');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Guardar Documento';
+            });
+        });
+        {% endwith %}
+        {% endfor %}
+    });
     
+    // Manejo del formulario de políticas internas (modal único)
+    {% if politicas_internas %}
+    (function() {
+        const form = document.getElementById('formPoliticasInternas');
+        if (!form) return;
+        
+        // Inicializar SignaturePad para firma
+        let signaturePadFirma = null;
+        
+        // Función para ajustar el tamaño del canvas
+        function resizeCanvas(canvas) {
+            const container = canvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            
+            // Establecer el tamaño del canvas en píxeles CSS
+            canvas.style.width = '100%';
+            canvas.style.height = '200px';
+            
+            // Establecer el tamaño interno del canvas (considerando DPR)
+            canvas.width = rect.width * dpr;
+            canvas.height = 200 * dpr;
+            
+            // Escalar el contexto para que coincida con el DPR
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            
+            return canvas;
+        }
+        
+        // Inicializar cuando se abre el modal
+        const modal = document.getElementById('modalPoliticasInternas');
+        if (modal) {
+            modal.addEventListener('shown.bs.modal', function() {
+                // Inicializar firma
+                const canvasFirma = document.getElementById('canvasFirma');
+                if (canvasFirma && !signaturePadFirma) {
+                    // Ajustar tamaño del canvas
+                    resizeCanvas(canvasFirma);
+                    
+                    signaturePadFirma = new SignaturePad(canvasFirma, {
+                        backgroundColor: 'rgb(255, 255, 255)',
+                        penColor: 'rgb(0, 0, 0)'
+                    });
+                    
+                    // Ajustar tamaño cuando cambia el tamaño de la ventana
+                    window.addEventListener('resize', function() {
+                        if (signaturePadFirma && !signaturePadFirma.isEmpty()) {
+                            const data = signaturePadFirma.toData();
+                            resizeCanvas(canvasFirma);
+                            signaturePadFirma.clear();
+                            signaturePadFirma.fromData(data);
+                        } else {
+                            resizeCanvas(canvasFirma);
+                        }
+                    });
+                }
+            });
+            
+            // Limpiar al cerrar el modal
+            modal.addEventListener('hidden.bs.modal', function() {
+                if (signaturePadFirma) {
+                    signaturePadFirma.clear();
+                }
+            });
+        }
+        
+        // Botón para limpiar
+        document.getElementById('btnLimpiarFirma')?.addEventListener('click', function() {
+            if (signaturePadFirma) {
+                signaturePadFirma.clear();
+            }
+        });
+        
+        // Mostrar/ocultar preguntas adicionales cuando se selecciona "Sí"
+        form.querySelectorAll('.politica-respuesta-si-no').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                const politicaItem = this.closest('.politica-item');
+                const preguntasSi = politicaItem.querySelector('.preguntas-si');
+                
+                if (this.value === 'si' && preguntasSi) {
+                    preguntasSi.style.display = 'block';
+                } else if (preguntasSi) {
+                    preguntasSi.style.display = 'none';
+                    // Limpiar campos de preguntas si se cambia a "No"
+                    preguntasSi.querySelectorAll('.politica-pregunta-si').forEach(function(input) {
+                        input.value = '';
+                    });
+                }
+            });
+        });
+        
+        // Manejar el envío del formulario
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const aplicacionId = form.dataset.aplicacionId;
+            const mensajeDiv = document.getElementById('mensajePoliticasInternas');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // Recopilar todas las respuestas
+            const respuestas = {};
+            
+            form.querySelectorAll('.politica-item').forEach(function(item) {
+                const politicaId = item.dataset.politicaId;
+                const politicaData = {};
+                
+                // Obtener respuesta principal (Sí/No o texto)
+                const respuestaSiNo = item.querySelector('input[name^="politica_' + politicaId + '_respuesta"]:checked');
+                const respuestaTexto = item.querySelector('.politica-respuesta-texto');
+                
+                if (respuestaSiNo) {
+                    politicaData.respuesta = respuestaSiNo.value;
+                    
+                    // Si es "Sí", obtener las preguntas adicionales
+                    if (respuestaSiNo.value === 'si') {
+                        const preguntas = {};
+                        item.querySelectorAll('.politica-pregunta-si').forEach(function(input) {
+                            const preguntaKey = input.name.split('_').pop();
+                            preguntas[preguntaKey] = input.value;
+                        });
+                        if (Object.keys(preguntas).length > 0) {
+                            politicaData.preguntas = preguntas;
+                        }
+                    }
+                } else if (respuestaTexto) {
+                    politicaData.respuesta = respuestaTexto.value;
+                }
+                
+                if (politicaData.respuesta) {
+                    respuestas[politicaId] = politicaData;
+                }
+            });
+            
+            // Validar que al menos haya una respuesta
+            if (Object.keys(respuestas).length === 0) {
+                mensajeDiv.textContent = 'Por favor, complete al menos una respuesta.';
+                mensajeDiv.classList.remove('d-none', 'alert-success');
+                mensajeDiv.classList.add('alert-warning');
+                return;
+            }
+            
+            // Validar que haya firma
+            if (!signaturePadFirma || signaturePadFirma.isEmpty()) {
+                mensajeDiv.textContent = 'Por favor, complete la firma.';
+                mensajeDiv.classList.remove('d-none', 'alert-success');
+                mensajeDiv.classList.add('alert-warning');
+                return;
+            }
+            
+            // Obtener la imagen de la firma como base64
+            const firmaDataURL = signaturePadFirma.toDataURL('image/png');
+            
+            // Convertir base64 a blob para enviar
+            function dataURLtoBlob(dataurl) {
+                const arr = dataurl.split(',');
+                const mime = arr[0].match(/:(.*?);/)[1];
+                const bstr = atob(arr[1]);
+                let n = bstr.length;
+                const u8arr = new Uint8Array(n);
+                while(n--){
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                return new Blob([u8arr], {type:mime});
+            }
+            
+            const firmaBlob = dataURLtoBlob(firmaDataURL);
+            
+            // Crear FormData para enviar la imagen
+            const formData = new FormData();
+            formData.append('respuestas', JSON.stringify(respuestas));
+            formData.append('firma', firmaBlob, 'firma.png');
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            
+            // Enviar datos vía AJAX
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Guardando...';
+            mensajeDiv.classList.add('d-none');
+            
+            // Enviar todas las respuestas y firmas
+            fetch('{% url "vacantes:guardar_respuestas_politicas" vacancy.id %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mensajeDiv.textContent = data.message || 'Respuestas guardadas exitosamente.';
+                    mensajeDiv.classList.remove('d-none', 'alert-danger', 'alert-warning');
+                    mensajeDiv.classList.add('alert-success');
+                    
+                    // Cerrar el modal después de 1.5 segundos y recargar la página
+                    setTimeout(function() {
+                        const modal = bootstrap.Modal.getInstance(form.closest('.modal'));
+                        modal.hide();
+                        mensajeDiv.classList.add('d-none');
+                        // Recargar la página para actualizar el estado
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    mensajeDiv.textContent = data.error || 'Error al guardar las respuestas';
+                    mensajeDiv.classList.remove('d-none', 'alert-success');
+                    mensajeDiv.classList.add('alert-danger');
+                }
+            })
+            .catch(error => {
+                mensajeDiv.textContent = 'Error de conexión. Por favor, intente nuevamente.';
+                mensajeDiv.classList.remove('d-none', 'alert-success');
+                mensajeDiv.classList.add('alert-danger');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Guardar Todas las Respuestas';
+            });
+        });
+    })();
+    {% endif %}
 </script>  
 {% endblock js %}

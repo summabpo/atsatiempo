@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Count
 from applications.common.models import Cat001Estado, Cat004Ciudad
-from applications.cliente.models import Cli051Cliente
+from applications.cliente.models import Cli051Cliente, Cli069Requisito, Cli070AsignacionRequisito
 from applications.candidato.models import Can101Candidato
 from applications.services.choices import ESTADO_APLICACION_CHOICES_STATIC, ESTADO_APLICACION_COLOR_STATIC, ESTADO_RECLUTADO_CHOICES_STATIC
 from applications.usuarios.models import UsuarioBase
@@ -22,6 +22,8 @@ class Cli056AplicacionVacante(models.Model):
     usuario_reclutador = models.ForeignKey(UsuarioBase, on_delete=models.SET_NULL, null=True, blank=True, related_name='aplicaciones_reclutador')
     registro_reclutamiento = models.JSONField(null=True, blank=True)
     json_match_inicial = models.JSONField(null=True, blank=True)
+    json_politicas_internas = models.JSONField(null=True, blank=True)
+
     def __str__(self):
         return str(self.id)
 
@@ -100,3 +102,37 @@ class Cli063AplicacionVacanteHistorial(models.Model):
         db_table = 'cli_063_aplicacion_vacante_historial'
         verbose_name = 'Historial de Aplicación a Vacante'
         verbose_name_plural = 'Historiales de Aplicaciones a Vacantes'
+
+
+class Cli079RequisitosCargado(models.Model):
+    aplicacion_vacante_056 = models.ForeignKey(Cli056AplicacionVacante, on_delete=models.CASCADE, related_name='requisitos_cargados')
+    asignacion_requisito_070 = models.ForeignKey(Cli070AsignacionRequisito, on_delete=models.CASCADE, related_name='requisitos_cargados')
+    archivo_requisito = models.FileField(upload_to='media_uploads/requisitos/', blank=True, null=True, verbose_name="Archivo Requisito")
+    fecha_cargado = models.DateTimeField(auto_now_add=True)
+    usuario_cargado = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, related_name='requisitos_cargados')
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, related_name='requisitos_cargados')
+
+    def __str__(self):
+        return f"Requisito {self.asignacion_requisito_070.requisito.nombre} cargado para la aplicación {self.aplicacion_vacante_056.id}"
+
+    class Meta:
+        db_table = 'cli_079_requisitos_cargado'
+        verbose_name = 'REQUISITO CARGADO'
+        verbose_name_plural = 'REQUISITOS CARGADOS'
+        unique_together = ('aplicacion_vacante_056', 'asignacion_requisito_070')
+
+class Cli080DocumentoFirmadoAplicacionVacante(models.Model):
+    aplicacion_vacante_056 = models.ForeignKey(Cli056AplicacionVacante, on_delete=models.CASCADE, related_name='documentos_firmar')
+    imagen_firmada = models.ImageField(upload_to='media_uploads/firmas/', blank=True, null=True, verbose_name="Imagen Firma")
+    ip_firmante = models.CharField(max_length=100, blank=True, null=True)
+    fecha_firma_hora_ip = models.DateTimeField(auto_now_add=True)
+    usuario_firmante = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, related_name='documentos_firmados')
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, related_name='documentos_firmados')
+
+    def __str__(self):
+        return f"Documento firmado para la aplicación {self.aplicacion_vacante_056.id}"
+
+    class Meta:
+        db_table = 'cli_080_documentos_firmar_aplicacion_vacante'
+        verbose_name = 'DOCUMENTO FIRMAR APLICACIÓN A VACANTE'
+        verbose_name_plural = 'DOCUMENTOS FIRMAR APLICACIONES A VACANTES'
