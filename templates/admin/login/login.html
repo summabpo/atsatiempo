@@ -83,7 +83,15 @@
 		<!-- jQuery (requerido por Select2) -->
 		<script src="{% static 'admin/js/jquery-3.6.0.min.js' %}"></script>
 		<script src="{% static 'admin/js/custom/custom.js' %}"></script>
-		
+		<script>
+
+		function enableSubmit() {
+
+			document.getElementById("btnSubmit").disabled = false;
+
+		}
+
+		</script>
 		<script>
 			{% if messages %}
 				{% for message in messages %}
