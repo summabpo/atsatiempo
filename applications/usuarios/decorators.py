@@ -10,7 +10,6 @@ def validar_permisos(*nombres_permisos):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if not request.user.is_authenticated:
-                print('------1------')
                 messages.error(request, "Debes iniciar sesión para acceder a esta página.")
                 return redirect('accesses:login')
             
@@ -20,7 +19,6 @@ def validar_permisos(*nombres_permisos):
 
             permisos = Permiso.objects.filter(nombre__in=nombres_permisos)
             if not permisos:
-                print('------2------')
                 messages.error(request, "Error de configuración: Permisos no encontrados.")
                 return redirect('accesses:acceso_denegado')
 
@@ -33,10 +31,8 @@ def validar_permisos(*nombres_permisos):
             request.permisos_usuario = list(permisos_usuario)
 
             if permisos_usuario:
-                print('------3------')
                 return view_func(request, *args, **kwargs)
             else:
-                print('------4------')
                 messages.error(request, 'No Cuenta con permisos para acceder a este modulo.')
                 return redirect('accesses:acceso_denegado')
                 # raise PermissionDenied

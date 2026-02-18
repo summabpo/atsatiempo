@@ -57,7 +57,11 @@ class SignupFormCandidato(forms.Form):
 
     ## catpchat 
     captcha = ReCaptchaField(
-        widget=ReCaptchaV2Checkbox
+        widget=ReCaptchaV2Checkbox(
+            attrs={
+                'data-callback': 'enableSubmit'
+            }
+        )
     )
 
 
@@ -133,5 +137,11 @@ class SignupFormCandidato(forms.Form):
                 ),
                 css_class='row'
             ),
-            Submit('submit', 'Crear', css_class='btn btn-lg btn-primary w-100 mb-5'),
+            Submit(
+                'submit',
+                'Continuar',
+                css_class='btn btn-lg btn-primary w-100 mb-5',
+                css_id='btnSubmit',
+                disabled=True
+            )
         )

@@ -390,13 +390,10 @@ def login_view(request):
                                 request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
 
                             if cliente.tipo_cliente == '1':
-                                print('Standard')
                                 request.session['tipo_cliente'] = 'Standard'
                             elif cliente.tipo_cliente == '2':
-                                print('Headhunter')
                                 request.session['tipo_cliente'] = 'Headhunter'
                             elif cliente.tipo_cliente == '3':
-                                print('Asignado')
                                 request.session['tipo_cliente'] = 'Asignado'
 
                         # Grupo 4 Cliente Entrevistador

@@ -14,9 +14,6 @@ class PreguntasReclutamiento(forms.Form):
     def __init__(self, vacante_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
         preguntas = get_vacanty_questions(vacante_id)
-        print("--------------------------------")
-        print(preguntas)
-        print("--------------------------------")
         
         # Configurar el helper una sola vez
         self.helper = FormHelper()

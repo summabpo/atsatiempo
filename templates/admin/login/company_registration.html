@@ -69,7 +69,11 @@
 		<script src="{% static 'admin/js/jquery-3.6.0.min.js' %}"></script>
 		<script src="{% static 'admin/js/select2.js' %}"></script>
         <script src="{% static 'admin/js/custom/select2.js' %}"></script>
-
+		<script>
+			function enableSubmit() {
+				document.getElementById("btnSubmit").disabled = false;
+			}
+		</script>
 		<script>
             initializeSelect2('#id_city');
 
