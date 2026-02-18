@@ -34,7 +34,11 @@ BASE_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'storages',
+    'django_recaptcha',
 ]
+
+
+SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
 
 LOCAL_APPS = [
     # Generated applications
@@ -54,6 +58,7 @@ LOCAL_APPS = [
 ]
 
 THIRD_APPS = [
+    
     # Crispy Forms
     'crispy_forms',
     "crispy_bootstrap5",
@@ -170,6 +175,11 @@ EMAIL_FILE_PATH = None
 EMAIL_FROM = None
 EMAIL_SUBJECT_PREFIX = '[Django] '
 
+
+
+## catpcha
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
 
 
 LOGIN_URL = '/'

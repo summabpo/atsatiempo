@@ -1,7 +1,10 @@
 import re, os
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Submit, HTML
+from crispy_forms.layout import Layout, Row, Column, Submit, Div, Field 
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
+
 
 class SignupFormCandidato(forms.Form):
 
@@ -52,6 +55,10 @@ class SignupFormCandidato(forms.Form):
         required=True
     )
 
+    ## catpchat 
+    captcha = ReCaptchaField(
+        widget=ReCaptchaV2Checkbox
+    )
 
 
     def clean(self):
@@ -117,6 +124,13 @@ class SignupFormCandidato(forms.Form):
             Row(
                 Column('password1', css_class='form-group mb-0'),
                 Column('password2', css_class='form-group mb-0'),
+                css_class='row'
+            ),
+            Row(
+                Div(
+                    Field('captcha'),
+                    css_class='d-flex justify-content-center mb-3'
+                ),
                 css_class='row'
             ),
             Submit('submit', 'Crear', css_class='btn btn-lg btn-primary w-100 mb-5'),
