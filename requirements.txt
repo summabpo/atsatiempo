@@ -20,3 +20,4 @@ tzdata==2024.1
 urllib3==2.2.3
 virtualenv==20.24.5
 reportlab==4.1.0
+django-recaptcha==4.1.0
