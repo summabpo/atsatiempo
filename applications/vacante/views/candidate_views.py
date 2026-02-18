@@ -23,14 +23,339 @@ from django.contrib.staticfiles import finders
 from io import BytesIO
 from datetime import datetime
 import os
+import uuid
+import string
+import secrets
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as RLImage
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_JUSTIFY
+from django.core.files.base import ContentFile
 
 from applications.vacante.views.common_view import get_politicas_internas, get_pruebas, get_requisitos
+
+def generar_codigo_unico():
+    """Genera un código único alfanumérico"""
+    characters = string.ascii_uppercase + string.digits
+    return ''.join(secrets.choice(characters) for _ in range(12))
+
+def generar_pdf_documento_firmado(aplicacion, fecha_firma=None, ip_firmante=None, codigo_unico=None):
+    """Función auxiliar para generar el PDF del documento firmado"""
+    if fecha_firma is None:
+        fecha_firma = datetime.now()
+    
+    # Obtener información del candidato
+    candidato = aplicacion.candidato_101
+    nombre_completo = candidato.nombre_completo()
+    numero_documento = candidato.numero_documento or "N/A"
+    tipo_documento = "Cédula de Ciudadanía"
+    ciudad_documento = candidato.ciudad_id_004.nombre if candidato.ciudad_id_004 else "N/A"
+    fecha_nacimiento = candidato.fecha_nacimiento.strftime("%d/%m/%Y") if candidato.fecha_nacimiento else "N/A"
+    
+    # Obtener información de la vacante y cargo
+    vacante = aplicacion.vacante_id_052
+    cargo_postulado = vacante.cargo.nombre_cargo if vacante.cargo else "N/A"
+    
+    # Obtener información del cliente
+    cliente = vacante.cargo.cliente if vacante.cargo and vacante.cargo.cliente else None
+    nombre_empresa = cliente.razon_social if cliente else "N/A"
+    
+    # Ciudad de firma
+    ciudad_firma = ciudad_documento
+    
+    # Fecha de firma
+    dia_firma = fecha_firma.day
+    meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+    mes_firma = meses[fecha_firma.month - 1]
+    anio_firma = fecha_firma.year
+    hora_firma = fecha_firma.strftime("%H:%M:%S")
+    fecha_firma_str = fecha_firma.strftime("%d/%m/%Y")
+    
+    # Información del responsable
+    responsable = aplicacion.usuario_reclutador if aplicacion.usuario_reclutador else None
+    nombre_responsable = responsable.get_full_name() if responsable and hasattr(responsable, 'get_full_name') and responsable.get_full_name() else (responsable.username if responsable else "N/A")
+    cargo_responsable = "Responsable del Proceso de Selección"
+    
+    # Obtener políticas internas del cliente
+    politicas_internas = []
+    if cliente:
+        politicas_internas = Cli051ClientePoliticas.objects.filter(
+            cliente=cliente,
+            estado_id=1
+        ).select_related('politica_interna')
+    
+    # Obtener respuestas guardadas
+    respuestas_guardadas = aplicacion.json_politicas_internas if aplicacion.json_politicas_internas else {}
+    if not isinstance(respuestas_guardadas, dict):
+        respuestas_guardadas = {}
+    
+    # Obtener la firma guardada
+    firma_guardada = None
+    try:
+        documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+            aplicacion_vacante_056=aplicacion,
+            estado_id=1
+        ).first()
+        if documento_firmado and documento_firmado.imagen_firmada:
+            firma_guardada = documento_firmado.imagen_firmada.path
+    except:
+        pass
+    
+    # Construir texto de políticas internas con respuestas
+    texto_politicas = ""
+    if politicas_internas:
+        for politica in politicas_internas:
+            descripcion = politica.politica_interna.descripcion
+            respuestas_json = politica.politica_interna.respuestas_politica
+            politica_id_str = str(politica.politica_interna.id)
+            respuesta_guardada = respuestas_guardadas.get(politica_id_str, {})
+            
+            texto_politicas += f"""
+                            
+                            {descripcion}"""
+            
+            if respuestas_json and isinstance(respuestas_json, dict):
+                try:
+                    if "si" in respuestas_json or "no" in respuestas_json:
+                        respuesta_valor = respuesta_guardada.get('respuesta', '')
+                        
+                        if respuesta_valor == 'si':
+                            texto_politicas += f"""
+                            
+                            Respuesta: SÍ"""
+                            
+                            if "si" in respuestas_json and isinstance(respuestas_json["si"], dict):
+                                preguntas_si = respuestas_json["si"]
+                                preguntas_respuestas = respuesta_guardada.get('preguntas', {})
+                                
+                                preguntas_ordenadas = sorted(
+                                    [(k, v) for k, v in preguntas_si.items() if k.startswith("pregunta")],
+                                    key=lambda x: int(x[0].replace("pregunta", "")) if x[0].replace("pregunta", "").isdigit() else 999
+                                )
+                                
+                                for pregunta_key, pregunta_data in preguntas_ordenadas:
+                                    if isinstance(pregunta_data, dict):
+                                        pregunta_texto = pregunta_data.get("pregunta", "")
+                                        ayuda = pregunta_data.get("ayuda", "")
+                                        respuesta_pregunta = preguntas_respuestas.get(pregunta_key, "")
+                                        
+                                        if pregunta_texto:
+                                            if ayuda:
+                                                texto_politicas += f"""
+                            Si la respuesta es "Sí": {pregunta_texto} ({ayuda}): {respuesta_pregunta if respuesta_pregunta else '__________'}"""
+                                            else:
+                                                texto_politicas += f"""
+                            Si la respuesta es "Sí": {pregunta_texto}: {respuesta_pregunta if respuesta_pregunta else '__________'}"""
+                        elif respuesta_valor == 'no':
+                            texto_politicas += f"""
+                            
+                            Respuesta: NO"""
+                        else:
+                            texto_politicas += f"""
+                            
+                            Respuesta: __________"""
+                    else:
+                        respuesta_texto = respuesta_guardada.get('respuesta', '')
+                        texto_politicas += f"""
+                            
+                            Respuesta: {respuesta_texto if respuesta_texto else '__________'}"""
+                except Exception as e:
+                    respuesta_texto = respuesta_guardada.get('respuesta', '')
+                    texto_politicas += f"""
+                            
+                            Respuesta: {respuesta_texto if respuesta_texto else '__________'}"""
+            else:
+                respuesta_texto = respuesta_guardada.get('respuesta', '')
+                texto_politicas += f"""
+                            
+                            Respuesta: {respuesta_texto if respuesta_texto else '__________'}"""
+    
+    # Texto del documento
+    texto_documento = f"""YO, {nombre_completo}, identificado(a) con {tipo_documento} No. {numero_documento} de {ciudad_documento}, nacido(a) el {fecha_nacimiento}, aspirando al cargo {cargo_postulado}, declaro que la información suministrada en este documento es verdadera y corresponde a mi situación actual.
+
+                            Autorizo a {nombre_empresa} para utilizar esta información en el proceso de selección y para realizar las verificaciones que considere necesarias, de acuerdo con la normatividad vigente y sus políticas internas.{texto_politicas}
+                            
+                            Entiendo que cualquier información falsa u omitida puede ser motivo de retiro del proceso de selección o de terminación de la relación laboral, si llegare a ser contratado(a).
+                            
+                            Firmo en {ciudad_firma}, a los {dia_firma} días del mes de {mes_firma} de {anio_firma}.
+
+                            _______________________________________________________
+                            Candidato: {nombre_completo}
+                            {tipo_documento} {numero_documento}
+                            
+
+                            _______________________________________________________
+                            Responsable del proceso
+                            Nombre: {nombre_responsable}
+                            Cargo: {cargo_responsable}"""
+    
+    # Información de firma para el pie de página
+    info_firma = f"Fecha y hora de firma: {fecha_firma_str} {hora_firma}"
+    if ip_firmante:
+        info_firma += f" | IP: {ip_firmante}"
+    if codigo_unico:
+        info_firma += f" | Código único: {codigo_unico}"
+    
+    # Crear el buffer para el PDF
+    buffer = BytesIO()
+    
+    # Crear el documento PDF
+    doc = SimpleDocTemplate(buffer, pagesize=A4,
+                            rightMargin=36, leftMargin=36,
+                            topMargin=30, bottomMargin=60)  # Aumentado bottomMargin para el pie de página
+    
+    # Contenedor para los elementos del PDF
+    elements = []
+    
+    # Estilos
+    styles = getSampleStyleSheet()
+    
+    # Colores de la aplicación
+    color_primary = colors.HexColor('#B10022')
+    
+    # Encabezado con logo
+    logo_path = os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo-talent-tray.png')
+    
+    header_data = []
+    if logo_path and os.path.exists(logo_path):
+        try:
+            logo_img = RLImage(logo_path, width=0.8*inch, height=0.35*inch)
+            header_data.append([logo_img, ''])
+        except:
+            header_data.append(['', ''])
+    else:
+        header_data.append(['', ''])
+    
+    header_table = Table(header_data, colWidths=[1*inch, 6.77*inch])
+    header_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING', (0, 0), (0, 0), 0),
+        ('RIGHTPADDING', (0, 0), (0, 0), 0),
+        ('TOPPADDING', (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+    ]))
+    
+    elements.append(header_table)
+    elements.append(Spacer(1, 0.05*inch))
+    
+    # Línea divisoria
+    line_table = Table([['']], colWidths=[7.77*inch], rowHeights=[0.015*inch])
+    line_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, 0), color_primary),
+        ('TOPPADDING', (0, 0), (0, 0), 0),
+        ('BOTTOMPADDING', (0, 0), (0, 0), 0),
+    ]))
+    elements.append(line_table)
+    elements.append(Spacer(1, 0.1*inch))
+    
+    # Estilos
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=14,
+        textColor=color_primary,
+        spaceAfter=15,
+        alignment=TA_CENTER,
+        fontName='Helvetica-Bold'
+    )
+    
+    body_style = ParagraphStyle(
+        'CustomBody',
+        parent=styles['Normal'],
+        fontSize=11,
+        leading=16,
+        alignment=TA_JUSTIFY,
+        spaceAfter=12,
+        fontName='Helvetica'
+    )
+    
+    signature_style = ParagraphStyle(
+        'CustomSignature',
+        parent=styles['Normal'],
+        fontSize=11,
+        leading=14,
+        alignment=TA_LEFT,
+        spaceAfter=6,
+        spaceBefore=20,
+        fontName='Helvetica'
+    )
+    
+    footer_style = ParagraphStyle(
+        'CustomFooter',
+        parent=styles['Normal'],
+        fontSize=8,
+        leading=10,
+        alignment=TA_CENTER,
+        textColor=colors.HexColor('#666666'),
+        fontName='Helvetica'
+    )
+    
+    # Título de sección
+    title = Paragraph("POLÍTICAS INTERNAS", title_style)
+    elements.append(title)
+    elements.append(Spacer(1, 0.15*inch))
+    
+    # Cuerpo del documento
+    parrafos = texto_documento.split('\n\n')
+    firma_insertada = False
+    for i, parrafo in enumerate(parrafos):
+        if parrafo.strip():
+            if parrafo.strip().startswith('________________________________') and ('Candidato:' in parrafo or (i + 1 < len(parrafos) and 'Candidato:' in parrafos[i + 1])):
+                lineas = parrafo.split('\n')
+                for j, linea in enumerate(lineas):
+                    if linea.strip().startswith('________________________________'):
+                        p = Paragraph(linea.replace('\n', '<br/>'), signature_style)
+                        elements.append(p)
+                        
+                        if firma_guardada and os.path.exists(firma_guardada) and not firma_insertada:
+                            try:
+                                firma_img = RLImage(firma_guardada, width=3*inch, height=1*inch)
+                                elements.append(Spacer(1, 0.1*inch))
+                                elements.append(firma_img)
+                                elements.append(Spacer(1, 0.1*inch))
+                                firma_insertada = True
+                            except Exception as e:
+                                pass
+                        
+                        if j + 1 < len(lineas):
+                            resto_parrafo = '\n'.join(lineas[j + 1:])
+                            p = Paragraph(resto_parrafo.replace('\n', '<br/>'), signature_style)
+                            elements.append(p)
+                        break
+                else:
+                    p = Paragraph(parrafo.replace('\n', '<br/>'), signature_style)
+                    elements.append(p)
+                
+                elements.append(Spacer(1, 0.15*inch))
+            elif parrafo.startswith('Firma') or parrafo.startswith('Espacio para') or parrafo.startswith('Candidato:') or parrafo.startswith('Responsable'):
+                p = Paragraph(parrafo.replace('\n', '<br/>'), signature_style)
+                elements.append(p)
+                elements.append(Spacer(1, 0.15*inch))
+            elif 'Respuesta:' in parrafo and i + 1 < len(parrafos) and 'Si la respuesta es' in parrafos[i + 1]:
+                p = Paragraph(parrafo.replace('\n', '<br/>'), body_style)
+                elements.append(p)
+                elements.append(Spacer(1, 0.05*inch))
+            elif 'Si la respuesta es' in parrafo:
+                p = Paragraph(parrafo.replace('\n', '<br/>'), body_style)
+                elements.append(p)
+                elements.append(Spacer(1, 0.05*inch))
+            else:
+                p = Paragraph(parrafo.replace('\n', '<br/>'), body_style)
+                elements.append(p)
+                elements.append(Spacer(1, 0.15*inch))
+    
+    # Agregar pie de página con información de firma
+    elements.append(Spacer(1, 0.2*inch))
+    footer = Paragraph(info_firma, footer_style)
+    elements.append(footer)
+    
+    # Construir el PDF
+    doc.build(elements)
+    
+    return buffer
 
 @login_required
 @validar_permisos('acceso_candidato')
@@ -105,7 +430,17 @@ def apply_vacancy_detail(request, pk):
             if politica_id in json_politicas_internas and json_politicas_internas[politica_id].get('respuesta'):
                 politicas_con_respuesta += 1
         politicas_finalizadas = politicas_con_respuesta == len(politicas_internas)
-    
+
+    # Obtener el documento firmado si existe
+    documento_firmado = None
+    try:
+        documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+            aplicacion_vacante_056=vacancy,
+            estado_id=1
+        ).first()
+    except:
+        pass
+        
     context = {
         'vacancy': vacancy,
         'vacante': vacante,
@@ -117,6 +452,7 @@ def apply_vacancy_detail(request, pk):
         'is_candidato': True,  # Indicar que es candidato para restringir información
         'json_politicas_internas': json_politicas_internas,
         'politicas_finalizadas': politicas_finalizadas,
+        'documento_firmado': documento_firmado,
     }
 
     return render(request, 'admin/vacancy/candidate_user/apply_vacancy_detail.html', context)
@@ -508,25 +844,58 @@ def guardar_respuestas_politicas(request, aplicacion_id):
             
             # Guardar la firma en Cli080DocumentoFirmadoAplicacionVacante
             if firma_file:
+                # Generar código único
+                codigo_unico = generar_codigo_unico()
+                
+                # Obtener IP del firmante
+                ip_firmante = request.META.get('REMOTE_ADDR', '')
+                if not ip_firmante:
+                    ip_firmante = request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].strip() if request.META.get('HTTP_X_FORWARDED_FOR') else ''
+                
                 # Obtener o crear el documento firmado
                 documento_firmado, created = Cli080DocumentoFirmadoAplicacionVacante.objects.get_or_create(
                     aplicacion_vacante_056=aplicacion,
                     defaults={
                         'usuario_firmante': request.user,
                         'estado': get_object_or_404(Cat001Estado, pk=1),
-                        'ip_firmante': request.META.get('REMOTE_ADDR', '')
+                        'ip_firmante': ip_firmante,
+                        'codigo_unico': codigo_unico
                     }
                 )
                 
                 # Si ya existe, actualizar
                 if not created:
                     documento_firmado.usuario_firmante = request.user
-                    documento_firmado.ip_firmante = request.META.get('REMOTE_ADDR', '')
+                    documento_firmado.ip_firmante = ip_firmante
+                    if not documento_firmado.codigo_unico:
+                        documento_firmado.codigo_unico = codigo_unico
+                    else:
+                        codigo_unico = documento_firmado.codigo_unico
                 
                 # Guardar la firma
                 documento_firmado.imagen_firmada.save(
                     f'firma_{aplicacion.id}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png',
                     firma_file,
+                    save=True
+                )
+                
+                # Guardar primero para tener el ID actualizado
+                documento_firmado.save()
+                
+                # Generar y guardar el PDF firmado
+                fecha_firma_actual = datetime.now()
+                pdf_buffer = generar_pdf_documento_firmado(
+                    aplicacion=aplicacion,
+                    fecha_firma=fecha_firma_actual,
+                    ip_firmante=ip_firmante,
+                    codigo_unico=codigo_unico
+                )
+                
+                # Guardar el PDF en el campo documento_firmado
+                nombre_pdf = f'politica_firmada_{aplicacion.id}_{fecha_firma_actual.strftime("%Y%m%d_%H%M%S")}.pdf'
+                documento_firmado.documento_firmado.save(
+                    nombre_pdf,
+                    ContentFile(pdf_buffer.getvalue()),
                     save=True
                 )
                 
@@ -602,237 +971,60 @@ def generar_declaracion_pdf(request, aplicacion_id):
                 estado_id=1
             ).select_related('politica_interna')
         
-        # Construir texto de políticas internas
-        texto_politicas = ""
-        if politicas_internas:
-            for politica in politicas_internas:
-                nombre_politica = politica.politica_interna.nombre
-                descripcion = politica.politica_interna.descripcion
-                respuestas_json = politica.politica_interna.respuestas_politica
-                
-                # Agregar la descripción de la política
-                texto_politicas += f"""
-                            
-                            {descripcion}"""
-                
-                # Verificar si hay opciones en el JSON
-                if respuestas_json and isinstance(respuestas_json, dict):
-                    try:
-                        # Verificar si tiene estructura con "si" y "no"
-                        if "si" in respuestas_json or "no" in respuestas_json:
-                            # Mostrar opciones Sí/No
-                            texto_politicas += f"""
-                            
-                            Respuesta: {{Sí}} {{No}}"""
-                            
-                            # Si hay preguntas adicionales para "si", mostrarlas
-                            if "si" in respuestas_json and isinstance(respuestas_json["si"], dict):
-                                preguntas_si = respuestas_json["si"]
-                                # Ordenar las preguntas por clave (pregunta1, pregunta2, etc.)
-                                preguntas_ordenadas = sorted(
-                                    [(k, v) for k, v in preguntas_si.items() if k.startswith("pregunta")],
-                                    key=lambda x: int(x[0].replace("pregunta", "")) if x[0].replace("pregunta", "").isdigit() else 999
-                                )
-                                
-                                for pregunta_key, pregunta_data in preguntas_ordenadas:
-                                    if isinstance(pregunta_data, dict):
-                                        pregunta_texto = pregunta_data.get("pregunta", "")
-                                        ayuda = pregunta_data.get("ayuda", "")
-                                        
-                                        if pregunta_texto:
-                                            if ayuda:
-                                                texto_politicas += f"""
-                            Si la respuesta es "Sí": {pregunta_texto} ({ayuda}): __________"""
-                                            else:
-                                                texto_politicas += f"""
-                            Si la respuesta es "Sí": {pregunta_texto}: __________"""
-                        else:
-                            # Si no tiene estructura si/no, mostrar solo línea
-                            texto_politicas += f"""
-                            
-                            Respuesta: __________"""
-                    except Exception as e:
-                        # Si hay error, mostrar solo línea
-                        texto_politicas += f"""
-                            
-                            Respuesta: __________"""
-                else:
-                    # Si no hay JSON, mostrar solo línea para escribir
-                    texto_politicas += f"""
-                            
-                            Respuesta: __________"""
+        # Obtener respuestas guardadas
+        respuestas_guardadas = aplicacion.json_politicas_internas if aplicacion.json_politicas_internas else {}
+        if not isinstance(respuestas_guardadas, dict):
+            respuestas_guardadas = {}
         
-        # Texto del documento con variables reemplazadas
-        texto_documento = f"""YO, {nombre_completo}, identificado(a) con {tipo_documento} No. {numero_documento} de {ciudad_documento}, nacido(a) el {fecha_nacimiento}, aspirando al cargo {cargo_postulado}, declaro que la información suministrada en este documento es verdadera y corresponde a mi situación actual.
-
-                            Autorizo a {nombre_empresa} para utilizar esta información en el proceso de selección y para realizar las verificaciones que considere necesarias, de acuerdo con la normatividad vigente y sus políticas internas.{texto_politicas}
-                            
-                            Entiendo que cualquier información falsa u omitida puede ser motivo de retiro del proceso de selección o de terminación de la relación laboral, si llegare a ser contratado(a).
-                            
-                            Firmo en {ciudad_firma}, a los {dia_firma} días del mes de {mes_firma} de {anio_firma}.
-
-                            _______________________________________________________
-                            Candidato: {nombre_completo}
-                            {tipo_documento} {numero_documento}
-                            
-
-                            _______________________________________________________
-                            Responsable del proceso
-                            Nombre: {nombre_responsable}
-                            Cargo: {cargo_responsable}"""
-
+        # Obtener información del documento firmado
+        documento_firmado_obj = None
+        fecha_firma_pdf = None
+        ip_firmante_pdf = None
+        codigo_unico_pdf = None
         
+        try:
+            documento_firmado_obj = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+                aplicacion_vacante_056=aplicacion,
+                estado_id=1
+            ).first()
+            if documento_firmado_obj:
+                fecha_firma_pdf = documento_firmado_obj.fecha_firma_hora_ip
+                ip_firmante_pdf = documento_firmado_obj.ip_firmante
+                codigo_unico_pdf = documento_firmado_obj.codigo_unico
+        except:
+            pass
         
-        # Crear el buffer para el PDF
-        buffer = BytesIO()
-        
-        # Crear el documento PDF con márgenes más angostas y margen superior reducido
-        doc = SimpleDocTemplate(buffer, pagesize=A4,
-                                rightMargin=36, leftMargin=36,
-                                topMargin=30, bottomMargin=36)
-        
-        # Contenedor para los elementos del PDF
-        elements = []
-        
-        # Estilos
-        styles = getSampleStyleSheet()
-        
-        # Colores de la aplicación
-        color_primary = colors.HexColor('#B10022')
-        color_bg_primary_opacity = colors.HexColor('#F7E6E9')
-        
-        # ========== ENCABEZADO CON LOGO ==========
-        # Obtener el logo de TalentTray desde static
-        logo_path = os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo-talent-tray.png')
-        
-        # Crear tabla para el encabezado con logo más pequeño
-        header_data = []
-        if logo_path and os.path.exists(logo_path):
+        # Si existe un documento PDF guardado, devolverlo directamente
+        if documento_firmado_obj and documento_firmado_obj.documento_firmado:
             try:
-                # Logo más pequeño: 0.8*inch de ancho, 0.35*inch de alto
-                logo_img = RLImage(logo_path, width=0.8*inch, height=0.35*inch)
-                header_data.append([logo_img, ''])
-            except:
-                header_data.append(['', ''])
-        else:
-            header_data.append(['', ''])
+                # Leer el archivo PDF guardado
+                documento_firmado_obj.documento_firmado.open('rb')
+                pdf_content = documento_firmado_obj.documento_firmado.read()
+                documento_firmado_obj.documento_firmado.close()
+                
+                # Crear la respuesta HTTP con el PDF guardado
+                response = HttpResponse(pdf_content, content_type='application/pdf')
+                response['Content-Disposition'] = f'inline; filename="politica_firmada_{aplicacion_id}.pdf"'
+                return response
+            except Exception as e:
+                # Si hay error al leer el archivo, continuar con la generación dinámica
+                pass
         
-        # Ancho total de la página A4 menos márgenes: 8.27*inch - 0.5*inch (36pt cada lado) = 7.77*inch
-        header_table = Table(header_data, colWidths=[1*inch, 6.77*inch])
-        header_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('LEFTPADDING', (0, 0), (0, 0), 0),
-            ('RIGHTPADDING', (0, 0), (0, 0), 0),
-            ('TOPPADDING', (0, 0), (-1, -1), 0),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
-        ]))
+        # Si no hay fecha de firma, usar la fecha actual
+        if fecha_firma_pdf is None:
+            fecha_firma_pdf = datetime.now()
         
-        elements.append(header_table)
-        elements.append(Spacer(1, 0.05*inch))  # Reducido a 0.05*inch
-        
-        # Línea divisoria con ancho ajustado al nuevo ancho de página
-        line_table = Table([['']], colWidths=[7.77*inch], rowHeights=[0.015*inch])
-        line_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (0, 0), color_primary),
-            ('TOPPADDING', (0, 0), (0, 0), 0),
-            ('BOTTOMPADDING', (0, 0), (0, 0), 0),
-        ]))
-        elements.append(line_table)
-        elements.append(Spacer(1, 0.1*inch))  # Reducido a 0.1*inch
-        
-        # Estilo personalizado para el título (más pequeño)
-        title_style = ParagraphStyle(
-            'CustomTitle',
-            parent=styles['Heading1'],
-            fontSize=14,
-            textColor=color_primary,
-            spaceAfter=15,
-            alignment=TA_CENTER,
-            fontName='Helvetica-Bold'
+        # Generar el PDF usando la función auxiliar
+        pdf_buffer = generar_pdf_documento_firmado(
+            aplicacion=aplicacion,
+            fecha_firma=fecha_firma_pdf,
+            ip_firmante=ip_firmante_pdf,
+            codigo_unico=codigo_unico_pdf
         )
-        
-        # Estilo para el cuerpo del texto
-        body_style = ParagraphStyle(
-            'CustomBody',
-            parent=styles['Normal'],
-            fontSize=11,
-            leading=16,
-            alignment=TA_JUSTIFY,
-            spaceAfter=12,
-            fontName='Helvetica'
-        )
-        
-        # Estilo para las firmas
-        signature_style = ParagraphStyle(
-            'CustomSignature',
-            parent=styles['Normal'],
-            fontSize=11,
-            leading=14,
-            alignment=TA_LEFT,
-            spaceAfter=6,
-            spaceBefore=20,
-            fontName='Helvetica'
-        )
-        
-        # Estilo para títulos de políticas (en rojo)
-        politica_titulo_style = ParagraphStyle(
-            'PoliticaTituloStyle',
-            parent=styles['Heading2'],
-            fontSize=12,
-            textColor=color_primary,
-            spaceAfter=8,
-            spaceBefore=15,
-            alignment=TA_LEFT,
-            fontName='Helvetica-Bold'
-        )
-        
-        # Título del documento
-        documento_title_style = ParagraphStyle(
-            'DocumentoTitle',
-            parent=styles['Heading1'],
-            fontSize=16,
-            textColor=color_primary,
-            spaceAfter=20,
-            alignment=TA_CENTER,
-            fontName='Helvetica-Bold'
-        )
-        
-        # Título de sección
-        title = Paragraph("POLÍTICAS INTERNAS", title_style)
-        elements.append(title)
-        elements.append(Spacer(1, 0.15*inch))
-        
-        # Cuerpo del documento
-        parrafos = texto_documento.split('\n\n')
-        for i, parrafo in enumerate(parrafos):
-            if parrafo.strip():
-                # Detectar si es una sección de firma o espacio para respuesta
-                if parrafo.startswith('Firma') or parrafo.startswith('________________________________') or parrafo.startswith('Espacio para') or parrafo.startswith('Candidato:') or parrafo.startswith('Responsable'):
-                    p = Paragraph(parrafo.replace('\n', '<br/>'), signature_style)
-                    elements.append(p)
-                    elements.append(Spacer(1, 0.15*inch))
-                # Detectar si es una respuesta seguida de una pregunta (reducir espacio)
-                elif 'Respuesta:' in parrafo and i + 1 < len(parrafos) and 'Si la respuesta es' in parrafos[i + 1]:
-                    p = Paragraph(parrafo.replace('\n', '<br/>'), body_style)
-                    elements.append(p)
-                    elements.append(Spacer(1, 0.05*inch))  # Espacio reducido entre respuesta y pregunta
-                # Detectar si es una pregunta adicional (reducir espacio)
-                elif 'Si la respuesta es' in parrafo:
-                    p = Paragraph(parrafo.replace('\n', '<br/>'), body_style)
-                    elements.append(p)
-                    elements.append(Spacer(1, 0.05*inch))  # Espacio reducido
-                else:
-                    p = Paragraph(parrafo.replace('\n', '<br/>'), body_style)
-                    elements.append(p)
-                    elements.append(Spacer(1, 0.15*inch))
-        
-        # Construir el PDF
-        doc.build(elements)
         
         # Obtener el valor del buffer y crear la respuesta HTTP
-        pdf = buffer.getvalue()
-        buffer.close()
+        pdf = pdf_buffer.getvalue()
+        pdf_buffer.close()
         
         # Crear la respuesta HTTP
         response = HttpResponse(content_type='application/pdf')
