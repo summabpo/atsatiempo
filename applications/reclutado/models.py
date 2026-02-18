@@ -128,6 +128,8 @@ class Cli080DocumentoFirmadoAplicacionVacante(models.Model):
     fecha_firma_hora_ip = models.DateTimeField(auto_now_add=True)
     usuario_firmante = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, related_name='documentos_firmados')
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, related_name='documentos_firmados')
+    documento_firmado = models.FileField(upload_to='media_uploads/documentos_firmados/', blank=True, null=True, verbose_name="Documento Firmado")
+    codigo_unico = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"Documento firmado para la aplicación {self.aplicacion_vacante_056.id}"

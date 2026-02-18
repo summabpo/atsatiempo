@@ -11,14 +11,7 @@ Mis Vacantes aplicadas
 <div class="main-content-container overflow-hidden">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
         <h3 class="mb-0" style="color: #B10022;">DETALLE VACANTE APLICADO</h3>
-        <div class="d-flex gap-2">
-            <a href="{% url 'vacantes:generar_declaracion_pdf' vacancy.id %}" 
-               class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-inline-flex align-items-center gap-2"
-               target="_blank">
-                <span class="material-symbols-outlined">picture_as_pdf</span>
-                <span>Generar Declaración PDF</span>
-            </a>
-        </div>
+        
         <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
             <ol class="breadcrumb align-items-center mb-0 lh-1">
                 <li class="breadcrumb-item">
@@ -39,10 +32,10 @@ Mis Vacantes aplicadas
         </nav>
     </div>
     <div class="row">
-		<div class="col-md-4">
+		<div class="col-12 col-md-4 mb-4 mb-md-0">
             {% include "admin/vacancy/common_template/info_vacancy.html" %}
         </div>
-        <div class="col-md-8">
+        <div class="col-12 col-md-8">
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
                     <h2 class="fs-18 fw-semibold mb-0 text-primary">Políticas Internas</h2>
@@ -50,35 +43,34 @@ Mis Vacantes aplicadas
                 <div class="card-body p-4">
                     {% if politicas_internas %}
                         <ul class="ps-0 mb-3 list-unstyled">
-                            <li class="d-flex align-items-center justify-content-between mb-3 p-3 border rounded">
-                                <div class="d-flex flex-column">
-                                    <div class="d-flex align-items-center">
-                                        <span class="material-symbols-outlined me-2 text-primary">policy</span>
-                                        <span class="fw-medium">Políticas Internas a Responder<small class="text-muted ms-4 mt-1">
-                                            {% if politicas_finalizadas %}
-                                                <span class="badge bg-success">Finalizada</span>
-                                            {% else %}
-                                                <span class="badge bg-primary">Pendiente</span>
-                                            {% endif %}
-                                        </small></span>
-                                    </div>
-                                </small>
+                            <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                <div class="d-flex align-items-center">
+                                    <span class="material-symbols-outlined me-2 text-primary">policy</span>
+                                    <span class="fw-medium">Políticas Internas a Responder<small class="text-muted ms-2 ms-sm-4 mt-1 d-inline-block">
+                                        {% if politicas_finalizadas %}
+                                            <span class="badge bg-success">Finalizada</span>
+                                        {% else %}
+                                            <span class="badge bg-primary">Pendiente</span>
+                                        {% endif %}
+                                    </small></span>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalPoliticasInternas">
-                                        {% if politicas_finalizadas %}
-                                            Ver Respuestas
-                                        {% else %}
+                                    {% if politicas_finalizadas %}
+                                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalVerPoliticaFirmada">
+                                            Ver Política Firmada
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalPoliticasInternas">
                                             Responder
-                                        {% endif %}
-                                    </button>
+                                        </button>
+                                    {% endif %}
                                 </div>
                             </li>
                         </ul>
                         
                         <!-- Modal único para todas las políticas -->
                         <div class="modal fade" id="modalPoliticasInternas" tabindex="-1" aria-labelledby="modalPoliticasInternasLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
+                            <div class="modal-dialog modal-fullscreen-md-down modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="modalPoliticasInternasLabel">
@@ -106,22 +98,22 @@ Mis Vacantes aplicadas
                                                                     <div class="d-flex gap-3">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input politica-respuesta-si-no" 
-                                                                                   type="radio" 
-                                                                                   name="politica_{{ politica_id }}_respuesta" 
-                                                                                   id="politica_{{ politica_id }}_si" 
-                                                                                   value="si"
-                                                                                   {% if respuestas_guardadas|get_item:politica_id and respuestas_guardadas|get_item:politica_id.respuesta == "si" %}checked{% endif %}>
+                                                                                    type="radio" 
+                                                                                    name="politica_{{ politica_id }}_respuesta" 
+                                                                                    id="politica_{{ politica_id }}_si" 
+                                                                                    value="si"
+                                                                                    {% if respuestas_guardadas|get_item:politica_id and respuestas_guardadas|get_item:politica_id.respuesta == "si" %}checked{% endif %}>
                                                                             <label class="form-check-label" for="politica_{{ politica_id }}_si">
                                                                                 Sí
                                                                             </label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input politica-respuesta-si-no" 
-                                                                                   type="radio" 
-                                                                                   name="politica_{{ politica_id }}_respuesta" 
-                                                                                   id="politica_{{ politica_id }}_no" 
-                                                                                   value="no"
-                                                                                   {% if respuestas_guardadas|get_item:politica_id and respuestas_guardadas|get_item:politica_id.respuesta == "no" %}checked{% endif %}>
+                                                                                    type="radio" 
+                                                                                    name="politica_{{ politica_id }}_respuesta" 
+                                                                                    id="politica_{{ politica_id }}_no" 
+                                                                                    value="no"
+                                                                                    {% if respuestas_guardadas|get_item:politica_id and respuestas_guardadas|get_item:politica_id.respuesta == "no" %}checked{% endif %}>
                                                                             <label class="form-check-label" for="politica_{{ politica_id }}_no">
                                                                                 No
                                                                             </label>
@@ -142,10 +134,10 @@ Mis Vacantes aplicadas
                                                                                         {% endif %}
                                                                                     </label>
                                                                                     <input type="text" 
-                                                                                           class="form-control politica-pregunta-si" 
-                                                                                           name="politica_{{ politica_id }}_pregunta_{{ key }}"
-                                                                                           value="{% if respuestas_guardadas|get_item:politica_id and respuestas_guardadas|get_item:politica_id.preguntas %}{{ respuestas_guardadas|get_item:politica_id.preguntas|get_item:key }}{% endif %}"
-                                                                                           placeholder="Ingrese su respuesta">
+                                                                                            class="form-control politica-pregunta-si" 
+                                                                                            name="politica_{{ politica_id }}_pregunta_{{ key }}"
+                                                                                            value="{% if respuestas_guardadas|get_item:politica_id and respuestas_guardadas|get_item:politica_id.preguntas %}{{ respuestas_guardadas|get_item:politica_id.preguntas|get_item:key }}{% endif %}"
+                                                                                            placeholder="Ingrese su respuesta">
                                                                                 </div>
                                                                             {% endif %}
                                                                         {% endfor %}
@@ -193,14 +185,42 @@ Mis Vacantes aplicadas
                                             
                                             <div id="mensajePoliticasInternas" class="alert d-none" role="alert"></div>
                                         </div>
-                                        <div class="modal-footer">
+                                        <div class="modal-footer flex-wrap gap-2">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">Guardar Todas las Respuestas</button>
+                                            <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3 px-md-4">Guardar Todas las Respuestas</button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Modal para ver política firmada -->
+                        {% if politicas_finalizadas %}
+                        <div class="modal fade" id="modalVerPoliticaFirmada" tabindex="-1" aria-labelledby="modalVerPoliticaFirmadaLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-fullscreen-md-down modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalVerPoliticaFirmadaLabel">
+                                            Ver Política Firmada
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body p-0">
+                                        <div class="border rounded" style="min-height: 400px; height: calc(100vh - 200px);">
+                                            {% if documento_firmado and documento_firmado.documento_firmado %}
+                                                <iframe src="{{ documento_firmado.documento_firmado.url }}" width="100%" height="100%" style="border: none; min-height: 400px;"></iframe>
+                                            {% else %}
+                                                <iframe src="{% url 'vacantes:generar_declaracion_pdf' vacancy.id %}" width="100%" height="100%" style="border: none; min-height: 400px;"></iframe>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer flex-wrap gap-2">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                     {% else %}
                         <p class="text-muted mb-0">No hay políticas internas disponibles.</p>
                     {% endif %}
@@ -215,10 +235,16 @@ Mis Vacantes aplicadas
                     <ul class="ps-0 mb-3 list-unstyled">
                         {% for req_info in requisitos_con_info %}
                             {% with r=req_info.requisito requisito_cargado=req_info.cargado %}
-                            <li class="d-flex align-items-center justify-content-between mb-3 p-3 border rounded">
+                            <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
                                 <div class="d-flex align-items-center">
                                     <span class="material-symbols-outlined me-2 text-primary">check</span>
-                                    <span class="fw-medium">{{ r.requisito.nombre|upper }}</span>
+                                    <span class="fw-medium">{{ r.requisito.nombre|upper }}<small class="text-muted ms-2 ms-sm-4 mt-1 d-inline-block">
+                                        {% if requisito_cargado and requisito_cargado.archivo_requisito %}
+                                            <span class="badge bg-success">Cargado</span>
+                                        {% else %}
+                                            <span class="badge bg-primary">Pendiente</span>
+                                        {% endif %}
+                                    </small></span>
                                 </div>
                                 <div class="d-flex gap-2">
                                     {% if requisito_cargado and requisito_cargado.archivo_requisito %}
@@ -239,7 +265,7 @@ Mis Vacantes aplicadas
                             <!-- Modal para ver documento cargado -->
                             {% if requisito_cargado and requisito_cargado.archivo_requisito %}
                             <div class="modal fade" id="modalVerRequisito{{ r.id }}" tabindex="-1" aria-labelledby="modalVerRequisitoLabel{{ r.id }}" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
+                                <div class="modal-dialog modal-fullscreen-md-down modal-lg">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="modalVerRequisitoLabel{{ r.id }}">Ver Documento - {{ r.requisito.nombre|upper }}</h5>
@@ -249,18 +275,17 @@ Mis Vacantes aplicadas
                                             <div class="mb-3">
                                                 <p class="mb-3"><strong>Fecha de carga:</strong> {{ requisito_cargado.fecha_cargado|date:"d/m/Y H:i" }}</p>
                                             </div>
-                                            <div class="border rounded p-3" style="min-height: 400px;">
+                                            <div class="border rounded p-2 p-md-3" style="max-height: calc(100vh - 300px); overflow-y: auto; overflow-x: auto;">
                                                 {% with archivo_url=requisito_cargado.archivo_requisito.url %}
                                                     {% if archivo_url|slice:"-4:" == ".pdf" or archivo_url|slice:"-4:" == ".PDF" %}
-                                                        <iframe src="{{ archivo_url }}" width="100%" height="600px" style="border: none;"></iframe>
+                                                        <iframe src="{{ archivo_url }}" width="100%" height="600px" style="border: none; min-height: 400px;"></iframe>
                                                     {% elif archivo_url|slice:"-4:" == ".jpg" or archivo_url|slice:"-4:" == ".JPG" or archivo_url|slice:"-4:" == ".png" or archivo_url|slice:"-4:" == ".PNG" %}
-                                                        <img src="{{ archivo_url }}" alt="Documento" class="img-fluid" style="max-width: 100%; height: auto;">
+                                                        <img src="{{ archivo_url }}" alt="Documento" class="img-fluid d-block mx-auto" style="max-width: 100%; height: auto; max-height: calc(100vh - 350px); object-fit: contain;">
                                                     {% endif %}
                                                 {% endwith %}
                                             </div>
                                         </div>
-                                        <div class="modal-footer">
-                                            <a href="{{ requisito_cargado.archivo_requisito.url }}" class="btn btn-primary" download>Descargar</a>
+                                        <div class="modal-footer flex-wrap gap-2">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                                         </div>
                                     </div>
@@ -338,12 +363,12 @@ Mis Vacantes aplicadas
                                     </h5>
                                     <p class="mb-2 text-secondary">{{ h.descripcion }}</p>
 
-                                    <ul class="ps-0 mb-3 list-unstyled d-flex align-items-center flex-wrap small">
-                                        <li class="d-flex align-items-center me-4">
+                                    <ul class="ps-0 mb-3 list-unstyled d-flex align-items-center flex-wrap small gap-2 gap-md-4">
+                                        <li class="d-flex align-items-center">
                                             <span class="material-symbols-outlined me-2 text-primary">person</span>
                                             <strong>Usuario:</strong> {{ h.usuario }}
                                         </li>
-                                        <li class="d-flex align-items-center me-4">
+                                        <li class="d-flex align-items-center">
                                             <span class="material-symbols-outlined me-2 text-primary">work</span>
                                             <strong>Vacante:</strong> {{ h.vacante }}
                                         </li>
@@ -406,26 +431,44 @@ Mis Vacantes aplicadas
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    mensajeDiv.textContent = data.message;
-                    mensajeDiv.classList.remove('d-none');
-                    mensajeDiv.classList.add('alert-success');
-                    
-                    // Cerrar el modal después de 1.5 segundos y recargar la página
-                    setTimeout(function() {
+                    // Mostrar SweetAlert de éxito
+                    Swal.fire({
+                        title: '¡Éxito!',
+                        text: 'Requisito cargado exitosamente',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#B10022',
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        // Cerrar el modal y recargar la página
                         const modal = bootstrap.Modal.getInstance(document.getElementById('modalRequisito{{ r.id }}'));
                         modal.hide();
                         form.reset();
-                        mensajeDiv.classList.add('d-none');
-                        // Recargar la página para mostrar el botón "Ver Documento"
                         window.location.reload();
-                    }, 1500);
+                    });
                 } else {
+                    // Mostrar SweetAlert de error
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.error || 'Error al cargar el documento',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#B10022'
+                    });
                     mensajeDiv.textContent = data.error || 'Error al cargar el documento';
                     mensajeDiv.classList.remove('d-none');
                     mensajeDiv.classList.add('alert-danger');
                 }
             })
             .catch(error => {
+                Swal.fire({
+                    title: 'Error de conexión',
+                    text: 'Por favor, intente nuevamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#B10022'
+                });
                 mensajeDiv.textContent = 'Error de conexión. Por favor, intente nuevamente.';
                 mensajeDiv.classList.remove('d-none');
                 mensajeDiv.classList.add('alert-danger');
@@ -629,25 +672,44 @@ Mis Vacantes aplicadas
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    mensajeDiv.textContent = data.message || 'Respuestas guardadas exitosamente.';
-                    mensajeDiv.classList.remove('d-none', 'alert-danger', 'alert-warning');
-                    mensajeDiv.classList.add('alert-success');
-                    
-                    // Cerrar el modal después de 1.5 segundos y recargar la página
-                    setTimeout(function() {
+                    // Mostrar SweetAlert de éxito
+                    Swal.fire({
+                        title: '¡Éxito!',
+                        text: 'Política firmada exitosamente',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#B10022',
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        // Cerrar el modal y recargar la página
                         const modal = bootstrap.Modal.getInstance(form.closest('.modal'));
                         modal.hide();
                         mensajeDiv.classList.add('d-none');
-                        // Recargar la página para actualizar el estado
                         window.location.reload();
-                    }, 1500);
+                    });
                 } else {
+                    // Mostrar SweetAlert de error
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.error || 'Error al guardar las respuestas',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#B10022'
+                    });
                     mensajeDiv.textContent = data.error || 'Error al guardar las respuestas';
                     mensajeDiv.classList.remove('d-none', 'alert-success');
                     mensajeDiv.classList.add('alert-danger');
                 }
             })
             .catch(error => {
+                Swal.fire({
+                    title: 'Error de conexión',
+                    text: 'Por favor, intente nuevamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#B10022'
+                });
                 mensajeDiv.textContent = 'Error de conexión. Por favor, intente nuevamente.';
                 mensajeDiv.classList.remove('d-none', 'alert-success');
                 mensajeDiv.classList.add('alert-danger');
