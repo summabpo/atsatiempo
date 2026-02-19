@@ -49,3 +49,26 @@ def generate_token(length=100):
     token = ''.join(secrets.choice(characters) for _ in range(length))
     
     return token
+
+def generar_token_documento(aplicacion_vacante, usuario_generador=None):
+    """Genera un token único y crea el registro en Cli081TokenGeneradoDocumentos"""
+    from applications.reclutado.models import Cli081TokenGeneradoDocumentos
+    from applications.common.models import Cat001Estado
+    
+    token = generate_token(100)
+    
+    # Obtener el estado activo por defecto (id=1)
+    estado_activo = None
+    try:
+        estado_activo = Cat001Estado.objects.get(id=1)
+    except Cat001Estado.DoesNotExist:
+        # Si no existe el estado 1, obtener el primero disponible
+        estado_activo = Cat001Estado.objects.first()
+    
+    token_generado = Cli081TokenGeneradoDocumentos.objects.create(
+        aplicacion_vacante_056=aplicacion_vacante,
+        token=token,
+        estado=estado_activo,
+        usuario_generador=usuario_generador
+    )
+    return token

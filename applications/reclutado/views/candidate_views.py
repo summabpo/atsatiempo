@@ -3,13 +3,15 @@ from django.db.models import F, Count, Q, Value, Case, When, CharField
 from applications.common.models import Cat001Estado
 from applications.common.views.EnvioCorreo import enviar_correo
 from applications.entrevista.forms.PreguntasReclutamientoForm import PreguntasReclutamiento
-from applications.reclutado.models import Cli056AplicacionVacante, Cli063AplicacionVacanteHistorial
+from applications.reclutado.models import Cli056AplicacionVacante, Cli063AplicacionVacanteHistorial, Cli081TokenGeneradoDocumentos
+from django.utils import timezone
 from applications.candidato.models import Can101Candidato
 from applications.services.service_vacanty import query_vacanty_with_skills_and_details
 from applications.vacante.models import Cli052Vacante
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 from django.contrib import messages
-from applications.vacante.views.common_view import get_match, get_match_initial
+from applications.vacante.views.common_view import get_match, get_match_initial, get_politicas_internas, get_requisitos, get_pruebas
+from applications.reclutado.models import Cli079RequisitosCargado
 from applications.usuarios.models import UsuarioBase
 
 def confirm_apply_vacancy_recruited(request, pk):
@@ -148,6 +150,136 @@ def apply_vacancy_recruited_candidate(request, pk):
     return redirect('reclutados:reclutados_confirmar_aplicar_candidato', pk=pk)
 
 
+
+def validar_token_documento(request, token):
+    """
+    View para validar el token y mostrar los documentos relacionados con la entrevista
+    Siempre muestra la pantalla, validando que la fecha/hora actual no sea mayor a la fecha de expiración
+    """
+    # Inicializar variables por defecto
+    token_obj = None
+    aplicacion = None
+    candidato = None
+    vacante = None
+    documento_firmado = None
+    entrevista_asignada = None
+    tiene_entrevista = False
+    politicas_internas = []
+    requisito = []
+    pruebas = []
+    requisitos_con_info = []
+    json_politicas_internas = {}
+    politicas_finalizadas = False
+    token_valido = False
+    mensaje_error = None
+    
+    try:
+        # Buscar el token en la base de datos
+        token_obj = Cli081TokenGeneradoDocumentos.objects.filter(
+            token=token,
+            estado_id=1
+        ).first()
+        
+        if not token_obj:
+            mensaje_error = 'Token inválido o no encontrado.'
+        else:
+            # Validar que la fecha/hora actual no sea mayor a la fecha de expiración
+            fecha_actual = timezone.now()
+            if fecha_actual > token_obj.fecha_expiracion:
+                mensaje_error = f'El token ha expirado. Fecha de expiración: {token_obj.fecha_expiracion.strftime("%d/%m/%Y %H:%M")}'
+            else:
+                # Token válido
+                token_valido = True
+                
+                # Obtener la aplicación de vacante relacionada
+                aplicacion = token_obj.aplicacion_vacante_056
+                
+                # Obtener información del candidato
+                candidato = aplicacion.candidato_101
+                
+                # Obtener el documento firmado si existe
+                from applications.reclutado.models import Cli080DocumentoFirmadoAplicacionVacante
+                documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+                    aplicacion_vacante_056=aplicacion,
+                    estado_id=1
+                ).first()
+                
+                # Obtener información de la vacante
+                vacante = aplicacion.vacante_id_052
+                
+                # Verificar si hay entrevista asignada
+                from applications.entrevista.models import Cli057AsignacionEntrevista
+                entrevista_asignada = Cli057AsignacionEntrevista.objects.filter(
+                    asignacion_vacante=aplicacion,
+                    estado_id=1
+                ).first()
+                
+                tiene_entrevista = entrevista_asignada is not None
+                
+                # Obtener políticas, requisitos y pruebas solo si hay entrevista asignada y token válido
+                if tiene_entrevista:
+                    politicas_internas = get_politicas_internas(aplicacion)
+                    requisito = get_requisitos(aplicacion)
+                    pruebas = get_pruebas(aplicacion)
+                
+                    # Obtener los requisitos cargados en estado 1
+                    requisitos_cargados = Cli079RequisitosCargado.objects.filter(
+                        aplicacion_vacante_056=aplicacion,
+                        estado_id=1
+                    ).select_related('asignacion_requisito_070', 'usuario_cargado')
+                    
+                    # Crear un diccionario para acceso rápido por asignacion_requisito_070.id
+                    requisitos_cargados_dict = {
+                        req.asignacion_requisito_070.id: req 
+                        for req in requisitos_cargados
+                    }
+                    
+                    # Agregar información de requisito cargado a cada requisito
+                    for req in requisito:
+                        requisito_info = {
+                            'requisito': req,
+                            'cargado': requisitos_cargados_dict.get(req.id)
+                        }
+                        requisitos_con_info.append(requisito_info)
+                    
+                    # Obtener respuestas de políticas guardadas
+                    json_politicas_internas = aplicacion.json_politicas_internas if aplicacion.json_politicas_internas else {}
+                    if not isinstance(json_politicas_internas, dict):
+                        json_politicas_internas = {}
+                    
+                    # Calcular estado de políticas: finalizada si todas las políticas tienen respuestas
+                    if politicas_internas and json_politicas_internas:
+                        politicas_con_respuesta = 0
+                        for politica in politicas_internas:
+                            politica_id = str(politica.politica_interna.id)
+                            if politica_id in json_politicas_internas and json_politicas_internas[politica_id].get('respuesta'):
+                                politicas_con_respuesta += 1
+                        politicas_finalizadas = politicas_con_respuesta == len(politicas_internas)
+        
+    except Exception as e:
+        mensaje_error = f'Error al validar el token: {str(e)}'
+    
+    # Siempre renderizar la pantalla, incluso si hay errores
+    context = {
+        'aplicacion': aplicacion,
+        'candidato': candidato,
+        'vacante': vacante,
+        'documento_firmado': documento_firmado,
+        'token_valido': token_valido,
+        'tiene_entrevista': tiene_entrevista,
+        'entrevista_asignada': entrevista_asignada,
+        'politicas_internas': politicas_internas,
+        'requisitos_con_info': requisitos_con_info,
+        'pruebas': pruebas,
+        'json_politicas_internas': json_politicas_internas,
+        'politicas_finalizadas': politicas_finalizadas,
+        'mensaje_error': mensaje_error,
+    }
+    
+    if mensaje_error:
+        messages.error(request, mensaje_error)
+    
+    return render(request, 'admin/candidate/candidate_user/validar_token_documento.html', context)
 
 def test_match(request, pk):    
 

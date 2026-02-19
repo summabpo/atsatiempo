@@ -124,6 +124,11 @@ def detail_aplicacion_vacante(request, pk):
                 'Entrevista Asignada'
             )
             
+            # Generar token para el documento
+            from applications.common.views.EnvioCorreo import generar_token_documento
+            usuario_generador = request.user if request.user.is_authenticated else None
+            token_documento = generar_token_documento(asignacion_vacante, usuario_generador)
+            
             contexto_email = {
                 'entrevistador': f'{usuario_asignado.primer_nombre} {usuario_asignado.segundo_nombre} {usuario_asignado.primer_apellido}',
                 'nombre_candidato': f'{info_candidato.primer_nombre} {info_candidato.segundo_nombre} {info_candidato.primer_apellido} {info_candidato.segundo_apellido}',
@@ -132,7 +137,9 @@ def detail_aplicacion_vacante(request, pk):
                 'lugar_enlace': lugar_enlace,
                 'vacante': vacante.titulo,
                 'cliente': cliente.razon_social,
-                'url': url_actual
+                'url': url_actual,
+                'token_documento': token_documento,
+                'email_candidato': info_candidato.email
             }
             
             lista_correos = [

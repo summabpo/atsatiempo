@@ -3,7 +3,7 @@ from django.db.models import F, Count, Q, Value, Case, When, CharField
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente
 
 
-from applications.common.views.EnvioCorreo import enviar_correo
+from applications.common.views.EnvioCorreo import enviar_correo, generar_token_documento
 from applications.reclutado.forms.FormRecruited import ReclutadoCrearForm, RespuestaClienteForm
 from applications.services.service_candidate import buscar_candidato
 from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm
@@ -203,6 +203,10 @@ def detail_recruited(request, pk):
             #funcion para crear registro en el historial y actualizar estado de la aplicacion de la vcatente
             crear_historial_aplicacion(asignacion_vacante, 2, request.session.get('_auth_user_id'), 'Entrevista Asignada')
             
+            # Generar token para el documento
+            usuario_generador = request.user if request.user.is_authenticated else None
+            token_documento = generar_token_documento(asignacion_vacante, usuario_generador)
+            
             contexto_email_1 = {
                 'entrevistador' : f'{usuario_asignado.primer_nombre} {usuario_asignado.segundo_nombre} {usuario_asignado.primer_apellido}',
                 'nombre_candidato' : f'{info_candidato.primer_nombre} {info_candidato.segundo_nombre} {info_candidato.primer_apellido} {info_candidato.segundo_apellido}' ,
@@ -211,7 +215,9 @@ def detail_recruited(request, pk):
                 'lugar_enlace' : lugar_enlace,
                 'vacante' : vacante.titulo,
                 'cliente' : cliente.razon_social,
-                'url' : url_actual
+                'url' : url_actual,
+                'token_documento' : token_documento,
+                'email_candidato' : info_candidato.email
             }
 
             lista_correos = [

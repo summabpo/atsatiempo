@@ -307,12 +307,22 @@ def dashboard_candidato(request):
     vacantes_disponibles = vacantes_disponibles.exclude(
         aplicaciones__candidato_101_id=candidato_id
     )
+    
+    # Obtener datos detallados para mostrar en el dashboard
+    from applications.candidato.models import Can101Candidato, Can102Experiencia, Can103Educacion, Can101CandidatoSkill
+    candidato_obj = Can101Candidato.objects.get(id=candidato_id)
+    educaciones = Can103Educacion.objects.filter(candidato_id_101=candidato_obj).order_by('-fecha_inicial')[:3]
+    experiencias = Can102Experiencia.objects.filter(candidato_id_101=candidato_obj).order_by('-fecha_inicial')[:3]
+    habilidades = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato_obj).select_related('skill_id_104')[:6]
 
     context = {
         'session_variables': session_variables,
         'data_candidate': data,
         'vacantes_disponibles': vacantes_disponibles,
-        
+        'candidato': candidato_obj,
+        'educaciones': educaciones,
+        'experiencias': experiencias,
+        'habilidades': habilidades,
     }
     
     return render(request, 'admin/dashboard/dashboard_candidate.html', context)

@@ -32,7 +32,7 @@ Inicio | Dashboard
 	<!-- Start Your Code -->
 	<div class="main-content-container overflow-hidden">
 
-		{% if data_candidate.porcentaje_total <= 90 %}
+		{% if data_candidate.porcentaje_total <= 60 %}
 		<div class="row">
 			<div class="col-md-12">
 				<div class="alert alert-warning" role="alert">
@@ -64,143 +64,11 @@ Inicio | Dashboard
 		{% endif %}
 		
 
-		<div class="row">
-			<div class="col-md-3">
-				<div class="card bg-white border-0 rounded-3 mb-4">
-					<div class="card-body p-4">
-						<h3 class="mb-0">Perfil al :</h3>
-						<div id="chart1"></div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-9">
-				<div class="row">
-					<div class="col-md-6">
-						<div class="card bg-white border-0 rounded-3 mb-4">
-							<div class="card-body p-4">
-								<div class="d-flex justify-content-center">
-									<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Personal</h4>
-								</div>
-								<div class="d-flex align-items-center justify-content-between">
-									<div class="flex-shrink-0">
-										<div class="d-flex">
-											<i class="material-symbols-outlined fs-40 text-danger">person</i>
-										</div>
-									</div>
-									<div class="flex-grow-1 ms-3">
-										<div class="d-flex align-items-center justify-content-end">
-											<div class="progress-responsive" style="width: 100%;">
-												<div class="progress rounded-pill" style="height: 20px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="{{ dashboard }}" aria-valuemin="0" aria-valuemax="100">
-													<div class="progress-bar rounded-pill" style="width: {{ data_candidate.info_personal.porcentaje }}%; height: 20px; background-color: #FE7A36;"></div>
-												</div>
-											</div>
-											<span class="count text-body ms-3 fs-12"> {{ data_candidate.info_personal.porcentaje }}%</span>
-										</div>
-									</div>
-									<div class="ms-3">
-										<a href="{% url 'candidatos:candidato_info_personal' %}" class="btn btn-danger text-white btn-sm mt-2">Actualizar</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="card bg-white border-0 rounded-3 mb-4">
-							<div class="card-body p-4">
-								<div class="d-flex justify-content-center">
-									<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Académica</h4>
-								</div>
-								<div class="d-flex align-items-center justify-content-between">
-									<div class="flex-shrink-0">
-										<div class="d-flex">
-											<i class="material-symbols-outlined fs-40 text-info">school</i>
-										</div>
-									</div>
-									<div class="flex-grow-1 ms-3">
-										<div class="d-flex align-items-center justify-content-end">
-											<div class="progress-responsive" style="width: 100%">
-												<div class="progress rounded-pill" style="height: 20px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
-													<div class="progress-bar rounded-pill" style="width: {{ data_candidate.educacion.porcentaje }}%; height: 20px; background-color: #2DB6F5;"></div>
-												</div>
-											</div>
-											<span class="count text-body ms-3 fs-12">{{ data_candidate.educacion.porcentaje }}%</span>
-										</div>
-									</div>
-									<div class="ms-3">
-										<a href="{% url 'candidatos:candidato_info_academica' %}" class="btn btn-info text-white btn-sm mt-2">Actualizar</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					
-					<div class="col-md-6">
-						<div class="card bg-white border-0 rounded-3 mb-4">
-							<div class="card-body p-4">
-								<div class="d-flex justify-content-center">
-									<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Laboral</h4>
-								</div>
-								<div class="d-flex align-items-center justify-content-between">
-									<div class="flex-shrink-0">
-										<div class="d-flex">
-											<i class="material-symbols-outlined fs-40 text-warning">work</i>
-										</div>
-									</div>
-									<div class="flex-grow-1 ms-3">
-										<div class="d-flex align-items-center justify-content-end">
-											<div class="progress-responsive" style="width: 100%;">
-												<div class="progress rounded-pill" style="height: 20px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
-													<div class="progress-bar rounded-pill" style="width: {{data_candidate.experiencia.porcentaje}}%; height: 20px; background-color: #FFBC2B;"></div>
-												</div>
-											</div>
-											<span class="count text-body ms-3 fs-12">{{data_candidate.experiencia.porcentaje}}%</span>
-										</div>
-									</div>
-									<div class="ms-3">
-										<a href="{% url 'candidatos:candidato_info_laboral' %}" class="btn btn-warning text-white btn-sm mt-2">Actualizar</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="card bg-white border-0 rounded-3 mb-4">
-							<div class="card-body p-4">
-								<div class="d-flex justify-content-center">
-									<h4 class="mb-0 fs-14 fw-semibold lh-1">Información Habilidades</h4>
-								</div>
-								<div class="d-flex align-items-center justify-content-between">
-									<div class="flex-shrink-0">
-										<div class="d-flex">
-											<i class="material-symbols-outlined fs-40 text-success">psychology</i>
-										</div>
-									</div>
-									<div class="flex-grow-1 ms-3">
-										<div class="d-flex align-items-center justify-content-end">
-											<div class="progress-responsive" style="width: 100%;">
-												<div class="progress rounded-pill" style="height: 20px; background-color: #DDE4FF;" role="progressbar" aria-label="Example with label" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
-													<div class="progress-bar rounded-pill" style="width: {{data_candidate.skills.porcentaje}}%; height: 20px; background-color: #37D80A;"></div>
-												</div>
-											</div>
-											<span class="count text-body ms-3 fs-12">{{data_candidate.skills.porcentaje}}%</span>
-										</div>
-									</div>
-									<div class="ms-3">
-										<a href="{% url 'candidatos:candidato_info_habilidades' %}" class="btn btn-success text-white btn-sm mt-2">Actualizar</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+		{% include 'admin/candidate/candidate_user/layout/base_candidate_info_records.html' %}
 		<hr class="my-4">
 
 		<!-- Vacantes -->
-		{% if data_candidate.porcentaje_total > 90 %}
+		{% if data_candidate.porcentaje_total > 60 %}
 		<div class="row">
 			<div class="col-md-8">
 				<div class="card bg-white border-0 rounded-3 mb-4">
@@ -270,6 +138,15 @@ Inicio | Dashboard
 					</div>
 				</div>	
 			</div>
+		{% else %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="alert alert-info" role="alert">
+					<h4 class="alert-heading">No se ha completado el perfil o la información necesaria para mostrar las vacantes.</h4>
+					<p class="mb-0">Por favor completa tu información personal, académica, laboral y habilidades para poder ver las vacantes disponibles.</p>
+				</div>
+			</div>
+		</div>
 		{% endif %}
 		<hr class="my-4">
 

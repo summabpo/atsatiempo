@@ -21,6 +21,7 @@ urlpatterns = [
     #candidate_user
     path( url_principal+'aplicar_vacante/<int:pk>/', candidate_views.confirm_apply_vacancy_recruited, name='reclutados_confirmar_aplicar_candidato'),
     path( url_principal+'aplicar_vacante/aplicar/<int:pk>/', candidate_views.apply_vacancy_recruited_candidate, name='reclutados_aplicar_candidato'),
+    path( url_principal+'gestionar-documentacion/<str:token>/', candidate_views.validar_token_documento, name='validar_token_documento'),
 
     #api
     path( url_principal+'api/buscar_candidato/', api_views.api_candidate_document, name='api_canidate_document'),

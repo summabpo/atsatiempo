@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 from django.contrib import messages
-from applications.common.views.EnvioCorreo import enviar_correo, generate_token
+from applications.common.views.EnvioCorreo import enviar_correo, generate_token, generar_token_documento
 from django.db.models import F
 from django.http import JsonResponse
 
@@ -11,7 +11,7 @@ from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm
 
 #modelos
 from applications.vacante.models import Cli052Vacante
-from applications.reclutado.models import Cli056AplicacionVacante
+from applications.reclutado.models import Cli056AplicacionVacante, Cli081TokenGeneradoDocumentos
 from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.cliente.models import Cli051Cliente
 from applications.usuarios.models import Permiso
@@ -178,6 +178,9 @@ def crear_entrevista(request, asignacion_id):
             #funcion para crear registro en el historial y actualizar estado de la aplicacion de la vcatente
             crear_historial_aplicacion(asignacion_vacante, 2, request.session.get('_auth_user_id'), 'Entrevista Asignada')
             
+            # Generar token para el documento
+            token_documento = generar_token_documento(asignacion_vacante, usuario_asigno)
+            
             contexto_email_1 = {
                 'entrevistador' : f'{usuario_asignado.primer_nombre} {usuario_asignado.segundo_nombre} {usuario_asignado.primer_apellido}',
                 'nombre_candidato' : f'{info_candidato.primer_nombre} {info_candidato.segundo_nombre} {info_candidato.primer_apellido} {info_candidato.segundo_apellido}' ,
@@ -186,7 +189,9 @@ def crear_entrevista(request, asignacion_id):
                 'lugar_enlace' : lugar_enlace,
                 'vacante' : vacante.titulo,
                 'cliente' : cliente.razon_social,
-                'url' : url_actual
+                'url' : url_actual,
+                'token_documento' : token_documento,
+                'email_candidato' : info_candidato.email
             }
 
             lista_correos = [
