@@ -1,11 +1,17 @@
+from datetime import timedelta
 from django.db import models
 from django.db.models import Count
+from django.utils import timezone
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.cliente.models import Cli051Cliente, Cli069Requisito, Cli070AsignacionRequisito
 from applications.candidato.models import Can101Candidato
 from applications.services.choices import ESTADO_APLICACION_CHOICES_STATIC, ESTADO_APLICACION_COLOR_STATIC, ESTADO_RECLUTADO_CHOICES_STATIC
 from applications.usuarios.models import UsuarioBase
 from applications.vacante.models import Cli052Vacante
+
+def calcular_fecha_expiracion():
+    """Función para calcular la fecha de expiración (2 días desde ahora)"""
+    return timezone.now() + timedelta(days=2)
 
 # Create your models here.
 class Cli056AplicacionVacante(models.Model):
@@ -138,3 +144,21 @@ class Cli080DocumentoFirmadoAplicacionVacante(models.Model):
         db_table = 'cli_080_documentos_firmar_aplicacion_vacante'
         verbose_name = 'DOCUMENTO FIRMAR APLICACIÓN A VACANTE'
         verbose_name_plural = 'DOCUMENTOS FIRMAR APLICACIONES A VACANTES'
+
+
+class Cli081TokenGeneradoDocumentos(models.Model):
+    aplicacion_vacante_056 = models.ForeignKey(Cli056AplicacionVacante, on_delete=models.CASCADE, related_name='aplicacion_vacante_token_generado')
+    token = models.CharField(max_length=100, blank=True, null=True)
+    fecha_generacion = models.DateTimeField(auto_now_add=True)
+    fecha_expiracion = models.DateTimeField(default=calcular_fecha_expiracion)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, null=True, blank=True, related_name='token_generado_documentos')
+    usuario_generador = models.ForeignKey(UsuarioBase, on_delete=models.SET_NULL, null=True, blank=True, related_name='token_generado_documentos')
+
+    def __str__(self):
+        return f"Token {self.token} generado para la aplicación {self.aplicacion_vacante_056.id}"
+    class Meta:
+        db_table = 'cli_081_token_generado_documentos'
+        verbose_name = 'TOKEN GENERADO DOCUMENTOS'
+        verbose_name_plural = 'TOKEN GENERADOS DOCUMENTOS'
+        unique_together = ('aplicacion_vacante_056', 'token')
+        

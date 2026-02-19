@@ -21,7 +21,7 @@ from applications.services.service_recruited import query_recruited_vacancy_id
 from applications.services.service_client import query_client_detail
 from applications.services.service_candidate import buscar_candidato
 from applications.services.choices import ESTADO_RECLUTADO_CHOICES_STATIC
-from applications.common.views.EnvioCorreo import enviar_correo
+from applications.common.views.EnvioCorreo import enviar_correo, generar_token_documento
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
 #forms
@@ -487,6 +487,10 @@ def crear_entrevistas_multiples(request, pk, vacante_id):
                         'Entrevista Asignada'
                     )
                     
+                    # Generar token para el documento
+                    usuario_generador = request.user if request.user.is_authenticated else None
+                    token_documento = generar_token_documento(aplicacion, usuario_generador)
+                    
                     # Obtener información del candidato
                     candidato = aplicacion.candidato_101
                     
@@ -499,7 +503,9 @@ def crear_entrevistas_multiples(request, pk, vacante_id):
                         'lugar_enlace': lugar_enlace,
                         'vacante': vacante.titulo,
                         'cliente': cliente.razon_social if cliente else 'N/A',
-                        'url': url_actual
+                        'url': url_actual,
+                        'token_documento': token_documento,
+                        'email_candidato': candidato.email
                     }
                     
                     # Lista de correos

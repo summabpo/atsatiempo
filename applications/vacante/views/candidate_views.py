@@ -386,50 +386,66 @@ def apply_vacancy_detail(request, pk):
 
         print(vacancy.vacante_id_052.cargo.id)
 
-        requisito =get_requisitos(vacancy)
-        pruebas = get_pruebas(vacancy)
-        politicas_internas = get_politicas_internas(vacancy)
-        print(politicas_internas)
-        
-        # Obtener los requisitos cargados en estado 1
-        requisitos_cargados = Cli079RequisitosCargado.objects.filter(
-            aplicacion_vacante_056=vacancy,
+        # Verificar si hay entrevista asignada
+        from applications.entrevista.models import Cli057AsignacionEntrevista
+        entrevista_asignada = Cli057AsignacionEntrevista.objects.filter(
+            asignacion_vacante=vacancy,
             estado_id=1
-        ).select_related('asignacion_requisito_070', 'usuario_cargado')
+        ).first()
         
-        # Crear un diccionario para acceso rápido por asignacion_requisito_070.id
-        requisitos_cargados_dict = {
-            req.asignacion_requisito_070.id: req 
-            for req in requisitos_cargados
-        }
+        tiene_entrevista = entrevista_asignada is not None
         
-        # Agregar información de requisito cargado a cada requisito
+        # Solo obtener políticas, requisitos y pruebas si hay entrevista asignada
+        requisito = []
+        pruebas = []
+        politicas_internas = []
         requisitos_con_info = []
-        for req in requisito:
-            requisito_info = {
-                'requisito': req,
-                'cargado': requisitos_cargados_dict.get(req.id)
+        json_politicas_internas = {}
+        politicas_finalizadas = False
+        
+        if tiene_entrevista:
+            requisito = get_requisitos(vacancy)
+            pruebas = get_pruebas(vacancy)
+            politicas_internas = get_politicas_internas(vacancy)
+            print(politicas_internas)
+            
+            # Obtener los requisitos cargados en estado 1
+            requisitos_cargados = Cli079RequisitosCargado.objects.filter(
+                aplicacion_vacante_056=vacancy,
+                estado_id=1
+            ).select_related('asignacion_requisito_070', 'usuario_cargado')
+            
+            # Crear un diccionario para acceso rápido por asignacion_requisito_070.id
+            requisitos_cargados_dict = {
+                req.asignacion_requisito_070.id: req 
+                for req in requisitos_cargados
             }
-            requisitos_con_info.append(requisito_info)
+            
+            # Agregar información de requisito cargado a cada requisito
+            for req in requisito:
+                requisito_info = {
+                    'requisito': req,
+                    'cargado': requisitos_cargados_dict.get(req.id)
+                }
+                requisitos_con_info.append(requisito_info)
+            
+            # Asegurar que json_politicas_internas sea un diccionario
+            json_politicas_internas = vacancy.json_politicas_internas if vacancy.json_politicas_internas else {}
+            
+            # Calcular estado de políticas: finalizada si todas las políticas tienen respuestas
+            if politicas_internas and json_politicas_internas:
+                politicas_con_respuesta = 0
+                for politica in politicas_internas:
+                    politica_id = str(politica.politica_interna.id)
+                    if politica_id in json_politicas_internas and json_politicas_internas[politica_id].get('respuesta'):
+                        politicas_con_respuesta += 1
+                politicas_finalizadas = politicas_con_respuesta == len(politicas_internas)
 
     except Cli056AplicacionVacante.DoesNotExist:
         messages.error(request, "La aplicación de vacante no existe o no pertenece al candidato.")
         return redirect('vacantes:vacante_candidato_aplicadas')
         
         
-
-    # Asegurar que json_politicas_internas sea un diccionario
-    json_politicas_internas = vacancy.json_politicas_internas if vacancy.json_politicas_internas else {}
-    
-    # Calcular estado de políticas: finalizada si todas las políticas tienen respuestas
-    politicas_finalizadas = False
-    if politicas_internas and json_politicas_internas:
-        politicas_con_respuesta = 0
-        for politica in politicas_internas:
-            politica_id = str(politica.politica_interna.id)
-            if politica_id in json_politicas_internas and json_politicas_internas[politica_id].get('respuesta'):
-                politicas_con_respuesta += 1
-        politicas_finalizadas = politicas_con_respuesta == len(politicas_internas)
 
     # Obtener el documento firmado si existe
     documento_firmado = None
@@ -453,6 +469,8 @@ def apply_vacancy_detail(request, pk):
         'json_politicas_internas': json_politicas_internas,
         'politicas_finalizadas': politicas_finalizadas,
         'documento_firmado': documento_firmado,
+        'tiene_entrevista': tiene_entrevista,
+        'entrevista_asignada': entrevista_asignada,
     }
 
     return render(request, 'admin/vacancy/candidate_user/apply_vacancy_detail.html', context)
@@ -707,15 +725,18 @@ def upload_requisito_document(request, aplicacion_id, requisito_id):
         return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
     
     try:
-        # Obtener el ID del candidato desde la sesión
-        candidato_id = request.session.get('candidato_id')
+        # Obtener la aplicación
+        aplicacion = get_object_or_404(Cli056AplicacionVacante, id=aplicacion_id)
         
-        # Verificar que la aplicación pertenece al candidato
-        aplicacion = get_object_or_404(
-            Cli056AplicacionVacante, 
-            id=aplicacion_id, 
-            candidato_101=candidato_id
-        )
+        # Obtener el ID del candidato desde la sesión o de la aplicación
+        candidato_id = request.session.get('candidato_id')
+        if not candidato_id:
+            # Si no hay sesión, usar el candidato de la aplicación
+            candidato_id = aplicacion.candidato_101.id
+        else:
+            # Si hay sesión, verificar que la aplicación pertenece al candidato
+            if aplicacion.candidato_101.id != candidato_id:
+                return JsonResponse({'success': False, 'error': 'No tiene permisos para esta aplicación'}, status=403)
         
         # Obtener la asignación del requisito
         asignacion_requisito = get_object_or_404(Cli070AsignacionRequisito, id=requisito_id)
@@ -743,8 +764,8 @@ def upload_requisito_document(request, aplicacion_id, requisito_id):
         # Obtener el estado activo (id=1)
         estado = get_object_or_404(Cat001Estado, id=1)
         
-        # Obtener el usuario logueado
-        usuario = request.user
+        # Obtener el usuario logueado o None si no hay sesión
+        usuario = request.user if request.user.is_authenticated else None
         
         # Crear o actualizar el requisito cargado
         requisito_cargado, created = Cli079RequisitosCargado.objects.update_or_create(
@@ -771,20 +792,21 @@ def upload_requisito_document(request, aplicacion_id, requisito_id):
             'error': f'Error al cargar el documento: {str(e)}'
         }, status=500)
 
-@login_required
-@validar_permisos('acceso_candidato')
 def guardar_respuestas_politicas(request, aplicacion_id):
     """Vista para guardar las respuestas de políticas internas"""
     try:
-        # Obtener el ID del candidato desde la sesión
-        candidato_id = request.session.get('candidato_id')
+        # Obtener la aplicación
+        aplicacion = get_object_or_404(Cli056AplicacionVacante, id=aplicacion_id)
         
-        # Verificar que la aplicación pertenece al candidato
-        aplicacion = get_object_or_404(
-            Cli056AplicacionVacante, 
-            id=aplicacion_id, 
-            candidato_101=candidato_id
-        )
+        # Obtener el ID del candidato desde la sesión o de la aplicación
+        candidato_id = request.session.get('candidato_id')
+        if not candidato_id:
+            # Si no hay sesión, usar el candidato de la aplicación
+            candidato_id = aplicacion.candidato_101.id
+        else:
+            # Si hay sesión, verificar que la aplicación pertenece al candidato
+            if aplicacion.candidato_101.id != candidato_id:
+                return JsonResponse({'success': False, 'error': 'No tiene permisos para esta aplicación'}, status=403)
         
         if request.method == 'POST':
             import json
@@ -852,11 +874,14 @@ def guardar_respuestas_politicas(request, aplicacion_id):
                 if not ip_firmante:
                     ip_firmante = request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].strip() if request.META.get('HTTP_X_FORWARDED_FOR') else ''
                 
+                # Obtener el usuario firmante (puede ser None si no hay sesión)
+                usuario_firmante = request.user if request.user.is_authenticated else None
+                
                 # Obtener o crear el documento firmado
                 documento_firmado, created = Cli080DocumentoFirmadoAplicacionVacante.objects.get_or_create(
                     aplicacion_vacante_056=aplicacion,
                     defaults={
-                        'usuario_firmante': request.user,
+                        'usuario_firmante': usuario_firmante,
                         'estado': get_object_or_404(Cat001Estado, pk=1),
                         'ip_firmante': ip_firmante,
                         'codigo_unico': codigo_unico
@@ -865,7 +890,7 @@ def guardar_respuestas_politicas(request, aplicacion_id):
                 
                 # Si ya existe, actualizar
                 if not created:
-                    documento_firmado.usuario_firmante = request.user
+                    documento_firmado.usuario_firmante = usuario_firmante
                     documento_firmado.ip_firmante = ip_firmante
                     if not documento_firmado.codigo_unico:
                         documento_firmado.codigo_unico = codigo_unico

@@ -173,8 +173,8 @@ Gestión de Vacante - Reclutador
                                                                         {% endwith %}
                                                                     </td>
                                                                     <td class="text-center">
-                                                                        <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
-                                                                            <i class="material-symbols-outlined fs-14">visibility</i> Ver
+                                                                        <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100 d-flex align-items-center justify-content-center">
+                                                                            <i class="material-symbols-outlined fs-14 me-1">visibility</i> Ver
                                                                         </a>
                                                                     </td>
                                                                 </tr>
@@ -291,7 +291,7 @@ Gestión de Vacante - Reclutador
                                 <!-- Tab: finalista -->
                                 <div class="tab-pane fade" id="nav-finalizalista" role="tabpanel" aria-labelledby="nav-finalizalista-tab" tabindex="0">
                                     <div class="mb-3 d-flex justify-content-start align-items-center">
-                                        <button type="button" id="btnAsignarEntrevistas" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" disabled>
+                                        <button type="button" id="btnAsignarEntrevistas" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center justify-content-center" disabled>
                                             <i class="material-symbols-outlined me-2">group_add</i>
                                             Asignar Entrevistas (<span id="contadorSeleccionados">0</span>)
                                         </button>
@@ -565,11 +565,11 @@ Gestión de Vacante - Reclutador
                     {% crispy form_entrevista_multiples %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn bg-secondary bg-opacity-10 fw-medium text-secondary py-2 px-4" data-bs-dismiss="modal">
+                    <button type="button" class="btn bg-secondary bg-opacity-10 fw-medium text-secondary py-2 px-4 d-flex align-items-center justify-content-center" data-bs-dismiss="modal">
                         <i class="material-symbols-outlined me-2">close</i>
                         Cancelar
                     </button>
-                    <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                    <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center justify-content-center">
                         <i class="material-symbols-outlined me-2">save</i>
                         Asignar Entrevistas
                     </button>

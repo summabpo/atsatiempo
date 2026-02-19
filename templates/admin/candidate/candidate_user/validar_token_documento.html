@@ -1,42 +1,136 @@
-{% extends 'admin/layout/dashboard_base.html' %} 
 {% load static %}
-{% load crispy_forms_tags %}
 {% load custom_tags %}
 
-{% block title %}
-Mis Vacantes aplicadas
-{% endblock %}
-
-{% block content %}
-<div class="main-content-container overflow-hidden">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-        <h3 class="mb-0" style="color: #B10022;">DETALLE VACANTE APLICADO</h3>
-        
-        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
-            <ol class="breadcrumb align-items-center mb-0 lh-1">
-                <li class="breadcrumb-item">
-                    <a href="#" class="d-flex align-items-center text-decoration-none">
-                        <i class="ri-home-4-line fs-18 text-primary me-1"></i>
-                        <span class="text-secondary fw-medium hover" >Inicio</span>
-                    </a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">
-					<a href="{% url 'vacantes:vacante_candidato_aplicadas' %}" class="d-flex align-items-center text-decoration-none">
-						<span class="text-secondary fw-medium hover" >Listado de Vacantes Aplicadas</span>
-					</a>
-				</li>
-                <li class="breadcrumb-item active" aria-current="page">
-                    <span class="fw-medium">Detalle Vacante</span>
-                </li>
-            </ol>
-        </nav>
-    </div>
-    <div class="row">
-		<div class="col-12 col-md-4 mb-4 mb-md-0">
-            {% include "admin/vacancy/common_template/info_vacancy.html" %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Documentos de Entrevista</title>
+    {% include 'admin/layout/partials/asset_files.html' %}
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 0;
+            margin: 0;
+        }
+        .header-logo {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header-logo .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header con Logo -->
+    <div class="header-logo">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <a href="#" class="text-decoration-none">
+                    <img src="{% static 'admin/images/landing/logo-talent-tray.png' %}" alt="Talent Tray Logo" style="max-width: 180px; height: auto;">
+                </a>
+            </div>
         </div>
-        <div class="col-12 col-md-8">
+    </div>
+
+
+
+
+    <div class="content-wrapper">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+            <h3 class="mb-0" style="color: #B10022;">DOCUMENTOS DE ENTREVISTA</h3>
+        </div>
+    
+    {% if token_valido %}
+    <div class="row">
+        <div class="col-12">
+            <!-- Información de la Vacante y Candidato -->
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                    <h2 class="fs-18 fw-semibold mb-0 text-primary">Información de la Entrevista</h2>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div class="d-flex align-items-start">
+                                <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">person</span>
+                                <div class="flex-grow-1">
+                                    <strong class="d-block text-muted small mb-1">Candidato:</strong>
+                                    <span class="fw-medium text-break">{{ candidato.nombre_completo }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div class="d-flex align-items-start">
+                                <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">email</span>
+                                <div class="flex-grow-1">
+                                    <strong class="d-block text-muted small mb-1">Correo:</strong>
+                                    <span class="fw-medium text-break">{{ candidato.email }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% if vacante.cargo %}
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div class="d-flex align-items-start">
+                                <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">badge</span>
+                                <div class="flex-grow-1">
+                                    <strong class="d-block text-muted small mb-1">Cargo:</strong>
+                                    <span class="fw-medium text-break">{{ vacante.cargo.nombre_cargo }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if vacante.asignacion_cliente_id_064 and vacante.asignacion_cliente_id_064.id_cliente_asignado %}
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div class="d-flex align-items-start">
+                                <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">business</span>
+                                <div class="flex-grow-1">
+                                    <strong class="d-block text-muted small mb-1">Cliente:</strong>
+                                    <span class="fw-medium text-break">{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if entrevista_asignada %}
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div class="d-flex align-items-start">
+                                <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">event</span>
+                                <div class="flex-grow-1">
+                                    <strong class="d-block text-muted small mb-1">Fecha y Hora:</strong>
+                                    <span class="fw-medium">{{ entrevista_asignada.fecha_entrevista|date:"d/m/Y" }} - {{ entrevista_asignada.hora_entrevista|time:"H:i" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información de la Vacante (con restricción para candidatos) -->
+            {% if vacante %}
+            <div class="row">
+                <div class="col-12">
+                    {% with is_candidato=True %}
+                        {% include "admin/vacancy/common_template/info_vacancy.html" %}
+                    {% endwith %}
+                </div>
+            </div>
+            {% endif %}
+            
             {% if tiene_entrevista %}
+            <!-- Políticas Internas -->
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
                     <h2 class="fs-18 fw-semibold mb-0 text-primary">Políticas Internas</h2>
@@ -57,11 +151,11 @@ Mis Vacantes aplicadas
                                 </div>
                                 <div class="d-flex gap-2">
                                     {% if politicas_finalizadas %}
-                                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalVerPoliticaFirmada">
+                                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#modalVerPoliticaFirmada">
                                             Ver Política Firmada
                                         </button>
                                     {% else %}
-                                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalPoliticasInternas">
+                                        <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#modalPoliticasInternas">
                                             Responder
                                         </button>
                                     {% endif %}
@@ -79,7 +173,7 @@ Mis Vacantes aplicadas
                                         </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form id="formPoliticasInternas" data-aplicacion-id="{{ vacancy.id }}">
+                                    <form id="formPoliticasInternas" data-aplicacion-id="{{ aplicacion.id }}">
                                         {% csrf_token %}
                                         <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                                             {% for politica in politicas_internas %}
@@ -210,13 +304,16 @@ Mis Vacantes aplicadas
                                         <div class="border rounded" style="min-height: 400px; height: calc(100vh - 200px);">
                                             {% if documento_firmado and documento_firmado.documento_firmado %}
                                                 <iframe src="{{ documento_firmado.documento_firmado.url }}" width="100%" height="100%" style="border: none; min-height: 400px;"></iframe>
-                                            {% else %}
-                                                <iframe src="{% url 'vacantes:generar_declaracion_pdf' vacancy.id %}" width="100%" height="100%" style="border: none; min-height: 400px;"></iframe>
                                             {% endif %}
                                         </div>
                                     </div>
                                     <div class="modal-footer flex-wrap gap-2">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                        {% if documento_firmado and documento_firmado.documento_firmado %}
+                                        <a href="{{ documento_firmado.documento_firmado.url }}" class="btn btn-primary d-flex align-items-center justify-content-center" download>
+                                            <i class="ri-download-line me-1"></i> Descargar PDF
+                                        </a>
+                                        {% endif %}
+                                        <button type="button" class="btn btn-secondary d-flex align-items-center justify-content-center" data-bs-dismiss="modal">Cerrar</button>
                                     </div>
                                 </div>
                             </div>
@@ -228,6 +325,7 @@ Mis Vacantes aplicadas
                 </div>
             </div>
 
+            <!-- Requisitos -->
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
                     <h2 class="fs-18 fw-semibold mb-0 text-primary">Requisitos</h2>
@@ -249,11 +347,11 @@ Mis Vacantes aplicadas
                                 </div>
                                 <div class="d-flex gap-2">
                                     {% if requisito_cargado and requisito_cargado.archivo_requisito %}
-                                        <button type="button" class="btn bg-success bg-opacity-10 fw-medium text-success py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalVerRequisito{{ r.id }}">
+                                        <button type="button" class="btn bg-success bg-opacity-10 fw-medium text-success py-2 px-4 d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#modalVerRequisito{{ r.id }}">
                                             Ver Documento
                                         </button>
                                     {% endif %}
-                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalRequisito{{ r.id }}">
+                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#modalRequisito{{ r.id }}">
                                         {% if requisito_cargado and requisito_cargado.archivo_requisito %}
                                             Actualizar Documento
                                         {% else %}
@@ -287,7 +385,7 @@ Mis Vacantes aplicadas
                                             </div>
                                         </div>
                                         <div class="modal-footer flex-wrap gap-2">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                            <button type="button" class="btn btn-secondary d-flex align-items-center justify-content-center" data-bs-dismiss="modal">Cerrar</button>
                                         </div>
                                     </div>
                                 </div>
@@ -332,35 +430,35 @@ Mis Vacantes aplicadas
                                 </div>
                             </div>
                             {% endwith %}
+                        {% empty %}
+                            <li class="text-muted">No hay requisitos disponibles.</li>
                         {% endfor %}
                     </ul>
                 </div>
-                
             </div>
 
+            <!-- Pruebas -->
+            {% if pruebas %}
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
                     <h2 class="fs-18 fw-semibold mb-0 text-primary">Pruebas</h2>
                 </div>
                 <div class="card-body p-4">
-                    {% if pruebas %}
-                        <ul class="ps-0 mb-3 list-unstyled">
-                            {% for prueba in pruebas %}
-                            <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
-                                <div class="d-flex align-items-center">
-                                    <span class="material-symbols-outlined me-2 text-primary">quiz</span>
-                                    <span class="fw-medium">{{ prueba.prueba.nombre|upper }}</span>
-                                </div>
-                            </li>
-                            {% empty %}
-                                <li class="text-muted">No hay pruebas disponibles.</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="text-muted mb-0">No hay pruebas disponibles.</p>
-                    {% endif %}
+                    <ul class="ps-0 mb-3 list-unstyled">
+                        {% for prueba in pruebas %}
+                        <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                            <div class="d-flex align-items-center">
+                                <span class="material-symbols-outlined me-2 text-primary">quiz</span>
+                                <span class="fw-medium">{{ prueba.prueba.nombre|upper }}</span>
+                            </div>
+                        </li>
+                        {% empty %}
+                            <li class="text-muted">No hay pruebas disponibles.</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
+            {% endif %}
             {% else %}
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-body p-4">
@@ -371,383 +469,346 @@ Mis Vacantes aplicadas
                 </div>
             </div>
             {% endif %}
-            
-
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
             <div class="card bg-white border-0 rounded-3 mb-4">
-                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
-                    <h2 class="fs-18 fw-semibold mb-0 text-primary">Historial de Aplicación</h2>
-                </div>
                 <div class="card-body p-4">
-                    <div class="mb-4">
-                    <div class="timeline-wrap">
-                        {% for h in historial %}
-                            <div class="timeline-item-2 mb-5">
-                                <div class="text p-4 rounded-3 shadow-sm border-start border-4  border-{{ h.color }} bg-white">
-                                    <h5 class="fw-bold mb-2 text-dark">
-                                        <span class="material-symbols-outlined me-1 text-{{ h.color }}">event</span>
-                                        Estado: {{ h.estado }}
-                                    </h5>
-                                    <p class="mb-2 text-secondary">{{ h.descripcion }}</p>
-
-                                    <ul class="ps-0 mb-3 list-unstyled d-flex align-items-center flex-wrap small gap-2 gap-md-4">
-                                        <li class="d-flex align-items-center">
-                                            <span class="material-symbols-outlined me-2 text-primary">person</span>
-                                            <strong>Usuario:</strong> {{ h.usuario }}
-                                        </li>
-                                        <li class="d-flex align-items-center">
-                                            <span class="material-symbols-outlined me-2 text-primary">work</span>
-                                            <strong>Vacante:</strong> {{ h.vacante }}
-                                        </li>
-                                    </ul>
-
-                                    <span class="d-block text-muted">
-                                        <span class="fw-semibold">ID Aplicación:</span> {{ h.aplicacion_id }}
-                                    </span>
-                                </div>
-
-                                <div class="icon {{ forloop.counter|add:"1" }}">
-                                    <div></div>
-                                </div>
-
-                                <div class="time">
-                                    <span class="badge bg-primary text-white fs-6">
-                                        {{ h.fecha|date:"H:i A, d M Y" }}
-                                    </span>
-                                </div>
-                            </div>
-                            {% endfor %}
+                    <div class="alert alert-danger mb-0">
+                        <i class="ri-error-warning-line me-2"></i>
+                        Token inválido o expirado.
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endif %}
+    </div>
 
-{% block js %} 
+    {% include 'admin/layout/partials/js_files.html' %}
+    
     {% if tiene_entrevista %}
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Manejar el envío de formularios de requisitos
             {% for req_info in requisitos_con_info %}
-        {% with r=req_info.requisito %}
-        document.getElementById('formRequisito{{ r.id }}').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const form = this;
-            const formData = new FormData(form);
-            const mensajeDiv = document.getElementById('mensajeRequisito{{ r.id }}');
-            const submitBtn = form.querySelector('button[type="submit"]');
-            
-            // Deshabilitar el botón durante el envío
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Guardando...';
-            
-            // Limpiar mensajes anteriores
-            mensajeDiv.classList.add('d-none');
-            mensajeDiv.classList.remove('alert-success', 'alert-danger');
-            
-            fetch('{% url "vacantes:upload_requisito_document" vacancy.id r.id %}', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Mostrar SweetAlert de éxito
-                    Swal.fire({
-                        title: '¡Éxito!',
-                        text: 'Requisito cargado exitosamente',
-                        icon: 'success',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#B10022',
-                        timer: 2000,
-                        timerProgressBar: true
-                    }).then(() => {
-                        // Cerrar el modal y recargar la página
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('modalRequisito{{ r.id }}'));
-                        modal.hide();
-                        form.reset();
-                        window.location.reload();
-                    });
-                } else {
-                    // Mostrar SweetAlert de error
-                    Swal.fire({
-                        title: 'Error',
-                        text: data.error || 'Error al cargar el documento',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#B10022'
-                    });
-                    mensajeDiv.textContent = data.error || 'Error al cargar el documento';
-                    mensajeDiv.classList.remove('d-none');
-                    mensajeDiv.classList.add('alert-danger');
-                }
-            })
-            .catch(error => {
-                Swal.fire({
-                    title: 'Error de conexión',
-                    text: 'Por favor, intente nuevamente.',
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#B10022'
-                });
-                mensajeDiv.textContent = 'Error de conexión. Por favor, intente nuevamente.';
-                mensajeDiv.classList.remove('d-none');
-                mensajeDiv.classList.add('alert-danger');
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Guardar Documento';
-            });
-        });
-        {% endwith %}
-        {% endfor %}
-    });
-    
-    // Manejo del formulario de políticas internas (modal único)
-    {% if politicas_internas %}
-    (function() {
-        const form = document.getElementById('formPoliticasInternas');
-        if (!form) return;
-        
-        // Inicializar SignaturePad para firma
-        let signaturePadFirma = null;
-        
-        // Función para ajustar el tamaño del canvas
-        function resizeCanvas(canvas) {
-            const container = canvas.parentElement;
-            const rect = container.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            
-            // Establecer el tamaño del canvas en píxeles CSS
-            canvas.style.width = '100%';
-            canvas.style.height = '200px';
-            
-            // Establecer el tamaño interno del canvas (considerando DPR)
-            canvas.width = rect.width * dpr;
-            canvas.height = 200 * dpr;
-            
-            // Escalar el contexto para que coincida con el DPR
-            const ctx = canvas.getContext('2d');
-            ctx.scale(dpr, dpr);
-            
-            return canvas;
-        }
-        
-        // Inicializar cuando se abre el modal
-        const modal = document.getElementById('modalPoliticasInternas');
-        if (modal) {
-            modal.addEventListener('shown.bs.modal', function() {
-                // Inicializar firma
-                const canvasFirma = document.getElementById('canvasFirma');
-                if (canvasFirma && !signaturePadFirma) {
-                    // Ajustar tamaño del canvas
-                    resizeCanvas(canvasFirma);
+            {% with r=req_info.requisito %}
+            const formRequisito{{ r.id }} = document.getElementById('formRequisito{{ r.id }}');
+            if (formRequisito{{ r.id }}) {
+                formRequisito{{ r.id }}.addEventListener('submit', function(e) {
+                    e.preventDefault();
                     
-                    signaturePadFirma = new SignaturePad(canvasFirma, {
-                        backgroundColor: 'rgb(255, 255, 255)',
-                        penColor: 'rgb(0, 0, 0)'
-                    });
+                    const form = this;
+                    const formData = new FormData(form);
+                    const mensajeDiv = document.getElementById('mensajeRequisito{{ r.id }}');
+                    const submitBtn = form.querySelector('button[type="submit"]');
                     
-                    // Ajustar tamaño cuando cambia el tamaño de la ventana
-                    window.addEventListener('resize', function() {
-                        if (signaturePadFirma && !signaturePadFirma.isEmpty()) {
-                            const data = signaturePadFirma.toData();
-                            resizeCanvas(canvasFirma);
-                            signaturePadFirma.clear();
-                            signaturePadFirma.fromData(data);
+                    // Deshabilitar el botón durante el envío
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Guardando...';
+                    
+                    // Limpiar mensajes anteriores
+                    mensajeDiv.classList.add('d-none');
+                    mensajeDiv.classList.remove('alert-success', 'alert-danger');
+                    
+                    fetch('{% url "vacantes:upload_requisito_document" aplicacion.id r.id %}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: '¡Éxito!',
+                                text: 'Requisito cargado exitosamente',
+                                icon: 'success',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#B10022',
+                                timer: 2000,
+                                timerProgressBar: true
+                            }).then(() => {
+                                const modal = bootstrap.Modal.getInstance(document.getElementById('modalRequisito{{ r.id }}'));
+                                modal.hide();
+                                form.reset();
+                                window.location.reload();
+                            });
                         } else {
-                            resizeCanvas(canvasFirma);
+                            Swal.fire({
+                                title: 'Error',
+                                text: data.error || 'Error al cargar el documento',
+                                icon: 'error',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#B10022'
+                            });
+                            mensajeDiv.textContent = data.error || 'Error al cargar el documento';
+                            mensajeDiv.classList.remove('d-none');
+                            mensajeDiv.classList.add('alert-danger');
                         }
-                    });
-                }
-            });
-            
-            // Limpiar al cerrar el modal
-            modal.addEventListener('hidden.bs.modal', function() {
-                if (signaturePadFirma) {
-                    signaturePadFirma.clear();
-                }
-            });
-        }
-        
-        // Botón para limpiar
-        document.getElementById('btnLimpiarFirma')?.addEventListener('click', function() {
-            if (signaturePadFirma) {
-                signaturePadFirma.clear();
-            }
-        });
-        
-        // Mostrar/ocultar preguntas adicionales cuando se selecciona "Sí"
-        form.querySelectorAll('.politica-respuesta-si-no').forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                const politicaItem = this.closest('.politica-item');
-                const preguntasSi = politicaItem.querySelector('.preguntas-si');
-                
-                if (this.value === 'si' && preguntasSi) {
-                    preguntasSi.style.display = 'block';
-                } else if (preguntasSi) {
-                    preguntasSi.style.display = 'none';
-                    // Limpiar campos de preguntas si se cambia a "No"
-                    preguntasSi.querySelectorAll('.politica-pregunta-si').forEach(function(input) {
-                        input.value = '';
-                    });
-                }
-            });
-        });
-        
-        // Manejar el envío del formulario
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const aplicacionId = form.dataset.aplicacionId;
-            const mensajeDiv = document.getElementById('mensajePoliticasInternas');
-            const submitBtn = form.querySelector('button[type="submit"]');
-            
-            // Recopilar todas las respuestas
-            const respuestas = {};
-            
-            form.querySelectorAll('.politica-item').forEach(function(item) {
-                const politicaId = item.dataset.politicaId;
-                const politicaData = {};
-                
-                // Obtener respuesta principal (Sí/No o texto)
-                const respuestaSiNo = item.querySelector('input[name^="politica_' + politicaId + '_respuesta"]:checked');
-                const respuestaTexto = item.querySelector('.politica-respuesta-texto');
-                
-                if (respuestaSiNo) {
-                    politicaData.respuesta = respuestaSiNo.value;
-                    
-                    // Si es "Sí", obtener las preguntas adicionales
-                    if (respuestaSiNo.value === 'si') {
-                        const preguntas = {};
-                        item.querySelectorAll('.politica-pregunta-si').forEach(function(input) {
-                            const preguntaKey = input.name.split('_').pop();
-                            preguntas[preguntaKey] = input.value;
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error de conexión',
+                            text: 'Por favor, intente nuevamente.',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#B10022'
                         });
-                        if (Object.keys(preguntas).length > 0) {
-                            politicaData.preguntas = preguntas;
-                        }
-                    }
-                } else if (respuestaTexto) {
-                    politicaData.respuesta = respuestaTexto.value;
+                        mensajeDiv.textContent = 'Error de conexión. Por favor, intente nuevamente.';
+                        mensajeDiv.classList.remove('d-none');
+                        mensajeDiv.classList.add('alert-danger');
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Guardar Documento';
+                    });
+                });
+            }
+            {% endwith %}
+            {% endfor %}
+            
+            // Manejo del formulario de políticas internas
+            {% if politicas_internas %}
+            (function() {
+                const form = document.getElementById('formPoliticasInternas');
+                if (!form) return;
+                
+                // Inicializar SignaturePad para firma
+                let signaturePadFirma = null;
+                
+                // Función para ajustar el tamaño del canvas
+                function resizeCanvas(canvas) {
+                    const container = canvas.parentElement;
+                    const rect = container.getBoundingClientRect();
+                    const dpr = window.devicePixelRatio || 1;
+                    
+                    canvas.style.width = '100%';
+                    canvas.style.height = '200px';
+                    
+                    canvas.width = rect.width * dpr;
+                    canvas.height = 200 * dpr;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.scale(dpr, dpr);
+                    
+                    return canvas;
                 }
                 
-                if (politicaData.respuesta) {
-                    respuestas[politicaId] = politicaData;
-                }
-            });
-            
-            // Validar que al menos haya una respuesta
-            if (Object.keys(respuestas).length === 0) {
-                mensajeDiv.textContent = 'Por favor, complete al menos una respuesta.';
-                mensajeDiv.classList.remove('d-none', 'alert-success');
-                mensajeDiv.classList.add('alert-warning');
-                return;
-            }
-            
-            // Validar que haya firma
-            if (!signaturePadFirma || signaturePadFirma.isEmpty()) {
-                mensajeDiv.textContent = 'Por favor, complete la firma.';
-                mensajeDiv.classList.remove('d-none', 'alert-success');
-                mensajeDiv.classList.add('alert-warning');
-                return;
-            }
-            
-            // Obtener la imagen de la firma como base64
-            const firmaDataURL = signaturePadFirma.toDataURL('image/png');
-            
-            // Convertir base64 a blob para enviar
-            function dataURLtoBlob(dataurl) {
-                const arr = dataurl.split(',');
-                const mime = arr[0].match(/:(.*?);/)[1];
-                const bstr = atob(arr[1]);
-                let n = bstr.length;
-                const u8arr = new Uint8Array(n);
-                while(n--){
-                    u8arr[n] = bstr.charCodeAt(n);
-                }
-                return new Blob([u8arr], {type:mime});
-            }
-            
-            const firmaBlob = dataURLtoBlob(firmaDataURL);
-            
-            // Crear FormData para enviar la imagen
-            const formData = new FormData();
-            formData.append('respuestas', JSON.stringify(respuestas));
-            formData.append('firma', firmaBlob, 'firma.png');
-            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-            
-            // Enviar datos vía AJAX
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Guardando...';
-            mensajeDiv.classList.add('d-none');
-            
-            // Enviar todas las respuestas y firmas
-            fetch('{% url "vacantes:guardar_respuestas_politicas" vacancy.id %}', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Mostrar SweetAlert de éxito
-                    Swal.fire({
-                        title: '¡Éxito!',
-                        text: 'Política firmada exitosamente',
-                        icon: 'success',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#B10022',
-                        timer: 2000,
-                        timerProgressBar: true
-                    }).then(() => {
-                        // Cerrar el modal y recargar la página
-                        const modal = bootstrap.Modal.getInstance(form.closest('.modal'));
-                        modal.hide();
-                        mensajeDiv.classList.add('d-none');
-                        window.location.reload();
+                // Inicializar cuando se abre el modal
+                const modal = document.getElementById('modalPoliticasInternas');
+                if (modal) {
+                    modal.addEventListener('shown.bs.modal', function() {
+                        const canvasFirma = document.getElementById('canvasFirma');
+                        if (canvasFirma && !signaturePadFirma) {
+                            resizeCanvas(canvasFirma);
+                            
+                            signaturePadFirma = new SignaturePad(canvasFirma, {
+                                backgroundColor: 'rgb(255, 255, 255)',
+                                penColor: 'rgb(0, 0, 0)'
+                            });
+                            
+                            window.addEventListener('resize', function() {
+                                if (signaturePadFirma && !signaturePadFirma.isEmpty()) {
+                                    const data = signaturePadFirma.toData();
+                                    resizeCanvas(canvasFirma);
+                                    signaturePadFirma.clear();
+                                    signaturePadFirma.fromData(data);
+                                } else {
+                                    resizeCanvas(canvasFirma);
+                                }
+                            });
+                        }
                     });
-                } else {
-                    // Mostrar SweetAlert de error
-                    Swal.fire({
-                        title: 'Error',
-                        text: data.error || 'Error al guardar las respuestas',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#B10022'
+                    
+                    modal.addEventListener('hidden.bs.modal', function() {
+                        if (signaturePadFirma) {
+                            signaturePadFirma.clear();
+                        }
                     });
-                    mensajeDiv.textContent = data.error || 'Error al guardar las respuestas';
-                    mensajeDiv.classList.remove('d-none', 'alert-success');
-                    mensajeDiv.classList.add('alert-danger');
                 }
-            })
-            .catch(error => {
-                Swal.fire({
-                    title: 'Error de conexión',
-                    text: 'Por favor, intente nuevamente.',
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#B10022'
+                
+                // Botón para limpiar
+                document.getElementById('btnLimpiarFirma')?.addEventListener('click', function() {
+                    if (signaturePadFirma) {
+                        signaturePadFirma.clear();
+                    }
                 });
-                mensajeDiv.textContent = 'Error de conexión. Por favor, intente nuevamente.';
-                mensajeDiv.classList.remove('d-none', 'alert-success');
-                mensajeDiv.classList.add('alert-danger');
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Guardar Todas las Respuestas';
-            });
+                
+                // Mostrar/ocultar preguntas adicionales cuando se selecciona "Sí"
+                form.querySelectorAll('.politica-respuesta-si-no').forEach(function(radio) {
+                    radio.addEventListener('change', function() {
+                        const politicaItem = this.closest('.politica-item');
+                        const preguntasSi = politicaItem.querySelector('.preguntas-si');
+                        
+                        if (this.value === 'si' && preguntasSi) {
+                            preguntasSi.style.display = 'block';
+                        } else if (preguntasSi) {
+                            preguntasSi.style.display = 'none';
+                            preguntasSi.querySelectorAll('.politica-pregunta-si').forEach(function(input) {
+                                input.value = '';
+                            });
+                        }
+                    });
+                });
+                
+                // Manejar el envío del formulario
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const aplicacionId = form.dataset.aplicacionId;
+                    const mensajeDiv = document.getElementById('mensajePoliticasInternas');
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    
+                    // Recopilar todas las respuestas
+                    const respuestas = {};
+                    
+                    form.querySelectorAll('.politica-item').forEach(function(item) {
+                        const politicaId = item.dataset.politicaId;
+                        const politicaData = {};
+                        
+                        const respuestaSiNo = item.querySelector('input[name^="politica_' + politicaId + '_respuesta"]:checked');
+                        const respuestaTexto = item.querySelector('.politica-respuesta-texto');
+                        
+                        if (respuestaSiNo) {
+                            politicaData.respuesta = respuestaSiNo.value;
+                            
+                            if (respuestaSiNo.value === 'si') {
+                                const preguntas = {};
+                                item.querySelectorAll('.politica-pregunta-si').forEach(function(input) {
+                                    const preguntaKey = input.name.split('_').pop();
+                                    preguntas[preguntaKey] = input.value;
+                                });
+                                if (Object.keys(preguntas).length > 0) {
+                                    politicaData.preguntas = preguntas;
+                                }
+                            }
+                        } else if (respuestaTexto) {
+                            politicaData.respuesta = respuestaTexto.value;
+                        }
+                        
+                        if (politicaData.respuesta) {
+                            respuestas[politicaId] = politicaData;
+                        }
+                    });
+                    
+                    if (Object.keys(respuestas).length === 0) {
+                        mensajeDiv.textContent = 'Por favor, complete al menos una respuesta.';
+                        mensajeDiv.classList.remove('d-none', 'alert-success');
+                        mensajeDiv.classList.add('alert-warning');
+                        return;
+                    }
+                    
+                    if (!signaturePadFirma || signaturePadFirma.isEmpty()) {
+                        mensajeDiv.textContent = 'Por favor, complete la firma.';
+                        mensajeDiv.classList.remove('d-none', 'alert-success');
+                        mensajeDiv.classList.add('alert-warning');
+                        return;
+                    }
+                    
+                    const firmaDataURL = signaturePadFirma.toDataURL('image/png');
+                    
+                    function dataURLtoBlob(dataurl) {
+                        const arr = dataurl.split(',');
+                        const mime = arr[0].match(/:(.*?);/)[1];
+                        const bstr = atob(arr[1]);
+                        let n = bstr.length;
+                        const u8arr = new Uint8Array(n);
+                        while(n--){
+                            u8arr[n] = bstr.charCodeAt(n);
+                        }
+                        return new Blob([u8arr], {type:mime});
+                    }
+                    
+                    const firmaBlob = dataURLtoBlob(firmaDataURL);
+                    
+                    const formData = new FormData();
+                    formData.append('respuestas', JSON.stringify(respuestas));
+                    formData.append('firma', firmaBlob, 'firma.png');
+                    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Guardando...';
+                    mensajeDiv.classList.add('d-none');
+                    
+                    fetch('{% url "vacantes:guardar_respuestas_politicas" aplicacion.id %}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: '¡Éxito!',
+                                text: 'Política firmada exitosamente',
+                                icon: 'success',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#B10022',
+                                timer: 2000,
+                                timerProgressBar: true
+                            }).then(() => {
+                                const modal = bootstrap.Modal.getInstance(form.closest('.modal'));
+                                modal.hide();
+                                mensajeDiv.classList.add('d-none');
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: data.error || 'Error al guardar las respuestas',
+                                icon: 'error',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#B10022'
+                            });
+                            mensajeDiv.textContent = data.error || 'Error al guardar las respuestas';
+                            mensajeDiv.classList.remove('d-none', 'alert-success');
+                            mensajeDiv.classList.add('alert-danger');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error de conexión',
+                            text: 'Por favor, intente nuevamente.',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#B10022'
+                        });
+                        mensajeDiv.textContent = 'Error de conexión. Por favor, intente nuevamente.';
+                        mensajeDiv.classList.remove('d-none', 'alert-success');
+                        mensajeDiv.classList.add('alert-danger');
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Guardar Todas las Respuestas';
+                    });
+                });
+            })();
+            {% endif %}
         });
-    })();
-    {% endif %}
     </script>
     {% endif %}
-{% endblock js %}
+    
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+            Swal.fire({
+                text: "{{ message }}",
+                icon: "{{message.tags}}",
+                showConfirmButton: true,
+                confirmButtonText: "Ok",
+                customClass: {
+                    confirmButton: "btn btn-primary"
+                }
+            });
+            </script>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>

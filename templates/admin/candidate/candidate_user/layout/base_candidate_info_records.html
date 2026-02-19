@@ -116,21 +116,21 @@
             <div class="card-body p-3 text-center">
                 <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">person</span>
-                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.info_personal.porcentaje }}%</h3>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{% if porcentajes %}{{ porcentajes.info_personal.porcentaje }}{% elif data_candidate %}{{ data_candidate.info_personal.porcentaje }}{% else %}0{% endif %}%</h3>
                 </div>
                 <p class="small text-secondary mb-2 fw-medium">Información Básica</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
-                        style="width: {{ porcentajes.info_personal.porcentaje }}%" 
-                        aria-valuenow="{{ porcentajes.info_personal.porcentaje }}" 
+                        style="width: {% if porcentajes %}{{ porcentajes.info_personal.porcentaje }}{% elif data_candidate %}{{ data_candidate.info_personal.porcentaje }}{% else %}0{% endif %}%" 
+                        aria-valuenow="{% if porcentajes %}{{ porcentajes.info_personal.porcentaje }}{% elif data_candidate %}{{ data_candidate.info_personal.porcentaje }}{% else %}0{% endif %}" 
                         aria-valuemin="0" aria-valuemax="100">
                     </div>
                 </div>
-                <small class="text-muted d-block mt-2">{{ porcentajes.info_personal.campos.llenos }}/{{ porcentajes.info_personal.campos.total }} campos</small>
+                <small class="text-muted d-block mt-2">{% if porcentajes %}{{ porcentajes.info_personal.campos.llenos }}/{{ porcentajes.info_personal.campos.total }}{% elif data_candidate %}{{ data_candidate.info_personal.campos.llenos }}/{{ data_candidate.info_personal.campos.total }}{% else %}0/0{% endif %} campos</small>
             </div>
             <div class="card-footer">
                 <a href="{% url 'candidatos:candidato_info_personal' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
-                    {% if porcentajes.info_personal.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}
+                    {% if porcentajes %}{% if porcentajes.info_personal.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}{% elif data_candidate %}{% if data_candidate.info_personal.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}{% else %}Registrar Nuevo{% endif %}
                 </a>
             </div>
         </div>
@@ -142,21 +142,21 @@
             <div class="card-body p-3 text-center">
                 <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">school</span>
-                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.educacion.porcentaje }}%</h3>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{% if porcentajes %}{{ porcentajes.educacion.porcentaje }}{% elif data_candidate %}{{ data_candidate.educacion.porcentaje }}{% else %}0{% endif %}%</h3>
                 </div>
                 <p class="small text-secondary mb-2 fw-medium">Información Académica</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
-                        style="width: {{ porcentajes.educacion.porcentaje }}%" 
-                        aria-valuenow="{{ porcentajes.educacion.porcentaje }}" 
+                        style="width: {% if porcentajes %}{{ porcentajes.educacion.porcentaje }}{% elif data_candidate %}{{ data_candidate.educacion.porcentaje }}{% else %}0{% endif %}%" 
+                        aria-valuenow="{% if porcentajes %}{{ porcentajes.educacion.porcentaje }}{% elif data_candidate %}{{ data_candidate.educacion.porcentaje }}{% else %}0{% endif %}" 
                         aria-valuemin="0" aria-valuemax="100">
                     </div>
                 </div>
-                <small class="text-muted d-block mt-2">{{ porcentajes.educacion.campos.llenos }} registro(s)</small>
+                <small class="text-muted d-block mt-2">{% if porcentajes %}{{ porcentajes.educacion.campos.llenos }}{% elif data_candidate %}{{ data_candidate.educacion.campos.llenos }}{% else %}0{% endif %} registro(s)</small>
             </div>
             <div class="card-footer">
                 <a href="{% url 'candidatos:candidato_info_academica' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
-                    {% if porcentajes.educacion.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}
+                    {% if porcentajes %}{% if porcentajes.educacion.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}{% elif data_candidate %}{% if data_candidate.educacion.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}{% else %}Registrar Nuevo{% endif %}
                 </a>
             </div>
         </div>
@@ -168,21 +168,21 @@
             <div class="card-body p-3 text-center">
                 <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">work</span>
-                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.experiencia.porcentaje }}%</h3>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{% if porcentajes %}{{ porcentajes.experiencia.porcentaje }}{% elif data_candidate %}{{ data_candidate.experiencia.porcentaje }}{% else %}0{% endif %}%</h3>
                 </div>
                 <p class="small text-secondary mb-2 fw-medium">Información Laboral</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
-                        style="width: {{ porcentajes.experiencia.porcentaje }}%" 
-                        aria-valuenow="{{ porcentajes.experiencia.porcentaje }}" 
+                        style="width: {% if porcentajes %}{{ porcentajes.experiencia.porcentaje }}{% elif data_candidate %}{{ data_candidate.experiencia.porcentaje }}{% else %}0{% endif %}%" 
+                        aria-valuenow="{% if porcentajes %}{{ porcentajes.experiencia.porcentaje }}{% elif data_candidate %}{{ data_candidate.experiencia.porcentaje }}{% else %}0{% endif %}" 
                         aria-valuemin="0" aria-valuemax="100">
                     </div>
                 </div>
-                <small class="text-muted d-block mt-2">{{ porcentajes.experiencia.campos.llenos }} registro(s)</small>
+                <small class="text-muted d-block mt-2">{% if porcentajes %}{{ porcentajes.experiencia.campos.llenos }}{% elif data_candidate %}{{ data_candidate.experiencia.campos.llenos }}{% else %}0{% endif %} registro(s)</small>
             </div>
             <div class="card-footer">
                 <a href="{% url 'candidatos:candidato_info_laboral' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
-                    {% if porcentajes.experiencia.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}
+                    {% if porcentajes %}{% if porcentajes.experiencia.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}{% elif data_candidate %}{% if data_candidate.experiencia.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}{% else %}Registrar Nuevo{% endif %}
                 </a>
             </div>
         </div>
@@ -194,21 +194,21 @@
             <div class="card-body p-3 text-center">
                 <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">psychology</span>
-                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.skills.porcentaje }}%</h3>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{% if porcentajes %}{{ porcentajes.skills.porcentaje }}{% elif data_candidate %}{{ data_candidate.skills.porcentaje }}{% else %}0{% endif %}%</h3>
                 </div>
                 <p class="small text-secondary mb-2 fw-medium">Habilidades</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
-                        style="width: {{ porcentajes.skills.porcentaje }}%" 
-                        aria-valuenow="{{ porcentajes.skills.porcentaje }}" 
+                        style="width: {% if porcentajes %}{{ porcentajes.skills.porcentaje }}{% elif data_candidate %}{{ data_candidate.skills.porcentaje }}{% else %}0{% endif %}%" 
+                        aria-valuenow="{% if porcentajes %}{{ porcentajes.skills.porcentaje }}{% elif data_candidate %}{{ data_candidate.skills.porcentaje }}{% else %}0{% endif %}" 
                         aria-valuemin="0" aria-valuemax="100">
                     </div>
                 </div>
-                <small class="text-muted d-block mt-2">{{ porcentajes.skills.campos.llenos }} habilidad(es)</small>
+                <small class="text-muted d-block mt-2">{% if porcentajes %}{{ porcentajes.skills.campos.llenos }}{% elif data_candidate %}{{ data_candidate.skills.campos.llenos }}{% else %}0{% endif %} habilidad(es)</small>
             </div>
             <div class="card-footer">
                 <a href="{% url 'candidatos:candidato_info_habilidades' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
-                    {% if porcentajes.skills.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}
+                    {% if porcentajes %}{% if porcentajes.skills.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}{% elif data_candidate %}{% if data_candidate.skills.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}{% else %}Registrar Nuevo{% endif %}
                 </a>
             </div>
         </div>
@@ -220,21 +220,21 @@
             <div class="card-body p-3 text-center">
                 <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">share</span>
-                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.redes_sociales.porcentaje }}%</h3>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{% if porcentajes %}{{ porcentajes.redes_sociales.porcentaje }}{% elif data_candidate %}{{ data_candidate.redes_sociales.porcentaje|default:0 }}{% else %}0{% endif %}%</h3>
                 </div>
                 <p class="small text-secondary mb-2 fw-medium">Redes Sociales</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
-                        style="width: {{ porcentajes.redes_sociales.porcentaje }}%" 
-                        aria-valuenow="{{ porcentajes.redes_sociales.porcentaje }}" 
+                        style="width: {% if porcentajes %}{{ porcentajes.redes_sociales.porcentaje }}{% elif data_candidate %}{{ data_candidate.redes_sociales.porcentaje|default:0 }}{% else %}0{% endif %}%" 
+                        aria-valuenow="{% if porcentajes %}{{ porcentajes.redes_sociales.porcentaje }}{% elif data_candidate %}{{ data_candidate.redes_sociales.porcentaje|default:0 }}{% else %}0{% endif %}" 
                         aria-valuemin="0" aria-valuemax="100">
                     </div>
                 </div>
-                <small class="text-muted d-block mt-2">{{ porcentajes.redes_sociales.campos.llenos }} red(es)</small>
+                <small class="text-muted d-block mt-2">{% if porcentajes %}{{ porcentajes.redes_sociales.campos.llenos }}{% elif data_candidate %}{{ data_candidate.redes_sociales.campos.llenos|default:0 }}{% else %}0{% endif %} red(es)</small>
             </div>
             <div class="card-footer">
                 <a href="{% url 'candidatos:candidato_info_redes' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
-                    {% if porcentajes.redes_sociales.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}
+                    {% if porcentajes %}{% if porcentajes.redes_sociales.porcentaje == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}{% elif data_candidate %}{% if data_candidate.redes_sociales.porcentaje|default:0 == 0 %}Registrar Nuevo{% else %}Actualizar{% endif %}{% else %}Registrar Nuevo{% endif %}
                 </a>
             </div>
         </div>
@@ -246,13 +246,13 @@
             <div class="card-body p-3 text-center">
                 <div class="mb-3 mb-md-3 d-flex d-md-block align-items-center justify-content-center gap-2">
                     <span class="material-symbols-outlined text-primary" style="font-size: 40px;">check_circle</span>
-                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{{ porcentajes.porcentaje_total }}%</h3>
+                    <h3 class="mb-0 mb-md-2 fw-bold text-primary">{% if porcentajes %}{{ porcentajes.porcentaje_total }}{% elif data_candidate %}{{ data_candidate.porcentaje_total }}{% else %}0{% endif %}%</h3>
                 </div>
                 <p class="small text-secondary mb-2 fw-medium">Perfil Completado</p>
                 <div class="progress" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar" 
-                        style="width: {{ porcentajes.porcentaje_total }}%" 
-                        aria-valuenow="{{ porcentajes.porcentaje_total }}" 
+                        style="width: {% if porcentajes %}{{ porcentajes.porcentaje_total }}{% elif data_candidate %}{{ data_candidate.porcentaje_total }}{% else %}0{% endif %}%" 
+                        aria-valuenow="{% if porcentajes %}{{ porcentajes.porcentaje_total }}{% elif data_candidate %}{{ data_candidate.porcentaje_total }}{% else %}0{% endif %}" 
                         aria-valuemin="0" aria-valuemax="100">
                     </div>
                 </div>
