@@ -117,18 +117,7 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Información de la Vacante (con restricción para candidatos) -->
-            {% if vacante %}
-            <div class="row">
-                <div class="col-12">
-                    {% with is_candidato=True %}
-                        {% include "admin/vacancy/common_template/info_vacancy.html" %}
-                    {% endwith %}
-                </div>
-            </div>
-            {% endif %}
-            
+                        
             {% if tiene_entrevista %}
             <!-- Políticas Internas -->
             <div class="card bg-white border-0 rounded-3 mb-4">
