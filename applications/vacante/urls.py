@@ -46,6 +46,7 @@ urlpatterns = [
     path( url_principal+'aplicadas/detalle/<int:pk>', candidate_views.apply_vacancy_detail, name='vacante_candidato_aplicadas_detalle'),
     path( url_principal+'aplicadas/<int:aplicacion_id>/requisito/<int:requisito_id>/cargar/', candidate_views.upload_requisito_document, name='upload_requisito_document'),
     path( url_principal+'aplicadas/<int:aplicacion_id>/politicas/guardar/', candidate_views.guardar_respuestas_politicas, name='guardar_respuestas_politicas'),
+    path( url_principal+'candidato/<int:candidato_id>/video/cargar/', candidate_views.upload_video_candidato, name='upload_video_candidato'),
     
     path( url_principal+'disponibles/', candidate_views.vacancy_available, name='vacante_candidato_disponibles'),
     path( url_principal+'filtros/opciones/', candidate_views.get_filter_options, name='vacante_filtros_opciones'),

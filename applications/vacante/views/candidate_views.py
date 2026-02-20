@@ -233,33 +233,15 @@ def generar_pdf_documento_firmado(aplicacion, fecha_firma=None, ip_firmante=None
     logo_path = None
     
     # Buscar el logo usando finders de Django (funciona con static files y S3)
-    # Intentar diferentes variaciones del nombre del logo
-    logo_variations = [
-        'admin/images/landing/logo-talent-tray.png',
-        'admin/images/landing/logo_talent_tray.png',
-        'admin/images/landing/logo-talenttray.png',
-        'admin/images/landing/logo_talenttray.png',
-        'admin/images/landing/logo.svg',  # Como alternativa si existe
-    ]
-    
-    for logo_variation in logo_variations:
-        logo_static_path = finders.find(logo_variation)
-        if logo_static_path and os.path.exists(logo_static_path):
-            logo_path = logo_static_path
-            break
-    
-    # Si no se encontró con finders, intentar con ruta directa
-    if not logo_path:
-        logo_direct_paths = [
-            os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo-talent-tray.png'),
-            os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo_talent_tray.png'),
-            os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo-talenttray.png'),
-            os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo_talenttray.png'),
-        ]
-        for logo_direct_path in logo_direct_paths:
-            if os.path.exists(logo_direct_path):
-                logo_path = logo_direct_path
-                break
+    # Solo buscar logo-talent-tray.png
+    logo_static_path = finders.find('admin/images/landing/logo-talent-tray.png')
+    if logo_static_path and os.path.exists(logo_static_path):
+        logo_path = logo_static_path
+    else:
+        # Si no se encontró con finders, intentar con ruta directa
+        logo_direct_path = os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo-talent-tray.png')
+        if os.path.exists(logo_direct_path):
+            logo_path = logo_direct_path
     
     header_data = []
     if logo_path:
@@ -267,8 +249,7 @@ def generar_pdf_documento_firmado(aplicacion, fecha_firma=None, ip_firmante=None
             logo_img = RLImage(logo_path, width=0.8*inch, height=0.35*inch)
             header_data.append([logo_img, ''])
         except Exception as e:
-            # Si falla con PNG, intentar con SVG (aunque ReportLab no soporta SVG directamente)
-            # Por ahora, dejar vacío si falla
+            # Si falla al cargar, dejar vacío (no mostrar error, solo no mostrar logo)
             header_data.append(['', ''])
     else:
         header_data.append(['', ''])
@@ -623,6 +604,11 @@ def apply_vacancy_detail(request, pk):
     except:
         pass
         
+    # Obtener información del video del candidato
+    candidato = vacancy.candidato_101
+    video_perfil = candidato.video_perfil if candidato else None
+    tiene_video = video_perfil and video_perfil.name
+    
     context = {
         'vacancy': vacancy,
         'vacante': vacante,
@@ -637,6 +623,9 @@ def apply_vacancy_detail(request, pk):
         'documento_firmado': documento_firmado,
         'tiene_entrevista': tiene_entrevista,
         'entrevista_asignada': entrevista_asignada,
+        'video_perfil': video_perfil,
+        'tiene_video': tiene_video,
+        'candidato': candidato,
     }
 
     return render(request, 'admin/vacancy/candidate_user/apply_vacancy_detail.html', context)
@@ -882,6 +871,58 @@ def get_filter_stats(request):
     }
     
     return JsonResponse(response_data)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def upload_video_candidato(request, candidato_id):
+    """Vista para cargar el video de perfil del candidato"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
+    
+    try:
+        # Obtener el candidato
+        candidato = get_object_or_404(Can101Candidato, id=candidato_id)
+        
+        # Verificar que el candidato pertenece al usuario de la sesión
+        candidato_sesion_id = request.session.get('candidato_id')
+        if candidato_sesion_id and candidato.id != candidato_sesion_id:
+            return JsonResponse({'success': False, 'error': 'No tiene permisos para esta acción'}, status=403)
+        
+        # Verificar que el archivo fue enviado
+        if 'video_perfil' not in request.FILES:
+            return JsonResponse({'success': False, 'error': 'No se envió ningún archivo de video'}, status=400)
+        
+        archivo_video = request.FILES['video_perfil']
+        
+        # Validar tipo de archivo (solo videos)
+        import os
+        ext = os.path.splitext(archivo_video.name)[1].lower()
+        extensiones_permitidas = ['.mp4', '.mov', '.avi', '.webm', '.mkv']
+        if ext not in extensiones_permitidas:
+            return JsonResponse({
+                'success': False, 
+                'error': 'Solo se permiten archivos de video (MP4, MOV, AVI, WEBM, MKV)'
+            }, status=400)
+        
+        # Validar tamaño del archivo (máximo 50 MB)
+        if archivo_video.size > 100 * 1024 * 1024:
+            return JsonResponse({'success': False, 'error': 'El archivo no puede superar los 100 MB'}, status=400)
+        
+        # Guardar el video en el campo video_perfil
+        candidato.video_perfil = archivo_video
+        candidato.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Video cargado exitosamente',
+            'video_url': candidato.video_perfil.url if candidato.video_perfil else None
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'Error al cargar el video: {str(e)}'
+        }, status=500)
 
 @login_required
 @validar_permisos('acceso_candidato')

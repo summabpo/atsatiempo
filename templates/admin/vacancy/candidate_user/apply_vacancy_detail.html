@@ -338,6 +338,123 @@ Mis Vacantes aplicadas
                 
             </div>
 
+            <!-- Sección de Video de Presentación Elevator Pitch -->
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                    <h2 class="fs-18 fw-semibold mb-0 text-primary">Video de Presentación Elevator Pitch</h2>
+                </div>
+                <div class="card-body p-4">
+                    {% if not tiene_video %}
+                        <div class="alert alert-warning mb-3" role="alert">
+                            <i class="ri-alert-line me-2"></i>
+                            <strong>¡Atención!</strong> Debes subir un video con tu presentación.
+                            <p class="mb-0 mt-2">
+                                "En este espacio queremos conocerte más allá de tu hoja de vida. Queremos entender quién eres, qué te mueve y qué te hace diferente. No buscamos un discurso perfecto, sino una versión auténtica de ti. Cuéntanos, en un minuto, quién eres, qué has construido y hacia dónde quieres ir."
+                            </p>
+                        </div>
+                    {% endif %}
+                    
+                    <ul class="ps-0 mb-3 list-unstyled">
+                        <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                            <div class="d-flex align-items-center">
+                                <span class="material-symbols-outlined me-2 text-primary">videocam</span>
+                                <span class="fw-medium">VIDEO DE PRESENTACIÓN ELEVATOR PITCH<small class="text-muted ms-2 ms-sm-4 mt-1 d-inline-block">
+                                    {% if tiene_video %}
+                                        <span class="badge bg-success">Cargado</span>
+                                    {% else %}
+                                        <span class="badge bg-primary">Pendiente</span>
+                                    {% endif %}
+                                </small></span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                {% if tiene_video %}
+                                    <button type="button" class="btn bg-success bg-opacity-10 fw-medium text-success py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalVerVideo">
+                                        Ver Video
+                                    </button>
+                                {% endif %}
+                                <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalVideo">
+                                    {% if tiene_video %}
+                                        Actualizar Video
+                                    {% else %}
+                                        Cargar Video
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Modal para ver video cargado -->
+            {% if tiene_video %}
+            <div class="modal fade" id="modalVerVideo" tabindex="-1" aria-labelledby="modalVerVideoLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen-md-down modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalVerVideoLabel">Ver Video de Presentación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <p class="mb-0"><strong>Video de presentación Elevator Pitch</strong></p>
+                            </div>
+                            <div class="border rounded p-2 p-md-3">
+                                <video controls width="100%" style="max-height: 70vh;">
+                                    <source src="{{ video_perfil.url }}" type="video/mp4">
+                                    Tu navegador no soporta la reproducción de video.
+                                </video>
+                            </div>
+                        </div>
+                        <div class="modal-footer flex-wrap gap-2">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Modal para cargar/actualizar video -->
+            <div class="modal fade" id="modalVideo" tabindex="-1" aria-labelledby="modalVideoLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalVideoLabel">
+                                {% if tiene_video %}
+                                    Actualizar Video de Presentación
+                                {% else %}
+                                    Cargar Video de Presentación
+                                {% endif %}
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="formVideo" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                {% if tiene_video %}
+                                    <div class="alert alert-info mb-3">
+                                        <small>Ya existe un video cargado. Al seleccionar un nuevo archivo, se reemplazará el video actual.</small>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-warning mb-3">
+                                        <small><strong>Instrucciones:</strong> En este espacio queremos conocerte más allá de tu hoja de vida. Queremos entender quién eres, qué te mueve y qué te hace diferente. No buscamos un discurso perfecto, sino una versión auténtica de ti. Cuéntanos, en un minuto, quién eres, qué has construido y hacia dónde quieres ir.</small>
+                                    </div>
+                                {% endif %}
+                                <div class="mb-3">
+                                    <label for="archivoVideo" class="form-label">Seleccionar Video</label>
+                                    <input type="file" class="form-control" id="archivoVideo" name="video_perfil" accept="video/*" required>
+                                    <small class="form-text text-muted">Formatos permitidos: MP4, MOV, AVI, WEBM, MKV. Tamaño máximo: 50 MB</small>
+                                </div>
+                                <div id="mensajeVideo" class="alert d-none" role="alert"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">Guardar Video</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
                     <h2 class="fs-18 fw-semibold mb-0 text-primary">Pruebas</h2>
@@ -748,6 +865,86 @@ Mis Vacantes aplicadas
         });
     })();
     {% endif %}
+    
+    // Manejo del formulario de video de presentación
+    (function() {
+        const formVideo = document.getElementById('formVideo');
+        if (!formVideo) return;
+        
+        formVideo.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const formData = new FormData(form);
+            const mensajeDiv = document.getElementById('mensajeVideo');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // Deshabilitar el botón durante el envío
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Guardando...';
+            
+            // Limpiar mensajes anteriores
+            mensajeDiv.classList.add('d-none');
+            mensajeDiv.classList.remove('alert-success', 'alert-danger');
+            
+            fetch('{% url "vacantes:upload_video_candidato" candidato.id %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mostrar SweetAlert de éxito
+                    Swal.fire({
+                        title: '¡Éxito!',
+                        text: 'Video cargado exitosamente',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#B10022',
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        // Cerrar el modal y recargar la página
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('modalVideo'));
+                        modal.hide();
+                        form.reset();
+                        window.location.reload();
+                    });
+                } else {
+                    // Mostrar SweetAlert de error
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.error || 'Error al cargar el video',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#B10022'
+                    });
+                    mensajeDiv.textContent = data.error || 'Error al cargar el video';
+                    mensajeDiv.classList.remove('d-none');
+                    mensajeDiv.classList.add('alert-danger');
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error de conexión',
+                    text: 'Por favor, intente nuevamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#B10022'
+                });
+                mensajeDiv.textContent = 'Error de conexión. Por favor, intente nuevamente.';
+                mensajeDiv.classList.remove('d-none');
+                mensajeDiv.classList.add('alert-danger');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '{% if tiene_video %}Actualizar Video{% else %}Cargar Video{% endif %}';
+            });
+        });
+    })();
     </script>
     {% endif %}
 {% endblock js %}

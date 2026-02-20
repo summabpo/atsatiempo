@@ -13,6 +13,7 @@ from django.contrib import messages
 from applications.vacante.views.common_view import get_match, get_match_initial, get_politicas_internas, get_requisitos, get_pruebas
 from applications.reclutado.models import Cli079RequisitosCargado
 from applications.usuarios.models import UsuarioBase
+from django.http import JsonResponse
 
 def confirm_apply_vacancy_recruited(request, pk):
     """
@@ -197,6 +198,10 @@ def validar_token_documento(request, token):
                 # Obtener información del candidato
                 candidato = aplicacion.candidato_101
                 
+                # Obtener información del video del candidato
+                video_perfil = candidato.video_perfil if candidato else None
+                tiene_video = video_perfil and video_perfil.name
+                
                 # Obtener el documento firmado si existe
                 from applications.reclutado.models import Cli080DocumentoFirmadoAplicacionVacante
                 documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
@@ -259,6 +264,13 @@ def validar_token_documento(request, token):
     except Exception as e:
         mensaje_error = f'Error al validar el token: {str(e)}'
     
+    # Obtener información del video del candidato (si existe)
+    video_perfil = None
+    tiene_video = False
+    if candidato:
+        video_perfil = candidato.video_perfil
+        tiene_video = video_perfil and video_perfil.name
+    
     # Siempre renderizar la pantalla, incluso si hay errores
     context = {
         'aplicacion': aplicacion,
@@ -274,12 +286,79 @@ def validar_token_documento(request, token):
         'json_politicas_internas': json_politicas_internas,
         'politicas_finalizadas': politicas_finalizadas,
         'mensaje_error': mensaje_error,
+        'video_perfil': video_perfil,
+        'tiene_video': tiene_video,
+        'token': token,  # Agregar el token al contexto
     }
     
     if mensaje_error:
         messages.error(request, mensaje_error)
     
     return render(request, 'admin/candidate/candidate_user/validar_token_documento.html', context)
+
+def upload_video_candidato_token(request, token, candidato_id):
+    """Vista para cargar el video de perfil del candidato usando token"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
+    
+    try:
+        # Validar el token
+        token_obj = Cli081TokenGeneradoDocumentos.objects.filter(
+            token=token,
+            estado_id=1
+        ).first()
+        
+        if not token_obj:
+            return JsonResponse({'success': False, 'error': 'Token inválido'}, status=403)
+        
+        # Validar que la fecha/hora actual no sea mayor a la fecha de expiración
+        fecha_actual = timezone.now()
+        if fecha_actual > token_obj.fecha_expiracion:
+            return JsonResponse({'success': False, 'error': 'Token expirado'}, status=403)
+        
+        # Obtener la aplicación y verificar que el candidato corresponde
+        aplicacion = token_obj.aplicacion_vacante_056
+        candidato = get_object_or_404(Can101Candidato, id=candidato_id)
+        
+        # Verificar que el candidato pertenece a la aplicación del token
+        if aplicacion.candidato_101.id != candidato.id:
+            return JsonResponse({'success': False, 'error': 'No tiene permisos para esta acción'}, status=403)
+        
+        # Verificar que el archivo fue enviado
+        if 'video_perfil' not in request.FILES:
+            return JsonResponse({'success': False, 'error': 'No se envió ningún archivo de video'}, status=400)
+        
+        archivo_video = request.FILES['video_perfil']
+        
+        # Validar tipo de archivo (solo videos)
+        import os
+        ext = os.path.splitext(archivo_video.name)[1].lower()
+        extensiones_permitidas = ['.mp4', '.mov', '.avi', '.webm', '.mkv']
+        if ext not in extensiones_permitidas:
+            return JsonResponse({
+                'success': False, 
+                'error': 'Solo se permiten archivos de video (MP4, MOV, AVI, WEBM, MKV)'
+            }, status=400)
+        
+        # Validar tamaño del archivo (máximo 100 MB)
+        if archivo_video.size > 100 * 1024 * 1024:
+            return JsonResponse({'success': False, 'error': 'El archivo no puede superar los 100 MB'}, status=400)
+        
+        # Guardar el video en el campo video_perfil
+        candidato.video_perfil = archivo_video
+        candidato.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Video cargado exitosamente',
+            'video_url': candidato.video_perfil.url if candidato.video_perfil else None
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'Error al cargar el video: {str(e)}'
+        }, status=500)
 
 def test_match(request, pk):    
 
