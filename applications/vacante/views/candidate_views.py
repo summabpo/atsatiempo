@@ -93,13 +93,27 @@ def generar_pdf_documento_firmado(aplicacion, fecha_firma=None, ip_firmante=None
     
     # Obtener la firma guardada
     firma_guardada = None
+    firma_file_obj = None
     try:
         documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
             aplicacion_vacante_056=aplicacion,
             estado_id=1
         ).first()
         if documento_firmado and documento_firmado.imagen_firmada:
-            firma_guardada = documento_firmado.imagen_firmada.path
+            # Intentar obtener la ruta local primero
+            try:
+                firma_guardada = documento_firmado.imagen_firmada.path
+                if not os.path.exists(firma_guardada):
+                    firma_guardada = None
+            except (ValueError, NotImplementedError):
+                # Si está en S3 o storage remoto, leer el archivo directamente
+                firma_guardada = None
+                try:
+                    documento_firmado.imagen_firmada.open('rb')
+                    firma_file_obj = BytesIO(documento_firmado.imagen_firmada.read())
+                    documento_firmado.imagen_firmada.close()
+                except:
+                    pass
     except:
         pass
     
@@ -216,14 +230,45 @@ def generar_pdf_documento_firmado(aplicacion, fecha_firma=None, ip_firmante=None
     color_primary = colors.HexColor('#B10022')
     
     # Encabezado con logo
-    logo_path = os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo-talent-tray.png')
+    logo_path = None
+    
+    # Buscar el logo usando finders de Django (funciona con static files y S3)
+    # Intentar diferentes variaciones del nombre del logo
+    logo_variations = [
+        'admin/images/landing/logo-talent-tray.png',
+        'admin/images/landing/logo_talent_tray.png',
+        'admin/images/landing/logo-talenttray.png',
+        'admin/images/landing/logo_talenttray.png',
+        'admin/images/landing/logo.svg',  # Como alternativa si existe
+    ]
+    
+    for logo_variation in logo_variations:
+        logo_static_path = finders.find(logo_variation)
+        if logo_static_path and os.path.exists(logo_static_path):
+            logo_path = logo_static_path
+            break
+    
+    # Si no se encontró con finders, intentar con ruta directa
+    if not logo_path:
+        logo_direct_paths = [
+            os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo-talent-tray.png'),
+            os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo_talent_tray.png'),
+            os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo-talenttray.png'),
+            os.path.join(settings.BASE_DIR, 'static', 'admin', 'images', 'landing', 'logo_talenttray.png'),
+        ]
+        for logo_direct_path in logo_direct_paths:
+            if os.path.exists(logo_direct_path):
+                logo_path = logo_direct_path
+                break
     
     header_data = []
-    if logo_path and os.path.exists(logo_path):
+    if logo_path:
         try:
             logo_img = RLImage(logo_path, width=0.8*inch, height=0.35*inch)
             header_data.append([logo_img, ''])
-        except:
+        except Exception as e:
+            # Si falla con PNG, intentar con SVG (aunque ReportLab no soporta SVG directamente)
+            # Por ahora, dejar vacío si falla
             header_data.append(['', ''])
     else:
         header_data.append(['', ''])
@@ -304,21 +349,54 @@ def generar_pdf_documento_firmado(aplicacion, fecha_firma=None, ip_firmante=None
     for i, parrafo in enumerate(parrafos):
         if parrafo.strip():
             if parrafo.strip().startswith('________________________________') and ('Candidato:' in parrafo or (i + 1 < len(parrafos) and 'Candidato:' in parrafos[i + 1])):
+                # Insertar la firma ANTES de la línea (arriba de la línea) y alineada a la izquierda
+                if not firma_insertada:
+                    if firma_guardada and os.path.exists(firma_guardada):
+                        try:
+                            firma_img = RLImage(firma_guardada, width=3*inch, height=1*inch)
+                            # Usar una tabla para alinear la imagen a la izquierda
+                            firma_table = Table([[firma_img]], colWidths=[3*inch])
+                            firma_table.setStyle(TableStyle([
+                                ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+                                ('VALIGN', (0, 0), (0, 0), 'TOP'),
+                                ('LEFTPADDING', (0, 0), (0, 0), 0),
+                                ('RIGHTPADDING', (0, 0), (0, 0), 0),
+                                ('TOPPADDING', (0, 0), (0, 0), 0),
+                                ('BOTTOMPADDING', (0, 0), (0, 0), 0),
+                            ]))
+                            elements.append(Spacer(1, 0.1*inch))
+                            elements.append(firma_table)
+                            elements.append(Spacer(1, 0.05*inch))
+                            firma_insertada = True
+                        except Exception as e:
+                            pass
+                    elif firma_file_obj:
+                        try:
+                            firma_file_obj.seek(0)
+                            firma_img = RLImage(firma_file_obj, width=3*inch, height=1*inch)
+                            # Usar una tabla para alinear la imagen a la izquierda
+                            firma_table = Table([[firma_img]], colWidths=[3*inch])
+                            firma_table.setStyle(TableStyle([
+                                ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+                                ('VALIGN', (0, 0), (0, 0), 'TOP'),
+                                ('LEFTPADDING', (0, 0), (0, 0), 0),
+                                ('RIGHTPADDING', (0, 0), (0, 0), 0),
+                                ('TOPPADDING', (0, 0), (0, 0), 0),
+                                ('BOTTOMPADDING', (0, 0), (0, 0), 0),
+                            ]))
+                            elements.append(Spacer(1, 0.1*inch))
+                            elements.append(firma_table)
+                            elements.append(Spacer(1, 0.05*inch))
+                            firma_insertada = True
+                        except Exception as e:
+                            pass
+                
+                # Ahora agregar la línea y el texto del candidato
                 lineas = parrafo.split('\n')
                 for j, linea in enumerate(lineas):
                     if linea.strip().startswith('________________________________'):
                         p = Paragraph(linea.replace('\n', '<br/>'), signature_style)
                         elements.append(p)
-                        
-                        if firma_guardada and os.path.exists(firma_guardada) and not firma_insertada:
-                            try:
-                                firma_img = RLImage(firma_guardada, width=3*inch, height=1*inch)
-                                elements.append(Spacer(1, 0.1*inch))
-                                elements.append(firma_img)
-                                elements.append(Spacer(1, 0.1*inch))
-                                firma_insertada = True
-                            except Exception as e:
-                                pass
                         
                         if j + 1 < len(lineas):
                             resto_parrafo = '\n'.join(lineas[j + 1:])
@@ -330,7 +408,53 @@ def generar_pdf_documento_firmado(aplicacion, fecha_firma=None, ip_firmante=None
                     elements.append(p)
                 
                 elements.append(Spacer(1, 0.15*inch))
-            elif parrafo.startswith('Firma') or parrafo.startswith('Espacio para') or parrafo.startswith('Candidato:') or parrafo.startswith('Responsable'):
+            elif parrafo.startswith('Candidato:') and not firma_insertada:
+                # Si encontramos la línea "Candidato:" y aún no se insertó la firma, insertarla antes
+                if firma_guardada and os.path.exists(firma_guardada):
+                    try:
+                        firma_img = RLImage(firma_guardada, width=3*inch, height=1*inch)
+                        # Usar una tabla para alinear la imagen a la izquierda
+                        firma_table = Table([[firma_img]], colWidths=[3*inch])
+                        firma_table.setStyle(TableStyle([
+                            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+                            ('VALIGN', (0, 0), (0, 0), 'TOP'),
+                            ('LEFTPADDING', (0, 0), (0, 0), 0),
+                            ('RIGHTPADDING', (0, 0), (0, 0), 0),
+                            ('TOPPADDING', (0, 0), (0, 0), 0),
+                            ('BOTTOMPADDING', (0, 0), (0, 0), 0),
+                        ]))
+                        elements.append(Spacer(1, 0.1*inch))
+                        elements.append(firma_table)
+                        elements.append(Spacer(1, 0.05*inch))
+                        firma_insertada = True
+                    except Exception as e:
+                        pass
+                elif firma_file_obj:
+                    try:
+                        firma_file_obj.seek(0)
+                        firma_img = RLImage(firma_file_obj, width=3*inch, height=1*inch)
+                        # Usar una tabla para alinear la imagen a la izquierda
+                        firma_table = Table([[firma_img]], colWidths=[3*inch])
+                        firma_table.setStyle(TableStyle([
+                            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+                            ('VALIGN', (0, 0), (0, 0), 'TOP'),
+                            ('LEFTPADDING', (0, 0), (0, 0), 0),
+                            ('RIGHTPADDING', (0, 0), (0, 0), 0),
+                            ('TOPPADDING', (0, 0), (0, 0), 0),
+                            ('BOTTOMPADDING', (0, 0), (0, 0), 0),
+                        ]))
+                        elements.append(Spacer(1, 0.1*inch))
+                        elements.append(firma_table)
+                        elements.append(Spacer(1, 0.05*inch))
+                        firma_insertada = True
+                    except Exception as e:
+                        pass
+                
+                # Luego agregar el texto del candidato
+                p = Paragraph(parrafo.replace('\n', '<br/>'), signature_style)
+                elements.append(p)
+                elements.append(Spacer(1, 0.15*inch))
+            elif parrafo.startswith('Firma') or parrafo.startswith('Espacio para') or parrafo.startswith('Responsable'):
                 p = Paragraph(parrafo.replace('\n', '<br/>'), signature_style)
                 elements.append(p)
                 elements.append(Spacer(1, 0.15*inch))
@@ -346,6 +470,48 @@ def generar_pdf_documento_firmado(aplicacion, fecha_firma=None, ip_firmante=None
                 p = Paragraph(parrafo.replace('\n', '<br/>'), body_style)
                 elements.append(p)
                 elements.append(Spacer(1, 0.15*inch))
+    
+    # Si la firma no se insertó en el loop anterior, intentar insertarla antes del pie de página
+    if not firma_insertada:
+        if firma_guardada and os.path.exists(firma_guardada):
+            try:
+                firma_img = RLImage(firma_guardada, width=3*inch, height=1*inch)
+                # Usar una tabla para alinear la imagen a la izquierda
+                firma_table = Table([[firma_img]], colWidths=[3*inch])
+                firma_table.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+                    ('VALIGN', (0, 0), (0, 0), 'TOP'),
+                    ('LEFTPADDING', (0, 0), (0, 0), 0),
+                    ('RIGHTPADDING', (0, 0), (0, 0), 0),
+                    ('TOPPADDING', (0, 0), (0, 0), 0),
+                    ('BOTTOMPADDING', (0, 0), (0, 0), 0),
+                ]))
+                elements.append(Spacer(1, 0.2*inch))
+                elements.append(firma_table)
+                elements.append(Spacer(1, 0.1*inch))
+                firma_insertada = True
+            except Exception as e:
+                pass
+        elif firma_file_obj:
+            try:
+                firma_file_obj.seek(0)
+                firma_img = RLImage(firma_file_obj, width=3*inch, height=1*inch)
+                # Usar una tabla para alinear la imagen a la izquierda
+                firma_table = Table([[firma_img]], colWidths=[3*inch])
+                firma_table.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+                    ('VALIGN', (0, 0), (0, 0), 'TOP'),
+                    ('LEFTPADDING', (0, 0), (0, 0), 0),
+                    ('RIGHTPADDING', (0, 0), (0, 0), 0),
+                    ('TOPPADDING', (0, 0), (0, 0), 0),
+                    ('BOTTOMPADDING', (0, 0), (0, 0), 0),
+                ]))
+                elements.append(Spacer(1, 0.2*inch))
+                elements.append(firma_table)
+                elements.append(Spacer(1, 0.1*inch))
+                firma_insertada = True
+            except Exception as e:
+                pass
     
     # Agregar pie de página con información de firma
     elements.append(Spacer(1, 0.2*inch))
