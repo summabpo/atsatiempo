@@ -162,3 +162,18 @@ class Cli081TokenGeneradoDocumentos(models.Model):
         verbose_name_plural = 'TOKEN GENERADOS DOCUMENTOS'
         unique_together = ('aplicacion_vacante_056', 'token')
         
+
+class Cli082PruebaCargada(models.Model):
+    aplicacion_vacante_056 = models.ForeignKey(Cli056AplicacionVacante, on_delete=models.CASCADE, related_name='aplicacion_vacante_prueba_cargada')
+    prueba_cargada = models.FileField(upload_to='media_uploads/pruebas/', blank=True, null=True, verbose_name="Prueba Cargada")
+    fecha_cargada = models.DateTimeField(auto_now_add=True)
+    usuario_cargada = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, related_name='prueba_cargada')
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, related_name='prueba_cargada')
+
+    def __str__(self):
+        return f"Prueba cargada para la aplicación {self.aplicacion_vacante_056.id}"
+
+    class Meta:
+        db_table = 'cli_082_prueba_cargada'
+        verbose_name = 'PRUEBA CARGADA'
+        verbose_name_plural = 'PRUEBAS CARGADAS'

@@ -130,7 +130,7 @@ Detalle vacante
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-body p-4">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-md-4 col-12">
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0">
                                     {% if candidato.imagen_perfil %}
@@ -146,7 +146,7 @@ Detalle vacante
                                 </div>
                             </div>
                         </div>
-                        <div class="col-8">
+                        <div class="col-md-8 col-12 ">
                             <div class="row">
                                 <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
                                     <div class="d-flex align-items-center mb-4">
@@ -189,9 +189,9 @@ Detalle vacante
             </div>
             <div class="row">
                 <div class="col-12">
-                    <div class="card bg-white border-0 rounded-3 mb-4">
-                        <div class="card-header border-bottom-0">
-                            <h5 class="card-title mb-0">Gestión de la entrevista</h5>
+                    <div class="card border-0 rounded-2 bg-white mb-4">
+                        <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                            <h5 class="fs-18 fw-semibold mb-0 text-primary">Gestión de la entrevista</h5>
                         </div>
                         <div class="card-body p-4">
                             {% if tiene_resultado %}
@@ -261,72 +261,93 @@ Detalle vacante
                                             </h5>
                                         </div>
                                         <div class="card-body">
-                                            {# 1. IDENTIDAD MÁS ALLÁ DEL CV #}
-                                            {% if resultado_data.identidad %}
+                                            {# 1. MATCH 360 PREDICTIVO DEL TALENTO (HABILIDADES) #}
+                                            {% if resultado_data.habilidades %}
                                             <div class="mb-4 pb-4 border-bottom">
                                                 <div class="d-flex align-items-start mb-3">
                                                     <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">1</span>
                                                     <div class="flex-grow-1">
-                                                        <h6 class="mb-2 fw-bold">IDENTIDAD MÁS ALLÁ DEL CV</h6>
+                                                        <h6 class="mb-3 fw-bold">MATCH 360 PREDICTIVCO DEL TALENTO (CONCEPTO DE LAS HABILIDADES)</h6>
                                                         <div class="row g-3">
-                                                            <div class="col-md-3">
-                                                                <small class="text-muted d-block mb-1">Calificación</small>
-                                                                <span class="badge bg-primary fs-16 px-3 py-2">
-                                                                    {{ resultado_data.identidad.calificacion|default:"-" }}/10
-                                                                </span>
+                                                            {% for skill_id, data in resultado_data.habilidades.items %}
+                                                            {% if not forloop.first %}<div class="col-12"><hr class="my-3"></div>{% endif %}
+                                                            <div class="col-12 mb-3">
+                                                                <div class="p-3 rounded bg-light border">
+                                                                    <div class="d-flex align-items-center mb-2">
+                                                                        <span class="me-2 text-uppercase fw-bold">{{ data.nombre|default:"Habilidad" }}</span>
+                                                                        <span class="badge bg-primary fs-14 px-3 py-1">{{ data.calificacion|default:"-" }}/10</span>
+                                                                    </div>
+                                                                    {% if data.observacion %}
+                                                                    <div class="mt-2">
+                                                                        <small class="text-muted d-block mb-1">Observación</small>
+                                                                        <p class="mb-0 small">{{ data.observacion }}</p>
+                                                                    </div>
+                                                                    {% endif %}
+                                                                </div>
                                                             </div>
-                                                            <div class="col-md-9">
-                                                                <small class="text-muted d-block mb-1">Observación</small>
-                                                                <p class="mb-0">{{ resultado_data.identidad.observacion|default:"Sin observaciones" }}</p>
-                                                            </div>
+                                                            {% endfor %}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             {% endif %}
 
-                                            {# 2. ANÁLISIS CORPORAL #}
-                                            {% if resultado_data.analisis_corporal %}
+                                            {# 2. FIT CULTURAL #}
+                                            {% if resultado_data.fit_cultural %}
                                             <div class="mb-4 pb-4 border-bottom">
                                                 <div class="d-flex align-items-start mb-3">
                                                     <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">2</span>
                                                     <div class="flex-grow-1">
-                                                        <h6 class="mb-2 fw-bold">ANÁLISIS CORPORAL – Lenguaje no verbal</h6>
+                                                        <h6 class="mb-3 fw-bold">FIT CULTURAL</h6>
                                                         <div class="row g-3">
-                                                            <div class="col-md-3">
-                                                                <small class="text-muted d-block mb-1">Calificación</small>
-                                                                <span class="badge bg-primary fs-16 px-3 py-2">
-                                                                    {{ resultado_data.analisis_corporal.calificacion|default:"-" }}/10
-                                                                </span>
+                                                            {% for fc_id, data in resultado_data.fit_cultural.items %}
+                                                            {% if not forloop.first %}<div class="col-12"><hr class="my-3"></div>{% endif %}
+                                                            <div class="col-12 mb-3">
+                                                                <div class="p-3 rounded bg-light border">
+                                                                    <div class="d-flex align-items-center mb-2">
+                                                                        <span class="me-2 text-uppercase fw-bold">{{ data.nombre|default:"Fit cultural" }}</span>
+                                                                        <span class="badge bg-primary fs-14 px-3 py-1">{{ data.calificacion|default:"-" }}/10</span>
+                                                                    </div>
+                                                                    {% if data.observacion %}
+                                                                    <div class="mt-2">
+                                                                        <small class="text-muted d-block mb-1">Observación</small>
+                                                                        <p class="mb-0 small">{{ data.observacion }}</p>
+                                                                    </div>
+                                                                    {% endif %}
+                                                                </div>
                                                             </div>
-                                                            <div class="col-md-9">
-                                                                <small class="text-muted d-block mb-1">Observación</small>
-                                                                <p class="mb-0">{{ resultado_data.analisis_corporal.observacion|default:"Sin observaciones" }}</p>
-                                                            </div>
+                                                            {% endfor %}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             {% endif %}
 
-                                            {# 3. PROPÓSITO Y CRECIMIENTO PERSONAL #}
-                                            {% if resultado_data.proposito %}
+                                            {# 3. MOTIVADORES #}
+                                            {% if resultado_data.motivadores %}
                                             <div class="mb-4 pb-4 border-bottom">
                                                 <div class="d-flex align-items-start mb-3">
                                                     <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">3</span>
                                                     <div class="flex-grow-1">
-                                                        <h6 class="mb-2 fw-bold">PROPÓSITO Y CRECIMIENTO PERSONAL</h6>
+                                                        <h6 class="mb-3 fw-bold">MOTIVADORES</h6>
                                                         <div class="row g-3">
-                                                            <div class="col-md-3">
-                                                                <small class="text-muted d-block mb-1">Calificación</small>
-                                                                <span class="badge bg-primary fs-16 px-3 py-2">
-                                                                    {{ resultado_data.proposito.calificacion|default:"-" }}/10
-                                                                </span>
+                                                            {% for m_id, data in resultado_data.motivadores.items %}
+                                                            {% if not forloop.first %}<div class="col-12"><hr class="my-3"></div>{% endif %}
+                                                            <div class="col-12 mb-3">
+                                                                <div class="p-3 rounded bg-light border">
+                                                                    <div class="d-flex align-items-center mb-2">
+                                                                        <span class="me-2 text-uppercase fw-bold">{{ data.nombre|default:"Motivador" }}</span>
+                                                                        <span class="badge bg-primary fs-14 px-3 py-1">{{ data.calificacion|default:"-" }}/10</span>
+                                                                    </div>
+                                                                    {% if data.observacion %}
+                                                                    <div class="mt-2">
+                                                                        <small class="text-muted d-block mb-1">Observación</small>
+                                                                        <p class="mb-0 small">{{ data.observacion }}</p>
+                                                                    </div>
+                                                                    {% endif %}
+                                                                </div>
                                                             </div>
-                                                            <div class="col-md-9">
-                                                                <small class="text-muted d-block mb-1">Observación</small>
-                                                                <p class="mb-0">{{ resultado_data.proposito.observacion|default:"Sin observaciones" }}</p>
-                                                            </div>
+                                                            {% endfor %}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -388,9 +409,9 @@ Detalle vacante
                             {% else %}
                                 {# Formulario de gestión #}
                                 <div class="row">
-                                    <div class="col-3">
+                                    <div class="col-md-1 col-12">
                                     </div>    
-                                    <div class="col-6">
+                                    <div class="col-md-10 col-12">
                                         <form method="post" id="form_gestion_entrevista">
                                             <div class="modal-body">
                                                 {% csrf_token %}
@@ -399,7 +420,7 @@ Detalle vacante
                                             <button type="submit" id="form_gestion_entrevista" class="btn btn-primary text-white"  form="form_gestion_entrevista">Gestionar</button>
                                         </form>
                                     </div>    
-                                    <div class="col-3">
+                                    <div class="col-md-1 col-12">
                                     </div>    
                                 </div>
                             {% endif %}
@@ -418,11 +439,44 @@ Detalle vacante
     initializeSelect2('#id_estado_asignacion');
     
     // Initialize select2 for calification fields
-    initializeSelect2('#id_identidad_calificacion');
-    initializeSelect2('#id_analisis_corporal_calificacion');
-    initializeSelect2('#id_proposito_calificacion');
     initializeSelect2('#id_encaje_360_calificacion');
     initializeSelect2('#id_confiabilidad_riesgo_calificacion');
+
+    // Select2 para calificación de cada habilidad
+    {% if habilidades_vacante %}
+    {% for h in habilidades_vacante %}
+    initializeSelect2('#id_habilidad_{{ h.id }}');
+    {% endfor %}
+    {% endif %}
+
+    // Select2 para calificación de cada ítem fit cultural
+    {% if fit_cultural_vacante %}
+    {% for fc in fit_cultural_vacante %}
+    initializeSelect2('#id_fit_cultural_{{ fc.id }}');
+    {% endfor %}
+    {% endif %}
+    // Select2 en todos los select de fit cultural (por selector, por si el formulario se re-renderiza)
+    if (typeof $ !== 'undefined' && $.fn.select2) {
+        $('select[id^="id_fit_cultural_"]').each(function() {
+            if (!$(this).hasClass('select2-hidden-accessible')) {
+                $(this).select2({ width: '100%', placeholder: 'Seleccione una opción', allowClear: true });
+            }
+        });
+    }
+
+    // Select2 para calificación de cada motivador
+    {% if motivadores_vacante %}
+    {% for m in motivadores_vacante %}
+    initializeSelect2('#id_motivador_{{ m.id }}');
+    {% endfor %}
+    {% endif %}
+    if (typeof $ !== 'undefined' && $.fn.select2) {
+        $('select[id^="id_motivador_"]').each(function() {
+            if (!$(this).hasClass('select2-hidden-accessible')) {
+                $(this).select2({ width: '100%', placeholder: 'Seleccione una opción', allowClear: true });
+            }
+        });
+    }
 </script>
 <style>
     /* Ajustar alineación de la X en select2 para todos los campos */
