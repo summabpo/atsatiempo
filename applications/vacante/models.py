@@ -130,7 +130,6 @@ class Cli073PerfilVacante(models.Model):
         verbose_name_plural = 'PERFILES_VACANTES'
 
 class Cli052Vacante(models.Model):
-    
     titulo = models.CharField(max_length=200)
     numero_posiciones = models.IntegerField()
     cantidad_presentar = models.IntegerField(blank=True, null=True)

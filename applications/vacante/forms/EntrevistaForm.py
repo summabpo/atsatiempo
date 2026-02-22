@@ -1,6 +1,7 @@
 from django import forms
+from django.utils.html import format_html
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset, Div, HTML
+from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset, Div, HTML, Field
 from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import UsuarioBase
 from django.utils import timezone
@@ -171,8 +172,8 @@ class EntrevistaGestionForm(forms.Form):
         (0, '----'),
         (2, 'Apto'),
         (3, 'No Apto'),
-        (4, 'Seleccionado'),
-        (5, 'Cancelado'),
+        # (4, 'Seleccionado'),
+        # (5, 'Cancelado'),
     ]
 
     observacion = forms.CharField(
@@ -192,81 +193,6 @@ class EntrevistaGestionForm(forms.Form):
         choices=[('', 'Seleccione...')] + list(ESTADO_ASIGNACION),
         label='Calificar',
         required=True,
-        widget=forms.Select(attrs={
-            'class': 'form-select form-select-solid',
-            'data-control': 'select2',
-        })
-    )
-
-    identidad_descripcion = forms.CharField(
-        label='¿Quién es esta persona más allá de su hoja de vida?',
-        required=True,
-        help_text='Enfoque: esencia humana, valores visibles, forma de relacionarse, nivel de autenticidad y coherencia interna.',
-        widget=forms.Textarea(
-            attrs={
-                'placeholder': 'Describa quién es esta persona más allá de su hoja de vida...',
-                'rows': 5,
-                'cols': 30,
-                'class': 'form-control form-control-solid'
-            }
-        )
-    )
-
-    identidad_calificacion = forms.ChoiceField(
-        choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
-        label='Calificación',
-        required=True,
-        help_text='Escala del 1 al 10',
-        widget=forms.Select(attrs={
-            'class': 'form-select form-select-solid',
-            'data-control': 'select2',
-        })
-    )
-
-    # 2. ANÁLISIS CORPORAL – Lenguaje no verbal
-    analisis_corporal_observaciones = forms.CharField(
-        label='Observaciones breves',
-        required=True,
-        widget=forms.Textarea(
-            attrs={
-                'placeholder': 'Ingrese observaciones breves sobre el lenguaje no verbal...',
-                'rows': 4,
-                'cols': 30,
-                'class': 'form-control form-control-solid'
-            }
-        )
-    )
-
-    analisis_corporal_calificacion = forms.ChoiceField(
-        choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
-        label='Calificación',
-        required=True,
-        help_text='Escala del 1 al 10',
-        widget=forms.Select(attrs={
-            'class': 'form-select form-select-solid',
-            'data-control': 'select2',
-        })
-    )
-
-    # 3. PROPÓSITO Y CRECIMIENTO PERSONAL
-    proposito_descripcion = forms.CharField(
-        label='Descripción breve del propósito y evolución personal',
-        required=True,
-        widget=forms.Textarea(
-            attrs={
-                'placeholder': 'Describa el propósito y evolución personal...',
-                'rows': 4,
-                'cols': 30,
-                'class': 'form-control form-control-solid'
-            }
-        )
-    )
-
-    proposito_calificacion = forms.ChoiceField(
-        choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
-        label='Calificación',
-        required=True,
-        help_text='Escala del 1 al 10',
         widget=forms.Select(attrs={
             'class': 'form-select form-select-solid',
             'data-control': 'select2',
@@ -311,45 +237,155 @@ class EntrevistaGestionForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        habilidades = kwargs.pop('habilidades', None) or []
+        fit_cultural = kwargs.pop('fit_cultural', None) or []
+        motivadores = kwargs.pop('motivadores', None) or []
         super().__init__(*args, **kwargs)
+
+        # Campos dinámicos: observaciones + calificación (Select2) por cada habilidad de la vacante
+        self.habilidades_list = list(habilidades)
+        for h in self.habilidades_list:
+            obs_name = f'habilidad_{h.id}_observacion'
+            cal_name = f'habilidad_{h.id}'
+            self.fields[obs_name] = forms.CharField(
+                label='Observaciones',
+                required=False,
+                widget=forms.Textarea(attrs={
+                    'placeholder': f'Observaciones sobre {h.nombre}...',
+                    'rows': 3,
+                    'cols': 30,
+                    'class': 'form-control form-control-solid',
+                }),
+            )
+            self.fields[cal_name] = forms.ChoiceField(
+                choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+                label='Calificar',
+                required=True,
+                help_text='Escala del 1 al 10',
+                widget=forms.Select(attrs={
+                    'class': 'form-select form-select-solid',
+                    'data-control': 'select2',
+                }),
+            )
+
+        # Campos dinámicos: calificación + observaciones por cada ítem de fit cultural de la vacante
+        self.fit_cultural_list = list(fit_cultural)
+        for fc in self.fit_cultural_list:
+            obs_name = f'fit_cultural_{fc.id}_observacion'
+            cal_name = f'fit_cultural_{fc.id}'
+            self.fields[obs_name] = forms.CharField(
+                label='Observaciones',
+                required=False,
+                widget=forms.Textarea(attrs={
+                    'placeholder': f'Observaciones sobre {fc.nombre}...',
+                    'rows': 3,
+                    'cols': 30,
+                    'class': 'form-control form-control-solid',
+                }),
+            )
+            self.fields[cal_name] = forms.ChoiceField(
+                choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+                label='Calificar',
+                required=True,
+                help_text='Escala del 1 al 10',
+                widget=forms.Select(attrs={
+                    'class': 'form-select form-select-solid',
+                    'data-control': 'select2',
+                }),
+            )
+
+        # Campos dinámicos: calificación + observaciones por cada motivador de la vacante
+        self.motivadores_list = list(motivadores)
+        for m in self.motivadores_list:
+            obs_name = f'motivador_{m.id}_observacion'
+            cal_name = f'motivador_{m.id}'
+            self.fields[obs_name] = forms.CharField(
+                label='Observaciones',
+                required=False,
+                widget=forms.Textarea(attrs={
+                    'placeholder': f'Observaciones sobre {m.nombre}...',
+                    'rows': 3,
+                    'cols': 30,
+                    'class': 'form-control form-control-solid',
+                }),
+            )
+            self.fields[cal_name] = forms.ChoiceField(
+                choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+                label='Calificar',
+                required=True,
+                help_text='Escala del 1 al 10',
+                widget=forms.Select(attrs={
+                    'class': 'form-select form-select-solid',
+                    'data-control': 'select2',
+                }),
+            )
 
         # Configuración de Crispy Forms
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.form_id = 'form_gestion_entrevista' 
+        self.helper.form_id = 'form_gestion_entrevista'
         self.helper.form_class = 'w-200'
-    
-        self.helper.layout = Layout(
-            # 1. IDENTIDAD MÁS ALLÁ DEL CV
-            Div(
+
+        layout_items = []
+
+        # 1. MATCH 360 PREDICTIVO DEL TALENTO (HABILIDADES DE LA VACANTE) – título + habilidades
+        if self.habilidades_list:
+            habilidades_layout = [
+                HTML("<h4 class='mb-3 text-primary'>1. MATCH 360 PREDICTIVCO DEL TALENTO (CONCEPTO DE LAS HABILIDADES)</h4>"),
+                HTML("<p class='text-muted small mb-3'>Califique cada habilidad de 1 a 10 y agregue observaciones según lo observado en la entrevista.</p>"),
+            ]
+            for i, h in enumerate(self.habilidades_list):
+                if i > 0:
+                    habilidades_layout.append(HTML('<hr class="my-4">'))
+                habilidades_layout.append(HTML(format_html('<p class="mb-2 fw-bold text-uppercase">{}</p>', h.nombre)))
+                habilidades_layout.append(Div(f'habilidad_{h.id}', css_class='col-12 mb-2'))
+                habilidades_layout.append(Div(f'habilidad_{h.id}_observacion', css_class='col-12 mb-4'))
+            layout_items.append(
                 Div(
-                    HTML("<h4 class='mb-3 text-primary'>1. IDENTIDAD MÁS ALLÁ DEL CV </h4>"),
-                    Div('identidad_descripcion', css_class='col-12 mb-3'),
-                    Div('identidad_calificacion', css_class='col-12'),
-                    css_class='row'
-                ),
-                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
-            ),
-            # 2. ANÁLISIS CORPORAL – Lenguaje no verbal
-            Div(
+                    Div(*habilidades_layout, css_class='row'),
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+                )
+            )
+
+        # 2. FIT CULTURAL (ítems de la vacante: calificación + observaciones)
+        if self.fit_cultural_list:
+            fit_layout = [
+                HTML("<h4 class='mb-3 text-primary'>2. FIT CULTURAL</h4>"),
+                HTML("<p class='text-muted small mb-3'>Califique cada ítem de fit cultural de 1 a 10 y agregue observaciones según lo observado en la entrevista.</p>"),
+            ]
+            for i, fc in enumerate(self.fit_cultural_list):
+                if i > 0:
+                    fit_layout.append(HTML('<hr class="my-4">'))
+                fit_layout.append(HTML(format_html('<p class="mb-2 fw-bold text-uppercase">{}</p>', fc.nombre)))
+                fit_layout.append(Div(f'fit_cultural_{fc.id}', css_class='col-12 mb-2'))
+                fit_layout.append(Div(f'fit_cultural_{fc.id}_observacion', css_class='col-12 mb-4'))
+            layout_items.append(
                 Div(
-                    HTML("<h4 class='mb-3 text-primary'>2. ANÁLISIS CORPORAL – Lenguaje no verbal</h4>"),
-                    Div('analisis_corporal_observaciones', css_class='col-12 mb-3'),
-                    Div('analisis_corporal_calificacion', css_class='col-12'),
-                    css_class='row'
-                ),
-                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
-            ),
-            # 3. PROPÓSITO Y CRECIMIENTO PERSONAL
-            Div(
+                    Div(*fit_layout, css_class='row'),
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+                )
+            )
+
+        # 3. MOTIVADORES (ítems de la vacante: calificación + observaciones)
+        if self.motivadores_list:
+            motivadores_layout = [
+                HTML("<h4 class='mb-3 text-primary'>3. MOTIVADORES</h4>"),
+                HTML("<p class='text-muted small mb-3'>Califique cada motivador de 1 a 10 y agregue observaciones según lo observado en la entrevista.</p>"),
+            ]
+            for i, m in enumerate(self.motivadores_list):
+                if i > 0:
+                    motivadores_layout.append(HTML('<hr class="my-4">'))
+                motivadores_layout.append(HTML(format_html('<p class="mb-2 fw-bold text-uppercase">{}</p>', m.nombre)))
+                motivadores_layout.append(Div(f'motivador_{m.id}', css_class='col-12 mb-2'))
+                motivadores_layout.append(Div(f'motivador_{m.id}_observacion', css_class='col-12 mb-4'))
+            layout_items.append(
                 Div(
-                    HTML("<h4 class='mb-3 text-primary'>3. PROPÓSITO Y CRECIMIENTO PERSONAL</h4>"),
-                    Div('proposito_descripcion', css_class='col-12 mb-3'),
-                    Div('proposito_calificacion', css_class='col-12'),
-                    css_class='row'
-                ),
-                css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
-            ),
+                    Div(*motivadores_layout, css_class='row'),
+                    css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
+                )
+            )
+
+        layout_items.extend([
             # 4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL
             Div(
                 Div(
@@ -369,6 +405,9 @@ class EntrevistaGestionForm(forms.Form):
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             ),
+        ])
+
+        layout_items.append(
             # CALIFICACIÓN GENERAL
             Div(
                 Div(
@@ -380,6 +419,8 @@ class EntrevistaGestionForm(forms.Form):
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             ),
         )
+
+        self.helper.layout = Layout(*layout_items)
 
         
 
