@@ -37,6 +37,7 @@ urlpatterns = [
     #admin_user
     path( url_principal+'resultado/<int:pk>/', admin_views.detail_aplicacion_vacante, name='reclutados_detalle_admin'),
     path( url_principal+'reporte/pdf/<int:pk>/', admin_views.generar_reporte_pdf, name='reclutados_reporte_pdf_admin'),
+    path( url_principal+'reporte_final/<int:aplicacion_id>/', admin_views.reporte_final_reclutado, name='reporte_final_vacante'),
 
     #test
     path( url_principal+'test/<int:pk>/', candidate_views.test_match, name='test_match'),
