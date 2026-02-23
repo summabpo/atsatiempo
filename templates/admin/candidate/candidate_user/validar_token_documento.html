@@ -228,26 +228,38 @@
                                                                     </div>
                                                                 {% endif %}
                                                             {% else %}
-                                                                <!-- Campo de texto simple si no hay estructura si/no -->
-                                                                <div class="mb-3">
-                                                                    <label class="form-label fw-semibold">Respuesta:</label>
-                                                                    <input type="text" 
-                                                                           class="form-control politica-respuesta-texto" 
-                                                                           name="politica_{{ politica_id }}_respuesta"
-                                                                           value="{% if respuestas_guardadas|get_item:politica_id %}{{ respuestas_guardadas|get_item:politica_id.respuesta }}{% endif %}"
-                                                                           placeholder="Ingrese su respuesta">
+                                                                <!-- Campo de texto simple: misma fila, respuesta a la derecha -->
+                                                                <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2 mb-3">
+                                                                    <div class="d-flex align-items-start flex-grow-1">
+                                                                        <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">policy</span>
+                                                                        <div class="flex-grow-1">
+                                                                            <h6 class="fw-semibold mb-1 text-primary">{{ politica.politica_interna.nombre }}</h6>
+                                                                            {% if politica.politica_interna.descripcion %}
+                                                                            <p class="text-secondary small mb-0">{{ politica.politica_interna.descripcion }}</p>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="flex-shrink-0 w-100 w-sm-auto" style="min-width: 180px;">
+                                                                        <input type="text" class="form-control form-control-sm politica-respuesta-texto" name="politica_{{ politica_id }}_respuesta" value="{% if respuestas_guardadas|get_item:politica_id %}{{ respuestas_guardadas|get_item:politica_id.respuesta }}{% endif %}" placeholder="Ingrese su respuesta">
+                                                                    </div>
                                                                 </div>
                                                             {% endif %}
                                                         {% endwith %}
                                                     {% else %}
-                                                        <!-- Campo de texto simple si no hay JSON -->
-                                                        <div class="mb-3">
-                                                            <label class="form-label fw-semibold">Respuesta:</label>
-                                                            <input type="text" 
-                                                                   class="form-control politica-respuesta-texto" 
-                                                                   name="politica_{{ politica_id }}_respuesta"
-                                                                   value="{% if respuestas_guardadas|get_item:politica_id %}{{ respuestas_guardadas|get_item:politica_id.respuesta }}{% endif %}"
-                                                                   placeholder="Ingrese su respuesta">
+                                                        <!-- Campo de texto simple sin JSON: misma fila -->
+                                                        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2 mb-3">
+                                                            <div class="d-flex align-items-start flex-grow-1">
+                                                                <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">policy</span>
+                                                                <div class="flex-grow-1">
+                                                                    <h6 class="fw-semibold mb-1 text-primary">{{ politica.politica_interna.nombre }}</h6>
+                                                                    {% if politica.politica_interna.descripcion %}
+                                                                    <p class="text-secondary small mb-0">{{ politica.politica_interna.descripcion }}</p>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-shrink-0 w-100 w-sm-auto" style="min-width: 180px;">
+                                                                <input type="text" class="form-control form-control-sm politica-respuesta-texto" name="politica_{{ politica_id }}_respuesta" value="{% if respuestas_guardadas|get_item:politica_id %}{{ respuestas_guardadas|get_item:politica_id.respuesta }}{% endif %}" placeholder="Ingrese su respuesta">
+                                                            </div>
                                                         </div>
                                                     {% endif %}
                                                 </div>
@@ -368,7 +380,7 @@
                                                     {% if archivo_url|slice:"-4:" == ".pdf" or archivo_url|slice:"-4:" == ".PDF" %}
                                                         <iframe src="{{ archivo_url }}" width="100%" height="600px" style="border: none; min-height: 400px;"></iframe>
                                                     {% elif archivo_url|slice:"-4:" == ".jpg" or archivo_url|slice:"-4:" == ".JPG" or archivo_url|slice:"-4:" == ".png" or archivo_url|slice:"-4:" == ".PNG" %}
-                                                        <img src="{{ archivo_url }}" alt="Documento" class="img-fluid d-block mx-auto" style="max-width: 100%; height: auto; max-height: calc(100vh - 350px); object-fit: contain;">
+                                                        <img src="{{ archivo_url }}" alt="Documento" class="img-fluid w-100 d-block" style="width: 100%; height: auto; max-height: calc(100vh - 350px); object-fit: contain;">
                                                     {% endif %}
                                                 {% endwith %}
                                             </div>
@@ -620,7 +632,7 @@
                     mensajeDiv.classList.add('d-none');
                     mensajeDiv.classList.remove('alert-success', 'alert-danger');
                     
-                    fetch('{% url "vacantes:upload_requisito_document" aplicacion.id r.id %}', {
+                    fetch('{% url "reclutados:upload_requisito_document_token" token aplicacion.id r.id %}', {
                         method: 'POST',
                         body: formData,
                         headers: {
@@ -745,12 +757,23 @@
                     }
                 });
                 
-                // Mostrar/ocultar preguntas adicionales cuando se selecciona "Sí"
+                // Mostrar/ocultar preguntas adicionales y actualizar estilo de Sí/No al cambiar
                 form.querySelectorAll('.politica-respuesta-si-no').forEach(function(radio) {
                     radio.addEventListener('change', function() {
                         const politicaItem = this.closest('.politica-item');
                         const preguntasSi = politicaItem.querySelector('.preguntas-si');
-                        
+                        const labels = politicaItem.querySelectorAll('.politica-label-si-no');
+                        const checkedRadio = politicaItem.querySelector('.politica-respuesta-si-no:checked');
+                        if (labels.length && checkedRadio) {
+                            labels.forEach(function(lbl) {
+                                lbl.classList.remove('bg-primary', 'bg-opacity-10', 'text-primary', 'bg-light', 'text-muted');
+                                if (lbl.getAttribute('for') === checkedRadio.id) {
+                                    lbl.classList.add('bg-primary', 'bg-opacity-10', 'text-primary');
+                                } else {
+                                    lbl.classList.add('bg-light', 'text-muted');
+                                }
+                            });
+                        }
                         if (this.value === 'si' && preguntasSi) {
                             preguntasSi.style.display = 'block';
                         } else if (preguntasSi) {

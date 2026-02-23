@@ -1081,8 +1081,16 @@ def guardar_respuestas_politicas(request, aplicacion_id):
                 if not ip_firmante:
                     ip_firmante = request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].strip() if request.META.get('HTTP_X_FORWARDED_FOR') else ''
                 
-                # Obtener el usuario firmante (puede ser None si no hay sesión)
-                usuario_firmante = request.user if request.user.is_authenticated else None
+                # Usuario firmante: logueado o usuario relacionado al candidato de la aplicación (obligatorio en BD)
+                if request.user.is_authenticated and request.user.pk:
+                    usuario_firmante = request.user
+                else:
+                    usuario_firmante = aplicacion.candidato_101.usuario.first()
+                if not usuario_firmante:
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'No se pudo identificar el usuario firmante. Inicie sesión o verifique que el candidato tenga un usuario asociado.'
+                    }, status=400)
                 
                 # Obtener o crear el documento firmado
                 documento_firmado, created = Cli080DocumentoFirmadoAplicacionVacante.objects.get_or_create(

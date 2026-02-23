@@ -199,23 +199,10 @@ class EntrevistaGestionForm(forms.Form):
         })
     )
 
-    # 4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL
-    encaje_360_observaciones = forms.CharField(
-        label='Observaciones',
-        required=True,
-        widget=forms.Textarea(
-            attrs={
-                'placeholder': 'Ingrese observaciones sobre el encaje personal y profesional...',
-                'rows': 4,
-                'cols': 30,
-                'class': 'form-control form-control-solid'
-            }
-        )
-    )
-
-    encaje_360_calificacion = forms.ChoiceField(
+    # 4. PRUEBAS (Resultados y análisis psicotécnicos)
+    prueba_calificacion = forms.ChoiceField(
         choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
-        label='Calificación',
+        label='Calificar',
         required=True,
         help_text='Escala del 1 al 10',
         widget=forms.Select(attrs={
@@ -223,17 +210,47 @@ class EntrevistaGestionForm(forms.Form):
             'data-control': 'select2',
         })
     )
+    prueba_observaciones = forms.CharField(
+        label='Observaciones',
+        required=False,
+        widget=forms.Textarea(attrs={
+            'placeholder': 'Observaciones sobre resultados y análisis psicotécnicos...',
+            'rows': 3,
+            'cols': 30,
+            'class': 'form-control form-control-solid',
+        }),
+    )
+    prueba_cargada = forms.FileField(
+        label='Cargar prueba (resultados/análisis psicotécnicos)',
+        required=False,
+        widget=forms.FileInput(attrs={'class': 'form-control form-control-solid', 'accept': '.pdf,.doc,.docx,.jpg,.jpeg,.png'}),
+    )
 
-    # 5. INDICE DE CONFIABILIDAD Y RIESGO
+    # 5. INDICE Y CONFIABILIDAD DEL RIESGO
     confiabilidad_riesgo_calificacion = forms.ChoiceField(
         choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
-        label='Calificación',
+        label='Calificar',
         required=True,
         help_text='Escala del 1 al 10',
         widget=forms.Select(attrs={
             'class': 'form-select form-select-solid',
             'data-control': 'select2',
         })
+    )
+    confiabilidad_riesgo_observaciones = forms.CharField(
+        label='Observaciones',
+        required=False,
+        widget=forms.Textarea(attrs={
+            'placeholder': 'Observaciones sobre índice y confiabilidad del riesgo...',
+            'rows': 3,
+            'cols': 30,
+            'class': 'form-control form-control-solid',
+        }),
+    )
+    confiabilidad_riesgo_cargado = forms.FileField(
+        label='Cargar documento (índice y confiabilidad del riesgo)',
+        required=False,
+        widget=forms.FileInput(attrs={'class': 'form-control form-control-solid', 'accept': '.pdf,.doc,.docx,.jpg,.jpeg,.png'}),
     )
 
     def __init__(self, *args, **kwargs):
@@ -386,21 +403,26 @@ class EntrevistaGestionForm(forms.Form):
             )
 
         layout_items.extend([
-            # 4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL
+            # 4. PRUEBAS (Resultados y análisis psicotécnicos)
             Div(
                 Div(
-                    HTML("<h4 class='mb-3 text-primary'>4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL</h4>"),
-                    Div('encaje_360_observaciones', css_class='col-12 mb-3'),
-                    Div('encaje_360_calificacion', css_class='col-12'),
+                    HTML("<h4 class='mb-3 text-primary'>4. PRUEBAS (Resultados y análisis psicotécnicos)</h4>"),
+                    HTML("<p class='text-muted small mb-3'>Califique de 1 a 10, agregue observaciones y opcionalmente cargue el archivo de resultados o análisis psicotécnicos.</p>"),
+                    Div('prueba_calificacion', css_class='col-12 mb-2'),
+                    Div('prueba_observaciones', css_class='col-12 mb-2'),
+                    Div('prueba_cargada', css_class='col-12 mb-4'),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             ),
-            # 5. INDICE DE CONFIABILIDAD Y RIESGO
+            # 5. INDICE Y CONFIABILIDAD DEL RIESGO
             Div(
                 Div(
-                    HTML("<h4 class='mb-3 text-primary'>5. INDICE DE CONFIABILIDAD Y RIESGO</h4>"),
-                    Div('confiabilidad_riesgo_calificacion', css_class='col-12'),
+                    HTML("<h4 class='mb-3 text-primary'>5. INDICE Y CONFIABILIDAD DEL RIESGO</h4>"),
+                    HTML("<p class='text-muted small mb-3'>Califique de 1 a 10, agregue observaciones y opcionalmente cargue el documento de índice y confiabilidad del riesgo.</p>"),
+                    Div('confiabilidad_riesgo_calificacion', css_class='col-12 mb-2'),
+                    Div('confiabilidad_riesgo_observaciones', css_class='col-12 mb-2'),
+                    Div('confiabilidad_riesgo_cargado', css_class='col-12 mb-4'),
                     css_class='row'
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
