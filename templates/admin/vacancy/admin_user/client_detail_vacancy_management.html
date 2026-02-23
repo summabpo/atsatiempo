@@ -434,7 +434,7 @@ Vacantes Propias
                                                             {% endwith %}
                                                         </td>
                                                         <td class="text-center">
-                                                            <div class="d-flex gap-2 justify-content-center">
+                                                            <div class="d-flex gap-2 justify-content-center flex-wrap">
                                                                 {% if request.session.grupo_id == 5 %}
                                                                     <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
                                                                         <i class="material-symbols-outlined fs-14">manage_accounts</i> Gestionar
@@ -446,6 +446,9 @@ Vacantes Propias
                                                                 {% endif %}
                                                                 <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
                                                                     <i class="material-symbols-outlined fs-14">person_check</i> En Finalistas
+                                                                </a>
+                                                                <a href="{% url 'reclutados:reporte_final_vacante' e.id %}" class="btn bg-success bg-opacity-10 fw-medium text-success py-2 px-3" target="_blank">
+                                                                    <i class="material-symbols-outlined fs-14">description</i> Informe Final
                                                                 </a>
                                                             </div>
                                                         </td>
