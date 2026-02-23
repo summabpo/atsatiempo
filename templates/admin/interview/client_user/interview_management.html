@@ -8,6 +8,8 @@ Detalle vacante
 {% endblock %}
 
 {% block content %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
 		<h3 class="mb-0 text-primary">Resultado de Entrevista</h3>
@@ -123,88 +125,55 @@ Detalle vacante
 		</nav>
 	</div>
     <div class="row">
-		<div class="col-3">
-            {% include "admin/vacancy/common_template/info_vacancy.html" %}
-        </div>
-		<div class="col-9">
-            <div class="card bg-white border-0 rounded-3 mb-4">
-                <div class="card-body p-4">
-                    <div class="row">
-                        <div class="col-md-4 col-12">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    {% if candidato.imagen_perfil %}
-                                        <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2 wh-75" alt="{{ candidato.imagen_perfil.url }}">
-                                    {% else %}
-                                        <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2 wh-75" alt="user">
-                                    {% endif %}
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h4 class="fs-17 mb-1 fw-semibold">{{ candidato.nombre_completo }}</h4>
-                                    
-                                    <span class="fs-14">Marketing Manager</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-8 col-12 ">
-                            <div class="row">
-                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <div class="flex-shrink-0">
-                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-primary bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Aplicó</h4>
-                                            <span>{{reclutado.fecha_aplicacion}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <div class="flex-shrink-0">
-                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-warning bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Actualización</h4>
-                                            <span>{{reclutado.fecha_actualizacion}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <div class="flex-shrink-0">
-                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-{{reclutado.obtener_estado_con_color.color}} bg-gary-light rounded-circle bg-for-dark-mode">person_alert</i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h4 class="fs-14 fw-semibold mb-1">Estado</h4>
-                                            <span></span>
-                                            <span class="badge bg-opacity-10 bg-{{reclutado.obtener_estado_con_color.color}} py-1 px-2 text-{{reclutado.obtener_estado_con_color.color}} rounded-1 fw-medium fs-12">{{reclutado.obtener_estado_con_color.estado}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+		<div class="col-12">
+            <div class="card border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                    <h2 class="fs-18 fw-semibold mb-0 text-primary">Gestión de entrevista</h2>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="card border-0 rounded-2 bg-white mb-4">
-                        <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
-                            <h5 class="fs-18 fw-semibold mb-0 text-primary">Gestión de la entrevista</h5>
-                        </div>
-                        <div class="card-body p-4">
+                <div class="card-header bg-white border-0 border-bottom py-3 px-4">
+                    <ul class="nav nav-tabs card-header-tabs" id="interviewTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tab-gestion-btn" data-bs-toggle="tab" data-bs-target="#tab-gestion" type="button" role="tab" aria-controls="tab-gestion" aria-selected="true">
+                                <i class="ri-file-edit-line me-1"></i>Entrevista
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-candidato-btn" data-bs-toggle="tab" data-bs-target="#tab-candidato" type="button" role="tab" aria-controls="tab-candidato" aria-selected="false">
+                                <i class="ri-user-line me-1"></i>Información del candidato
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-requisitos-btn" data-bs-toggle="tab" data-bs-target="#tab-requisitos" type="button" role="tab" aria-controls="tab-requisitos" aria-selected="false">
+                                <i class="ri-folder-upload-line me-1"></i>Requisitos cargados
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-vacante-btn" data-bs-toggle="tab" data-bs-target="#tab-vacante" type="button" role="tab" aria-controls="tab-vacante" aria-selected="false">
+                                <i class="ri-briefcase-line me-1"></i>Información de la vacante
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body bg-white p-4">
+                    <div class="tab-content" id="interviewTabsContent">
+                        {# Pestaña 1: Gestión de la entrevista (formulario o resultado) #}
+                        <div class="tab-pane fade show active" id="tab-gestion" role="tabpanel" aria-labelledby="tab-gestion-btn">
+                            <div class="card border-0 rounded-2 mb-0">
+                                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                                    <h5 class="fs-16 fw-semibold mb-0 text-primary">Gestión de entrevista</h5>
+                                </div>
+                                        <div class="card-body bg-white p-4">
                             {% if tiene_resultado %}
                                 {# Dashboard de resultados #}
-                                <div class="resultado-entrevista-dashboard">
+                                <div>
                                     {# Información del Candidato #}
-                                    <div class="card border-0 shadow-sm mb-4">
-                                        <div class="card-header bg-white border-bottom">
+                                    <div class="card border-0 mb-4">
+                                        <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
                                             <h5 class="card-title mb-0 text-primary">
                                                 <i class="ri-user-line me-2"></i>Información del Candidato
                                             </h5>
                                         </div>
-                                        <div class="card-body">
+                                        <div class="card-body bg-white">
                                             <div class="row align-items-center">
                                                 <div class="col-md-3 text-center mb-3 mb-md-0">
                                                     {% if candidato.imagen_perfil %}
@@ -253,177 +222,473 @@ Detalle vacante
                                         </div>
                                     </div>
 
-                                    {# Resultados de Evaluación #}
-                                    <div class="card border-0 shadow-sm">
-                                        <div class="card-header bg-white border-bottom">
+                                    {# Resultados de Evaluación (estilo tipo requisitos: fila con nombre izquierda, calificación derecha) #}
+                                    <div class="card border-0 mb-4">
+                                        <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
                                             <h5 class="card-title mb-0 text-primary">
                                                 <i class="ri-file-list-3-line me-2"></i>Resultados de Evaluación
                                             </h5>
                                         </div>
-                                        <div class="card-body">
+                                        <div class="card-body bg-white">
                                             {# 1. MATCH 360 PREDICTIVO DEL TALENTO (HABILIDADES) #}
                                             {% if resultado_data.habilidades %}
                                             <div class="mb-4 pb-4 border-bottom">
-                                                <div class="d-flex align-items-start mb-3">
-                                                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">1</span>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-3 fw-bold">MATCH 360 PREDICTIVCO DEL TALENTO (CONCEPTO DE LAS HABILIDADES)</h6>
-                                                        <div class="row g-3">
-                                                            {% for skill_id, data in resultado_data.habilidades.items %}
-                                                            {% if not forloop.first %}<div class="col-12"><hr class="my-3"></div>{% endif %}
-                                                            <div class="col-12 mb-3">
-                                                                <div class="p-3 rounded bg-light border">
-                                                                    <div class="d-flex align-items-center mb-2">
-                                                                        <span class="me-2 text-uppercase fw-bold">{{ data.nombre|default:"Habilidad" }}</span>
-                                                                        <span class="badge bg-primary fs-14 px-3 py-1">{{ data.calificacion|default:"-" }}/10</span>
-                                                                    </div>
-                                                                    {% if data.observacion %}
-                                                                    <div class="mt-2">
-                                                                        <small class="text-muted d-block mb-1">Observación</small>
-                                                                        <p class="mb-0 small">{{ data.observacion }}</p>
-                                                                    </div>
-                                                                    {% endif %}
-                                                                </div>
+                                                <h6 class="fw-bold mb-3 text-primary">1. MATCH 360 PREDICTIVO DEL TALENTO (CONCEPTO DE LAS HABILIDADES)</h6>
+                                                <ul class="ps-0 mb-0 list-unstyled">
+                                                    {% for skill_id, data in resultado_data.habilidades.items %}
+                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                                        <div class="d-flex align-items-start flex-grow-1">
+                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">psychology</span>
+                                                            <div>
+                                                                <span class="fw-medium text-uppercase">{{ data.nombre|default:"Habilidad" }}</span>
+                                                                {% if data.observacion %}
+                                                                <p class="text-muted small mb-0 mt-1">{{ data.observacion }}</p>
+                                                                {% endif %}
                                                             </div>
-                                                            {% endfor %}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                        <div class="flex-shrink-0">
+                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ data.calificacion|default:"-" }}/10</span>
+                                                        </div>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
                                             </div>
                                             {% endif %}
 
                                             {# 2. FIT CULTURAL #}
                                             {% if resultado_data.fit_cultural %}
                                             <div class="mb-4 pb-4 border-bottom">
-                                                <div class="d-flex align-items-start mb-3">
-                                                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">2</span>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-3 fw-bold">FIT CULTURAL</h6>
-                                                        <div class="row g-3">
-                                                            {% for fc_id, data in resultado_data.fit_cultural.items %}
-                                                            {% if not forloop.first %}<div class="col-12"><hr class="my-3"></div>{% endif %}
-                                                            <div class="col-12 mb-3">
-                                                                <div class="p-3 rounded bg-light border">
-                                                                    <div class="d-flex align-items-center mb-2">
-                                                                        <span class="me-2 text-uppercase fw-bold">{{ data.nombre|default:"Fit cultural" }}</span>
-                                                                        <span class="badge bg-primary fs-14 px-3 py-1">{{ data.calificacion|default:"-" }}/10</span>
-                                                                    </div>
-                                                                    {% if data.observacion %}
-                                                                    <div class="mt-2">
-                                                                        <small class="text-muted d-block mb-1">Observación</small>
-                                                                        <p class="mb-0 small">{{ data.observacion }}</p>
-                                                                    </div>
-                                                                    {% endif %}
-                                                                </div>
+                                                <h6 class="fw-bold mb-3 text-primary">2. FIT CULTURAL</h6>
+                                                <ul class="ps-0 mb-0 list-unstyled">
+                                                    {% for fc_id, data in resultado_data.fit_cultural.items %}
+                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                                        <div class="d-flex align-items-start flex-grow-1">
+                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">groups</span>
+                                                            <div>
+                                                                <span class="fw-medium text-uppercase">{{ data.nombre|default:"Fit cultural" }}</span>
+                                                                {% if data.observacion %}
+                                                                <p class="text-muted small mb-0 mt-1">{{ data.observacion }}</p>
+                                                                {% endif %}
                                                             </div>
-                                                            {% endfor %}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                        <div class="flex-shrink-0">
+                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ data.calificacion|default:"-" }}/10</span>
+                                                        </div>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
                                             </div>
                                             {% endif %}
 
                                             {# 3. MOTIVADORES #}
                                             {% if resultado_data.motivadores %}
                                             <div class="mb-4 pb-4 border-bottom">
-                                                <div class="d-flex align-items-start mb-3">
-                                                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">3</span>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-3 fw-bold">MOTIVADORES</h6>
-                                                        <div class="row g-3">
-                                                            {% for m_id, data in resultado_data.motivadores.items %}
-                                                            {% if not forloop.first %}<div class="col-12"><hr class="my-3"></div>{% endif %}
-                                                            <div class="col-12 mb-3">
-                                                                <div class="p-3 rounded bg-light border">
-                                                                    <div class="d-flex align-items-center mb-2">
-                                                                        <span class="me-2 text-uppercase fw-bold">{{ data.nombre|default:"Motivador" }}</span>
-                                                                        <span class="badge bg-primary fs-14 px-3 py-1">{{ data.calificacion|default:"-" }}/10</span>
-                                                                    </div>
-                                                                    {% if data.observacion %}
-                                                                    <div class="mt-2">
-                                                                        <small class="text-muted d-block mb-1">Observación</small>
-                                                                        <p class="mb-0 small">{{ data.observacion }}</p>
-                                                                    </div>
-                                                                    {% endif %}
-                                                                </div>
+                                                <h6 class="fw-bold mb-3 text-primary">3. MOTIVADORES</h6>
+                                                <ul class="ps-0 mb-0 list-unstyled">
+                                                    {% for m_id, data in resultado_data.motivadores.items %}
+                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                                        <div class="d-flex align-items-start flex-grow-1">
+                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">emoji_events</span>
+                                                            <div>
+                                                                <span class="fw-medium text-uppercase">{{ data.nombre|default:"Motivador" }}</span>
+                                                                {% if data.observacion %}
+                                                                <p class="text-muted small mb-0 mt-1">{{ data.observacion }}</p>
+                                                                {% endif %}
                                                             </div>
-                                                            {% endfor %}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                        <div class="flex-shrink-0">
+                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ data.calificacion|default:"-" }}/10</span>
+                                                        </div>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
                                             </div>
                                             {% endif %}
 
-                                            {# 4. ANÁLISIS 360° #}
-                                            {% if resultado_data.encaje_360 %}
+                                            {# 4. PRUEBAS (Resultados y análisis psicotécnicos) #}
+                                            {% if resultado_data.pruebas %}
                                             <div class="mb-4 pb-4 border-bottom">
-                                                <div class="d-flex align-items-start mb-3">
-                                                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">4</span>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-2 fw-bold">ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL</h6>
-                                                        <div class="row g-3">
-                                                            <div class="col-md-3">
-                                                                <small class="text-muted d-block mb-1">Calificación</small>
-                                                                <span class="badge bg-primary fs-16 px-3 py-2">
-                                                                    {{ resultado_data.encaje_360.calificacion|default:"-" }}/10
-                                                                </span>
-                                                            </div>
-                                                            <div class="col-md-9">
-                                                                <small class="text-muted d-block mb-1">Observación</small>
-                                                                <p class="mb-0">{{ resultado_data.encaje_360.observacion|default:"Sin observaciones" }}</p>
+                                                <h6 class="fw-bold mb-3 text-primary">4. PRUEBAS (Resultados y análisis psicotécnicos)</h6>
+                                                <ul class="ps-0 mb-0 list-unstyled">
+                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                                        <div class="d-flex align-items-start flex-grow-1">
+                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">quiz</span>
+                                                            <div>
+                                                                <span class="fw-medium">Pruebas y análisis psicotécnicos</span>
+                                                                {% if resultado_data.pruebas.observacion %}
+                                                                <p class="text-muted small mb-0 mt-1">{{ resultado_data.pruebas.observacion }}</p>
+                                                                {% endif %}
+                                                                {% if resultado_data.prueba_cargada_obj and resultado_data.prueba_cargada_obj.prueba_cargada %}
+                                                                <div class="mt-2">
+                                                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalPruebaCargada">
+                                                                        <i class="material-symbols-outlined fs-14 me-1">visibility</i>Ver documento
+                                                                    </button>
+                                                                </div>
+                                                                {% endif %}
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                        <div class="flex-shrink-0">
+                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ resultado_data.pruebas.calificacion|default:"-" }}/10</span>
+                                                        </div>
+                                                    </li>
+                                                </ul>
                                             </div>
                                             {% endif %}
 
-                                            {# 5. INDICE DE CONFIABILIDAD Y RIESGO #}
+                                            {# 5. INDICE Y CONFIABILIDAD DEL RIESGO #}
                                             {% if resultado_data.confiabilidad %}
                                             <div class="mb-0">
-                                                <div class="d-flex align-items-start mb-3">
-                                                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 14px;">5</span>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-2 fw-bold">INDICE DE CONFIABILIDAD Y RIESGO</h6>
-                                                        <div class="row g-3">
-                                                            <div class="col-md-3">
-                                                                <small class="text-muted d-block mb-1">Calificación</small>
-                                                                <span class="badge bg-primary fs-16 px-3 py-2">
-                                                                    {{ resultado_data.confiabilidad.calificacion|default:"-" }}/10
-                                                                </span>
+                                                <h6 class="fw-bold mb-3 text-primary">5. ÍNDICE Y CONFIABILIDAD DEL RIESGO</h6>
+                                                <ul class="ps-0 mb-0 list-unstyled">
+                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                                        <div class="d-flex align-items-start flex-grow-1">
+                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">verified_user</span>
+                                                            <div>
+                                                                <span class="fw-medium">Índice y confiabilidad del riesgo</span>
+                                                                {% if resultado_data.confiabilidad.observacion %}
+                                                                <p class="text-muted small mb-0 mt-1">{{ resultado_data.confiabilidad.observacion }}</p>
+                                                                {% endif %}
+                                                                {% if resultado_data.confiabilidad_cargada_obj and resultado_data.confiabilidad_cargada_obj.documento_cargado %}
+                                                                <div class="mt-2">
+                                                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalConfiabilidadCargada">
+                                                                        <i class="material-symbols-outlined fs-14 me-1">visibility</i>Ver documento
+                                                                    </button>
+                                                                </div>
+                                                                {% endif %}
                                                             </div>
-                                                            {% if resultado_data.confiabilidad.observacion %}
-                                                            <div class="col-md-9">
-                                                                <small class="text-muted d-block mb-1">Observación</small>
-                                                                <p class="mb-0">{{ resultado_data.confiabilidad.observacion }}</p>
-                                                            </div>
-                                                            {% endif %}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                        <div class="flex-shrink-0">
+                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ resultado_data.confiabilidad.calificacion|default:"-" }}/10</span>
+                                                        </div>
+                                                    </li>
+                                                </ul>
                                             </div>
                                             {% endif %}
                                         </div>
                                     </div>
                                 </div>
+
+                                {# Modal: Prueba cargada (sección 4) #}
+                                {% if resultado_data.prueba_cargada_obj and resultado_data.prueba_cargada_obj.prueba_cargada %}
+                                {% with archivo_url=resultado_data.prueba_cargada_obj.prueba_cargada.url %}
+                                <div class="modal fade" id="modalPruebaCargada" tabindex="-1" aria-labelledby="modalPruebaCargadaLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header border-0 pb-0">
+                                                <h5 class="modal-title fw-semibold text-primary" id="modalPruebaCargadaLabel">Prueba cargada</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                            </div>
+                                            <div class="modal-body p-0" style="min-height: 70vh;">
+                                                <div class="d-flex align-items-center justify-content-center p-2 p-md-3" style="min-height: 70vh; overflow: auto;">
+                                                    {% if archivo_url|slice:"-4:" == ".pdf" or archivo_url|slice:"-4:" == ".PDF" %}
+                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Prueba cargada"></iframe>
+                                                    {% elif archivo_url|slice:"-4:" == ".jpg" or archivo_url|slice:"-4:" == ".JPG" or archivo_url|slice:"-4:" == ".png" or archivo_url|slice:"-4:" == ".PNG" %}
+                                                        <img src="{{ archivo_url }}" alt="Prueba cargada" class="img-fluid w-100" style="max-width: 100%; height: auto; max-height: 70vh; object-fit: contain; display: block;">
+                                                    {% else %}
+                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Prueba cargada"></iframe>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-0">
+                                                <a href="{{ archivo_url }}" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100"><i class="material-symbols-outlined fs-14 me-1">visibility</i>Abrir en nueva pestaña</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                                {% endif %}
+
+                                {# Modal: Documento confiabilidad del riesgo (sección 5) #}
+                                {% if resultado_data.confiabilidad_cargada_obj and resultado_data.confiabilidad_cargada_obj.documento_cargado %}
+                                {% with archivo_url=resultado_data.confiabilidad_cargada_obj.documento_cargado.url %}
+                                <div class="modal fade" id="modalConfiabilidadCargada" tabindex="-1" aria-labelledby="modalConfiabilidadCargadaLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header border-0 pb-0">
+                                                <h5 class="modal-title fw-semibold text-primary" id="modalConfiabilidadCargadaLabel">Documento índice y confiabilidad del riesgo</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                            </div>
+                                            <div class="modal-body p-0" style="min-height: 70vh;">
+                                                <div class="d-flex align-items-center justify-content-center p-2 p-md-3" style="min-height: 70vh; overflow: auto;">
+                                                    {% if archivo_url|slice:"-4:" == ".pdf" or archivo_url|slice:"-4:" == ".PDF" %}
+                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Documento confiabilidad"></iframe>
+                                                    {% elif archivo_url|slice:"-4:" == ".jpg" or archivo_url|slice:"-4:" == ".JPG" or archivo_url|slice:"-4:" == ".png" or archivo_url|slice:"-4:" == ".PNG" %}
+                                                        <img src="{{ archivo_url }}" alt="Documento confiabilidad" class="img-fluid w-100" style="max-width: 100%; height: auto; max-height: 70vh; object-fit: contain; display: block;">
+                                                    {% else %}
+                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Documento confiabilidad"></iframe>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-0">
+                                                <a href="{{ archivo_url }}" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100"><i class="material-symbols-outlined fs-14 me-1">visibility</i>Abrir en nueva pestaña</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                                {% endif %}
                             {% else %}
                                 {# Formulario de gestión #}
                                 <div class="row">
                                     <div class="col-md-1 col-12">
                                     </div>    
                                     <div class="col-md-10 col-12">
-                                        <form method="post" id="form_gestion_entrevista">
+                                        <form method="post" id="form_gestion_entrevista" enctype="multipart/form-data">
                                             <div class="modal-body">
                                                 {% csrf_token %}
                                                 {% crispy form %}
                                             </div>
-                                            <button type="submit" id="form_gestion_entrevista" class="btn btn-primary text-white"  form="form_gestion_entrevista">Gestionar</button>
+                                            <button type="submit" form="form_gestion_entrevista" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
+                                                <i class="material-symbols-outlined fs-14 me-1">visibility</i>Gestionar
+                                            </button>
                                         </form>
                                     </div>    
                                     <div class="col-md-1 col-12">
                                     </div>    
                                 </div>
                             {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {# Pestaña 2: Información del candidato #}
+                        <div class="tab-pane fade" id="tab-candidato" role="tabpanel" aria-labelledby="tab-candidato-btn">
+                            <div class="card border-0 rounded-2 mb-0">
+                                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                                    <h5 class="fs-16 fw-semibold mb-0 text-primary">Información del candidato</h5>
+                                </div>
+                                        <div class="card-body bg-white p-4">
+                                    <div class="row">
+                                        <div class="col-md-4 col-12">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    {% if candidato.imagen_perfil %}
+                                                        <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2 wh-75" alt="{{ candidato.nombre_completo }}">
+                                                    {% else %}
+                                                        <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2 wh-75" alt="user">
+                                                    {% endif %}
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h4 class="fs-17 mb-1 fw-semibold">{{ candidato.nombre_completo }}</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8 col-12">
+                                            <div class="row">
+                                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                                    <div class="d-flex align-items-center mb-4">
+                                                        <div class="flex-shrink-0">
+                                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-primary bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Aplicó</h4>
+                                                            <span>{{ reclutado.fecha_aplicacion }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                                    <div class="d-flex align-items-center mb-4">
+                                                        <div class="flex-shrink-0">
+                                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-warning bg-gary-light rounded-circle bg-for-dark-mode">schedule</i>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <h4 class="fs-14 fw-semibold mb-1">Fecha Actualización</h4>
+                                                            <span>{{ reclutado.fecha_actualizacion }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                                    <div class="d-flex align-items-center mb-4">
+                                                        <div class="flex-shrink-0">
+                                                            <i class="material-symbols-outlined d-inline-block wh-70 lh-70 text-center fs-35 text-{{ reclutado.obtener_estado_con_color.color }} bg-gary-light rounded-circle bg-for-dark-mode">person_alert</i>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <h4 class="fs-14 fw-semibold mb-1">Estado</h4>
+                                                            <span class="badge bg-opacity-10 bg-{{ reclutado.obtener_estado_con_color.color }} py-1 px-2 text-{{ reclutado.obtener_estado_con_color.color }} rounded-1 fw-medium fs-12">{{ reclutado.obtener_estado_con_color.estado }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {# Video de presentación (misma estructura que validar_token_documento) #}
+                                    <div class="mt-4 pt-3 border-top">
+                                        <h6 class="fs-14 fw-semibold mb-2 text-secondary">Video de Presentación Elevator Pitch</h6>
+                                        <ul class="ps-0 mb-3 list-unstyled">
+                                            <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                                <div class="d-flex align-items-center">
+                                                    <span class="material-symbols-outlined me-2 text-primary">videocam</span>
+                                                    <span class="fw-medium">VIDEO DE PRESENTACIÓN ELEVATOR PITCH<small class="text-muted ms-2 ms-sm-4 mt-1 d-inline-block">
+                                                        {% if candidato.video_perfil %}
+                                                            <span class="badge bg-success">Cargado</span>
+                                                        {% else %}
+                                                            <span class="badge bg-primary">Pendiente</span>
+                                                        {% endif %}
+                                                    </small></span>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    {% if candidato.video_perfil %}
+                                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#modalVerVideoCandidato">
+                                                        <i class="material-symbols-outlined fs-14 me-1">visibility</i>Ver Video
+                                                    </button>
+                                                    {% endif %}
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {# Modal: Ver video de presentación (como validar_token_documento) #}
+                            {% if candidato.video_perfil %}
+                            <div class="modal fade" id="modalVerVideoCandidato" tabindex="-1" aria-labelledby="modalVerVideoCandidatoLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-fullscreen-md-down modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header border-0 pb-0">
+                                            <h5 class="modal-title fw-semibold text-primary" id="modalVerVideoCandidatoLabel">Ver Video de Presentación</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <p class="mb-0"><strong>Video de presentación Elevator Pitch</strong></p>
+                                            </div>
+                                            <div class="border rounded p-2 p-md-3">
+                                                <video controls width="100%" style="max-height: 70vh;">
+                                                    <source src="{{ candidato.video_perfil.url }}" type="video/mp4">
+                                                    Tu navegador no soporta la reproducción de video.
+                                                </video>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer border-0 flex-wrap gap-2">
+                                            <button type="button" class="btn btn-secondary d-flex align-items-center justify-content-center" data-bs-dismiss="modal">Cerrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {# Pestaña 3: Requisitos cargados #}
+                        <div class="tab-pane fade" id="tab-requisitos" role="tabpanel" aria-labelledby="tab-requisitos-btn">
+                            <div class="card border-0 rounded-2 mb-0">
+                                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                                    <h5 class="fs-16 fw-semibold mb-0 text-primary">Requisitos cargados</h5>
+                                </div>
+                                        <div class="card-body bg-white p-4">
+                                    {# Políticas internas / Documento firmado (misma estructura que validar_token_documento) #}
+                                    <h6 class="fs-14 fw-semibold mb-2 text-secondary">Políticas Internas</h6>
+                                    <ul class="ps-0 mb-4 list-unstyled">
+                                        {% if documento_politica_firmada and documento_politica_firmada.documento_firmado %}
+                                        <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                            <div class="d-flex align-items-center">
+                                                <span class="material-symbols-outlined me-2 text-primary">policy</span>
+                                                <span class="fw-medium">Política de datos firmada<small class="text-muted ms-2 ms-sm-4 mt-1 d-inline-block">
+                                                    <span class="badge bg-success">Finalizada</span>
+                                                </small></span>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#modalPoliticaDatosFirmada">
+                                                    <i class="material-symbols-outlined fs-14 me-1">visibility</i>Ver documento
+                                                </button>
+                                            </div>
+                                        </li>
+                                        {% else %}
+                                        <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                            <div class="d-flex align-items-center">
+                                                <span class="material-symbols-outlined me-2 text-primary">policy</span>
+                                                <span class="fw-medium text-muted">Política de datos firmada<small class="text-muted ms-2 ms-sm-4 mt-1 d-inline-block">
+                                                    <span class="badge bg-primary">Pendiente</span>
+                                                </small></span>
+                                            </div>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+
+                                    {# Requisitos del cargo (misma estructura que validar_token_documento) #}
+                                    <h6 class="fs-14 fw-semibold mb-2 text-secondary">Requisitos</h6>
+                                    <ul class="ps-0 mb-3 list-unstyled">
+                                        {% for item in requisitos_con_info %}
+                                        {% with r=item.requisito requisito_cargado=item.cargado %}
+                                        <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                            <div class="d-flex align-items-center">
+                                                <span class="material-symbols-outlined me-2 text-primary">check</span>
+                                                <span class="fw-medium">{{ r.requisito.nombre|upper }}<small class="text-muted ms-2 ms-sm-4 mt-1 d-inline-block">
+                                                    {% if requisito_cargado and requisito_cargado.archivo_requisito %}
+                                                        <span class="badge bg-success">Cargado</span>
+                                                    {% else %}
+                                                        <span class="badge bg-primary">Pendiente</span>
+                                                    {% endif %}
+                                                </small></span>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                {% if requisito_cargado and requisito_cargado.archivo_requisito %}
+                                                <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#modalRequisitoDoc{{ item.cargado.id }}">
+                                                    <i class="material-symbols-outlined fs-14 me-1">visibility</i>Ver documento
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                        {% endwith %}
+                                        {% empty %}
+                                        <li class="text-muted">No hay requisitos disponibles.</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {# Modal: política de datos firmada #}
+                            {% if documento_politica_firmada and documento_politica_firmada.documento_firmado %}
+                            <div class="modal fade" id="modalPoliticaDatosFirmada" tabindex="-1" aria-labelledby="modalPoliticaDatosFirmadaLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header border-0 pb-0">
+                                            <h5 class="modal-title fw-semibold text-primary" id="modalPoliticaDatosFirmadaLabel">Política de datos firmada</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                        </div>
+                                        <div class="modal-body p-0" style="min-height: 70vh;">
+                                            <iframe src="{{ documento_politica_firmada.documento_firmado.url }}" class="w-100 border-0" style="height: 70vh;" title="Política de datos firmada"></iframe>
+                                        </div>
+                                        <div class="modal-footer border-0">
+                                            <a href="{{ documento_politica_firmada.documento_firmado.url }}" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100"><i class="material-symbols-outlined fs-14 me-1">visibility</i>Abrir en nueva pestaña</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {# Modales: documento cargado por requisito (uno por registro) #}
+                            {% for item in requisitos_con_info %}
+                            {% if item.cargado and item.cargado.archivo_requisito %}
+                            <div class="modal fade" id="modalRequisitoDoc{{ item.cargado.id }}" tabindex="-1" aria-labelledby="modalRequisitoDocLabel{{ item.cargado.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header border-0 pb-0">
+                                            <h5 class="modal-title fw-semibold text-primary" id="modalRequisitoDocLabel{{ item.cargado.id }}">{{ item.requisito.requisito.nombre }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                        </div>
+                                        <div class="modal-body p-0" style="min-height: 70vh;">
+                                            <div class="d-flex align-items-center justify-content-center p-2 p-md-3" style="min-height: 70vh; overflow: auto;">
+                                                {% with archivo_url=item.cargado.archivo_requisito.url %}
+                                                    {% if archivo_url|slice:"-4:" == ".pdf" or archivo_url|slice:"-4:" == ".PDF" %}
+                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="{{ item.requisito.requisito.nombre }}"></iframe>
+                                                    {% elif archivo_url|slice:"-4:" == ".jpg" or archivo_url|slice:"-4:" == ".JPG" or archivo_url|slice:"-4:" == ".png" or archivo_url|slice:"-4:" == ".PNG" %}
+                                                        <img src="{{ archivo_url }}" alt="{{ item.requisito.requisito.nombre }}" class="img-fluid w-100" style="max-width: 100%; height: auto; max-height: 70vh; object-fit: contain; display: block;">
+                                                    {% else %}
+                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="{{ item.requisito.requisito.nombre }}"></iframe>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer border-0">
+                                            <a href="{{ item.cargado.archivo_requisito.url }}" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100"><i class="material-symbols-outlined fs-14 me-1">visibility</i>Abrir en nueva pestaña</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        {# Pestaña 4: Información de la vacante #}
+                        <div class="tab-pane fade" id="tab-vacante" role="tabpanel" aria-labelledby="tab-vacante-btn">
+                            {% include "admin/vacancy/common_template/info_vacancy.html" %}
                         </div>
                     </div>
                 </div>
@@ -433,13 +698,16 @@ Detalle vacante
 </div>
 {% endblock %}
 
-{% block js %} 
+{% block js %}
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 <script>
     // Initialize select2 for specific fields
     initializeSelect2('#id_estado_asignacion');
     
     // Initialize select2 for calification fields
-    initializeSelect2('#id_encaje_360_calificacion');
+    initializeSelect2('#id_prueba_calificacion');
     initializeSelect2('#id_confiabilidad_riesgo_calificacion');
 
     // Select2 para calificación de cada habilidad
@@ -477,6 +745,59 @@ Detalle vacante
             }
         });
     }
+
+    // DataTable: Requisitos cargados (inicializar cuando se muestre la pestaña)
+    var dataTableConfigRequisitos = {
+        "dom": '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        "language": {
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "zeroRecords": "No se encontraron registros",
+            "info": "Mostrando página _PAGE_ de _PAGES_",
+            "infoEmpty": "No hay registros disponibles",
+            "infoFiltered": "(filtrado de _MAX_ registros totales)",
+            "search": "Buscar:",
+            "searchPlaceholder": "Buscar...",
+            "paginate": {
+                "first": "Primero",
+                "last": "Último",
+                "next": "Siguiente",
+                "previous": "Anterior"
+            },
+            "emptyTable": "No hay datos disponibles en la tabla",
+            "loadingRecords": "Cargando...",
+            "processing": "Procesando...",
+            "infoThousands": ","
+        },
+        "responsive": true,
+        "autoWidth": false,
+        "pageLength": 10,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "paging": true
+    };
+
+    function initTableRequisitosCargados() {
+        if (typeof $ === 'undefined' || typeof $.fn.DataTable === 'undefined') return;
+        var $table = $('#tableRequisitosCargados');
+        if (!$table.length) return;
+        if ($.fn.DataTable.isDataTable('#tableRequisitosCargados')) return;
+        $table.DataTable($.extend({}, dataTableConfigRequisitos, {
+            "columnDefs": [
+                { "targets": 3, "orderable": false, "searchable": false }
+            ]
+        }));
+    }
+
+    $(document).ready(function() {
+        $('#tab-requisitos-btn').on('shown.bs.tab', function() {
+            initTableRequisitosCargados();
+        });
+        if ($('#tab-requisitos').hasClass('show') && $('#tableRequisitosCargados').length) {
+            initTableRequisitosCargados();
+        }
+    });
 </script>
 <style>
     /* Ajustar alineación de la X en select2 para todos los campos */

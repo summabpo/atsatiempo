@@ -7,7 +7,7 @@ from applications.common.views.EnvioCorreo import enviar_correo
 from applications.services.service_interview import query_interview_all
 from applications.vacante.forms.EntrevistaForm import EntrevistaCrearForm, EntrevistaGestionForm
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones
-from applications.reclutado.models import Cli056AplicacionVacante
+from applications.reclutado.models import Cli056AplicacionVacante, Cli079RequisitosCargado, Cli082PruebaCargada, Cli083ConfiabilidadRiesgoCargado
 from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import Permiso, UsuarioBase
 from applications.common.models import Cat001Estado, Cat004Ciudad
@@ -26,6 +26,7 @@ from applications.vacante.forms.VacanteForms import VacancyFormAll
 #query
 from applications.services.service_recruited import query_recruited_vacancy_id
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
+from applications.vacante.views.common_view import get_requisitos
 
 
 #detalle de la vacante
@@ -55,22 +56,55 @@ def management_interview(request, pk):
     motivadores_vacante = list(vacante.motivadores.all())
 
     if request.method == 'POST': 
-        form = EntrevistaGestionForm(request.POST, habilidades=habilidades_vacante, fit_cultural=fit_cultural_vacante, motivadores=motivadores_vacante)
+        form = EntrevistaGestionForm(request.POST, request.FILES, habilidades=habilidades_vacante, fit_cultural=fit_cultural_vacante, motivadores=motivadores_vacante)
         if form.is_valid():
             observacion = form.cleaned_data['observacion']
             estado_asignacion = int(form.cleaned_data['estado_asignacion'])
 
+            # 4. PRUEBAS: crear Cli082PruebaCargada si se subió archivo y referencia en JSON
+            prueba_cargada_id = None
+            if form.cleaned_data.get('prueba_cargada'):
+                estado_activo = get_object_or_404(Cat001Estado, id=1)
+                obj_prueba = Cli082PruebaCargada.objects.create(
+                    aplicacion_vacante_056=asignacion_vacante,
+                    prueba_cargada=form.cleaned_data['prueba_cargada'],
+                    usuario_cargada=request.user,
+                    estado=estado_activo,
+                )
+                prueba_cargada_id = obj_prueba.id
+
+            # 5. INDICE Y CONFIABILIDAD DEL RIESGO: crear Cli083 si se subió documento
+            confiabilidad_cargada_id = None
+            if form.cleaned_data.get('confiabilidad_riesgo_cargado'):
+                estado_activo = get_object_or_404(Cat001Estado, id=1)
+                obj_conf = Cli083ConfiabilidadRiesgoCargado.objects.create(
+                    aplicacion_vacante_056=asignacion_vacante,
+                    documento_cargado=form.cleaned_data['confiabilidad_riesgo_cargado'],
+                    usuario_cargado=request.user,
+                    estado=estado_activo,
+                )
+                confiabilidad_cargada_id = obj_conf.id
+
+            # Id para el resultado: usuario logueado o, si no hay, id del usuario relacionado al candidato (vía aplicación)
+            if request.user.is_authenticated and getattr(request.user, 'id', None):
+                id_usuario_resultado = request.user.id
+            else:
+                usuario_candidato = asignacion_vacante.candidato_101.usuario.first()
+                id_usuario_resultado = usuario_candidato.id if usuario_candidato else request.session.get('user_id')
+
             # Construir el JSON con los resultados de la entrevista
             resultado_json = {
-                'id_usuario': request.user.id,
+                'id_usuario': id_usuario_resultado,
                 'fecha_entrevista': asignacion_entrevista.fecha_entrevista.strftime('%Y-%m-%d') if asignacion_entrevista.fecha_entrevista else None,
-                '4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL': {
-                    'calificacion': int(form.cleaned_data['encaje_360_calificacion']),
-                    'observacion': form.cleaned_data['encaje_360_observaciones']
+                '4. PRUEBAS (Resultados y análisis psicotécnicos)': {
+                    'calificacion': int(form.cleaned_data['prueba_calificacion']),
+                    'observacion': form.cleaned_data.get('prueba_observaciones', '') or '',
+                    'prueba_cargada_id': prueba_cargada_id,
                 },
-                '5. INDICE DE CONFIABILIDAD Y RIESGO': {
+                '5. INDICE Y CONFIABILIDAD DEL RIESGO': {
                     'calificacion': int(form.cleaned_data['confiabilidad_riesgo_calificacion']),
-                    'observacion': ''
+                    'observacion': form.cleaned_data.get('confiabilidad_riesgo_observaciones', '') or '',
+                    'confiabilidad_cargada_id': confiabilidad_cargada_id,
                 }
             }
             # 6. HABILIDADES DE LA VACANTE (calificación 1-10 + observaciones por habilidad)
@@ -155,11 +189,16 @@ def management_interview(request, pk):
         initial_data = {}
         if entrevista.resultado_entrevista:
             resultado = entrevista.resultado_entrevista
+            conf = resultado.get('5. INDICE Y CONFIABILIDAD DEL RIESGO') or resultado.get('6. INDICE DE CONFIABILIDAD Y RIESGO') or resultado.get('5. INDICE DE CONFIABILIDAD Y RIESGO') or {}
             initial_data = {
-                'encaje_360_observaciones': resultado.get('4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL', {}).get('observacion', ''),
-                'encaje_360_calificacion': str(resultado.get('4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL', {}).get('calificacion', '')),
-                'confiabilidad_riesgo_calificacion': str(resultado.get('5. INDICE DE CONFIABILIDAD Y RIESGO', {}).get('calificacion', '')),
+                'confiabilidad_riesgo_calificacion': str(conf.get('calificacion', '')),
+                'confiabilidad_riesgo_observaciones': conf.get('observacion', '') or '',
             }
+            # Cargar pruebas (compatibilidad con clave 4 antigua y nueva)
+            pruebas_data = resultado.get('4. PRUEBAS (Resultados y análisis psicotécnicos)', resultado.get('4. PRUEBAS', {}))
+            if isinstance(pruebas_data, dict):
+                initial_data['prueba_calificacion'] = str(pruebas_data.get('calificacion', ''))
+                initial_data['prueba_observaciones'] = pruebas_data.get('observacion', '') or ''
             # Cargar calificaciones y observaciones de habilidades guardadas
             habilidades_guardadas = resultado.get('6. HABILIDADES VACANTE', {})
             for skill_id, data in habilidades_guardadas.items():
@@ -203,16 +242,43 @@ def management_interview(request, pk):
     resultado_data = None
     if tiene_resultado:
         resultado_json = asignacion_entrevista.resultado_entrevista
+        # Resolver prueba cargada para mostrar enlace de descarga
+        pruebas_json = resultado_json.get('4. PRUEBAS (Resultados y análisis psicotécnicos)', resultado_json.get('4. PRUEBAS', {}))
+        prueba_cargada_obj = None
+        if isinstance(pruebas_json, dict) and pruebas_json.get('prueba_cargada_id'):
+            prueba_cargada_obj = Cli082PruebaCargada.objects.filter(id=pruebas_json['prueba_cargada_id']).first()
+        confiabilidad = resultado_json.get('5. INDICE Y CONFIABILIDAD DEL RIESGO') or resultado_json.get('6. INDICE DE CONFIABILIDAD Y RIESGO') or resultado_json.get('5. INDICE DE CONFIABILIDAD Y RIESGO') or {}
+        confiabilidad_cargada_obj = None
+        if isinstance(confiabilidad, dict) and confiabilidad.get('confiabilidad_cargada_id'):
+            confiabilidad_cargada_obj = Cli083ConfiabilidadRiesgoCargado.objects.filter(id=confiabilidad['confiabilidad_cargada_id']).first()
         resultado_data = {
             'fecha_entrevista': resultado_json.get('fecha_entrevista'),
             'id_usuario': resultado_json.get('id_usuario'),
             'fit_cultural': resultado_json.get('2. FIT CULTURAL', {}),
             'motivadores': resultado_json.get('3. MOTIVADORES', {}),
-            'encaje_360': resultado_json.get('4. ANÁLISIS 360° DE ENCAJE PERSONAL Y PROFESIONAL', {}),
-            'confiabilidad': resultado_json.get('5. INDICE DE CONFIABILIDAD Y RIESGO', {}),
+            'pruebas': pruebas_json if isinstance(pruebas_json, dict) else {},
+            'prueba_cargada_obj': prueba_cargada_obj,
+            'confiabilidad': confiabilidad,
+            'confiabilidad_cargada_obj': confiabilidad_cargada_obj,
             'habilidades': resultado_json.get('6. HABILIDADES VACANTE', {}),
         }
     
+    # Requisitos del cargo y cuáles tiene cargados esta aplicación
+    requisitos_cargo = get_requisitos(asignacion_vacante)
+    requisitos_cargados_qs = Cli079RequisitosCargado.objects.filter(
+        aplicacion_vacante_056=asignacion_vacante
+    ).select_related('asignacion_requisito_070__requisito', 'usuario_cargado')
+    requisitos_cargados_dict = {r.asignacion_requisito_070.id: r for r in requisitos_cargados_qs}
+    requisitos_con_info = [
+        {'requisito': req, 'cargado': requisitos_cargados_dict.get(req.id)}
+        for req in requisitos_cargo
+    ]
+
+    # Documento de política de datos firmada (si existe)
+    documento_politica_firmada = asignacion_vacante.documentos_firmar.filter(
+        documento_firmado__isnull=False
+    ).exclude(documento_firmado='').first()
+
     context = {
         'vacante': vacante,
         'candidato': info_candidato,
@@ -225,6 +291,8 @@ def management_interview(request, pk):
         'habilidades_vacante': habilidades_vacante,
         'fit_cultural_vacante': fit_cultural_vacante,
         'motivadores_vacante': motivadores_vacante,
+        'requisitos_con_info': requisitos_con_info,
+        'documento_politica_firmada': documento_politica_firmada,
     }
 
     return render(request, 'admin/interview/client_user/interview_management.html', context)

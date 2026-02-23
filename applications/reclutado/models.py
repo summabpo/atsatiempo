@@ -177,3 +177,20 @@ class Cli082PruebaCargada(models.Model):
         db_table = 'cli_082_prueba_cargada'
         verbose_name = 'PRUEBA CARGADA'
         verbose_name_plural = 'PRUEBAS CARGADAS'
+
+
+class Cli083ConfiabilidadRiesgoCargado(models.Model):
+    """Documento de índice y confiabilidad del riesgo asociado a la aplicación (entrevista)."""
+    aplicacion_vacante_056 = models.ForeignKey(Cli056AplicacionVacante, on_delete=models.CASCADE, related_name='confiabilidad_riesgo_cargados')
+    documento_cargado = models.FileField(upload_to='media_uploads/confiabilidad_riesgo/', blank=True, null=True, verbose_name="Documento Confiabilidad/Riesgo")
+    fecha_cargado = models.DateTimeField(auto_now_add=True)
+    usuario_cargado = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, related_name='confiabilidad_riesgo_cargados')
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, related_name='confiabilidad_riesgo_cargados')
+
+    def __str__(self):
+        return f"Confiabilidad/riesgo cargado para la aplicación {self.aplicacion_vacante_056.id}"
+
+    class Meta:
+        db_table = 'cli_083_confiabilidad_riesgo_cargado'
+        verbose_name = 'CONFIABILIDAD RIESGO CARGADO'
+        verbose_name_plural = 'CONFIABILIDAD RIESGO CARGADOS'

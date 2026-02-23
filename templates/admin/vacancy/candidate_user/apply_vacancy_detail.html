@@ -281,7 +281,7 @@ Mis Vacantes aplicadas
                                                     {% if archivo_url|slice:"-4:" == ".pdf" or archivo_url|slice:"-4:" == ".PDF" %}
                                                         <iframe src="{{ archivo_url }}" width="100%" height="600px" style="border: none; min-height: 400px;"></iframe>
                                                     {% elif archivo_url|slice:"-4:" == ".jpg" or archivo_url|slice:"-4:" == ".JPG" or archivo_url|slice:"-4:" == ".png" or archivo_url|slice:"-4:" == ".PNG" %}
-                                                        <img src="{{ archivo_url }}" alt="Documento" class="img-fluid d-block mx-auto" style="max-width: 100%; height: auto; max-height: calc(100vh - 350px); object-fit: contain;">
+                                                        <img src="{{ archivo_url }}" alt="Documento" class="img-fluid w-100 d-block" style="width: 100%; height: auto; max-height: calc(100vh - 350px); object-fit: contain;">
                                                     {% endif %}
                                                 {% endwith %}
                                             </div>
