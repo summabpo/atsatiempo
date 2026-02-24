@@ -27,6 +27,7 @@ from applications.vacante.forms.VacanteForms import VacancyFormAll
 from applications.services.service_vacanty import  query_vacanty_detail
 from applications.services.service_recruited import consultar_historial_aplicacion_vacante, query_recruited_vacancy_id
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
+from applications.reclutado.views.admin_views import _procesar_datos_reporte_final
 
 #detalle de la vacante
 @login_required
@@ -288,7 +289,14 @@ def detail_recruited(request, pk):
         if not tiene_respuesta_cliente:
             form_respuesta_cliente = RespuestaClienteForm()
 
-    
+    # Obtener datos del reporte final si el estado_aplicacion es 8 (Seleccionado) o si hay respuesta del cliente
+    datos_reporte_final = None
+    if asignacion_vacante.estado_aplicacion == 8 or tiene_respuesta_cliente:
+        try:
+            datos_reporte_final = _procesar_datos_reporte_final(request, asignacion_vacante.id)
+        except Exception as e:
+            # Si hay error al procesar el reporte, dejar datos_reporte_final como None
+            datos_reporte_final = None
 
     context ={
         'form': form,
@@ -303,6 +311,7 @@ def detail_recruited(request, pk):
         'info_detalle_candidato': info_detalle_candidato,
         'historial': historico_vacante,
         'json_match': json_match,
+        'datos_reporte_final': datos_reporte_final,
     }
 
     return render(request, 'admin/recruited/client_user/recruited_detail.html', context)

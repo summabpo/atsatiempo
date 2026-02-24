@@ -1008,6 +1008,18 @@ def reporte_final_reclutado(request, aplicacion_id):
     """
     Vista para mostrar el reporte final de un reclutado.
     """
+    datos_procesados = _procesar_datos_reporte_final(request, aplicacion_id)
+    context = {
+        'datos_procesados': datos_procesados,
+    }
+
+    return render(request, 'admin/recruited/admin_user/report_final.html', context)
+
+def _procesar_datos_reporte_final(request, aplicacion_id):
+    """
+    Función auxiliar para procesar y estructurar los datos del reporte final de un reclutado.
+    Retorna un diccionario con todos los datos procesados.
+    """
     # Obtener la aplicación de vacante
     asignacion_vacante = get_object_or_404(Cli056AplicacionVacante, id=aplicacion_id)
     
@@ -1358,9 +1370,7 @@ def reporte_final_reclutado(request, aplicacion_id):
         recomendacion_final['observacion'] = entrevista.observacion or ''
     
     datos_procesados['recomendacion_final'] = recomendacion_final
+    
+    return datos_procesados
 
-    context = {
-        'datos_procesados': datos_procesados,
-    }
-
-    return render(request, 'admin/recruited/admin_user/report_final.html', context)
+    

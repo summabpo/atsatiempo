@@ -489,7 +489,9 @@ def list_vacanty_all(request):
 def vacancy_management_from_client(request, pk, vacante_id):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
+    grupo_id = request.session.get('grupo_id')
     form_errors = False
+    print(grupo_id)
     
     # Data cliente a mostrar
     data = query_client_detail(pk)

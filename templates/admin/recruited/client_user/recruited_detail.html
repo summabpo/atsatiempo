@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load crispy_forms_tags %}
+{% load custom_tags %}
 
 {% block title %}
 Detalle vacante
@@ -179,10 +180,7 @@ Detalle vacante
                 </div>
             </div>
         </div>
-		<div class="col-md-3">
-            {% include "admin/vacancy/common_template/info_vacancy.html" %}
-        </div>
-		<div class="col-md-9">
+		<div class="col-md-12">
             <div class="row">
                 <div class="col-12">
                     <div class="card bg-white border-0 rounded-3 mb-4">
@@ -205,13 +203,13 @@ Detalle vacante
                                 </li>
                                 {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="respuesta-cliente-tab" data-bs-toggle="tab" data-bs-target="#respuesta-cliente-tab-pane" type="button" role="tab" aria-controls="respuesta-cliente-tab-pane" aria-selected="false">Respuesta Cliente</button>
+                                    <button class="nav-link" id="respuesta-cliente-tab" data-bs-toggle="tab" data-bs-target="#respuesta-cliente-tab-pane" type="button" role="tab" aria-controls="respuesta-cliente-tab-pane" aria-selected="false">Reporte Final</button>
                                 </li>
                                 {% endif %}
                             </ul>
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="match-tab-pane" role="tabpanel" aria-labelledby="match-tab" tabindex="0">
-                                    {% include "admin/vacancy/partials/match_candidate_vacancy.html" %}
+                                    {% include "admin/vacancy/common_template/info_vacancy.html" %}
                                 </div>
                                 <div class="tab-pane fade" id="candidato-tab-pane" role="tabpanel" aria-labelledby="candidato-tab" tabindex="0">
                                     <div style="max-width: 1200px; width: 100%; margin-left: auto; margin-right: auto;">
@@ -511,6 +509,14 @@ Detalle vacante
                                 </div>
                                 {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
                                 <div class="tab-pane fade" id="respuesta-cliente-tab-pane" role="tabpanel" aria-labelledby="respuesta-cliente-tab" tabindex="0">
+                                    {% if datos_reporte_final %}
+                                        {% if reclutado.estado_aplicacion == 8 or tiene_respuesta_cliente %}
+                                            <!-- Mostrar reporte final cuando estado_aplicacion es 8 o cuando hay respuesta del cliente -->
+                                            {% include "admin/recruited/partials/reporte_final_content.html" %}
+                                        {% endif %}
+                                    {% endif %}
+                                    
+                                    <!-- Formulario de respuesta del cliente (siempre visible) -->
                                     {% if tiene_respuesta_cliente %}
                                         <!-- Mostrar información en modo solo lectura -->
                                         <div class="card bg-white border-0 rounded-3 mb-4">

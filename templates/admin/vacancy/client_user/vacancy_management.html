@@ -164,7 +164,7 @@ Vacantes Propias
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="d-flex gap-2 justify-content-center">
-                                                        {% if request.session.grupo_id == 5 %}
+                                                        {% if request.session.grupo_id == 5 or request.session.grupo_id == 3 %}
                                                             <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
                                                                 <i class="material-symbols-outlined fs-14">manage_accounts</i> Gestionar
                                                             </a>
@@ -172,10 +172,10 @@ Vacantes Propias
                                                             <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
                                                                 <i class="material-symbols-outlined fs-14">manage_accounts</i> Gestionar
                                                             </a>
+                                                            <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
+                                                                <i class="material-symbols-outlined fs-14">person_check</i> En Finalistas
+                                                            </a>
                                                         {% endif %}
-                                                        <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
-                                                            <i class="material-symbols-outlined fs-14">person_check</i> En Finalistas
-                                                        </a>
                                                     </div>
                                                 </td>
                                             </tr>
