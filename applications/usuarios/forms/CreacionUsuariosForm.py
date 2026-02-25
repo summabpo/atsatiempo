@@ -205,8 +205,8 @@ class CrearUsuarioInternoForm(forms.Form):
             if extension not in ['.jpg', '.jpeg', '.png']:
                 self.add_error('imagen_perfil', 'Formato de imagen no válido. Solo se permiten JPG, JPEG y PNG.')
             # Verificar el tamaño del archivo (5 MB máximo)
-            if imagen_perfil.size > 5 * 1024 * 1024:
-                self.add_error('imagen_perfil', 'El tamaño de la imagen no debe exceder los 5 MB.')
+            if imagen_perfil.size > 15 * 1024 * 1024:
+                self.add_error('imagen_perfil', 'El tamaño de la imagen no debe exceder los 15 MB.')
         return super().clean()
 
 class EditUsuarioInternoForm(forms.Form):

@@ -371,9 +371,12 @@ def login_view(request):
                         }
 
                         #validar imagen de perfil
-                        if usuario.imagen_perfil:
-                            request.session['imagen_url'] = usuario.imagen_perfil.url
-                        else:
+                        try:
+                            if usuario.imagen_perfil and usuario.imagen_perfil.name:
+                                request.session['imagen_url'] = usuario.imagen_perfil.url
+                            else:
+                                request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
+                        except (ValueError, AttributeError):
                             request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
 
                         #Tipo de usuario
@@ -412,12 +415,24 @@ def login_view(request):
                             
                         # Grupo 5 Analista Selección
                         if usuario.group.id == 5:
-                            request.session['imagen_url'] = usuario.imagen_perfil.url
+                            try:
+                                if usuario.imagen_perfil and usuario.imagen_perfil.name:
+                                    request.session['imagen_url'] = usuario.imagen_perfil.url
+                                else:
+                                    request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
+                            except (ValueError, AttributeError):
+                                request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
                             request.session['cliente_id'] = usuario.cliente_id_051.id
                         
                         # Grupo 6 Analista Selección ATS
                         if usuario.group.id == 6:
-                            request.session['imagen_url'] = usuario.imagen_perfil.url
+                            try:
+                                if usuario.imagen_perfil and usuario.imagen_perfil.name:
+                                    request.session['imagen_url'] = usuario.imagen_perfil.url
+                                else:
+                                    request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
+                            except (ValueError, AttributeError):
+                                request.session['imagen_url'] = f'{settings.STATIC_URL}media/avatars/blank.png'
 
                         # Grupo 7 Analista Selección ATS (Interno)
                         if usuario.group.id == 7:

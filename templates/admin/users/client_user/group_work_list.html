@@ -157,5 +157,39 @@ Grupo de Trabajo
     // Initialize select2 for specific fields
     initializeSelect2('#id_rol');
     initializeSelect2('#id_entrevistador');
+
+    // Abrir el modal automáticamente si hay errores en el formulario
+    {% if form_has_errors %}
+    document.addEventListener('DOMContentLoaded', function() {
+        var modalElement = document.getElementById('modal_grupo_trabajo');
+        if (modalElement) {
+            var modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+    });
+    {% endif %}
+
+    // Prevenir que el modal se cierre al enviar el formulario si hay errores
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('form_crear_usuario');
+        var modalElement = document.getElementById('modal_grupo_trabajo');
+        
+        if (form && modalElement) {
+            form.addEventListener('submit', function(e) {
+                // Verificar si hay errores en el formulario antes de enviar
+                var hasErrors = form.querySelector('.errorlist, .invalid-feedback, .is-invalid');
+                
+                if (hasErrors) {
+                    // Si hay errores, mantener el modal abierto
+                    e.preventDefault();
+                    var modal = bootstrap.Modal.getInstance(modalElement);
+                    if (!modal) {
+                        modal = new bootstrap.Modal(modalElement);
+                    }
+                    modal.show();
+                }
+            });
+        }
+    });
 </script>  
 {% endblock js %}

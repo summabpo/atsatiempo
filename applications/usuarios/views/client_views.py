@@ -41,7 +41,7 @@ def create_internal_client(request):
     form = CrearUsuarioInternoForm(tipo_cliente=cliente_type)
 
     if request.method == 'POST':
-        form = CrearUsuarioInternoForm(request.POST, request.FILES)
+        form = CrearUsuarioInternoForm(request.POST, request.FILES, tipo_cliente=cliente_type)
         if form.is_valid():
             primer_nombre = form.cleaned_data['primer_nombre']
             segundo_nombre = form.cleaned_data['segundo_nombre']
@@ -49,25 +49,30 @@ def create_internal_client(request):
             segundo_apellido = form.cleaned_data['segundo_apellido']
             correo = form.cleaned_data['correo']
             rol = form.cleaned_data['rol']
-            imagen_perfil = form.cleaned_data['imagen_perfil']
+            imagen_perfil = form.cleaned_data.get('imagen_perfil')
 
             grupo = get_object_or_404(Grupo, id=rol)
 
             passwordoriginal = generate_random_password()
 
-            user = UsuarioBase.objects.create_user(
-                username=correo,
-                email=correo,
-                primer_nombre=primer_nombre.capitalize(),
-                segundo_nombre=segundo_nombre.capitalize(),
-                primer_apellido=primer_apellido.capitalize(),
-                segundo_apellido=segundo_apellido.capitalize(),
-                password=passwordoriginal,
-                is_verificado=True,
-                group=grupo,
-                imagen_perfil=imagen_perfil,
-                cliente_id_051_id=cliente_id,
-            )
+            user_data = {
+                'username': correo,
+                'email': correo,
+                'primer_nombre': primer_nombre.capitalize(),
+                'segundo_nombre': segundo_nombre.capitalize(),
+                'primer_apellido': primer_apellido.capitalize(),
+                'segundo_apellido': segundo_apellido.capitalize(),
+                'password': passwordoriginal,
+                'is_verificado': True,
+                'group': grupo,
+                'cliente_id_051_id': cliente_id,
+            }
+            
+            # Solo agregar imagen_perfil si se proporcionó una
+            if imagen_perfil:
+                user_data['imagen_perfil'] = imagen_perfil
+
+            user = UsuarioBase.objects.create_user(**user_data)
 
             contexto_mail = {
                 'name': primer_nombre.capitalize(),
@@ -93,9 +98,13 @@ def create_internal_client(request):
     else:
         form = CrearUsuarioInternoForm(tipo_cliente=cliente_type)
 
+    # Verificar si hay errores en el formulario
+    form_has_errors = request.method == 'POST' and not form.is_valid()
+
     context = {
         'usuarios_internos': usuarios_internos,
         'form': form,
+        'form_has_errors': form_has_errors,
     }
 
     return render(request, 'admin/users/client_user/group_work_list.html', context)
