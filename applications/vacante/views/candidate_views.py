@@ -34,7 +34,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_JUSTIFY
 from django.core.files.base import ContentFile
 
-from applications.vacante.views.common_view import get_politicas_internas, get_pruebas, get_requisitos
+from applications.vacante.views.common_view import get_politicas_internas, get_pruebas, get_requisitos, get_autorizacion_datos
 
 def generar_codigo_unico():
     """Genera un código único alfanumérico"""
@@ -95,10 +95,17 @@ def generar_pdf_documento_firmado(aplicacion, fecha_firma=None, ip_firmante=None
     firma_guardada = None
     firma_file_obj = None
     try:
+        # Preferir firma asociada a POLÍTICAS (si hay múltiples registros)
         documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
             aplicacion_vacante_056=aplicacion,
-            estado_id=1
-        ).first()
+            estado_id=1,
+            imagen_firmada__icontains='firma_politicas_'
+        ).order_by('-fecha_firma_hora_ip', '-id').first()
+        if not documento_firmado:
+            documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+                aplicacion_vacante_056=aplicacion,
+                estado_id=1
+            ).order_by('-fecha_firma_hora_ip', '-id').first()
         if documento_firmado and documento_firmado.imagen_firmada:
             # Intentar obtener la ruta local primero
             try:
@@ -504,6 +511,257 @@ def generar_pdf_documento_firmado(aplicacion, fecha_firma=None, ip_firmante=None
     
     return buffer
 
+def generar_pdf_autorizacion_datos(aplicacion, autorizacion_datos, fecha_firma=None, ip_firmante=None, codigo_unico=None):
+    """Función auxiliar para generar el PDF de autorización de tratamiento de datos"""
+    if fecha_firma is None:
+        fecha_firma = datetime.now()
+    
+    # Obtener información del candidato
+    candidato = aplicacion.candidato_101
+    nombre_completo = candidato.nombre_completo()
+    numero_documento = candidato.numero_documento or "N/A"
+    tipo_documento = "Cédula de Ciudadanía"
+    
+    # Obtener información del cliente maestro
+    from applications.cliente.models import Cli064AsignacionCliente
+    cliente_asignado = aplicacion.vacante_id_052.cargo.cliente if aplicacion.vacante_id_052.cargo else None
+    cliente = None
+    if cliente_asignado:
+        asignacion_cliente = Cli064AsignacionCliente.objects.filter(
+            id_cliente_asignado=cliente_asignado,
+            estado_id=1
+        ).select_related('id_cliente_maestro').first()
+        cliente = asignacion_cliente.id_cliente_maestro if asignacion_cliente else cliente_asignado
+    
+    # Fecha de firma
+    fecha_firma_str = fecha_firma.strftime("%d/%m/%Y")
+    
+    # Obtener la descripción procesada
+    descripcion_texto = ""
+    if autorizacion_datos:
+        if hasattr(autorizacion_datos, 'descripcion_procesada') and autorizacion_datos.descripcion_procesada:
+            # Convertir HTML a texto plano para el PDF (remover tags HTML)
+            import re
+            descripcion_texto = re.sub(r'<[^>]+>', '', autorizacion_datos.descripcion_procesada)
+            # Reemplazar <strong> con texto en negrita (manejado por ReportLab)
+            descripcion_texto = descripcion_texto.replace('<strong>', '').replace('</strong>', '')
+        else:
+            descripcion_texto = autorizacion_datos.descripcion if autorizacion_datos.descripcion else ""
+    
+    # Obtener la firma guardada de la autorización de datos
+    firma_guardada = None
+    firma_file_obj = None
+    try:
+        # Preferir firma asociada a AUTORIZACIÓN (si hay múltiples registros)
+        documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+            aplicacion_vacante_056=aplicacion,
+            estado_id=1,
+            imagen_firmada__icontains='firma_autorizacion_'
+        ).order_by('-fecha_firma_hora_ip', '-id').first()
+        if not documento_firmado:
+            documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+                aplicacion_vacante_056=aplicacion,
+                estado_id=1
+            ).order_by('-fecha_firma_hora_ip', '-id').first()
+        if documento_firmado and documento_firmado.imagen_firmada:
+            try:
+                firma_guardada = documento_firmado.imagen_firmada.path
+                if not os.path.exists(firma_guardada):
+                    firma_guardada = None
+            except (ValueError, NotImplementedError):
+                firma_guardada = None
+                try:
+                    documento_firmado.imagen_firmada.open('rb')
+                    firma_file_obj = BytesIO(documento_firmado.imagen_firmada.read())
+                    documento_firmado.imagen_firmada.close()
+                except:
+                    pass
+    except:
+        pass
+    
+    # Crear el buffer para el PDF
+    buffer = BytesIO()
+    
+    # Crear el documento PDF
+    doc = SimpleDocTemplate(buffer, pagesize=A4,
+                            rightMargin=36, leftMargin=36,
+                            topMargin=30, bottomMargin=60)
+    
+    # Contenedor para los elementos del PDF
+    elements = []
+    
+    # Estilos
+    styles = getSampleStyleSheet()
+    
+    # Colores de la aplicación
+    color_primary = colors.HexColor('#B10022')
+    
+    # Estilos personalizados
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=16,
+        textColor=color_primary,
+        spaceAfter=20,
+        alignment=TA_CENTER,
+        fontName='Helvetica-Bold'
+    )
+    
+    body_style = ParagraphStyle(
+        'CustomBody',
+        parent=styles['Normal'],
+        fontSize=11,
+        leading=16,
+        alignment=TA_JUSTIFY,
+        spaceAfter=12,
+        fontName='Helvetica'
+    )
+    
+    signature_style = ParagraphStyle(
+        'CustomSignature',
+        parent=styles['Normal'],
+        fontSize=11,
+        leading=14,
+        alignment=TA_LEFT,
+        spaceAfter=6,
+        spaceBefore=20,
+        fontName='Helvetica'
+    )
+    
+    footer_style = ParagraphStyle(
+        'CustomFooter',
+        parent=styles['Normal'],
+        fontSize=8,
+        leading=10,
+        alignment=TA_CENTER,
+        textColor=colors.HexColor('#666666'),
+        fontName='Helvetica'
+    )
+    
+    # Título del documento
+    title = Paragraph("AUTORIZACIÓN DE TRATAMIENTO DE DATOS PERSONALES", title_style)
+    elements.append(title)
+    elements.append(Spacer(1, 0.2*inch))
+    
+    # Cuerpo del documento (descripción)
+    if descripcion_texto:
+        # Procesar el texto para mantener el formato en negrita
+        descripcion_parsed = descripcion_texto
+        # Si hay texto en negrita, usar <b> tags para ReportLab
+        if cliente:
+            nombre_cliente_bold = f"<b>{cliente.razon_social}</b>"
+            descripcion_parsed = descripcion_parsed.replace(cliente.razon_social, nombre_cliente_bold)
+        
+        parrafos = descripcion_parsed.split('\n\n')
+        for parrafo in parrafos:
+            if parrafo.strip():
+                p = Paragraph(parrafo.strip().replace('\n', '<br/>'), body_style)
+                elements.append(p)
+                elements.append(Spacer(1, 0.1*inch))
+    
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # Sección de firma y datos (la firma se insertará en la tabla al final)
+    firma_insertada = False
+    if firma_guardada and os.path.exists(firma_guardada):
+        firma_insertada = True
+    elif firma_file_obj:
+        firma_insertada = True
+    
+    # Información del candidato al final (formato específico)
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # Crear tabla para alinear Nombre y Firma en la misma línea
+    # Preparar celda de firma
+    celda_firma = None
+    if firma_insertada:
+        if firma_guardada and os.path.exists(firma_guardada):
+            try:
+                firma_img = RLImage(firma_guardada, width=2.5*inch, height=0.8*inch)
+                # Crear una tabla anidada con "Firma:" y la imagen
+                firma_table_inner = Table([['Firma:'], [firma_img]], colWidths=[2.5*inch])
+                firma_table_inner.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+                    ('TOPPADDING', (0, 0), (-1, -1), 0),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+                ]))
+                celda_firma = firma_table_inner
+            except:
+                celda_firma = Paragraph('Firma: _____________________________________', signature_style)
+        elif firma_file_obj:
+            try:
+                firma_file_obj.seek(0)
+                firma_img = RLImage(firma_file_obj, width=2.5*inch, height=0.8*inch)
+                # Crear una tabla anidada con "Firma:" y la imagen
+                firma_table_inner = Table([['Firma:'], [firma_img]], colWidths=[2.5*inch])
+                firma_table_inner.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+                    ('TOPPADDING', (0, 0), (-1, -1), 0),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+                ]))
+                celda_firma = firma_table_inner
+            except:
+                celda_firma = Paragraph('Firma: _____________________________________', signature_style)
+    else:
+        celda_firma = Paragraph('Firma: _____________________________________', signature_style)
+    
+    datos_tabla = [
+        [Paragraph(f'Nombre: {nombre_completo}', signature_style), celda_firma]
+    ]
+    
+    tabla_datos = Table(datos_tabla, colWidths=[3.5*inch, 3.5*inch])
+    tabla_datos.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+        ('ALIGN', (1, 0), (1, 0), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+    ]))
+    elements.append(tabla_datos)
+    elements.append(Spacer(1, 0.15*inch))
+    
+    # Segunda línea: Identificación y Fecha
+    datos_tabla2 = [
+        [Paragraph(f'Identificación: {tipo_documento} {numero_documento}', signature_style), Paragraph(f'Fecha: {fecha_firma_str}', signature_style)]
+    ]
+    tabla_datos2 = Table(datos_tabla2, colWidths=[3.5*inch, 3.5*inch])
+    tabla_datos2.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+        ('ALIGN', (1, 0), (1, 0), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+    ]))
+    elements.append(tabla_datos2)
+    elements.append(Spacer(1, 0.2*inch))
+    
+    # Información de firma para el pie de página
+    info_firma = f"Fecha y hora de firma: {fecha_firma_str} {fecha_firma.strftime('%H:%M:%S')}"
+    if ip_firmante:
+        info_firma += f" | IP: {ip_firmante}"
+    if codigo_unico:
+        info_firma += f" | Código único: {codigo_unico}"
+    
+    # Agregar pie de página
+    elements.append(Spacer(1, 0.2*inch))
+    footer = Paragraph(info_firma, footer_style)
+    elements.append(footer)
+    
+    # Construir el PDF
+    doc.build(elements)
+    
+    return buffer
+
 @login_required
 @validar_permisos('acceso_candidato')
 def apply_vacancy(request):
@@ -549,6 +807,40 @@ def apply_vacancy_detail(request, pk):
         requisitos_con_info = []
         json_politicas_internas = {}
         politicas_finalizadas = False
+        
+        # Obtener autorización de datos siempre (no requiere entrevista)
+        autorizacion_datos = get_autorizacion_datos()
+        autorizacion_datos_respondida = False
+        
+        # Obtener información del cliente maestro para reemplazar placeholders
+        cliente_info = None
+        if vacancy.vacante_id_052.cargo and vacancy.vacante_id_052.cargo.cliente:
+            from applications.cliente.models import Cli064AsignacionCliente
+            cliente_asignado = vacancy.vacante_id_052.cargo.cliente
+            
+            # Buscar la asignación de cliente donde el cliente del cargo es el cliente asignado
+            asignacion_cliente = Cli064AsignacionCliente.objects.filter(
+                id_cliente_asignado=cliente_asignado,
+                estado_id=1
+            ).select_related('id_cliente_maestro').first()
+            
+            # Si existe asignación, usar el cliente maestro; si no, usar el cliente del cargo
+            cliente = asignacion_cliente.id_cliente_maestro if asignacion_cliente else cliente_asignado
+            
+            cliente_info = {
+                'nombre': cliente.razon_social,
+                'email': cliente.email,
+                'direccion': cliente.direccion_cargo or ''
+            }
+            
+            # Procesar la descripción de la autorización de datos para reemplazar placeholders
+            if autorizacion_datos and autorizacion_datos.descripcion:
+                descripcion_procesada = autorizacion_datos.descripcion
+                descripcion_procesada = descripcion_procesada.replace('nombre_cliente', f'<strong>{cliente.razon_social}</strong>')
+                descripcion_procesada = descripcion_procesada.replace('correo_cliente', cliente.email)
+                descripcion_procesada = descripcion_procesada.replace('direccion_cliente', cliente.direccion_cargo or '')
+                # Crear una copia del objeto para no modificar el original
+                autorizacion_datos.descripcion_procesada = descripcion_procesada
         
         if tiene_entrevista:
             requisito = get_requisitos(vacancy)
@@ -596,11 +888,25 @@ def apply_vacancy_detail(request, pk):
 
     # Obtener el documento firmado si existe
     documento_firmado = None
+    documento_firmado_autorizacion = None
+    documento_firmado_politicas = None
     try:
         documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
             aplicacion_vacante_056=vacancy,
             estado_id=1
-        ).first()
+        ).order_by('-fecha_firma_hora_ip', '-id').first()
+
+        documento_firmado_autorizacion = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+            aplicacion_vacante_056=vacancy,
+            estado_id=1,
+            documento_firmado__icontains='autorizacion_datos_'
+        ).order_by('-fecha_firma_hora_ip', '-id').first()
+
+        documento_firmado_politicas = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+            aplicacion_vacante_056=vacancy,
+            estado_id=1,
+            documento_firmado__icontains='politica_firmada_'
+        ).order_by('-fecha_firma_hora_ip', '-id').first()
     except:
         pass
         
@@ -609,6 +915,13 @@ def apply_vacancy_detail(request, pk):
     video_perfil = candidato.video_perfil if candidato else None
     tiene_video = video_perfil and video_perfil.name
     
+    # Verificar si la autorización de datos está respondida
+    if autorizacion_datos:
+        json_politicas_internas = vacancy.json_politicas_internas if vacancy.json_politicas_internas else {}
+        autorizacion_id = str(autorizacion_datos.id)
+        if autorizacion_id in json_politicas_internas and json_politicas_internas[autorizacion_id].get('respuesta'):
+            autorizacion_datos_respondida = True
+    
     context = {
         'vacancy': vacancy,
         'vacante': vacante,
@@ -616,11 +929,16 @@ def apply_vacancy_detail(request, pk):
         'requisitos_con_info': requisitos_con_info,
         'pruebas': pruebas,
         'politicas_internas': politicas_internas,
+        'autorizacion_datos': autorizacion_datos,
+        'autorizacion_datos_respondida': autorizacion_datos_respondida,
+        'cliente_info': cliente_info,
         'historial': historico_vacante,
         'is_candidato': True,  # Indicar que es candidato para restringir información
         'json_politicas_internas': json_politicas_internas,
         'politicas_finalizadas': politicas_finalizadas,
         'documento_firmado': documento_firmado,
+        'documento_firmado_autorizacion': documento_firmado_autorizacion,
+        'documento_firmado_politicas': documento_firmado_politicas,
         'tiene_entrevista': tiene_entrevista,
         'entrevista_asignada': entrevista_asignada,
         'video_perfil': video_perfil,
@@ -1092,54 +1410,91 @@ def guardar_respuestas_politicas(request, aplicacion_id):
                         'message': 'No se pudo identificar el usuario firmante. Inicie sesión o verifique que el candidato tenga un usuario asociado.'
                     }, status=400)
                 
-                # Obtener o crear el documento firmado
-                documento_firmado, created = Cli080DocumentoFirmadoAplicacionVacante.objects.get_or_create(
-                    aplicacion_vacante_056=aplicacion,
-                    defaults={
-                        'usuario_firmante': usuario_firmante,
-                        'estado': get_object_or_404(Cat001Estado, pk=1),
-                        'ip_firmante': ip_firmante,
-                        'codigo_unico': codigo_unico
-                    }
-                )
-                
-                # Si ya existe, actualizar
-                if not created:
-                    documento_firmado.usuario_firmante = usuario_firmante
-                    documento_firmado.ip_firmante = ip_firmante
-                    if not documento_firmado.codigo_unico:
-                        documento_firmado.codigo_unico = codigo_unico
-                    else:
-                        codigo_unico = documento_firmado.codigo_unico
-                
-                # Guardar la firma
-                documento_firmado.imagen_firmada.save(
-                    f'firma_{aplicacion.id}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png',
-                    firma_file,
-                    save=True
-                )
-                
-                # Guardar primero para tener el ID actualizado
-                documento_firmado.save()
-                
-                # Generar y guardar el PDF firmado
+                # Crear un registro NUEVO por cada firma para no pisar documentos anteriores
+                autorizacion_datos_id = '1000'
+                solo_autorizacion = set(respuestas.keys()) == {autorizacion_datos_id}
+                tiene_politicas = any(k != autorizacion_datos_id for k in respuestas.keys())
                 fecha_firma_actual = datetime.now()
-                pdf_buffer = generar_pdf_documento_firmado(
-                    aplicacion=aplicacion,
-                    fecha_firma=fecha_firma_actual,
-                    ip_firmante=ip_firmante,
-                    codigo_unico=codigo_unico
-                )
-                
-                # Guardar el PDF en el campo documento_firmado
-                nombre_pdf = f'politica_firmada_{aplicacion.id}_{fecha_firma_actual.strftime("%Y%m%d_%H%M%S")}.pdf'
-                documento_firmado.documento_firmado.save(
-                    nombre_pdf,
-                    ContentFile(pdf_buffer.getvalue()),
-                    save=True
-                )
-                
-                documento_firmado.save()
+
+                if solo_autorizacion:
+                    # ==== AUTORIZACIÓN DE DATOS ====
+                    documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.create(
+                        aplicacion_vacante_056=aplicacion,
+                        usuario_firmante=usuario_firmante,
+                        estado=get_object_or_404(Cat001Estado, pk=1),
+                        ip_firmante=ip_firmante,
+                        codigo_unico=codigo_unico
+                    )
+
+                    documento_firmado.imagen_firmada.save(
+                        f'firma_autorizacion_{aplicacion.id}_{fecha_firma_actual.strftime("%Y%m%d_%H%M%S")}.png',
+                        firma_file,
+                        save=True
+                    )
+
+                    autorizacion_datos = get_autorizacion_datos()
+                    if autorizacion_datos:
+                        from applications.cliente.models import Cli064AsignacionCliente
+                        cliente_asignado = aplicacion.vacante_id_052.cargo.cliente if aplicacion.vacante_id_052.cargo else None
+                        cliente = None
+                        if cliente_asignado:
+                            asignacion_cliente = Cli064AsignacionCliente.objects.filter(
+                                id_cliente_asignado=cliente_asignado,
+                                estado_id=1
+                            ).select_related('id_cliente_maestro').first()
+                            cliente = asignacion_cliente.id_cliente_maestro if asignacion_cliente else cliente_asignado
+
+                        if cliente and autorizacion_datos.descripcion:
+                            descripcion_procesada = autorizacion_datos.descripcion
+                            descripcion_procesada = descripcion_procesada.replace('nombre_cliente', f'<strong>{cliente.razon_social}</strong>')
+                            descripcion_procesada = descripcion_procesada.replace('correo_cliente', cliente.email)
+                            descripcion_procesada = descripcion_procesada.replace('direccion_cliente', cliente.direccion_cargo or '')
+                            autorizacion_datos.descripcion_procesada = descripcion_procesada
+
+                        pdf_buffer_autorizacion = generar_pdf_autorizacion_datos(
+                            aplicacion=aplicacion,
+                            autorizacion_datos=autorizacion_datos,
+                            fecha_firma=fecha_firma_actual,
+                            ip_firmante=ip_firmante,
+                            codigo_unico=codigo_unico
+                        )
+
+                        nombre_pdf = f'autorizacion_datos_{aplicacion.id}_{fecha_firma_actual.strftime("%Y%m%d_%H%M%S")}.pdf'
+                        documento_firmado.documento_firmado.save(
+                            nombre_pdf,
+                            ContentFile(pdf_buffer_autorizacion.getvalue()),
+                            save=True
+                        )
+
+                elif tiene_politicas:
+                    # ==== POLÍTICAS INTERNAS ====
+                    documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.create(
+                        aplicacion_vacante_056=aplicacion,
+                        usuario_firmante=usuario_firmante,
+                        estado=get_object_or_404(Cat001Estado, pk=1),
+                        ip_firmante=ip_firmante,
+                        codigo_unico=codigo_unico
+                    )
+
+                    documento_firmado.imagen_firmada.save(
+                        f'firma_politicas_{aplicacion.id}_{fecha_firma_actual.strftime("%Y%m%d_%H%M%S")}.png',
+                        firma_file,
+                        save=True
+                    )
+
+                    pdf_buffer = generar_pdf_documento_firmado(
+                        aplicacion=aplicacion,
+                        fecha_firma=fecha_firma_actual,
+                        ip_firmante=ip_firmante,
+                        codigo_unico=codigo_unico
+                    )
+
+                    nombre_pdf = f'politica_firmada_{aplicacion.id}_{fecha_firma_actual.strftime("%Y%m%d_%H%M%S")}.pdf'
+                    documento_firmado.documento_firmado.save(
+                        nombre_pdf,
+                        ContentFile(pdf_buffer.getvalue()),
+                        save=True
+                    )
             
             return JsonResponse({
                 'success': True,
@@ -1223,10 +1578,12 @@ def generar_declaracion_pdf(request, aplicacion_id):
         codigo_unico_pdf = None
         
         try:
+            # Preferir el PDF guardado de POLÍTICAS (si existen múltiples documentos)
             documento_firmado_obj = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
                 aplicacion_vacante_056=aplicacion,
-                estado_id=1
-            ).first()
+                estado_id=1,
+                documento_firmado__icontains='politica_firmada_'
+            ).order_by('-fecha_firma_hora_ip', '-id').first()
             if documento_firmado_obj:
                 fecha_firma_pdf = documento_firmado_obj.fecha_firma_hora_ip
                 ip_firmante_pdf = documento_firmado_obj.ip_firmante
@@ -1234,7 +1591,7 @@ def generar_declaracion_pdf(request, aplicacion_id):
         except:
             pass
         
-        # Si existe un documento PDF guardado, devolverlo directamente
+        # Si existe un documento PDF guardado de POLÍTICAS, devolverlo directamente
         if documento_firmado_obj and documento_firmado_obj.documento_firmado:
             try:
                 # Leer el archivo PDF guardado
@@ -1269,6 +1626,104 @@ def generar_declaracion_pdf(request, aplicacion_id):
         # Crear la respuesta HTTP
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = f'inline; filename="declaracion_{aplicacion_id}_{datetime.now().strftime("%Y%m%d")}.pdf"'
+        response.write(pdf)
+        
+        return response
+        
+    except Exception as e:
+        messages.error(request, f'Error al generar el PDF: {str(e)}')
+        return redirect('vacantes:vacante_candidato_aplicadas_detalle', pk=aplicacion_id)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def generar_autorizacion_datos_pdf(request, aplicacion_id):
+    """Vista para generar el PDF de autorización de tratamiento de datos"""
+    try:
+        # Obtener el ID del candidato desde la sesión
+        candidato_id = request.session.get('candidato_id')
+        
+        # Verificar que la aplicación pertenece al candidato
+        aplicacion = get_object_or_404(
+            Cli056AplicacionVacante, 
+            id=aplicacion_id, 
+            candidato_101=candidato_id
+        )
+        
+        # Obtener la autorización de datos
+        autorizacion_datos = get_autorizacion_datos()
+        if not autorizacion_datos:
+            messages.error(request, 'No se encontró la autorización de tratamiento de datos.')
+            return redirect('vacantes:vacante_candidato_aplicadas_detalle', pk=aplicacion_id)
+        
+        # Obtener información del documento firmado
+        documento_firmado_obj = None
+        fecha_firma_pdf = None
+        ip_firmante_pdf = None
+        codigo_unico_pdf = None
+        
+        try:
+            documento_firmado_obj = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+                aplicacion_vacante_056=aplicacion,
+                estado_id=1,
+                documento_firmado__icontains='autorizacion_datos_'
+            ).order_by('-fecha_firma_hora_ip', '-id').first()
+            if documento_firmado_obj:
+                fecha_firma_pdf = documento_firmado_obj.fecha_firma_hora_ip
+                ip_firmante_pdf = documento_firmado_obj.ip_firmante
+                codigo_unico_pdf = documento_firmado_obj.codigo_unico
+        except:
+            pass
+        
+        # Si existe un documento PDF guardado de autorización, devolverlo
+        if documento_firmado_obj and documento_firmado_obj.documento_firmado:
+            try:
+                documento_firmado_obj.documento_firmado.open('rb')
+                pdf_content = documento_firmado_obj.documento_firmado.read()
+                documento_firmado_obj.documento_firmado.close()
+                response = HttpResponse(pdf_content, content_type='application/pdf')
+                response['Content-Disposition'] = f'inline; filename="autorizacion_datos_{aplicacion_id}.pdf"'
+                return response
+            except Exception:
+                pass
+        
+        # Si no hay fecha de firma, usar la fecha actual
+        if fecha_firma_pdf is None:
+            fecha_firma_pdf = datetime.now()
+        
+        # Procesar la descripción con los datos del cliente maestro
+        from applications.cliente.models import Cli064AsignacionCliente
+        cliente_asignado = aplicacion.vacante_id_052.cargo.cliente if aplicacion.vacante_id_052.cargo else None
+        cliente = None
+        if cliente_asignado:
+            asignacion_cliente = Cli064AsignacionCliente.objects.filter(
+                id_cliente_asignado=cliente_asignado,
+                estado_id=1
+            ).select_related('id_cliente_maestro').first()
+            cliente = asignacion_cliente.id_cliente_maestro if asignacion_cliente else cliente_asignado
+        
+        if autorizacion_datos and autorizacion_datos.descripcion and cliente:
+            descripcion_procesada = autorizacion_datos.descripcion
+            descripcion_procesada = descripcion_procesada.replace('nombre_cliente', f'<strong>{cliente.razon_social}</strong>')
+            descripcion_procesada = descripcion_procesada.replace('correo_cliente', cliente.email)
+            descripcion_procesada = descripcion_procesada.replace('direccion_cliente', cliente.direccion_cargo or '')
+            autorizacion_datos.descripcion_procesada = descripcion_procesada
+        
+        # Generar el PDF usando la función auxiliar
+        pdf_buffer = generar_pdf_autorizacion_datos(
+            aplicacion=aplicacion,
+            autorizacion_datos=autorizacion_datos,
+            fecha_firma=fecha_firma_pdf,
+            ip_firmante=ip_firmante_pdf,
+            codigo_unico=codigo_unico_pdf
+        )
+        
+        # Obtener el valor del buffer y crear la respuesta HTTP
+        pdf = pdf_buffer.getvalue()
+        pdf_buffer.close()
+        
+        # Crear la respuesta HTTP
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="autorizacion_datos_{aplicacion_id}_{datetime.now().strftime("%Y%m%d")}.pdf"'
         response.write(pdf)
         
         return response

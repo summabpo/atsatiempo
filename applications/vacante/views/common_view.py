@@ -3,7 +3,7 @@ from datetime import date
 import json
 
 #models
-from applications.cliente.models import Cli051ClientePoliticas, Cli070AsignacionRequisito, Cli071AsignacionPrueba
+from applications.cliente.models import Cli051ClientePoliticas, Cli070AsignacionRequisito, Cli071AsignacionPrueba, Cli067PoliticasInternas
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.services.service_vacanty import get_vacanty_questions
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio
@@ -3086,3 +3086,10 @@ def get_politicas_internas(aplicacion_vacante):
         politicas_internas = Cli051ClientePoliticas.objects.none()
     return politicas_internas
 
+def get_autorizacion_datos():
+    """Obtiene la política de autorización de tratamiento de datos con ID 1000"""
+    try:
+        autorizacion = Cli067PoliticasInternas.objects.get(id=1000, estado_id=1)
+        return autorizacion
+    except Cli067PoliticasInternas.DoesNotExist:
+        return None
