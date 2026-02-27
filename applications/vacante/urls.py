@@ -59,6 +59,7 @@ urlpatterns = [
     #commons
     path( url_principal+'match/<int:candidato_id>/<int:vacante_id>/', common_view.match, name='match'),
     path( url_principal+'aplicadas/politicas/documento/<int:aplicacion_id>/', candidate_views.generar_declaracion_pdf, name='generar_declaracion_pdf'),
+    path( url_principal+'aplicadas/autorizacion-datos/documento/<int:aplicacion_id>/', candidate_views.generar_autorizacion_datos_pdf, name='generar_autorizacion_datos_pdf'),
 
 
 
