@@ -12,10 +12,10 @@ from applications.services.service_vacanty import query_vacanty_with_skills_and_
 from applications.vacante.models import Cli052Vacante
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 from django.contrib import messages
-from applications.vacante.views.common_view import get_match, get_match_initial, get_politicas_internas, get_requisitos, get_pruebas
+from applications.vacante.views.common_view import get_match, get_match_initial, get_politicas_internas, get_requisitos, get_pruebas, get_autorizacion_datos
 from applications.reclutado.models import Cli079RequisitosCargado
 from applications.usuarios.models import UsuarioBase
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 def confirm_apply_vacancy_recruited(request, pk):
     """
@@ -165,6 +165,8 @@ def validar_token_documento(request, token):
     candidato = None
     vacante = None
     documento_firmado = None
+    documento_firmado_autorizacion = None
+    documento_firmado_politicas = None
     entrevista_asignada = None
     tiene_entrevista = False
     politicas_internas = []
@@ -173,6 +175,8 @@ def validar_token_documento(request, token):
     requisitos_con_info = []
     json_politicas_internas = {}
     politicas_finalizadas = False
+    autorizacion_datos = None
+    autorizacion_datos_respondida = False
     token_valido = False
     mensaje_error = None
     
@@ -204,12 +208,19 @@ def validar_token_documento(request, token):
                 video_perfil = candidato.video_perfil if candidato else None
                 tiene_video = video_perfil and video_perfil.name
                 
-                # Obtener el documento firmado si existe
+                # Obtener documentos firmados (autorización y políticas por separado)
                 from applications.reclutado.models import Cli080DocumentoFirmadoAplicacionVacante
-                documento_firmado = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+                documento_firmado_autorizacion = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
                     aplicacion_vacante_056=aplicacion,
-                    estado_id=1
-                ).first()
+                    estado_id=1,
+                    documento_firmado__icontains='autorizacion_datos_'
+                ).order_by('-fecha_firma_hora_ip', '-id').first()
+                documento_firmado_politicas = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+                    aplicacion_vacante_056=aplicacion,
+                    estado_id=1,
+                    documento_firmado__icontains='politica_firmada_'
+                ).order_by('-fecha_firma_hora_ip', '-id').first()
+                documento_firmado = documento_firmado_politicas or documento_firmado_autorizacion
                 
                 # Obtener información de la vacante
                 vacante = aplicacion.vacante_id_052
@@ -222,6 +233,34 @@ def validar_token_documento(request, token):
                 ).first()
                 
                 tiene_entrevista = entrevista_asignada is not None
+                
+                # Obtener autorización de datos siempre (no requiere entrevista)
+                autorizacion_datos = get_autorizacion_datos()
+                if autorizacion_datos:
+                    from applications.cliente.models import Cli064AsignacionCliente
+                    cliente_asignado = vacante.cargo.cliente if vacante.cargo else None
+                    cliente = None
+                    if cliente_asignado:
+                        asignacion_cliente = Cli064AsignacionCliente.objects.filter(
+                            id_cliente_asignado=cliente_asignado,
+                            estado_id=1
+                        ).select_related('id_cliente_maestro').first()
+                        cliente = asignacion_cliente.id_cliente_maestro if asignacion_cliente else cliente_asignado
+                    if cliente and autorizacion_datos.descripcion:
+                        descripcion_procesada = autorizacion_datos.descripcion
+                        descripcion_procesada = descripcion_procesada.replace('nombre_cliente', f'<strong>{cliente.razon_social}</strong>')
+                        descripcion_procesada = descripcion_procesada.replace('correo_cliente', cliente.email or '')
+                        descripcion_procesada = descripcion_procesada.replace('direccion_cliente', cliente.direccion_cargo or '')
+                        autorizacion_datos.descripcion_procesada = descripcion_procesada
+                
+                # json_politicas_internas siempre (para autorización y políticas)
+                json_politicas_internas = aplicacion.json_politicas_internas if aplicacion.json_politicas_internas else {}
+                if not isinstance(json_politicas_internas, dict):
+                    json_politicas_internas = {}
+                if autorizacion_datos:
+                    autorizacion_id = str(autorizacion_datos.id)
+                    if autorizacion_id in json_politicas_internas and json_politicas_internas[autorizacion_id].get('respuesta'):
+                        autorizacion_datos_respondida = True
                 
                 # Obtener políticas, requisitos y pruebas solo si hay entrevista asignada y token válido
                 if tiene_entrevista:
@@ -279,6 +318,8 @@ def validar_token_documento(request, token):
         'candidato': candidato,
         'vacante': vacante,
         'documento_firmado': documento_firmado,
+        'documento_firmado_autorizacion': documento_firmado_autorizacion,
+        'documento_firmado_politicas': documento_firmado_politicas,
         'token_valido': token_valido,
         'tiene_entrevista': tiene_entrevista,
         'entrevista_asignada': entrevista_asignada,
@@ -287,6 +328,8 @@ def validar_token_documento(request, token):
         'pruebas': pruebas,
         'json_politicas_internas': json_politicas_internas,
         'politicas_finalizadas': politicas_finalizadas,
+        'autorizacion_datos': autorizacion_datos,
+        'autorizacion_datos_respondida': autorizacion_datos_respondida,
         'mensaje_error': mensaje_error,
         'video_perfil': video_perfil,
         'tiene_video': tiene_video,
@@ -361,6 +404,78 @@ def upload_video_candidato_token(request, token, candidato_id):
             'success': False,
             'error': f'Error al cargar el video: {str(e)}'
         }, status=500)
+
+
+def generar_autorizacion_datos_pdf_token(request, token, aplicacion_id):
+    """Genera el PDF de autorización de tratamiento de datos validando el token (sin login)."""
+    from datetime import datetime
+    from applications.reclutado.models import Cli080DocumentoFirmadoAplicacionVacante
+    from applications.vacante.views.candidate_views import generar_pdf_autorizacion_datos
+    
+    token_obj, aplicacion = _validar_token_aplicacion(token, aplicacion_id)
+    if not aplicacion:
+        return HttpResponse('Token inválido o expirado', status=403)
+    
+    try:
+        autorizacion_datos = get_autorizacion_datos()
+        if not autorizacion_datos:
+            return HttpResponse('No se encontró la autorización de tratamiento de datos.', status=404)
+        
+        documento_firmado_obj = Cli080DocumentoFirmadoAplicacionVacante.objects.filter(
+            aplicacion_vacante_056=aplicacion,
+            estado_id=1,
+            documento_firmado__icontains='autorizacion_datos_'
+        ).order_by('-fecha_firma_hora_ip', '-id').first()
+        
+        if documento_firmado_obj and documento_firmado_obj.documento_firmado:
+            try:
+                documento_firmado_obj.documento_firmado.open('rb')
+                pdf_content = documento_firmado_obj.documento_firmado.read()
+                documento_firmado_obj.documento_firmado.close()
+                response = HttpResponse(pdf_content, content_type='application/pdf')
+                response['Content-Disposition'] = f'inline; filename="autorizacion_datos_{aplicacion_id}.pdf"'
+                return response
+            except Exception:
+                pass
+        
+        fecha_firma_pdf = documento_firmado_obj.fecha_firma_hora_ip if documento_firmado_obj else datetime.now()
+        ip_firmante_pdf = documento_firmado_obj.ip_firmante if documento_firmado_obj else None
+        codigo_unico_pdf = documento_firmado_obj.codigo_unico if documento_firmado_obj else None
+        
+        from applications.cliente.models import Cli064AsignacionCliente
+        vacante = aplicacion.vacante_id_052
+        cliente_asignado = vacante.cargo.cliente if vacante.cargo else None
+        cliente = None
+        if cliente_asignado:
+            asignacion_cliente = Cli064AsignacionCliente.objects.filter(
+                id_cliente_asignado=cliente_asignado,
+                estado_id=1
+            ).select_related('id_cliente_maestro').first()
+            cliente = asignacion_cliente.id_cliente_maestro if asignacion_cliente else cliente_asignado
+        
+        if autorizacion_datos and autorizacion_datos.descripcion and cliente:
+            descripcion_procesada = autorizacion_datos.descripcion
+            descripcion_procesada = descripcion_procesada.replace('nombre_cliente', f'<strong>{cliente.razon_social}</strong>')
+            descripcion_procesada = descripcion_procesada.replace('correo_cliente', cliente.email or '')
+            descripcion_procesada = descripcion_procesada.replace('direccion_cliente', cliente.direccion_cargo or '')
+            autorizacion_datos.descripcion_procesada = descripcion_procesada
+        
+        pdf_buffer = generar_pdf_autorizacion_datos(
+            aplicacion=aplicacion,
+            autorizacion_datos=autorizacion_datos,
+            fecha_firma=fecha_firma_pdf,
+            ip_firmante=ip_firmante_pdf,
+            codigo_unico=codigo_unico_pdf
+        )
+        pdf = pdf_buffer.getvalue()
+        pdf_buffer.close()
+        
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="autorizacion_datos_{aplicacion_id}_{datetime.now().strftime("%Y%m%d")}.pdf"'
+        response.write(pdf)
+        return response
+    except Exception as e:
+        return HttpResponse(f'Error al generar el PDF: {str(e)}', status=500)
 
 
 def _validar_token_aplicacion(token, aplicacion_id):
