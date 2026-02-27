@@ -22,6 +22,7 @@ urlpatterns = [
     path( url_principal+'aplicar_vacante/<int:pk>/', candidate_views.confirm_apply_vacancy_recruited, name='reclutados_confirmar_aplicar_candidato'),
     path( url_principal+'aplicar_vacante/aplicar/<int:pk>/', candidate_views.apply_vacancy_recruited_candidate, name='reclutados_aplicar_candidato'),
     path( url_principal+'gestionar-documentacion/<str:token>/', candidate_views.validar_token_documento, name='validar_token_documento'),
+    path( url_principal+'gestionar-documentacion/<str:token>/aplicacion/<int:aplicacion_id>/autorizacion-datos/pdf/', candidate_views.generar_autorizacion_datos_pdf_token, name='generar_autorizacion_datos_pdf_token'),
     path( url_principal+'gestionar-documentacion/<str:token>/candidato/<int:candidato_id>/video/cargar/', candidate_views.upload_video_candidato_token, name='upload_video_candidato_token'),
     path( url_principal+'gestionar-documentacion/<str:token>/aplicacion/<int:aplicacion_id>/requisito/<int:requisito_id>/cargar/', candidate_views.upload_requisito_document_token, name='upload_requisito_document_token'),
 

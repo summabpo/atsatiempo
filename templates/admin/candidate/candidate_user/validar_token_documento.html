@@ -117,6 +117,177 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Autorización de Tratamiento de Datos -->
+            {% if autorizacion_datos %}
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                    <h2 class="fs-18 fw-semibold mb-0 text-primary">Autorización de Tratamiento de Datos</h2>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="ps-0 mb-3 list-unstyled">
+                        <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                            <div class="d-flex align-items-center">
+                                <span class="material-symbols-outlined me-2 text-primary">security</span>
+                                <span class="fw-medium">{{ autorizacion_datos.nombre|upper }}<small class="text-muted ms-2 ms-sm-4 mt-1 d-inline-block">
+                                    {% if autorizacion_datos_respondida %}
+                                        <span class="badge bg-success">Aceptada</span>
+                                    {% else %}
+                                        <span class="badge bg-primary">Pendiente</span>
+                                    {% endif %}
+                                </small></span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                {% if autorizacion_datos_respondida %}
+                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalVerAutorizacionDatosFirmada">
+                                        Ver Autorización Firmada
+                                    </button>
+                                {% else %}
+                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalAutorizacionDatos">
+                                        Responder
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <!-- Modal para autorización de datos -->
+                    <div class="modal fade" id="modalAutorizacionDatos" tabindex="-1" aria-labelledby="modalAutorizacionDatosLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-fullscreen-md-down modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalAutorizacionDatosLabel">
+                                        Autorización de Tratamiento de Datos
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form id="formAutorizacionDatos" data-aplicacion-id="{{ aplicacion.id }}">
+                                    {% csrf_token %}
+                                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                                        <div class="mb-4 p-3 border rounded" data-autorizacion-id="{{ autorizacion_datos.id }}">
+                                            <div class="mb-3">
+                                                <h6 class="fw-semibold mb-2 text-primary">{{ autorizacion_datos.nombre }}</h6>
+                                                <div class="text-secondary small mb-3">
+                                                    {% if autorizacion_datos.descripcion_procesada %}
+                                                        {{ autorizacion_datos.descripcion_procesada|safe }}
+                                                    {% else %}
+                                                        {{ autorizacion_datos.descripcion }}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">¿Acepta la autorización de tratamiento de datos?</label>
+                                                <div class="d-flex gap-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input autorizacion-respuesta-si-no" 
+                                                                type="radio" 
+                                                                name="autorizacion_{{ autorizacion_datos.id }}_respuesta" 
+                                                                id="autorizacion_{{ autorizacion_datos.id }}_si" 
+                                                                value="si"
+                                                                {% if json_politicas_internas|get_item:autorizacion_datos.id and json_politicas_internas|get_item:autorizacion_datos.id.respuesta == "si" %}checked{% endif %}>
+                                                        <label class="form-check-label" for="autorizacion_{{ autorizacion_datos.id }}_si">
+                                                            Sí
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input autorizacion-respuesta-si-no" 
+                                                                type="radio" 
+                                                                name="autorizacion_{{ autorizacion_datos.id }}_respuesta" 
+                                                                id="autorizacion_{{ autorizacion_datos.id }}_no" 
+                                                                value="no"
+                                                                {% if json_politicas_internas|get_item:autorizacion_datos.id and json_politicas_internas|get_item:autorizacion_datos.id.respuesta == "no" %}checked{% endif %}>
+                                                        <label class="form-check-label" for="autorizacion_{{ autorizacion_datos.id }}_no">
+                                                            No
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {% if autorizacion_datos.respuestas_politica %}
+                                                {% with respuestas_json=autorizacion_datos.respuestas_politica %}
+                                                    {% if respuestas_json.si %}
+                                                        <div class="preguntas-si-autorizacion" style="display: {% if json_politicas_internas|get_item:autorizacion_datos.id and json_politicas_internas|get_item:autorizacion_datos.id.respuesta == "si" %}block{% else %}none{% endif %};">
+                                                            {% for key, pregunta_data in respuestas_json.si.items %}
+                                                                {% if key|slice:":8" == "pregunta" %}
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label fw-semibold">
+                                                                            Si la respuesta es "Sí": {{ pregunta_data.pregunta }}
+                                                                            {% if pregunta_data.ayuda %}
+                                                                                <small class="text-muted">({{ pregunta_data.ayuda }})</small>
+                                                                            {% endif %}
+                                                                        </label>
+                                                                        <input type="text" 
+                                                                                class="form-control autorizacion-pregunta-si" 
+                                                                                name="autorizacion_{{ autorizacion_datos.id }}_pregunta_{{ key }}"
+                                                                                value="{% if json_politicas_internas|get_item:autorizacion_datos.id and json_politicas_internas|get_item:autorizacion_datos.id.preguntas %}{{ json_politicas_internas|get_item:autorizacion_datos.id.preguntas|get_item:key }}{% endif %}"
+                                                                                placeholder="Ingrese su respuesta">
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="mt-4 p-3 border rounded bg-light">
+                                            <h6 class="fw-semibold mb-3">Firma</h6>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Firma:</label>
+                                                <div class="border rounded p-2 bg-white">
+                                                    <canvas id="canvasFirmaAutorizacion" style="border: 1px solid #ddd; cursor: crosshair; width: 100%; max-width: 100%; height: 200px;"></canvas>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="btnLimpiarFirmaAutorizacion">Limpiar Firma</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="mensajeAutorizacionDatos" class="alert d-none" role="alert"></div>
+                                    </div>
+                                    <div class="modal-footer flex-wrap gap-2">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3 px-md-4">Guardar Respuesta</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal para ver autorización de datos firmada -->
+            {% if autorizacion_datos_respondida %}
+            <div class="modal fade" id="modalVerAutorizacionDatosFirmada" tabindex="-1" aria-labelledby="modalVerAutorizacionDatosFirmadaLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen-md-down modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalVerAutorizacionDatosFirmadaLabel">
+                                Ver Autorización de Tratamiento de Datos Firmada
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-0">
+                            <div class="border rounded" style="min-height: 400px; height: calc(100vh - 200px);">
+                                {% if documento_firmado_autorizacion and documento_firmado_autorizacion.documento_firmado %}
+                                    <iframe src="{{ documento_firmado_autorizacion.documento_firmado.url }}" width="100%" height="100%" style="border: none; min-height: 400px;"></iframe>
+                                {% else %}
+                                    <iframe src="{% url 'reclutados:generar_autorizacion_datos_pdf_token' token aplicacion.id %}" width="100%" height="100%" style="border: none; min-height: 400px;"></iframe>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="modal-footer flex-wrap gap-2">
+                            {% if documento_firmado_autorizacion and documento_firmado_autorizacion.documento_firmado %}
+                            <a href="{{ documento_firmado_autorizacion.documento_firmado.url }}" class="btn btn-primary d-flex align-items-center justify-content-center" download>
+                                <i class="ri-download-line me-1"></i> Descargar PDF
+                            </a>
+                            {% endif %}
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
                         
             {% if tiene_entrevista %}
             <!-- Políticas Internas -->
@@ -303,14 +474,14 @@
                                     </div>
                                     <div class="modal-body p-0">
                                         <div class="border rounded" style="min-height: 400px; height: calc(100vh - 200px);">
-                                            {% if documento_firmado and documento_firmado.documento_firmado %}
-                                                <iframe src="{{ documento_firmado.documento_firmado.url }}" width="100%" height="100%" style="border: none; min-height: 400px;"></iframe>
+                                            {% if documento_firmado_politicas and documento_firmado_politicas.documento_firmado %}
+                                                <iframe src="{{ documento_firmado_politicas.documento_firmado.url }}" width="100%" height="100%" style="border: none; min-height: 400px;"></iframe>
                                             {% endif %}
                                         </div>
                                     </div>
                                     <div class="modal-footer flex-wrap gap-2">
-                                        {% if documento_firmado and documento_firmado.documento_firmado %}
-                                        <a href="{{ documento_firmado.documento_firmado.url }}" class="btn btn-primary d-flex align-items-center justify-content-center" download>
+                                        {% if documento_firmado_politicas and documento_firmado_politicas.documento_firmado %}
+                                        <a href="{{ documento_firmado_politicas.documento_firmado.url }}" class="btn btn-primary d-flex align-items-center justify-content-center" download>
                                             <i class="ri-download-line me-1"></i> Descargar PDF
                                         </a>
                                         {% endif %}
@@ -607,10 +778,164 @@
 
     {% include 'admin/layout/partials/js_files.html' %}
     
-    {% if tiene_entrevista %}
+    {% if tiene_entrevista or autorizacion_datos %}
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Manejo del formulario de autorización de datos
+            {% if autorizacion_datos %}
+            (function() {
+                const formAutorizacion = document.getElementById('formAutorizacionDatos');
+                if (formAutorizacion) {
+                    let signaturePadAutorizacion = null;
+                    function resizeCanvasAutorizacion(canvas) {
+                        const container = canvas.parentElement;
+                        const rect = container.getBoundingClientRect();
+                        const dpr = window.devicePixelRatio || 1;
+                        canvas.style.width = '100%';
+                        canvas.style.height = '200px';
+                        canvas.width = rect.width * dpr;
+                        canvas.height = 200 * dpr;
+                        const ctx = canvas.getContext('2d');
+                        ctx.scale(dpr, dpr);
+                        return canvas;
+                    }
+                    const modalAutorizacion = document.getElementById('modalAutorizacionDatos');
+                    if (modalAutorizacion) {
+                        modalAutorizacion.addEventListener('shown.bs.modal', function() {
+                            const canvasFirma = document.getElementById('canvasFirmaAutorizacion');
+                            if (canvasFirma && !signaturePadAutorizacion) {
+                                resizeCanvasAutorizacion(canvasFirma);
+                                signaturePadAutorizacion = new SignaturePad(canvasFirma, {
+                                    backgroundColor: 'rgb(255, 255, 255)',
+                                    penColor: 'rgb(0, 0, 0)'
+                                });
+                                window.addEventListener('resize', function() {
+                                    if (signaturePadAutorizacion && !signaturePadAutorizacion.isEmpty()) {
+                                        const data = signaturePadAutorizacion.toData();
+                                        resizeCanvasAutorizacion(canvasFirma);
+                                        signaturePadAutorizacion.clear();
+                                        signaturePadAutorizacion.fromData(data);
+                                    } else {
+                                        resizeCanvasAutorizacion(canvasFirma);
+                                    }
+                                });
+                            }
+                        });
+                        modalAutorizacion.addEventListener('hidden.bs.modal', function() {
+                            if (signaturePadAutorizacion) signaturePadAutorizacion.clear();
+                        });
+                    }
+                    document.getElementById('btnLimpiarFirmaAutorizacion')?.addEventListener('click', function() {
+                        if (signaturePadAutorizacion) signaturePadAutorizacion.clear();
+                    });
+                    formAutorizacion.querySelectorAll('.autorizacion-respuesta-si-no').forEach(function(radio) {
+                        radio.addEventListener('change', function() {
+                            const autorizacionItem = this.closest('[data-autorizacion-id]');
+                            const preguntasSi = autorizacionItem?.querySelector('.preguntas-si-autorizacion');
+                            if (preguntasSi) {
+                                preguntasSi.style.display = this.value === 'si' ? 'block' : 'none';
+                                if (this.value !== 'si') {
+                                    preguntasSi.querySelectorAll('.autorizacion-pregunta-si').forEach(function(input) { input.value = ''; });
+                                }
+                            }
+                        });
+                    });
+                    formAutorizacion.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const mensajeDiv = document.getElementById('mensajeAutorizacionDatos');
+                        const submitBtn = formAutorizacion.querySelector('button[type="submit"]');
+                        const autorizacionItem = formAutorizacion.querySelector('[data-autorizacion-id]');
+                        const autorizacionId = autorizacionItem.dataset.autorizacionId;
+                        const autorizacionData = {};
+                        const respuestaSiNo = autorizacionItem.querySelector('input[name^="autorizacion_' + autorizacionId + '_respuesta"]:checked');
+                        if (respuestaSiNo) {
+                            autorizacionData.respuesta = respuestaSiNo.value;
+                            if (respuestaSiNo.value === 'si') {
+                                const preguntas = {};
+                                autorizacionItem.querySelectorAll('.autorizacion-pregunta-si').forEach(function(input) {
+                                    preguntas[input.name.split('_').pop()] = input.value;
+                                });
+                                if (Object.keys(preguntas).length > 0) autorizacionData.preguntas = preguntas;
+                            }
+                        }
+                        if (!autorizacionData.respuesta) {
+                            mensajeDiv.textContent = 'Por favor, seleccione una respuesta.';
+                            mensajeDiv.classList.remove('d-none', 'alert-success');
+                            mensajeDiv.classList.add('alert-warning');
+                            return;
+                        }
+                        if (!signaturePadAutorizacion || signaturePadAutorizacion.isEmpty()) {
+                            mensajeDiv.textContent = 'Por favor, complete la firma.';
+                            mensajeDiv.classList.remove('d-none', 'alert-success');
+                            mensajeDiv.classList.add('alert-warning');
+                            return;
+                        }
+                        const respuestas = {}; respuestas[autorizacionId] = autorizacionData;
+                        const firmaDataURL = signaturePadAutorizacion.toDataURL('image/png');
+                        function dataURLtoBlob(dataurl) {
+                            const arr = dataurl.split(',');
+                            const mime = arr[0].match(/:(.*?);/)[1];
+                            const bstr = atob(arr[1]);
+                            let n = bstr.length;
+                            const u8arr = new Uint8Array(n);
+                            while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+                            return new Blob([u8arr], {type:mime});
+                        }
+                        const formData = new FormData();
+                        formData.append('respuestas', JSON.stringify(respuestas));
+                        formData.append('firma', dataURLtoBlob(firmaDataURL), 'firma.png');
+                        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Guardando...';
+                        mensajeDiv.classList.add('d-none');
+                        fetch('{% url "vacantes:guardar_respuestas_politicas" aplicacion.id %}', {
+                            method: 'POST',
+                            body: formData,
+                            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: '¡Éxito!',
+                                    text: 'Autorización de datos guardada exitosamente',
+                                    icon: 'success',
+                                    confirmButtonText: 'Aceptar',
+                                    confirmButtonColor: '#B10022',
+                                    timer: 2000,
+                                    timerProgressBar: true
+                                }).then(() => {
+                                    const modal = bootstrap.Modal.getInstance(formAutorizacion.closest('.modal'));
+                                    if (modal) modal.hide();
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: data.error || 'Error al guardar la respuesta',
+                                    icon: 'error',
+                                    confirmButtonText: 'Aceptar',
+                                    confirmButtonColor: '#B10022'
+                                });
+                                mensajeDiv.textContent = data.error || 'Error al guardar la respuesta';
+                                mensajeDiv.classList.remove('d-none', 'alert-success');
+                                mensajeDiv.classList.add('alert-danger');
+                            }
+                        })
+                        .catch(error => {
+                            mensajeDiv.textContent = 'Error de conexión. Por favor, intente nuevamente.';
+                            mensajeDiv.classList.remove('d-none');
+                            mensajeDiv.classList.add('alert-danger');
+                        })
+                        .finally(() => {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Guardar Respuesta';
+                        });
+                    });
+                }
+            })();
+            {% endif %}
             // Manejar el envío de formularios de requisitos
             {% for req_info in requisitos_con_info %}
             {% with r=req_info.requisito %}

@@ -684,8 +684,8 @@ class ClienteFormPoliticas(forms.Form):
             estado=1
         ).exclude(
             id__in=Cli051ClientePoliticas.objects.filter(cliente_id=cliente_id).values_list('politica_interna_id', flat=True)
-        ).order_by('descripcion')
-        politicas_choices = [('', 'Seleccione una politica')] + [(politica.id, f"{politica.descripcion}") for politica in politicas]
+        ).exclude(id=1000).order_by('descripcion')
+        politicas_choices = [('', 'Seleccione una politica')] + [(politica.id, f"{politica.nombre}") for politica in politicas]
 
         self.fields['politicas'] = forms.ChoiceField(
             label='POLITICAS',
