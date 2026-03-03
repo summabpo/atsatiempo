@@ -109,3 +109,29 @@
 </li>
 -->
 <!-- VACANTES -->
+
+<!-- USUARIOS -->
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">USUARIOS</span>
+</li>
+<li class="menu-item 
+    {% if request.resolver_match.url_name|is_active_url_usuarios %}open{% endif %}
+    ">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon red">group</span>
+        <span class="title">Usuarios</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="{% url 'accesses:usuarios_candidatos' %}" class="menu-link {% if request.resolver_match.url_name == 'usuarios_candidatos' %}active{% endif %}">
+                Candidatos
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{% url 'accesses:usuarios_internos' %}" class="menu-link {% if request.resolver_match.url_name == 'usuarios_internos' %}active{% endif %}">
+                Usuarios internos
+            </a>
+        </li>
+    </ul>
+</li>
+<!-- USUARIOS -->

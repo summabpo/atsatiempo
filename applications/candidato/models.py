@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.services.choices import GENERO_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, MOTIVO_SALIDA_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, NIVEL_HABILIDAD_CHOICES_STATIC, TIPO_HABILIDAD_CHOICES_STATIC, ESTADO_ESTUDIOS_CHOICES_STATIC
 # Create your models here.
@@ -68,6 +69,17 @@ class Can101Candidato(models.Model):
     def nombre_completo(self):
         nombres = [self.primer_nombre, self.segundo_nombre, self.primer_apellido, self.segundo_apellido]
         return " ".join(filter(None, nombres))
+
+    @property
+    def edad(self):
+        """Calcula la edad en años a partir de fecha_nacimiento."""
+        if not self.fecha_nacimiento:
+            return None
+        hoy = date.today()
+        edad = hoy.year - self.fecha_nacimiento.year
+        if (hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day):
+            edad -= 1
+        return edad
 
 class Can102Experiencia(models.Model):
     estado_id_001 = models.ForeignKey(Cat001Estado, models.DO_NOTHING, db_column='estado_id_001')
