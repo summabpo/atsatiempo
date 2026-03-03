@@ -1,0 +1,162 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Mi Perfil | Talent Tray
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">Mi Perfil</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover">Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Mi Perfil</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<div class="row g-4">
+		<!-- Columna izquierda: Foto y acciones -->
+		<div class="col-12 col-md-5 col-lg-4">
+			<div class="card bg-white border-0 rounded-3 mb-0 h-100">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+					<h2 class="fs-18 fw-semibold mb-0 text-primary">Foto de Perfil</h2>
+				</div>
+				<div class="card-body p-4 text-center">
+					<div class="position-relative d-inline-block mb-3">
+						<img id="imgPerfil" src="{{ imagen_url }}" class="rounded-circle border border-3 border-primary shadow-sm" style="width: 160px; height: 160px; object-fit: cover;" alt="Foto de perfil">
+						<button type="button" class="btn bg-white border border-primary text-primary position-absolute bottom-0 end-0 rounded-circle p-2" style="width: 40px; height: 40px;" data-bs-toggle="modal" data-bs-target="#modalCambiarImagen" title="Cambiar imagen">
+							<span class="material-symbols-outlined" style="font-size: 1.2rem;">photo_camera</span>
+						</button>
+					</div>
+					<h4 class="fs-18 fw-semibold mb-1 text-primary">{{ nombre_completo }}</h4>
+					<span class="badge bg-primary bg-opacity-25 text-primary px-3 py-2">{{ tipo_usuario }}</span>
+				</div>
+			</div>
+		</div>
+		<!-- Columna derecha: Datos y opciones -->
+		<div class="col-12 col-md-7 col-lg-8">
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+					<h2 class="fs-18 fw-semibold mb-0 text-primary">Información del Perfil</h2>
+				</div>
+				<div class="card-body p-4">
+					<div class="row g-3 mb-4">
+						<div class="col-12 col-sm-6">
+							<div class="d-flex align-items-center p-3 rounded-3 bg-white bg-opacity-50 border border-1 border-primary">
+								<span class="material-symbols-outlined text-primary me-3">mail</span>
+								<div>
+									<small class="text-muted d-block">Correo electrónico</small>
+									<span class="fw-medium">{{ correo }}</span>
+								</div>
+							</div>
+						</div>
+						<div class="col-12 col-sm-6">
+							<div class="d-flex align-items-center p-3 rounded-3 bg-white bg-opacity-50 border border-1 border-primary">
+								<span class="material-symbols-outlined text-primary me-3">phone</span>
+								<div>
+									<small class="text-muted d-block">Teléfono</small>
+									<span class="fw-medium">{{ telefono }}</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<hr class="my-4">
+					<div class="d-flex flex-wrap gap-2">
+						<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalCambiarImagen">
+							<span class="material-symbols-outlined me-2">photo_camera</span>
+							Cambiar Imagen
+						</button>
+						<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalCambiarContrasena">
+							<span class="material-symbols-outlined me-2">lock</span>
+							Cambiar Contraseña
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal Cambiar Imagen -->
+<div class="modal fade" id="modalCambiarImagen" tabindex="-1" aria-labelledby="modalCambiarImagenLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalCambiarImagenLabel">
+					<span class="material-symbols-outlined me-2 align-middle">photo_camera</span>
+					Cambiar imagen de perfil
+				</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<form method="post" action="{{ url_actualizar_imagen }}" enctype="multipart/form-data">
+				{% csrf_token %}
+				<div class="modal-body">
+					<div class="mb-3">
+						<label for="id_imagen_perfil" class="form-label fw-semibold">Seleccionar imagen</label>
+						<input type="file" name="imagen_perfil" accept=".jpg,.jpeg,.png" required class="form-control" id="id_imagen_perfil">
+						<small class="text-muted">Formatos: JPG, JPEG, PNG. Máximo 5 MB</small>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-dismiss="modal">Cancelar</button>
+					<button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center">
+						<span class="material-symbols-outlined me-1" style="font-size: 1.2rem;">check</span>
+						Actualizar imagen
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- Modal Cambiar Contraseña -->
+<div class="modal fade" id="modalCambiarContrasena" tabindex="-1" aria-labelledby="modalCambiarContrasenaLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalCambiarContrasenaLabel">
+					<span class="material-symbols-outlined me-2 align-middle">lock</span>
+					Cambiar Contraseña
+				</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<form method="post" action="{{ url_cambiar_contrasena }}">
+				{% csrf_token %}
+				<div class="modal-body">
+					<div class="mb-3">
+						<label for="id_password_actual" class="form-label fw-semibold">Contraseña actual</label>
+						<input type="password" name="password_actual" required class="form-control" id="id_password_actual" placeholder="Ingrese su contraseña actual" autocomplete="current-password">
+					</div>
+					<div class="mb-3">
+						<label for="id_password_nueva" class="form-label fw-semibold">Nueva contraseña</label>
+						<input type="password" name="password_nueva" required class="form-control" id="id_password_nueva" placeholder="Ingrese la nueva contraseña" autocomplete="new-password">
+						<small class="text-muted">Mínimo 8 caracteres</small>
+					</div>
+					<div class="mb-3">
+						<label for="id_password_confirmar" class="form-label fw-semibold">Confirmar nueva contraseña</label>
+						<input type="password" name="password_confirmar" required class="form-control" id="id_password_confirmar" placeholder="Confirme la nueva contraseña" autocomplete="new-password">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-dismiss="modal">Cancelar</button>
+					<button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center">
+						<span class="material-symbols-outlined me-1" style="font-size: 1.2rem;">check</span>
+						Actualizar Contraseña
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

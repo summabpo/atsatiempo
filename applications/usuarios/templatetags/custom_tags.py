@@ -1,5 +1,6 @@
 from django import template
 import json
+from datetime import date
 
 register = template.Library()
 
@@ -21,6 +22,18 @@ URLS_CLIENTES = [
 @register.filter(name='is_active_url_cliente_all')
 def is_active_url_cliente_all(url_name):
     return url_name in URLS_CLIENTES
+
+
+URLS_USUARIOS = [
+    'usuarios_listar',
+    'usuarios_candidatos',
+    'usuarios_internos',
+]
+
+
+@register.filter(name='is_active_url_usuarios')
+def is_active_url_usuarios(url_name):
+    return url_name in URLS_USUARIOS
 
 
 # Define una lista global de rutas activas
@@ -53,6 +66,23 @@ URLS_VACANTES_ANALISTA  = [
 @register.filter(name='is_active_url_analista_interno_vacante')
 def is_active_url_analista_interno_vacante(url_name):
     return url_name in URLS_VACANTES_ANALISTA
+
+@register.filter(name='edad_desde_fecha')
+def edad_desde_fecha(fecha_nacimiento):
+    """
+    Calcula la edad en años a partir de una fecha de nacimiento.
+    """
+    if not fecha_nacimiento:
+        return None
+    try:
+        hoy = date.today()
+        edad = hoy.year - fecha_nacimiento.year
+        if (hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day):
+            edad -= 1
+        return edad
+    except (TypeError, AttributeError):
+        return None
+
 
 @register.filter(name='format_number')
 def format_number(value):

@@ -1,0 +1,181 @@
+"""
+Funciones comunes para generar los datos de cada panel del dashboard administrador.
+Cada función retorna un diccionario con los datos necesarios para renderizar su panel.
+"""
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Count
+from django.db.models.functions import ExtractMonth
+
+
+def get_panel_metricas_superiores():
+    """
+    Panel: 4 tarjetas superiores (Total personal, Vacantes, Clientes, Headhunters).
+    Retorna: total_personal, vacantes_total, total_clientes, headhunters
+    """
+    from applications.candidato.models import Can101Candidato
+    from applications.cliente.models import Cli051Cliente
+    from applications.vacante.models import Cli052Vacante
+
+    total_personal = Can101Candidato.objects.count()
+    vacantes_total = Cli052Vacante.objects.filter(estado_id_001=1).count()
+    total_clientes = Cli051Cliente.objects.filter(estado_id_001=1).count()
+    headhunters = list(
+        Cli051Cliente.objects
+        .filter(tipo_cliente='2', estado_id_001=1)
+        .select_related('ciudad_id_004')
+        .order_by('razon_social')
+    )
+    return {
+        'total_personal': total_personal,
+        'vacantes_total': vacantes_total,
+        'total_clientes': total_clientes,
+        'headhunters': headhunters,
+    }
+
+
+def get_panel_candidatos_por_dia():
+    """
+    Panel: Candidatos registrados por día (últimos 15 días).
+    Retorna: usuarios_por_dia_labels, usuarios_por_dia_data
+    """
+    from applications.usuarios.models import UsuarioBase
+
+    hoy = timezone.now().date()
+    chart_labels = []
+    chart_data = []
+    for i in range(14, -1, -1):
+        d = hoy - timedelta(days=i)
+        chart_labels.append(d.strftime('%d/%m'))
+        count = UsuarioBase.objects.filter(date_joined__date=d, group_id=2).count()
+        chart_data.append(count)
+    return {
+        'usuarios_por_dia_labels': chart_labels,
+        'usuarios_por_dia_data': chart_data,
+    }
+
+
+def get_panel_candidatos_por_mes():
+    """
+    Panel: Candidatos registrados por mes (año en curso).
+    Retorna: usuarios_por_mes_labels, usuarios_por_mes_data, anio_actual
+    """
+    from applications.usuarios.models import UsuarioBase
+
+    hoy = timezone.now().date()
+    anio_actual = hoy.year
+    meses_nombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+    conteo_mensual = (
+        UsuarioBase.objects
+        .filter(date_joined__year=anio_actual, group_id=2)
+        .annotate(mes=ExtractMonth('date_joined'))
+        .values('mes')
+        .annotate(total=Count('id'))
+        .order_by('mes')
+    )
+    conteo_por_mes = {r['mes']: r['total'] for r in conteo_mensual}
+    usuarios_por_mes_labels = meses_nombres
+    usuarios_por_mes_data = [conteo_por_mes.get(m, 0) for m in range(1, 13)]
+    return {
+        'usuarios_por_mes_labels': usuarios_por_mes_labels,
+        'usuarios_por_mes_data': usuarios_por_mes_data,
+        'anio_actual': anio_actual,
+    }
+
+
+def get_panel_ciudad_residencia():
+    """
+    Panel: Candidatos por ciudad de residencia + Resumen por ciudad.
+    Retorna: ciudad_labels, ciudad_data, sin_ciudad, con_ciudad
+    """
+    from applications.candidato.models import Can101Candidato
+
+    ciudad_conteo = (
+        Can101Candidato.objects
+        .filter(ciudad_id_004__isnull=False)
+        .values('ciudad_id_004__nombre')
+        .annotate(total=Count('id'))
+        .order_by('-total')
+    )
+    ciudad_labels = [c['ciudad_id_004__nombre'] for c in ciudad_conteo]
+    ciudad_data = [c['total'] for c in ciudad_conteo]
+    sin_ciudad = Can101Candidato.objects.filter(ciudad_id_004__isnull=True).count()
+    con_ciudad = sum(ciudad_data)
+    return {
+        'ciudad_labels': ciudad_labels,
+        'ciudad_data': ciudad_data,
+        'sin_ciudad': sin_ciudad,
+        'con_ciudad': con_ciudad,
+    }
+
+
+def get_panel_tipo_estudio():
+    """
+    Panel: Tipo de estudio (donut + lista).
+    Retorna: nivel_estudio_labels, nivel_estudio_data, nivel_estudio_labels_zip, nivel_estudio_items
+    """
+    from applications.candidato.models import Can103Educacion
+    from applications.services.choices import NIVEL_ESTUDIO_CHOICES_STATIC
+
+    nivel_labels_dict = dict(NIVEL_ESTUDIO_CHOICES_STATIC)
+    niveles_orden = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+    conteo_por_nivel = {n: 0 for n in niveles_orden}
+
+    estudios_con_tipo = (
+        Can103Educacion.objects
+        .filter(candidato_id_101__isnull=False, tipo_estudio__isnull=False)
+        .exclude(tipo_estudio='')
+        .values_list('candidato_id_101_id', 'tipo_estudio')
+    )
+    max_por_candidato = {}
+    for candidato_id, tipo in estudios_con_tipo:
+        if candidato_id not in max_por_candidato or tipo > max_por_candidato[candidato_id]:
+            max_por_candidato[candidato_id] = tipo
+
+    for tipo in max_por_candidato.values():
+        if tipo in conteo_por_nivel:
+            conteo_por_nivel[tipo] += 1
+
+    nivel_estudio_labels = [nivel_labels_dict.get(n, n) for n in niveles_orden]
+    nivel_estudio_data = [conteo_por_nivel[n] for n in niveles_orden]
+    nivel_estudio_labels_zip = list(zip(nivel_estudio_labels, nivel_estudio_data))
+
+    nivel_colors = ['#6c757d', '#0d6efd', '#198754', '#ffc107', '#fd7e14', '#B10022', '#6610f2', '#20c997', '#e83e8c']
+    total_candidatos = sum(nivel_estudio_data)
+    nivel_estudio_items = []
+    for i, (label, count) in enumerate(nivel_estudio_labels_zip):
+        pct = round((count / total_candidatos * 100), 1) if total_candidatos > 0 else 0
+        nivel_estudio_items.append({
+            'label': label,
+            'count': count,
+            'percentage': pct,
+            'color': nivel_colors[i % len(nivel_colors)],
+        })
+    return {
+        'nivel_estudio_labels': nivel_estudio_labels,
+        'nivel_estudio_data': nivel_estudio_data,
+        'nivel_estudio_labels_zip': nivel_estudio_labels_zip,
+        'nivel_estudio_items': nivel_estudio_items,
+    }
+
+
+def get_panel_profesion_estudio():
+    """
+    Panel: Candidatos por profesión o estudio (top 15).
+    Retorna: profesion_labels, profesion_data
+    """
+    from applications.candidato.models import Can103Educacion
+
+    profesion_conteo = (
+        Can103Educacion.objects
+        .filter(profesion_estudio__isnull=False)
+        .values('profesion_estudio__nombre')
+        .annotate(total=Count('candidato_id_101', distinct=True))
+        .order_by('-total')[:15]
+    )
+    profesion_labels = [p['profesion_estudio__nombre'] for p in profesion_conteo]
+    profesion_data = [p['total'] for p in profesion_conteo]
+    return {
+        'profesion_labels': profesion_labels,
+        'profesion_data': profesion_data,
+    }

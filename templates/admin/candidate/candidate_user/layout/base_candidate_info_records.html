@@ -153,6 +153,7 @@
                     </div>
                 </div>
                 <small class="text-muted d-block mt-2">{% if porcentajes %}{{ porcentajes.educacion.campos.llenos }}{% elif data_candidate %}{{ data_candidate.educacion.campos.llenos }}{% else %}0{% endif %} registro(s)</small>
+                <small class="text-primary fw-semibold d-block mt-1" title="Nivel educativo más alto según registros">Nivel: {{ nivel_educativo_maximo|default:"-" }}</small>
             </div>
             <div class="card-footer">
                 <a href="{% url 'candidatos:candidato_info_academica' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">

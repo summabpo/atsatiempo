@@ -5,9 +5,15 @@ from .views import client_views
 from applications.common.views import PruebasView
 
 
+
 #new
 from applications.usuarios.views.user_login import loginView
-
+from applications.usuarios.views.user_login import dashboardView
+from applications.usuarios.views.usuario_admin.UsuarioAdminView import (
+    usuarios_listar,
+    usuarios_candidatos,
+    usuarios_internos,
+)
 urlpatterns = [
     #new
     path('test_template', PruebasView.test_template, name='test'),
@@ -23,9 +29,20 @@ urlpatterns = [
     path('acceso_denegado/', loginView.acceso_denegado, name='acceso_denegado'),
     path('cambiar_password/', loginView.change_password_form, name='change_password'),
     path('confirmar_password/<str:token>', loginView.confirm_password_form, name='confirm_password'),
-    
+    path('mi_perfil/', loginView.my_profile, name='my_profile'),
+    path('mi_perfil/cambiar-contrasena/', loginView.cambiar_contrasena_perfil, name='cambiar_contrasena_perfil'),
+    path('mi_perfil/actualizar-imagen/', loginView.actualizar_imagen_perfil, name='actualizar_imagen_perfil'),
     #candidate
-    path('inicio/candidato', loginView.dashboard_candidato, name='inicio_candidato'),
+    path('inicio/candidato', dashboardView.dashboard_candidato, name='inicio_candidato'),
+    
+    
+    #administrador
+    path('inicio/administrador', dashboardView.dashboard_administrador, name='inicio_administrador'),
+    path('usuarios/listar/', usuarios_listar, name='usuarios_listar'),
+    path('usuarios/candidatos/', usuarios_candidatos, name='usuarios_candidatos'),
+    path('usuarios/internos/', usuarios_internos, name='usuarios_internos'),
+    
+
 
     #client
     path('cliente/grupo_trabajo_interno/', client_views.create_internal_client, name='users_client'),

@@ -24,7 +24,7 @@ from django.conf import settings # type: ignore
 from applications.usuarios.forms.loginform import LoginForm
 from applications.usuarios.forms.UserForms import SignupForm
 from applications.usuarios.forms.CandidatoForm import SignupFormCandidato
-from applications.usuarios.forms.EmailUserForm import EmailForm, EmailUserForm
+from applications.usuarios.forms.EmailUserForm import EmailForm, EmailUserForm, CambioContrasenaPerfilForm
 
 # consultas
 from applications.vacante.views.consultas.AsignacionVacanteConsultaView import consulta_asignacion_vacante_candidato
@@ -262,6 +262,7 @@ def dashboard_begin(request):
     #ats portal interno
     if session_variables['grupo_id'] == 1:
         print('Sesion Admin')
+        return redirect('accesses:inicio_administrador')
     #candidato información panel
     if session_variables['grupo_id'] == 2:
         return redirect('accesses:inicio_candidato')
@@ -292,40 +293,7 @@ def dashboard_begin(request):
     
     return render(request, 'admin/dashboard.html', context)
 
-#pantalla inicio
-# @login_required
-@validar_permisos('acceso_candidato')
-def dashboard_candidato(request):
-    """ Vista que carga la página de inicio y muestra variables de sesión """
-    
-    # Obtener todas las variables de sesión
-    session_variables = dict(request.session)
-    candidato_id = request.session.get('candidato_id')
-    data = personal_information_calculation(candidato_id)
-    vacantes_disponibles = query_vacanty_with_skills_and_details().filter(estado_id_001=1)
-    
-    vacantes_disponibles = vacantes_disponibles.exclude(
-        aplicaciones__candidato_101_id=candidato_id
-    )
-    
-    # Obtener datos detallados para mostrar en el dashboard
-    from applications.candidato.models import Can101Candidato, Can102Experiencia, Can103Educacion, Can101CandidatoSkill
-    candidato_obj = Can101Candidato.objects.get(id=candidato_id)
-    educaciones = Can103Educacion.objects.filter(candidato_id_101=candidato_obj).order_by('-fecha_inicial')[:3]
-    experiencias = Can102Experiencia.objects.filter(candidato_id_101=candidato_obj).order_by('-fecha_inicial')[:3]
-    habilidades = Can101CandidatoSkill.objects.filter(candidato_id_101=candidato_obj).select_related('skill_id_104')[:6]
 
-    context = {
-        'session_variables': session_variables,
-        'data_candidate': data,
-        'vacantes_disponibles': vacantes_disponibles,
-        'candidato': candidato_obj,
-        'educaciones': educaciones,
-        'experiencias': experiencias,
-        'habilidades': habilidades,
-    }
-    
-    return render(request, 'admin/dashboard/dashboard_candidate.html', context)
 
 # Salida de sesión.
 def logout_view(request):
@@ -645,3 +613,98 @@ def confirm_password_form(request, token):
     }
 
     return render(request, 'admin/login/confirm_password.html', context)
+
+
+@login_required
+@validar_permisos(*Permiso.obtener_nombres())
+def my_profile(request):
+    """Vista de perfil del usuario logueado: nombre, tipo, correo, teléfono, imagen y opción para cambiar contraseña."""
+    usuario = get_object_or_404(UsuarioBase, id=request.user.id)
+    
+    nombre_completo = f'{usuario.primer_nombre or ""} {usuario.segundo_nombre or ""} {usuario.primer_apellido or ""} {usuario.segundo_apellido or ""}'.strip() or usuario.username
+    tipo_usuario = usuario.group.name if usuario.group else 'Usuario'
+    correo = usuario.username or usuario.email or '-'
+    telefono = usuario.telefono or '-'
+    imagen_url = None
+    if usuario.imagen_perfil and usuario.imagen_perfil.name:
+        imagen_url = usuario.imagen_perfil.url
+    else:
+        imagen_url = f'{settings.STATIC_URL}media/avatars/blank.png'
+    
+    form_cambio_password = CambioContrasenaPerfilForm()
+    from django.urls import reverse
+    try:
+        url_cambiar_contrasena = reverse('accesses:cambiar_contrasena_perfil')
+    except Exception:
+        url_cambiar_contrasena = '/mi_perfil/cambiar-contrasena/'
+    try:
+        url_actualizar_imagen = reverse('accesses:actualizar_imagen_perfil')
+    except Exception:
+        url_actualizar_imagen = '/mi_perfil/actualizar-imagen/'
+    
+    context = {
+        'usuario': usuario,
+        'nombre_completo': nombre_completo,
+        'tipo_usuario': tipo_usuario,
+        'correo': correo,
+        'telefono': telefono,
+        'imagen_url': imagen_url,
+        'form_cambio_password': form_cambio_password,
+        'url_cambiar_contrasena': url_cambiar_contrasena,
+        'url_actualizar_imagen': url_actualizar_imagen,
+    }
+    return render(request, 'admin/login/my_profile.html', context)
+
+
+@login_required
+def actualizar_imagen_perfil(request):
+    """Vista para actualizar la imagen de perfil del usuario logueado."""
+    redirect_url = '/mi_perfil/'
+    if request.method != 'POST' or 'imagen_perfil' not in request.FILES:
+        messages.error(request, 'No se envió ninguna imagen.')
+        return redirect(redirect_url)
+    
+    archivo = request.FILES['imagen_perfil']
+    ext = archivo.name.split('.')[-1].lower() if '.' in archivo.name else ''
+    if ext not in ['jpg', 'jpeg', 'png']:
+        messages.error(request, 'Formato no válido. Solo se permiten JPG, JPEG y PNG.')
+        return redirect(redirect_url)
+    if archivo.size > 5 * 1024 * 1024:
+        messages.error(request, 'La imagen no debe superar los 5 MB.')
+        return redirect(redirect_url)
+    
+    usuario = get_object_or_404(UsuarioBase, id=request.user.id)
+    usuario.imagen_perfil = archivo
+    usuario.save()
+    
+    request.session['imagen_url'] = usuario.imagen_perfil.url
+    messages.success(request, 'Imagen de perfil actualizada correctamente.')
+    return redirect(redirect_url)
+
+
+@login_required
+def cambiar_contrasena_perfil(request):
+    """Vista para cambiar la contraseña del usuario logueado."""
+    if request.method != 'POST':
+        return redirect('accesses:my_profile')
+    
+    form = CambioContrasenaPerfilForm(request.POST)
+    if form.is_valid():
+        usuario = get_object_or_404(UsuarioBase, id=request.user.id)
+        password_actual = form.cleaned_data['password_actual']
+        password_nueva = form.cleaned_data['password_nueva']
+        
+        if not usuario.check_password(password_actual):
+            messages.error(request, 'La contraseña actual no es correcta.')
+            return redirect('accesses:my_profile')
+        
+        usuario.set_password(password_nueva)
+        usuario.save()
+        messages.success(request, 'Contraseña actualizada correctamente. Por favor, inicie sesión nuevamente.')
+        logout(request)
+        return redirect('accesses:login')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, error)
+        return redirect('accesses:my_profile')

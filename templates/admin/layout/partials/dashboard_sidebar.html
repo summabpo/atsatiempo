@@ -17,10 +17,15 @@
             <span class="menu-title-text">PRINCIPAL</span>
         </li>
         <li class="menu-item 
-            {% if request.resolver_match.url_name == 'inicio'  %}open{% endif %}
-            {% if request.resolver_match.url_name == 'inicio_candidato'  %}open{% endif %}
+            {% if request.resolver_match.url_name == 'inicio' %}open{% endif %}
+            {% if request.resolver_match.url_name == 'inicio_candidato' %}open{% endif %}
+            {% if request.resolver_match.url_name == 'inicio_administrador' %}open{% endif %}
             ">
-            <a href="javascript:void(0);" class="menu-link menu-toggle active">
+            <a href="javascript:void(0);" class="menu-link menu-toggle 
+            {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'inicio_candidato' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'inicio_administrador' %}active{% endif %}
+            ">
                 <span class="material-symbols-outlined menu-icon">Dashboard</span>
                 <span class="title">Dashboard</span>
                 {% comment %} <span class="count">18</span>  {% endcomment %}
@@ -30,7 +35,7 @@
                     <a href="{% url 'accesses:inicio' %}" class="menu-link 
                     {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}
                     {% if request.resolver_match.url_name == 'inicio_candidato' %}active{% endif %}
-
+                    {% if request.resolver_match.url_name == 'inicio_administrador' %}active{% endif %}
                     ">
                         Inicio
                     </a>

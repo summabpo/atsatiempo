@@ -152,6 +152,7 @@ def candidate_info(request):
             candidato.fecha_nacimiento = form.cleaned_data['fecha_nacimiento']
             candidato.telefono = form.cleaned_data['telefono']
             candidato.direccion = form.cleaned_data['direccion']
+            candidato.aspiracion_salarial = form.cleaned_data['aspiracion_salarial']
             # Procesar archivos desde el formulario validado
             # La imagen_perfil ya se guardó arriba si era válida, solo actualizar si hay una nueva que no se guardó antes
             if form.cleaned_data.get('imagen_perfil') and not files_saved_in_request.get('imagen_perfil', False):

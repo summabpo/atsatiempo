@@ -94,4 +94,48 @@ class EmailUserForm(forms.Form):
         if password and confirm_password and password != confirm_password:
             self.add_error('confirm_password', "Las contraseñas no coinciden.")
         return cleaned_data
-    
+
+
+class CambioContrasenaPerfilForm(forms.Form):
+    """
+    Formulario para cambiar contraseña cuando el usuario está logueado.
+    Requiere contraseña actual, nueva y confirmación.
+    """
+    password_actual = forms.CharField(
+        label='Contraseña actual',
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ingrese su contraseña actual',
+            'autocomplete': 'current-password'
+        })
+    )
+    password_nueva = forms.CharField(
+        label='Nueva contraseña',
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ingrese la nueva contraseña',
+            'autocomplete': 'new-password'
+        })
+    )
+    password_confirmar = forms.CharField(
+        label='Confirmar nueva contraseña',
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirme la nueva contraseña',
+            'autocomplete': 'new-password'
+        })
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password_nueva = cleaned_data.get('password_nueva')
+        password_confirmar = cleaned_data.get('password_confirmar')
+        if password_nueva and password_confirmar and password_nueva != password_confirmar:
+            self.add_error('password_confirmar', 'Las contraseñas no coinciden.')
+        if password_nueva and len(password_nueva) < 8:
+            self.add_error('password_nueva', 'La contraseña debe tener al menos 8 caracteres.')
+        return cleaned_data
+

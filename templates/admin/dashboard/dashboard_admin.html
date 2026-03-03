@@ -29,14 +29,532 @@ Inicio | Dashboard
 		</nav>
 	</div>
 
-	<!-- Start Your Code -->
-	
+	<!-- Paneles superiores -->
+	<div class="row mb-4">
+		<div class="col-md-3">
+			<div class="card border-0 rounded-3 bg-white shadow-sm h-100">
+				<div class="card-body p-4 d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center flex-grow-1 min-w-0">
+						<div class="flex-shrink-0 me-3">
+							<div class="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+								<span class="material-symbols-outlined text-primary" style="font-size: 32px;">groups</span>
+							</div>
+						</div>
+						<div class="min-w-0">
+							<h4 class="fw-semibold mb-0 text-primary fs-20">{{ total_personal|default:0 }}</h4>
+							<small class="text-muted d-block">Total personal registrado</small>
+						</div>
+					</div>
+					<a href="{% url 'vacantes:vacantes_todas' %}" class="btn btn-sm bg-primary bg-opacity-10 text-primary flex-shrink-0 ms-2" title="Ver vacantes">
+						<span class="material-symbols-outlined fs-18">arrow_forward</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card border-0 rounded-3 bg-white shadow-sm h-100">
+				<div class="card-body p-4 d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center flex-grow-1 min-w-0">
+						<div class="flex-shrink-0 me-3">
+							<div class="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+								<span class="material-symbols-outlined text-primary" style="font-size: 32px;">work_history</span>
+							</div>
+						</div>
+						<div class="min-w-0">
+							<h4 class="fw-semibold mb-0 text-primary fs-20">{{ vacantes_total|default:0 }}</h4>
+							<small class="text-muted d-block">Vacantes registradas</small>
+						</div>
+					</div>
+					<a href="{% url 'vacantes:vacantes_todas' %}" class="btn btn-sm bg-primary bg-opacity-10 text-primary flex-shrink-0 ms-2" title="Ver vacantes">
+						<span class="material-symbols-outlined fs-18">arrow_forward</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card border-0 rounded-3 bg-white shadow-sm h-100">
+				<div class="card-body p-4 d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center flex-grow-1 min-w-0">
+						<div class="flex-shrink-0 me-3">
+							<div class="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+								<span class="material-symbols-outlined text-primary" style="font-size: 32px;">business</span>
+							</div>
+						</div>
+						<div class="min-w-0">
+							<h4 class="fw-semibold mb-0 text-primary fs-20">{{ total_clientes|default:0 }}</h4>
+							<small class="text-muted d-block">Clientes registrados</small>
+						</div>
+					</div>
+					<a href="{% url 'clientes:cliente_ver' %}" class="btn btn-sm bg-primary bg-opacity-10 text-primary flex-shrink-0 ms-2" title="Ver clientes">
+						<span class="material-symbols-outlined fs-18">arrow_forward</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card border-0 rounded-3 bg-white shadow-sm h-100">
+				<div class="card-body p-4 d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center flex-grow-1 min-w-0">
+						<div class="flex-shrink-0 me-3">
+							<div class="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+								<span class="material-symbols-outlined text-primary" style="font-size: 32px;">handshake</span>
+							</div>
+						</div>
+						<div class="min-w-0">
+							<h4 class="fw-semibold mb-0 text-primary fs-20">{{ headhunters|length }}</h4>
+							<small class="text-muted d-block">Clientes Headhunter</small>
+						</div>
+					</div>
+					<a href="{% url 'clientes:cliente_ver' %}" class="btn btn-sm bg-primary bg-opacity-10 text-primary flex-shrink-0 ms-2" title="Ver headhunters">
+						<span class="material-symbols-outlined fs-18">arrow_forward</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 
-	
+	<!-- Candidatos registrados por día -->
+	<div class="row mb-4">
+		<div class="col-12">
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+					<h2 class="fs-18 fw-semibold mb-0 text-primary">
+						<span class="material-symbols-outlined align-middle me-2">person_add</span>
+						Candidatos registrados por día (últimos 15 días)
+					</h2>
+				</div>
+				<div class="card-body p-4">
+					<div id="chartUsuariosPorDia" style="min-height: 350px;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Candidatos registrados por mes (año en curso) -->
+	<div class="row mb-4">
+		<div class="col-12">
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+					<h2 class="fs-18 fw-semibold mb-0 text-primary">
+						<span class="material-symbols-outlined align-middle me-2">calendar_month</span>
+						Candidatos registrados por mes ({{ anio_actual }})
+					</h2>
+				</div>
+				<div class="card-body p-4">
+					<div id="chartUsuariosPorMes" style="min-height: 350px;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Candidatos por ciudad de residencia -->
+	<div class="row mb-4">
+		<div class="col-lg-9">
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+					<h2 class="fs-18 fw-semibold mb-0 text-primary">
+						<span class="material-symbols-outlined align-middle me-2">location_city</span>
+						Candidatos por ciudad de residencia
+					</h2>
+				</div>
+				<div class="card-body p-4">
+					<div id="chartCiudadResidencia" style="min-height: 400px;"></div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3">
+			<div class="card border-0 rounded-3 bg-white shadow-sm mb-4 h-100">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+					<h2 class="fs-18 fw-semibold mb-0 text-primary">
+						<span class="material-symbols-outlined align-middle me-2">location_on</span>
+						Resumen por ciudad
+					</h2>
+				</div>
+				<div class="card-body p-4">
+					<div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+						<div class="d-flex align-items-center">
+							<div class="rounded-2 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+								<span class="material-symbols-outlined text-primary fs-20">location_city</span>
+							</div>
+							<div>
+								<span class="fw-semibold text-secondary">{{ con_ciudad|default:0 }}</span>
+								<small class="d-block text-muted">Con ciudad</small>
+							</div>
+						</div>
+					</div>
+					<div class="d-flex align-items-center justify-content-between">
+						<div class="d-flex align-items-center">
+							<div class="rounded-2 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+								<span class="material-symbols-outlined text-secondary fs-20">location_off</span>
+							</div>
+							<div>
+								<span class="fw-semibold text-secondary">{{ sin_ciudad|default:0 }}</span>
+								<small class="d-block text-muted">Sin ciudad</small>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Panel: Tipo de estudio -->
+	<div class="row mb-4">
+		<div class="col-lg-3">
+			<div class="card border-0 rounded-3 bg-white shadow-sm mb-4">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+					<h2 class="fs-18 fw-semibold mb-0 text-primary">
+						<span class="material-symbols-outlined align-middle me-2">school</span>
+						Tipo de estudio
+					</h2>
+				</div>
+				<div class="card-body p-4">
+					<div class="custom-padding-30">
+						<div style="margin: -8px 0 -18px 0;">
+							<div id="chartNivelEstudio" style="min-height: 320px;"></div>
+						</div>
+						<ul class="ps-0 list-unstyled mb-2 mt-3">
+							{% for item in nivel_estudio_items %}
+							<li class="d-flex justify-content-between align-items-center border-top" style="padding: 13px 0;">
+								<div class="d-flex align-items-center" style="min-width: 140px;">
+									<div class="flex-grow-1">
+										<div class="d-flex align-items-center gap-2">
+											<span class="d-inline-block rounded-1" style="width: 8px; height: 8px; background-color: {{ item.color }};"></span>
+											<span class="fw-medium text-secondary">{{ item.label }}</span>
+										</div>
+									</div>
+									<span class="flex-shrink-0 text-secondary ms-2">{{ item.percentage }}%</span>
+								</div>
+								<span class="fw-bold text-secondary">{{ item.count }}</span>
+							</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-9">
+			<div class="card bg-white border-0 rounded-3 shadow-sm mb-4">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+					<h2 class="fs-18 fw-semibold mb-0 text-primary">
+						<span class="material-symbols-outlined align-middle me-2">work</span>
+						Candidatos por profesión o estudio (top 15)
+					</h2>
+				</div>
+				<div class="card-body p-4">
+					<div id="chartProfesionEstudio" style="min-height: 400px;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Panel: Candidatos por profesión o estudio -->
+	<div class="row">
+		
+	</div>
+
 	
 </div>
 {% endblock %}
 
 {% block js %}
+{{ usuarios_por_dia_labels|json_script:"usuarios-por-dia-labels" }}
+{{ usuarios_por_dia_data|json_script:"usuarios-por-dia-data" }}
+{{ usuarios_por_mes_labels|json_script:"usuarios-por-mes-labels" }}
+{{ usuarios_por_mes_data|json_script:"usuarios-por-mes-data" }}
+{{ nivel_estudio_labels|json_script:"nivel-estudio-labels" }}
+{{ nivel_estudio_data|json_script:"nivel-estudio-data" }}
+{{ profesion_labels|json_script:"profesion-labels" }}
+{{ profesion_data|json_script:"profesion-data" }}
+{{ ciudad_labels|json_script:"ciudad-labels" }}
+{{ ciudad_data|json_script:"ciudad-data" }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	var labelsEl = document.getElementById('usuarios-por-dia-labels');
+	var dataEl = document.getElementById('usuarios-por-dia-data');
+	var labels = labelsEl ? JSON.parse(labelsEl.textContent) : [];
+	var data = dataEl ? JSON.parse(dataEl.textContent) : [];
+	var options = {
+		series: [{
+			name: 'Candidatos registrados',
+			data: data.length ? data : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		}],
+		chart: {
+			type: 'bar',
+			height: 350,
+			toolbar: { show: false },
+			zoom: { enabled: false },
+			animations: { enabled: true }
+		},
+		noData: {
+			text: 'No hay datos disponibles',
+			align: 'center',
+			verticalAlign: 'middle'
+		},
+		plotOptions: {
+			bar: {
+				horizontal: false,
+				columnWidth: '55%',
+				borderRadius: 4,
+				dataLabels: { position: 'center' }
+			}
+		},
+		dataLabels: {
+			enabled: true,
+			style: {
+				fontSize: '14px',
+				fontWeight: 700,
+				colors: ['#ffffff']
+			}
+		},
+		xaxis: {
+			categories: labels.length ? labels : ['Día 1','Día 2','Día 3','Día 4','Día 5','Día 6','Día 7','Día 8','Día 9','Día 10','Día 11','Día 12','Día 13','Día 14','Día 15'],
+			labels: { style: { fontSize: '12px' } }
+		},
+		yaxis: {
+			labels: { style: { fontSize: '12px' } },
+			title: { text: 'Cantidad' }
+		},
+		fill: {
+			opacity: 1,
+			colors: ['#B10022']
+		},
+		colors: ['#B10022'],
+		grid: {
+			borderColor: '#e7e7e7',
+			strokeDashArray: 4
+		}
+	};
+	var chartEl = document.querySelector("#chartUsuariosPorDia");
+	if (chartEl && typeof ApexCharts !== 'undefined') {
+		setTimeout(function() {
+			var chart = new ApexCharts(chartEl, options);
+			chart.render();
+		}, 100);
+	}
 
+	// Gráfico candidatos por mes (año en curso)
+	var mesLabelsEl = document.getElementById('usuarios-por-mes-labels');
+	var mesDataEl = document.getElementById('usuarios-por-mes-data');
+	var mesLabels = mesLabelsEl ? JSON.parse(mesLabelsEl.textContent) : [];
+	var mesData = mesDataEl ? JSON.parse(mesDataEl.textContent) : [];
+	var mesOptions = {
+		series: [{
+			name: 'Candidatos registrados',
+			data: mesData.length ? mesData : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		}],
+		chart: {
+			type: 'bar',
+			height: 350,
+			toolbar: { show: false },
+			zoom: { enabled: false },
+			animations: { enabled: true }
+		},
+		noData: {
+			text: 'No hay datos disponibles',
+			align: 'center',
+			verticalAlign: 'middle'
+		},
+		plotOptions: {
+			bar: {
+				horizontal: false,
+				columnWidth: '55%',
+				borderRadius: 4,
+				dataLabels: { position: 'center' }
+			}
+		},
+		dataLabels: {
+			enabled: true,
+			style: {
+				fontSize: '14px',
+				fontWeight: 700,
+				colors: ['#ffffff']
+			}
+		},
+		xaxis: {
+			categories: mesLabels.length ? mesLabels : ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+			labels: { style: { fontSize: '12px' } }
+		},
+		yaxis: {
+			labels: { style: { fontSize: '12px' } },
+			title: { text: 'Cantidad' }
+		},
+		fill: {
+			opacity: 1,
+			colors: ['#B10022']
+		},
+		colors: ['#B10022'],
+		grid: {
+			borderColor: '#e7e7e7',
+			strokeDashArray: 4
+		}
+	};
+	var mesChartEl = document.querySelector("#chartUsuariosPorMes");
+	if (mesChartEl && typeof ApexCharts !== 'undefined') {
+		setTimeout(function() {
+			var mesChart = new ApexCharts(mesChartEl, mesOptions);
+			mesChart.render();
+		}, 150);
+	}
+
+	// Gráfico de nivel de estudio
+	var nivelLabelsEl = document.getElementById('nivel-estudio-labels');
+	var nivelDataEl = document.getElementById('nivel-estudio-data');
+	var nivelLabels = nivelLabelsEl ? JSON.parse(nivelLabelsEl.textContent) : [];
+	var nivelData = nivelDataEl ? JSON.parse(nivelDataEl.textContent) : [];
+	var nivelOptions = {
+		series: nivelData.length ? nivelData : [0, 0, 0, 0, 0, 0, 0, 0, 0],
+		chart: {
+			type: 'donut',
+			height: 320,
+			toolbar: { show: false }
+		},
+		labels: nivelLabels.length ? nivelLabels : ['Sin estudios', 'Primaria', 'Secundaria/Bachillerato', 'Técnico', 'Tecnólogo', 'Universitario', 'Postgrado', 'Diplomado', 'Curso'],
+		colors: ['#6c757d', '#0d6efd', '#198754', '#ffc107', '#fd7e14', '#B10022', '#6610f2', '#20c997', '#e83e8c'],
+		plotOptions: {
+			pie: {
+				donut: {
+					labels: {
+						show: true,
+						total: {
+							show: true,
+							label: 'Total candidatos',
+							fontSize: '14px'
+						}
+					}
+				}
+			}
+		},
+		dataLabels: {
+			enabled: false
+		},
+		legend: {
+			show: false
+		}
+	};
+	var nivelChartEl = document.querySelector("#chartNivelEstudio");
+	if (nivelChartEl && typeof ApexCharts !== 'undefined') {
+		setTimeout(function() {
+			var nivelChart = new ApexCharts(nivelChartEl, nivelOptions);
+			nivelChart.render();
+		}, 200);
+	}
+
+	// Gráfico de ciudad de residencia (barras horizontales: ciudades en eje Y izquierdo, cantidad en eje X)
+	var ciudadLabelsEl = document.getElementById('ciudad-labels');
+	var ciudadDataEl = document.getElementById('ciudad-data');
+	var ciudadLabels = ciudadLabelsEl ? JSON.parse(ciudadLabelsEl.textContent) : [];
+	var ciudadData = ciudadDataEl ? JSON.parse(ciudadDataEl.textContent) : [];
+	var ciudadOptions = {
+		series: [{
+			name: 'Candidatos',
+			data: ciudadData
+		}],
+		chart: {
+			type: 'bar',
+			height: 400,
+			toolbar: { show: false },
+			animations: { enabled: true }
+		},
+		plotOptions: {
+			bar: {
+				horizontal: true,
+				barHeight: '65%',
+				borderRadius: 4,
+				dataLabels: { position: 'center' }
+			}
+		},
+		dataLabels: {
+			enabled: true,
+			formatter: function(val) { return val; },
+			style: {
+				fontSize: '14px',
+				fontWeight: 700,
+				colors: ['#ffffff']
+			}
+		},
+		xaxis: {
+			categories: ciudadLabels,
+			labels: { style: { fontSize: '11px' } },
+			title: { text: 'Cantidad de candidatos' }
+		},
+		yaxis: {
+			labels: { style: { fontSize: '11px' }, maxWidth: 180 }
+		},
+		fill: { opacity: 1, colors: ['#B10022'] },
+		colors: ['#B10022'],
+		grid: { borderColor: '#e7e7e7', strokeDashArray: 4 },
+		noData: {
+			text: 'No hay datos de ciudades disponibles',
+			align: 'center',
+			verticalAlign: 'middle'
+		}
+	};
+	var ciudadChartEl = document.querySelector("#chartCiudadResidencia");
+	if (ciudadChartEl && typeof ApexCharts !== 'undefined') {
+		setTimeout(function() {
+			var ciudadChart = new ApexCharts(ciudadChartEl, ciudadOptions);
+			ciudadChart.render();
+		}, 250);
+	}
+
+	// Gráfico de profesiones/estudios (barras horizontales)
+	var profLabelsEl = document.getElementById('profesion-labels');
+	var profDataEl = document.getElementById('profesion-data');
+	var profLabels = profLabelsEl ? JSON.parse(profLabelsEl.textContent) : [];
+	var profData = profDataEl ? JSON.parse(profDataEl.textContent) : [];
+	var profOptions = {
+		series: [{
+			name: 'Candidatos',
+			data: profData.length ? profData : []
+		}],
+		chart: {
+			type: 'bar',
+			height: 400,
+			toolbar: { show: false },
+			animations: { enabled: true }
+		},
+		plotOptions: {
+			bar: {
+				horizontal: true,
+				barHeight: '65%',
+				borderRadius: 4,
+				dataLabels: { position: 'center' }
+			}
+		},
+		dataLabels: {
+			enabled: true,
+			formatter: function(val) { return val; },
+			style: {
+				fontSize: '14px',
+				fontWeight: 700,
+				colors: ['#ffffff']
+			}
+		},
+		xaxis: {
+			categories: profLabels,
+			labels: { style: { fontSize: '11px' } },
+			title: { text: 'Cantidad de candidatos' }
+		},
+		yaxis: {
+			labels: { style: { fontSize: '11px' }, maxWidth: 180 }
+		},
+		fill: { opacity: 1, colors: ['#B10022'] },
+		colors: ['#B10022'],
+		grid: { borderColor: '#e7e7e7', strokeDashArray: 4 },
+		noData: {
+			text: 'No hay datos de profesiones disponibles',
+			align: 'center',
+			verticalAlign: 'middle'
+		}
+	};
+	var profChartEl = document.querySelector("#chartProfesionEstudio");
+	if (profChartEl && typeof ApexCharts !== 'undefined') {
+		setTimeout(function() {
+			var profChart = new ApexCharts(profChartEl, profOptions);
+			profChart.render();
+		}, 300);
+	}
+});
+</script>
 {% endblock %}
