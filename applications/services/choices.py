@@ -140,11 +140,10 @@ NIVEL_IDIOMA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     ('B1', 'B1 - Intermedio'),
     ('B2', 'B2 - Intermedio Alto'),
     ('C1', 'C1 - Avanzado'),
-    ('C2', 'C2 - Nativo o Bilingüe'),
+    ('C2', 'C2 - Bilingüe'),
 ]
 
 IDIOMA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
-    ('ES', 'Español'),
     ('EN', 'Inglés'),
     ('FR', 'Francés'),
     ('DE', 'Alemán'),
@@ -154,7 +153,6 @@ IDIOMA_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     ('ZH', 'Chino'),
     ('JP', 'Japonés'),
     ('AR', 'Árabe'),
-    ('OT', 'Otro'),
 ]
 
 TIPO_PROFESION_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [

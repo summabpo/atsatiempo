@@ -68,6 +68,15 @@
         }
     }
     
+    /* Efecto titilante para badge Ver vacantes */
+    @keyframes badge-pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.85; transform: scale(1.05); }
+    }
+    .badge-titile {
+        animation: badge-pulse 1.5s ease-in-out infinite;
+    }
+    
     @media (max-width: 576px) {
         .info-panel-card .card-body,
         .card:not(.info-panel-card) .card-body {
@@ -258,6 +267,53 @@
                     </div>
                 </div>
                 <small class="text-muted d-block mt-2">Progreso general</small>
+            </div>
+            {% if porcentajes %}
+                {% if porcentajes.info_personal.porcentaje >= 100 and porcentajes.educacion.porcentaje >= 100 and porcentajes.experiencia.porcentaje >= 100 and porcentajes.skills.porcentaje >= 100 %}
+            <div class="card-footer">
+                <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" data-bs-toggle="modal" data-bs-target="#modalPerfilCompletado">
+                    <i class="ri-briefcase-line me-2"></i>Ver vacantes <span class="badge bg-primary ms-1 badge-titile">¡Nuevo!</span>
+                </button>
+                <div class="alert alert-info py-2 px-3 mt-2 mb-0 small" role="alert">
+                    <i class="ri-information-line me-1"></i>Ya puedes aplicar a las vacantes disponibles.
+                </div>
+            </div>
+                {% endif %}
+            {% elif data_candidate %}
+                {% if data_candidate.info_personal.porcentaje >= 100 and data_candidate.educacion.porcentaje >= 100 and data_candidate.experiencia.porcentaje >= 100 and data_candidate.skills.porcentaje >= 100 %}
+            <div class="card-footer">
+                <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" data-bs-toggle="modal" data-bs-target="#modalPerfilCompletado">
+                    <i class="ri-briefcase-line me-2"></i>Ver vacantes <span class="badge bg-primary ms-1 badge-titile">¡Nuevo!</span>
+                </button>
+                <div class="alert alert-success py-2 px-3 mt-2 mb-0 small" role="alert">
+                    <i class="ri-information-line me-1"></i>Ya puedes aplicar a las vacantes disponibles.
+                </div>
+            </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal Felicitaciones Perfil Completado -->
+<div class="modal fade" id="modalPerfilCompletado" tabindex="-1" aria-labelledby="modalPerfilCompletadoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center pt-0">
+                <span class="material-symbols-outlined text-success mb-3" style="font-size: 64px;">celebration</span>
+                <h4 class="modal-title fw-bold text-primary mb-3" id="modalPerfilCompletadoLabel">¡Felicitaciones!</h4>
+                <p class="text-secondary mb-4">Ya has completado tu perfil. Ahora puedes ver las vacantes disponibles a las que puedes aplicar o consultar las vacantes a las que has aplicado.</p>
+                <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                    <a href="{% url 'vacantes:vacante_candidato_disponibles' %}" class="btn btn-success">
+                        <i class="ri-briefcase-line me-2"></i>Ver vacantes disponibles
+                    </a>
+                    <a href="{% url 'vacantes:vacante_candidato_aplicadas' %}" class="btn btn-outline-success">
+                        <i class="ri-file-list-3-line me-2"></i>Ver vacantes aplicadas
+                    </a>
+                </div>
             </div>
         </div>
     </div>

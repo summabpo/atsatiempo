@@ -12,6 +12,9 @@ urlpatterns = [
 
     #candidate_user
     path( url_principal+'informacion/basica', candidate_views.candidate_info, name='candidato_info_personal'),
+    path( url_principal+'informacion/basica/upload/imagen', candidate_views.candidato_upload_imagen, name='candidato_upload_imagen'),
+    path( url_principal+'informacion/basica/upload/hoja-vida', candidate_views.candidato_upload_hoja_vida, name='candidato_upload_hoja_vida'),
+    path( url_principal+'informacion/basica/upload/video', candidate_views.candidato_upload_video, name='candidato_upload_video'),
     path( url_principal+'informacion/academica', candidate_views.candidate_info_academy, name='candidato_info_academica'),
     path( url_principal+'informacion/laboral', candidate_views.candidate_info_job, name='candidato_info_laboral'),
     path( url_principal+'informacion/habilidades', candidate_views.candidate_info_skills, name='candidato_info_habilidades'),
