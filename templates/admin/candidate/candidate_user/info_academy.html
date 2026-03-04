@@ -8,6 +8,20 @@ Información Básica | Talent Tray
 {% endblock %}
 
 {% block styles %}
+<style>
+    /* Select2: botón X visible y enfoque en búsqueda al abrir (como info_personal) */
+    #form_estudio .select2-container .select2-selection--single .select2-selection__clear {
+        position: absolute !important;
+        right: 28px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        line-height: 1 !important;
+        opacity: 1 !important;
+    }
+    #form_estudio .select2-container .select2-selection--single .select2-selection__rendered {
+        padding-right: 45px !important;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -332,12 +346,33 @@ Información Básica | Talent Tray
         
         // Ejecutar al cambiar el estado de estudios
         $('#id_estado_estudios').on('change', toggleEstadoEstudiosFields);
+        
+        // Select2: al hacer clic enfoca el campo de búsqueda para escribir (como en info_personal)
+        var select2Options = {
+            width: '100%',
+            placeholder: 'Seleccione una opción',
+            allowClear: true,
+            minimumResultsForSearch: 0,
+            dropdownParent: $('body'),
+            language: {
+                noResults: function() { return 'No se encontraron resultados'; },
+                searching: function() { return 'Buscando...'; }
+            }
+        };
+        $('#id_tipo_estudio, #id_ciudad_id_004, #id_profesion_estudio, #id_estado_estudios').each(function() {
+            var $el = $(this);
+            if ($el.length && !$el.hasClass('select2-hidden-accessible')) {
+                $el.select2(select2Options).on('select2:open', function() {
+                    setTimeout(function() {
+                        var $search = $('.select2-container--open .select2-search__field');
+                        if ($search.length) {
+                            $search[0].focus();
+                        }
+                    }, 100);
+                });
+            }
+        });
     });
-
-    initializeSelect2('#id_tipo_estudio');
-    initializeSelect2('#id_ciudad_id_004');
-    initializeSelect2('#id_profesion_estudio');
-    initializeSelect2('#id_estado_estudios');
     
 </script>
 {% endblock js %}

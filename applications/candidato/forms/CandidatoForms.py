@@ -75,7 +75,7 @@ class CandidatoForm(forms.Form):
     segundo_nombre = forms.CharField(label='SEGUNDO NOMBRE', required=False, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Segundo Nombre'}))
     primer_apellido = forms.CharField(label='PRIMER APELLIDO', required=True, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Primer Apellido'}))
     segundo_apellido = forms.CharField(label='SEGUNDO APELLIDO', required=False, max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Segundo Apellido'}))
-    ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all(), required=True)
+    ciudad_id_004 = forms.ModelChoiceField(label='CIUDAD', queryset=Cat004Ciudad.objects.all().order_by('nombre'), required=True)
     sexo = forms.ChoiceField(label='GENERO', choices=[ ('', '---'), ('M', 'MASCULINO'), ('F', 'FEMENINO')], required=True)
     fecha_nacimiento = forms.DateField(label='FECHA DE NACIMIENTO', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     telefono = forms.CharField(label='TELEFONO'    , required=True , widget=forms.TextInput(attrs={'placeholder': 'Teléfono'}))
@@ -557,9 +557,11 @@ class CandidateForm(forms.Form):
             'class': 'form-control form-control-solid'
         })
     )
+
+    
     ciudad_id_004 = forms.ModelChoiceField(
         label='CIUDAD',
-        queryset=Cat004Ciudad.objects.all(),
+        queryset=Cat004Ciudad.objects.all().order_by('nombre'),
         required=True,
         widget=forms.Select(attrs={
             'class': 'form-select form-select-solid'
@@ -608,112 +610,9 @@ class CandidateForm(forms.Form):
             'class': 'form-control form-control-solid'
         })
     )
-    imagen_perfil = forms.ImageField(
-        label='IMAGEN DE PERFIL',
-        required=False,
-        widget=forms.ClearableFileInput(attrs={
-            'class': 'form-control form-control-solid'
-        })
-    )
-
-    
-    
-    def clean_imagen_perfil(self):
-        imagen_perfil = self.cleaned_data.get('imagen_perfil')
-        
-        # Si el archivo ya se guardó exitosamente en la vista, no validar nada
-        if self.files_saved_in_request.get('imagen_perfil', False):
-            # El archivo ya se guardó en la vista, no procesarlo de nuevo
-            # Retornar None para que Django no intente procesar el archivo nuevamente
-            return None
-        
-        # Si no hay archivo nuevo, retornar None (no es requerido)
-        if not imagen_perfil:
-            return None
-        
-        # Validar solo si hay un nuevo archivo que no fue guardado previamente
-        # Validar extensión (JPG, PNG)
-        import os
-        ext = os.path.splitext(imagen_perfil.name)[1].lower()
-        if ext not in ['.jpg', '.jpeg', '.png']:
-            raise forms.ValidationError('El archivo debe ser una imagen en formato JPG o PNG.')
-        
-        # Validar tamaño (máximo 10 MB)
-        if imagen_perfil.size > 10 * 1024 * 1024:  # 10 MB en bytes
-            raise forms.ValidationError('El archivo no puede superar los 10 MB.')
-        
-        # Django ImageField ya valida automáticamente que sea una imagen válida
-        # No necesitamos validar con PIL aquí para evitar problemas con el archivo cerrado
-        # Si la imagen es inválida, Django lanzará un error automáticamente
-        
-        return imagen_perfil
-    hoja_de_vida = forms.FileField(
-        label='HOJA DE VIDA',
-        required=False,
-        widget=forms.ClearableFileInput(attrs={
-            'class': 'form-control form-control-solid'
-        })
-    )
-    
-    def clean_hoja_de_vida(self):
-        hoja_de_vida = self.cleaned_data.get('hoja_de_vida')
-        
-        # Si el archivo ya se guardó exitosamente en la vista, no validar nada
-        if self.files_saved_in_request.get('hoja_de_vida', False):
-            # El archivo ya se guardó en la vista, no procesarlo de nuevo
-            if self.candidato and self.candidato.hoja_de_vida:
-                return self.candidato.hoja_de_vida
-            return None
-        
-        # Validar solo si hay un nuevo archivo
-        if hoja_de_vida:
-            # Validar extensión (PDF, DOC, DOCX)
-            import os
-            ext = os.path.splitext(hoja_de_vida.name)[1].lower()
-            if ext not in ['.pdf', '.doc', '.docx']:
-                raise forms.ValidationError('El archivo debe ser un documento en formato PDF o Word (.doc, .docx).')
-            
-            # Validar tamaño (máximo 10 MB)
-            if hoja_de_vida.size > 10 * 1024 * 1024:  # 10 MB en bytes
-                raise forms.ValidationError('El archivo no puede superar los 10 MB.')
-        
-        return hoja_de_vida
-    
-    video_perfil = forms.FileField(
-        label='VIDEO DE PERFIL',
-        required=False,
-        widget=forms.ClearableFileInput(attrs={
-            'class': 'form-control form-control-solid'
-        })
-    )
-    
-    def clean_video_perfil(self):
-        video_perfil = self.cleaned_data.get('video_perfil')
-        
-        # Si el archivo ya se guardó exitosamente en la vista, no validar nada
-        if self.files_saved_in_request.get('video_perfil', False):
-            # El archivo ya se guardó en la vista, no procesarlo de nuevo
-            if self.candidato and self.candidato.video_perfil:
-                return self.candidato.video_perfil
-            return None
-        
-        # Validar solo si hay un nuevo archivo
-        if video_perfil:
-            # Validar extensión (MP4)
-            import os
-            ext = os.path.splitext(video_perfil.name)[1].lower()
-            if ext not in ['.mp4']:
-                raise forms.ValidationError('El archivo debe ser un video en formato MP4.')
-            
-            # Validar tamaño (máximo 150 MB)
-            if video_perfil.size > 150 * 1024 * 1024:  # 150 MB en bytes
-                raise forms.ValidationError('El archivo no puede superar los 150 MB.')
-        
-        return video_perfil
-
     perfil = forms.CharField(
         label='Mi perfil',
-        required=False,
+        required=True,
         widget=forms.Textarea(attrs={
             'placeholder': 'Por favor escriba su perfil del candidato aquí.',
             'class': 'form-control form-control-solid',
@@ -795,11 +694,10 @@ class CandidateForm(forms.Form):
     
 
 
-    def __init__(self, *args, instance=None, files_saved_in_request=None, **kwargs):
+    def __init__(self, *args, instance=None, **kwargs):
         super().__init__(*args, **kwargs)
         
         self.candidato = instance  # guardamos el candidato si se va a editar
-        self.files_saved_in_request = files_saved_in_request or {}  # archivos ya guardados exitosamente
 
         # Agregar campos dinámicos de idiomas (similar a la vacante)
         for i in range(1, 3):  # Crearemos hasta 2 pares de campos
@@ -937,9 +835,6 @@ class CandidateForm(forms.Form):
         fecha_nacimiento = cleaned_data.get('fecha_nacimiento')
         numero_documento = cleaned_data.get('numero_documento')
         direccion = cleaned_data.get('direccion')
-        imagen_perfil = cleaned_data.get('imagen_perfil')
-        hoja_de_vida = cleaned_data.get('hoja_de_vida')
-        video_perfil = cleaned_data.get('video_perfil')
         perfil = cleaned_data.get('perfil')
         motivadores = cleaned_data.get('motivadores')
         
@@ -1034,7 +929,6 @@ class CandidateForm(forms.Form):
 
         # validación motivadores
         # motivadores puede venir como QuerySet, lista de objetos, o lista de dicts (cuando se inicializa desde JSON)
-        print(motivadores)
         motivadores_count = 0
         if motivadores:
             # Si es QuerySet o lista de objetos

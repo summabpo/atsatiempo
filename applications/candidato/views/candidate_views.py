@@ -27,6 +27,78 @@ from applications.usuarios.models import UsuarioBase
 #views
 @login_required
 @validar_permisos('acceso_candidato')
+def candidato_upload_imagen(request):
+    """Sube la imagen de perfil del candidato de forma independiente."""
+    candidato_id = request.session.get('candidato_id')
+    candidato = get_object_or_404(Can101Candidato, pk=candidato_id)
+    if request.method == 'POST' and 'imagen_perfil' in request.FILES:
+        imagen_perfil = request.FILES['imagen_perfil']
+        ext = os.path.splitext(imagen_perfil.name)[1].lower()
+        if ext not in ['.jpg', '.jpeg', '.png']:
+            messages.error(request, 'El archivo debe ser una imagen en formato JPG o PNG.')
+        elif imagen_perfil.size > 10 * 1024 * 1024:
+            messages.error(request, 'El archivo no puede superar los 10 MB.')
+        else:
+            try:
+                candidato.imagen_perfil = imagen_perfil
+                candidato.save(update_fields=['imagen_perfil'])
+                usuario = UsuarioBase.objects.get(id=request.session.get('user_login')['id'])
+                usuario.imagen_perfil = candidato.imagen_perfil
+                usuario.save(update_fields=['imagen_perfil'])
+                messages.success(request, 'Imagen de perfil actualizada exitosamente.')
+            except Exception as e:
+                messages.error(request, 'Error al guardar la imagen. Por favor, intente nuevamente.')
+    return redirect('candidatos:candidato_info_personal')
+
+
+@login_required
+@validar_permisos('acceso_candidato')
+def candidato_upload_hoja_vida(request):
+    """Sube la hoja de vida del candidato de forma independiente."""
+    candidato_id = request.session.get('candidato_id')
+    candidato = get_object_or_404(Can101Candidato, pk=candidato_id)
+    if request.method == 'POST' and 'hoja_de_vida' in request.FILES:
+        hoja_de_vida = request.FILES['hoja_de_vida']
+        ext = os.path.splitext(hoja_de_vida.name)[1].lower()
+        if ext not in ['.pdf', '.doc', '.docx']:
+            messages.error(request, 'El archivo debe ser un documento en formato PDF o Word (.doc, .docx).')
+        elif hoja_de_vida.size > 10 * 1024 * 1024:
+            messages.error(request, 'El archivo no puede superar los 10 MB.')
+        else:
+            try:
+                candidato.hoja_de_vida = hoja_de_vida
+                candidato.save(update_fields=['hoja_de_vida'])
+                messages.success(request, 'Hoja de vida actualizada exitosamente.')
+            except Exception as e:
+                messages.error(request, 'Error al guardar la hoja de vida. Por favor, intente nuevamente.')
+    return redirect('candidatos:candidato_info_personal')
+
+
+@login_required
+@validar_permisos('acceso_candidato')
+def candidato_upload_video(request):
+    """Sube el video de perfil del candidato de forma independiente."""
+    candidato_id = request.session.get('candidato_id')
+    candidato = get_object_or_404(Can101Candidato, pk=candidato_id)
+    if request.method == 'POST' and 'video_perfil' in request.FILES:
+        video_perfil = request.FILES['video_perfil']
+        ext = os.path.splitext(video_perfil.name)[1].lower()
+        if ext not in ['.mp4']:
+            messages.error(request, 'El archivo debe ser un video en formato MP4.')
+        elif video_perfil.size > 20 * 1024 * 1024:
+            messages.error(request, 'El archivo no puede superar los 20 MB.')
+        else:
+            try:
+                candidato.video_perfil = video_perfil
+                candidato.save(update_fields=['video_perfil'])
+                messages.success(request, 'Video de perfil actualizado exitosamente.')
+            except Exception as e:
+                messages.error(request, 'Error al guardar el video. Por favor, intente nuevamente.')
+    return redirect('candidatos:candidato_info_personal')
+
+
+@login_required
+@validar_permisos('acceso_candidato')
 def candidate_info(request):
 
     candidato_id = request.session.get('candidato_id')
@@ -34,112 +106,7 @@ def candidate_info(request):
     candidato = get_object_or_404(Can101Candidato, pk=candidato_id)
 
     if request.method == 'POST':
-        # Inicializar files_saved_in_request
-        files_saved_in_request = {
-            'imagen_perfil': False,
-            'hoja_de_vida': False,
-            'video_perfil': False,
-        }
-        
-        # Validar y guardar archivos primero si son válidos
-        files_saved = False
-        file_errors = {}
-        
-        # Validar y guardar imagen_perfil
-        if 'imagen_perfil' in request.FILES:
-            imagen_perfil = request.FILES['imagen_perfil']
-            
-            # Validar extensión (JPG, PNG)
-            import os
-            ext = os.path.splitext(imagen_perfil.name)[1].lower()
-            if ext not in ['.jpg', '.jpeg', '.png']:
-                file_errors['imagen_perfil'] = 'El archivo debe ser una imagen en formato JPG o PNG.'
-            # Validar tamaño (máximo 10 MB)
-            elif imagen_perfil.size > 10 * 1024 * 1024:  # 10 MB en bytes
-                file_errors['imagen_perfil'] = 'El archivo no puede superar los 10 MB.'
-            else:
-                # Si pasa las validaciones de extensión y tamaño, guardar la imagen inmediatamente
-                # Esto asegura que la imagen se mantenga incluso si hay errores en otros campos
-                try:
-                    candidato.imagen_perfil = imagen_perfil
-                    candidato.save(update_fields=['imagen_perfil'])  # Guardar solo el campo de imagen
-                    files_saved = True
-                    files_saved_in_request['imagen_perfil'] = True
-                    
-                    # Actualizar imagen de perfil en el usuario también
-                    try:
-                        usuario = UsuarioBase.objects.get(id=request.session.get('user_login')['id'])
-                        usuario.imagen_perfil = candidato.imagen_perfil
-                        usuario.save(update_fields=['imagen_perfil'])
-                    except Exception as e:
-                        print(f"Error actualizando imagen de perfil en usuario: {e}")
-                except Exception as e:
-                    file_errors['imagen_perfil'] = 'Error al guardar la imagen. Por favor, intente nuevamente.'
-        
-        # Validar y guardar hoja_de_vida
-        if 'hoja_de_vida' in request.FILES:
-            hoja_de_vida = request.FILES['hoja_de_vida']
-            
-            # Validar extensión (PDF, DOC, DOCX)
-            import os
-            ext = os.path.splitext(hoja_de_vida.name)[1].lower()
-            if ext not in ['.pdf', '.doc', '.docx']:
-                file_errors['hoja_de_vida'] = 'El archivo debe ser un documento en formato PDF o Word (.doc, .docx).'
-            # Validar tamaño (máximo 10 MB)
-            elif hoja_de_vida.size > 10 * 1024 * 1024:  # 10 MB en bytes
-                file_errors['hoja_de_vida'] = 'El archivo no puede superar los 10 MB.'
-            else:
-                # Si pasa todas las validaciones, guardar
-                candidato.hoja_de_vida = hoja_de_vida
-                files_saved = True
-                files_saved_in_request['hoja_de_vida'] = True
-        
-        # Validar y guardar video_perfil
-        if 'video_perfil' in request.FILES:
-            video_perfil = request.FILES['video_perfil']
-            
-            # Validar extensión (MP4)
-            import os
-            ext = os.path.splitext(video_perfil.name)[1].lower()
-            if ext not in ['.mp4']:
-                file_errors['video_perfil'] = 'El archivo debe ser un video en formato MP4.'
-            # Validar tamaño (máximo 20 MB)
-            elif video_perfil.size > 20 * 1024 * 1024:  # 20 MB en bytes
-                file_errors['video_perfil'] = 'El archivo no puede superar los 20 MB.'
-            else:
-                # Si pasa todas las validaciones, guardar
-                candidato.video_perfil = video_perfil
-                files_saved = True
-                files_saved_in_request['video_perfil'] = True
-        
-        # Crear el formulario DESPUÉS de validar y guardar archivos, pasando files_saved_in_request actualizado
-        # Si la imagen ya fue guardada, no pasarla al formulario para evitar validación duplicada
-        files_for_form = request.FILES.copy() if hasattr(request, 'FILES') else {}
-        if files_saved_in_request.get('imagen_perfil', False):
-            # Remover la imagen de los archivos del formulario si ya fue guardada
-            if 'imagen_perfil' in files_for_form:
-                del files_for_form['imagen_perfil']
-        
-        form = CandidateForm(request.POST, files_for_form, instance=candidato, files_saved_in_request=files_saved_in_request)
-        
-        # Si hay errores en archivos, agregarlos al formulario
-        for field, error_msg in file_errors.items():
-            form.add_error(field, error_msg)
-        
-        # Si se validaron archivos correctamente, guardarlos en el candidato
-        # La imagen_perfil ya se guardó arriba si era válida
-        if files_saved:
-            # Guardar hoja_de_vida y video_perfil si fueron validados
-            if files_saved_in_request.get('hoja_de_vida', False) and 'hoja_de_vida' not in file_errors:
-                candidato.hoja_de_vida = request.FILES['hoja_de_vida']
-            if files_saved_in_request.get('video_perfil', False) and 'video_perfil' not in file_errors:
-                candidato.video_perfil = request.FILES['video_perfil']
-            # Guardar solo si hay archivos nuevos (imagen ya se guardó arriba)
-            if files_saved_in_request.get('hoja_de_vida', False) or files_saved_in_request.get('video_perfil', False):
-                candidato.save()
-            # Recargar el candidato para que el formulario tenga los archivos actualizados
-            candidato.refresh_from_db()
-            # NO mostrar mensaje aquí - solo se mostrará cuando el formulario se procese correctamente
+        form = CandidateForm(request.POST, instance=candidato)
 
         if form.is_valid():
             candidato.numero_documento = form.cleaned_data['numero_documento']
@@ -153,17 +120,6 @@ def candidate_info(request):
             candidato.telefono = form.cleaned_data['telefono']
             candidato.direccion = form.cleaned_data['direccion']
             candidato.aspiracion_salarial = form.cleaned_data['aspiracion_salarial']    
-            # Procesar archivos desde el formulario validado
-            # La imagen_perfil ya se guardó arriba si era válida, solo actualizar si hay una nueva que no se guardó antes
-            if form.cleaned_data.get('imagen_perfil') and not files_saved_in_request.get('imagen_perfil', False):
-                candidato.imagen_perfil = form.cleaned_data['imagen_perfil']
-            
-            if 'hoja_de_vida' in request.FILES and 'hoja_de_vida' not in file_errors and not files_saved_in_request.get('hoja_de_vida', False):
-                candidato.hoja_de_vida = request.FILES['hoja_de_vida']
-            
-            if 'video_perfil' in request.FILES and 'video_perfil' not in file_errors and not files_saved_in_request.get('video_perfil', False):
-                candidato.video_perfil = request.FILES['video_perfil']
-            
             candidato.email = form.cleaned_data['email']
             candidato.perfil = form.cleaned_data['perfil']
             
@@ -215,18 +171,6 @@ def candidate_info(request):
             
             candidato.idiomas = idiomas_data if idiomas_data else None
             
-            UsuarioBase.objects.get(id=request.session.get('user_login')['id']).candidato_id_101 = candidato
-            usuario = UsuarioBase.objects.get(id=request.session.get('user_login')['id'])
-            # Actualizar la imagen de perfil en el usuario si hay una nueva
-            # Si la imagen ya se guardó arriba, usar la del candidato; si no, usar la del formulario
-            if files_saved_in_request.get('imagen_perfil', False) and candidato.imagen_perfil:
-                usuario.imagen_perfil = candidato.imagen_perfil
-            elif form.cleaned_data.get('imagen_perfil'):
-                usuario.imagen_perfil = form.cleaned_data['imagen_perfil']
-            elif candidato.imagen_perfil:
-                usuario.imagen_perfil = candidato.imagen_perfil
-            usuario.save()
-            
             candidato.save()
 
             # Mostrar mensaje de éxito solo cuando el formulario se procesa correctamente
@@ -235,18 +179,7 @@ def candidate_info(request):
             return redirect('candidatos:candidato_info_personal')
         else:
             print(form.errors)
-            # Si los archivos ya se guardaron, no mostrar error general, solo los errores específicos
-            if not files_saved:
-                messages.error(request, 'Error al actualizar la información básica.')
-            # Si hay error, recrear el formulario pero manteniendo los archivos de request.FILES
-            # para que se puedan reutilizar en el siguiente envío
-            form = CandidateForm(request.POST, request.FILES, instance=candidato, files_saved_in_request=files_saved_in_request)
-            
-            # Obtener el nombre del archivo de imagen si se guardó
-            imagen_perfil_nombre = None
-            if files_saved_in_request.get('imagen_perfil', False) and candidato.imagen_perfil:
-                import os
-                imagen_perfil_nombre = os.path.basename(candidato.imagen_perfil.name)
+            messages.error(request, 'Error al actualizar la información básica.')
     else:
         initial_data = {
             'email': candidato.email,
@@ -271,9 +204,6 @@ def candidate_info(request):
             'grupo_fit_5': None,
             'motivadores': [item['id'] for item in candidato.motivadores] if candidato.motivadores else [],
             'aspiracion_salarial': candidato.aspiracion_salarial,
-            'imagen_perfil': candidato.imagen_perfil,
-            'hoja_de_vida': candidato.hoja_de_vida,
-            'video_perfil': candidato.video_perfil,
         }
         
         # Inicializar campos de idiomas desde el JSON
@@ -308,11 +238,6 @@ def candidate_info(request):
                     continue
         
         form = CandidateForm(initial=initial_data, instance=candidato)
-        
-        # Inicializar nombres de archivos como None para el caso GET
-        imagen_perfil_nombre = None
-        hoja_de_vida_nombre = None
-        video_perfil_nombre = None
 
     # Obtener descripciones de fit cultural para tooltips
     from applications.cliente.models import Cli077FitCultural
@@ -354,29 +279,11 @@ def candidate_info(request):
 
     context = {
         'form': form,
-        'candidato': candidato,  # Agregar el candidato al contexto para mostrar el video
-        'fit_cultural_descriptions': json.dumps(fit_cultural_descriptions),  # Pasar como JSON
+        'candidato': candidato,
+        'fit_cultural_descriptions': json.dumps(fit_cultural_descriptions),
         'porcentajes': porcentajes,
         'active_section': 'personal',
-        'files_saved_in_request': {
-            'imagen_perfil': False,
-            'hoja_de_vida': False,
-            'video_perfil': False,
-        },
-        'imagen_perfil_nombre': None
     }
-    
-    # Si se guardaron archivos en esta petición, indicarlo en el contexto
-    if request.method == 'POST':
-        if 'files_saved_in_request' in locals():
-            context['files_saved_in_request'] = files_saved_in_request
-        # Si los archivos se guardaron pero hay errores, pasar los nombres de los archivos
-        if 'imagen_perfil_nombre' in locals() and imagen_perfil_nombre:
-            context['imagen_perfil_nombre'] = imagen_perfil_nombre
-        if 'hoja_de_vida_nombre' in locals() and hoja_de_vida_nombre:
-            context['hoja_de_vida_nombre'] = hoja_de_vida_nombre
-        if 'video_perfil_nombre' in locals() and video_perfil_nombre:
-            context['video_perfil_nombre'] = video_perfil_nombre
 
     return render(request, 'admin/candidate/candidate_user/info_personal.html', context)
 
