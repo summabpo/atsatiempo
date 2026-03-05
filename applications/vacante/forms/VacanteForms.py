@@ -1,3 +1,4 @@
+import json
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset, Div, HTML, Field
@@ -2633,11 +2634,15 @@ class VacancyFormAllV2(forms.Form):
         required=False
     )
 
-    profesion_estudio_listado = forms.CharField(
+    profesion_estudio_listado = forms.MultipleChoiceField(
         label='Listado Personalizado de Profesiones',
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Escriba las profesiones...',
+        choices=[],  # Se llena en __init__
+        widget=forms.SelectMultiple(attrs={
+            'class': 'form-select form-select-solid',
+            'data-control': 'select2',
+            'data-placeholder': 'Busque y seleccione las profesiones...',
+            'multiple': 'multiple',
+            'style': 'width: 100%; min-height: 38px;'
         }),
         required=False
     )
@@ -2909,6 +2914,10 @@ class VacancyFormAllV2(forms.Form):
         profesiones = Cli055ProfesionEstudio.objects.filter(estado_id_001=1).order_by('nombre')
         profesion_choices = [('', 'Seleccione una opción...')] + [(p.id, p.nombre) for p in profesiones]
         self.fields['profesion_estudio'].choices = profesion_choices
+
+        # Cargar listado de profesiones para Select2 múltiple
+        profesion_listado_choices = [(str(p.id), p.nombre) for p in profesiones]
+        self.fields['profesion_estudio_listado'].choices = profesion_listado_choices
 
         # Cargar grupos de profesiones
         grupos = Cli075GrupoProfesion.objects.filter(estado=1).order_by('nombre')
@@ -3193,5 +3202,17 @@ class VacancyFormAllV2(forms.Form):
                 self.add_error('cantidad_semestres', 'El campo Cantidad de semestres es obligatorio cuando no está graduado.')
             elif cantidad_semestres < 1 or cantidad_semestres > 20:
                 self.add_error('cantidad_semestres', 'La cantidad de semestres debe estar entre 1 y 20.')
+
+        # Convertir profesion_estudio_listado (lista de IDs) a JSON para almacenamiento
+        listado_ids = cleaned_data.get('profesion_estudio_listado')
+        if isinstance(listado_ids, list):
+            if listado_ids:
+                ids_int = [int(x) for x in listado_ids if str(x).isdigit()]
+                profesiones_obj = Cli055ProfesionEstudio.objects.filter(id__in=ids_int)
+                cleaned_data['profesion_estudio_listado'] = json.dumps([
+                    {"value": p.nombre, "id": p.id} for p in profesiones_obj
+                ])
+            else:
+                cleaned_data['profesion_estudio_listado'] = ""
         
         return cleaned_data

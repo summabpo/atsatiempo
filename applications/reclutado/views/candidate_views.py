@@ -225,12 +225,12 @@ def validar_token_documento(request, token):
                 # Obtener información de la vacante
                 vacante = aplicacion.vacante_id_052
                 
-                # Verificar si hay entrevista asignada
+                # Verificar si hay entrevista asignada (excluir canceladas)
                 from applications.entrevista.models import Cli057AsignacionEntrevista
                 entrevista_asignada = Cli057AsignacionEntrevista.objects.filter(
                     asignacion_vacante=aplicacion,
                     estado_id=1
-                ).first()
+                ).exclude(estado_asignacion=5).first()  # 5=Cancelado
                 
                 tiene_entrevista = entrevista_asignada is not None
                 

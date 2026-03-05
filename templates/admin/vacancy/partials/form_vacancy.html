@@ -643,7 +643,9 @@ window.debugErrors = function() {
                 </div>
                 
                 <div id="campo_listado" class="col-md-6" style="display:none;">
-                    {{ form.profesion_estudio_listado|as_crispy_field }}
+                    <div class="profesiones-listado-field-wrapper">
+                        {{ form.profesion_estudio_listado|as_crispy_field }}
+                    </div>
                 </div>
                 
                 <div class="col-md-4">

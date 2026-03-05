@@ -574,37 +574,18 @@ def detail_vacancy(request, pk):
     FIT_GRUPO_4_IDS = [14, 15, 16]
     FIT_GRUPO_5_IDS = [17, 18, 19, 20]
 
-    # Función para procesar profesion_estudio_listado
-    def procesar_profesion_listado(listado_json):
+    # Función para extraer IDs de profesion_estudio_listado (JSON) para MultipleChoiceField
+    def parse_profesion_listado_ids(listado_json):
+        """Convierte JSON de profesiones a lista de IDs para el campo Select2 múltiple."""
         if not listado_json:
-            return ""
+            return []
         try:
-            # Si es un string JSON, parsearlo y devolverlo como string JSON válido
-            if isinstance(listado_json, str):
-                # Verificar si ya es JSON válido
-                try:
-                    data = json.loads(listado_json)
-                    # Si es una lista de objetos con 'value' e 'id', devolver el JSON original
-                    if isinstance(data, list) and len(data) > 0 and isinstance(data[0], dict) and 'value' in data[0]:
-                        return listado_json
-                    else:
-                        # Si no tiene el formato esperado, convertirlo
-                        return json.dumps([{"value": item, "id": i} for i, item in enumerate(data)])
-                except json.JSONDecodeError:
-                    # Si no es JSON válido, crear el formato correcto
-                    return json.dumps([{"value": listado_json, "id": 0}])
-            else:
-                # Si ya es una lista o dict, convertirlo al formato correcto
-                if isinstance(listado_json, list):
-                    if len(listado_json) > 0 and isinstance(listado_json[0], dict) and 'value' in listado_json[0]:
-                        return json.dumps(listado_json)
-                    else:
-                        return json.dumps([{"value": item, "id": i} for i, item in enumerate(listado_json)])
-                else:
-                    return json.dumps([{"value": str(listado_json), "id": 0}])
-        except (json.JSONDecodeError, TypeError, AttributeError):
-            # Si no es JSON válido, devolver como string simple
-            return json.dumps([{"value": str(listado_json), "id": 0}]) if listado_json else ""
+            data = json.loads(listado_json) if isinstance(listado_json, str) else listado_json
+            if isinstance(data, list):
+                return [str(item.get('id')) for item in data if isinstance(item, dict) and item.get('id')]
+        except (json.JSONDecodeError, TypeError):
+            pass
+        return []
 
     # Construir initial data para el formulario
     initial = {
@@ -634,7 +615,7 @@ def detail_vacancy(request, pk):
         'descripcion_vacante': vacante.descripcion_vacante,
         'tipo_profesion': perfil_vacante.tipo_profesion if perfil_vacante else None,
         'grupo_profesion': perfil_vacante.grupo_profesion_id if perfil_vacante and perfil_vacante.grupo_profesion else None,
-        'profesion_estudio_listado': procesar_profesion_listado(perfil_vacante.profesion_estudio_listado) if perfil_vacante else None,
+        'profesion_estudio_listado': parse_profesion_listado_ids(perfil_vacante.profesion_estudio_listado) if perfil_vacante else [],
     }
 
     # Cargar skills correctamente por grupo

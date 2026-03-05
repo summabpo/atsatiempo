@@ -230,19 +230,19 @@
                                             <i class="bi bi-collection me-1"></i>Listado de Profesiones
                                         </span>
                                     </div>
-                                    {% if vacante.perfil_vacante.profesion_estudio_listado %}
-                                        <div class="mt-3">
-                                            <div class="d-flex flex-wrap gap-2">
-                                                {% for profesion in vacante.perfil_vacante.profesion_estudio_listado|parse_profesiones_json %}
-                                                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle" style="font-size: 0.85rem; font-weight: 500; padding: 0.6em 1em; border-radius: 0.5rem;">
+                                    <div class="mt-3">
+                                        <div class="d-flex flex-column gap-2">
+                                            {% with profesiones_listado=vacante.perfil_vacante.profesion_estudio_listado|parse_profesiones_json %}
+                                                {% for profesion in profesiones_listado %}
+                                                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle align-self-start" style="font-size: 0.85rem; font-weight: 500; padding: 0.6em 1em; border-radius: 0.5rem;">
                                                         <i class="bi bi-mortarboard-fill me-1"></i>{{ profesion }}
                                                     </span>
                                                 {% empty %}
                                                     <span class="text-muted fst-italic">No hay profesiones seleccionadas en el listado.</span>
                                                 {% endfor %}
-                                            </div>
+                                            {% endwith %}
                                         </div>
-                                    {% endif %}
+                                    </div>
                                 </div>
                             {% endif %}
                         </div>
@@ -251,7 +251,8 @@
                 </div>
 
                 <div class="col-lg-4">
-                    <!-- Información del cliente -->
+                    <!-- Información del cliente (oculta para candidatos) -->
+                    {% if request.user.is_authenticated and request.session.grupo_id != 2 %}
                     <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-4 shadow-sm">
                         <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
                             <p class="text-primary my-2 fs-6 fw-semibold">
@@ -422,6 +423,7 @@
                             {% endif %}
                         </div>
                     </div>
+                    {% endif %}
 
                     <!-- Horarios -->
                     <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
