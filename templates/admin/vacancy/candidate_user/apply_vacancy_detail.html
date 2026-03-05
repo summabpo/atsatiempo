@@ -36,8 +36,8 @@ Mis Vacantes aplicadas
             {% include "admin/vacancy/common_template/info_vacancy.html" %}
         </div>
         <div class="col-12 col-md-8">
-            <!-- Autorización de Tratamiento de Datos -->
-            {% if autorizacion_datos %}
+            <!-- Autorización de Tratamiento de Datos (solo si hay entrevista asignada) -->
+            {% if autorizacion_datos and tiene_entrevista %}
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
                     <h2 class="fs-18 fw-semibold mb-0 text-primary">Autorización de Tratamiento de Datos</h2>

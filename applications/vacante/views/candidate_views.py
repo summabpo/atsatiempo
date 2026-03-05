@@ -791,12 +791,12 @@ def apply_vacancy_detail(request, pk):
 
         print(vacancy.vacante_id_052.cargo.id)
 
-        # Verificar si hay entrevista asignada
+        # Verificar si hay entrevista asignada (excluir canceladas)
         from applications.entrevista.models import Cli057AsignacionEntrevista
         entrevista_asignada = Cli057AsignacionEntrevista.objects.filter(
             asignacion_vacante=vacancy,
             estado_id=1
-        ).first()
+        ).exclude(estado_asignacion=5).first()  # 5=Cancelado
         
         tiene_entrevista = entrevista_asignada is not None
         
@@ -962,6 +962,7 @@ def vacancy_available(request):
         'perfil_vacante__lugar_trabajo'
     ).filter(
         estado_id_001=1,
+        estado_vacante__in=[1, 2]
     ).exclude(
         aplicaciones__candidato_101=candidato_id
     ).order_by('-fecha_creacion')

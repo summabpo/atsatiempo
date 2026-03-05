@@ -118,8 +118,8 @@
                 </div>
             </div>
             
-            <!-- Autorización de Tratamiento de Datos -->
-            {% if autorizacion_datos %}
+            <!-- Autorización de Tratamiento de Datos (solo si hay entrevista asignada) -->
+            {% if autorizacion_datos and tiene_entrevista %}
             <div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
                     <h2 class="fs-18 fw-semibold mb-0 text-primary">Autorización de Tratamiento de Datos</h2>
@@ -778,7 +778,7 @@
 
     {% include 'admin/layout/partials/js_files.html' %}
     
-    {% if tiene_entrevista or autorizacion_datos %}
+    {% if tiene_entrevista %}
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

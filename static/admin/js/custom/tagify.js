@@ -27,17 +27,15 @@ function TagifyList(campoId, apiUrl) {
         dropdown: {
             maxItems: 10,
             classname: "tags-look",
-            enabled: 1, // Cambiar a 1 para mostrar dropdown
+            enabled: 1,
             closeOnSelect: false
         }
     };
 
-    // Inicializar Tagify solo si no se ha aplicado antes
     if (!input.classList.contains("tagify-applied")) {
         let tagify = new Tagify(input, opciones);
         input.classList.add("tagify-applied");
 
-        // Cargar datos desde la API
         if (apiUrl) {
             $.ajax({
                 url: apiUrl,
@@ -51,6 +49,60 @@ function TagifyList(campoId, apiUrl) {
             });
         }
     }
+}
+
+/**
+ * Inicializa Tagify para listado de profesiones cargando whitelist desde API primero.
+ * Similar a incializarTagifyLista pero con datos desde API (más confiable que TagifyList).
+ * @param {string} campoId - ID del input
+ * @param {string} apiUrl - URL de la API de profesiones
+ * @param {function} onReady - Callback opcional cuando Tagify está listo (recibe instancia tagify)
+ */
+function TagifyProfesionesFromAPI(campoId, apiUrl, onReady) {
+    let input = document.getElementById(campoId);
+    if (!input) {
+        console.warn(`TagifyProfesiones: campo "${campoId}" no existe.`);
+        return;
+    }
+
+    limpiarTagify(campoId);
+
+    if (!apiUrl) {
+        console.warn('TagifyProfesiones: apiUrl no proporcionada.');
+        return;
+    }
+
+    $.ajax({
+        url: apiUrl,
+        method: 'GET',
+        dataType: 'json',
+        success: function(whitelist) {
+            if (!Array.isArray(whitelist)) whitelist = [];
+            if (!input.classList.contains("tagify-applied")) {
+                let tagify = new Tagify(input, {
+                    whitelist: whitelist,
+                    enforceWhitelist: false,
+                    maxTags: 15,
+                    dropdown: {
+                        maxItems: 15,
+                        classname: "tags-look",
+                        enabled: 1,
+                        closeOnSelect: false
+                    }
+                });
+                input.classList.add("tagify-applied");
+                if (typeof onReady === 'function') onReady(tagify);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('TagifyProfesiones: Error cargando profesiones:', error);
+            if (!input.classList.contains("tagify-applied")) {
+                let tagify = new Tagify(input, { maxTags: 15 });
+                input.classList.add("tagify-applied");
+                if (typeof onReady === 'function') onReady(tagify);
+            }
+        }
+    });
 }
 
 // Funcionalidad por Tagify

@@ -101,27 +101,46 @@ def format_number(value):
     except (ValueError, TypeError):
         return str(value)
 
+def _extraer_nombre_profesion(item):
+    """Extrae el nombre de una profesión desde un item (dict o string)."""
+    if isinstance(item, str):
+        return item.strip() if item.strip() else None
+    if isinstance(item, dict):
+        nombre = item.get('value') or item.get('name') or item.get('nombre') or item.get('label')
+        if nombre:
+            return str(nombre).strip() if str(nombre).strip() else None
+    return None
+
+
 @register.filter(name='parse_profesiones_json')
 def parse_profesiones_json(value):
     """
-    Filtro para parsear el JSON de profesiones y extraer los nombres
-    Ejemplo: [{"value":"Administración","id":9}] -> ["Administración"]
+    Filtro para parsear el JSON de profesiones y extraer los nombres.
+    Soporta: [{"value":"X","id":9}], [{"name":"X"}], ["X"], etc.
     """
     if not value:
         return []
     
     try:
-        # Si ya es una lista, devolverla
-        if isinstance(value, list):
-            return [item.get('value', '') for item in value if isinstance(item, dict)]
-        
-        # Si es un string JSON, parsearlo
+        data = value
         if isinstance(value, str):
-            data = json.loads(value)
-            if isinstance(data, list):
-                return [item.get('value', '') for item in data if isinstance(item, dict)]
+            value_stripped = value.strip()
+            if not value_stripped:
+                return []
+            data = json.loads(value_stripped)
         
-        return []
+        if not isinstance(data, list):
+            return []
+        
+        resultado = []
+        for item in data:
+            if isinstance(item, (str, int, float)):
+                nombre = str(item).strip() if str(item).strip() else None
+            else:
+                nombre = _extraer_nombre_profesion(item)
+            if nombre:
+                resultado.append(nombre)
+        return resultado
     except (json.JSONDecodeError, TypeError, AttributeError):
         return []
 
