@@ -1,0 +1,463 @@
+{% extends 'admin/layout/dashboard_base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+Dashboard Candidato - {{ candidato.nombre_completo }}
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <h3 class="mb-0" style="color: #B10022;">DASHBOARD CANDIDATO</h3>
+        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+            <ol class="breadcrumb align-items-center mb-0 lh-1">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+                        <i class="ri-home-4-line fs-18 text-primary me-1"></i>
+                        <span class="text-secondary fw-medium hover">Inicio</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'accesses:usuarios_candidatos' %}" class="d-flex align-items-center text-decoration-none">
+                        <span class="text-secondary fw-medium hover">Listado de Candidatos</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span class="fw-medium">Detalle del candidato</span>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="d-flex justify-content-start mb-4">
+        <a href="{% url 'accesses:usuarios_candidatos' %}" class="btn btn-outline-secondary py-2 px-4 fw-medium rounded-3 d-flex align-items-center gap-2">
+            <i class="ri-arrow-left-line"></i>
+            Volver
+        </a>
+    </div>
+
+    <!-- Panel superior: presentación del candidato -->
+    <div class="card bg-white border-0 rounded-3 mb-4">
+        <div class="card-header border-0 py-3 px-4 d-flex align-items-center" style="background-color: rgba(177, 0, 34, 0.1);">
+            <h2 class="fs-18 fw-semibold mb-0" style="color: #B10022;">
+                <i class="ri-user-settings-line align-middle me-2"></i>Perfil del candidato
+            </h2>
+        </div>
+        <div class="card-body p-4">
+            <div class="row align-items-center g-4">
+                <div class="col-12 col-sm-6 col-lg-7 d-flex align-items-center gap-4">
+                    <div class="flex-shrink-0">
+                        {% if candidato.imagen_perfil %}
+                        <img src="{{ candidato.imagen_perfil.url }}" alt="{{ candidato.nombre_completo }}" class="rounded-3" style="width: 140px; height: 140px; object-fit: cover;">
+                        {% elif usuario and usuario.imagen_perfil %}
+                        <img src="{{ usuario.imagen_perfil.url }}" alt="{{ candidato.nombre_completo }}" class="rounded-3" style="width: 140px; height: 140px; object-fit: cover;">
+                        {% else %}
+                        <div class="d-flex align-items-center justify-content-center bg-light rounded-3 text-secondary" style="width: 140px; height: 140px;">
+                            <i class="ri-user-line fs-48"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-grow-1">
+                        <h2 class="h3 fw-bold mb-2" style="color: #B10022;">{{ candidato.nombre_completo }}</h2>
+                        <p class="text-body mb-1">
+                            <i class="ri-map-pin-line me-2" style="color: #B10022;"></i>{% if candidato.ciudad_id_004 %}{{ candidato.ciudad_id_004.nombre }}{% else %}—{% endif %}
+                        </p>
+                        <p class="text-body mb-1">
+                            <i class="ri-mail-line me-2" style="color: #B10022;"></i>{{ candidato.email|default:"—" }}
+                        </p>
+                        <p class="text-body mb-0">
+                            <i class="ri-phone-line me-2" style="color: #B10022;"></i>{{ candidato.telefono|default:"—" }}
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-5">
+                    <div class="d-flex flex-wrap gap-3 align-items-center justify-content-end">
+                        <div class="text-end">
+                            <p class="text-body mb-0 fs-14">Fecha de registro</p>
+                            <p class="fw-semibold mb-0" style="color: #B10022;">{% if usuario %}{{ usuario.date_joined|date:"d/m/Y H:i" }}{% else %}—{% endif %}</p>
+                        </div>
+                        <div class="rounded-3 p-3 text-center" style="min-width: 140px; background-color: rgba(177, 0, 34, 0.1);">
+                            <p class="text-body mb-0 fs-14">Vacantes aplicadas</p>
+                            <h3 class="mb-0 fw-bold" style="color: #B10022;">{{ aplicaciones|length }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel con tabs -->
+    <div class="card bg-white border-0 rounded-3 mb-4">
+        <div class="card-header border-0 py-3 px-4 d-flex align-items-center" style="background-color: rgba(177, 0, 34, 0.1);">
+            <h2 class="fs-18 fw-semibold mb-0" style="color: #B10022;">
+                <i class="ri-folder-open-line align-middle me-2"></i>Información del candidato
+            </h2>
+        </div>
+        <div class="card-body p-4">
+            <ul class="nav nav-tabs mb-4" id="candidatoTabs" role="tablist" style="border-bottom: 2px solid rgba(177, 0, 34, 0.2);">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-medium" id="tab-personal" data-bs-toggle="tab" data-bs-target="#pane-personal" type="button" role="tab" aria-controls="pane-personal" aria-selected="true" style="color: #B10022;">
+                        <i class="ri-user-line me-2"></i>Información Personal
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-medium" id="tab-laboral" data-bs-toggle="tab" data-bs-target="#pane-laboral" type="button" role="tab" aria-controls="pane-laboral" aria-selected="false">
+                        <i class="ri-briefcase-line me-2"></i>Información Laboral
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-medium" id="tab-academico" data-bs-toggle="tab" data-bs-target="#pane-academico" type="button" role="tab" aria-controls="pane-academico" aria-selected="false">
+                        <i class="ri-graduation-cap-line me-2"></i>Académico
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-medium" id="tab-vacantes" data-bs-toggle="tab" data-bs-target="#pane-vacantes" type="button" role="tab" aria-controls="pane-vacantes" aria-selected="false">
+                        <i class="ri-file-list-3-line me-2"></i>Vacantes Aplicadas
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="candidatoTabsContent">
+                <!-- Tab Información Personal -->
+                <div class="tab-pane fade show active" id="pane-personal" role="tabpanel" aria-labelledby="tab-personal" tabindex="0">
+                    <div class="row g-4">
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                                <p class="text-muted small mb-1">Documento</p>
+                                <p class="fw-medium mb-0">{{ candidato.numero_documento|default:"—" }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                                <p class="text-muted small mb-1">Género</p>
+                                <p class="fw-medium mb-0">{% if candidato.sexo %}{{ candidato.get_sexo_display }}{% else %}—{% endif %}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                                <p class="text-muted small mb-1">Edad</p>
+                                <p class="fw-medium mb-0">{{ candidato.edad|default:"—" }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                                <p class="text-muted small mb-1">Fecha de nacimiento</p>
+                                <p class="fw-medium mb-0">{% if candidato.fecha_nacimiento %}{{ candidato.fecha_nacimiento|date:"d/m/Y" }}{% else %}—{% endif %}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                                <p class="text-muted small mb-1">Aspiración salarial</p>
+                                <p class="fw-medium mb-0">{% if candidato.aspiracion_salarial %}{{ candidato.aspiracion_salarial|intcomma }}{% else %}—{% endif %}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                                <p class="text-muted small mb-1">Fecha de registro</p>
+                                <p class="fw-medium mb-0">{% if usuario %}{{ usuario.date_joined|date:"d/m/Y H:i" }}{% else %}—{% endif %}</p>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                                <p class="text-muted small mb-1">Dirección</p>
+                                <p class="fw-medium mb-0">{{ candidato.direccion|default:"—" }}</p>
+                            </div>
+                        </div>
+                        {% if candidato.perfil %}
+                        <div class="col-12">
+                            <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                                <p class="text-muted small mb-1">Perfil profesional</p>
+                                <p class="fw-medium mb-0">{{ candidato.perfil }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="col-12 col-md-6">
+                            <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                                <p class="text-muted small mb-1">Hoja de vida</p>
+                                {% if candidato.hoja_de_vida %}
+                                <button type="button" class="btn btn-sm py-1 px-3 fw-medium" style="background-color: rgba(177, 0, 34, 0.1); color: #B10022;" data-bs-toggle="modal" data-bs-target="#modalHojaVida">
+                                    <i class="ri-file-text-line me-1"></i>Ver hoja de vida
+                                </button>
+                                {% else %}
+                                <p class="fw-medium mb-0">—</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Información Laboral -->
+                <div class="tab-pane fade" id="pane-laboral" role="tabpanel" aria-labelledby="tab-laboral" tabindex="0">
+                    {% for exp in experiencias %}
+                    <div class="card border rounded-3 mb-3" style="border-color: rgba(177, 0, 34, 0.2) !important;">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                                <h5 class="fw-bold mb-0" style="color: #B10022;">{{ exp.cargo }}</h5>
+                                {% if exp.activo %}
+                                <span class="badge rounded-pill" style="background-color: rgba(34, 197, 94, 0.2); color: #198754;">Activo</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-body mb-2"><strong>Empresa:</strong> {{ exp.entidad }}</p>
+                            <p class="text-body mb-2"><strong>Sector:</strong> {{ exp.sector|default:"—" }}</p>
+                            <div class="row g-2 mb-2">
+                                <div class="col-12 col-sm-6">
+                                    <p class="text-body mb-0"><strong>Fecha inicio:</strong> {% if exp.fecha_inicial %}{{ exp.fecha_inicial|date:"d/m/Y" }}{% else %}—{% endif %}</p>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <p class="text-body mb-0"><strong>Fecha fin:</strong> {% if exp.fecha_final %}{{ exp.fecha_final|date:"d/m/Y" }}{% elif exp.activo %}Actualidad{% else %}—{% endif %}</p>
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-12 col-sm-6">
+                                    <p class="text-body mb-0"><strong>Modalidad:</strong> {% if exp.modalidad_trabajo %}{{ exp.get_modalidad_trabajo_display }}{% else %}—{% endif %}</p>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <p class="text-body mb-0"><strong>Motivo salida:</strong> {% if exp.motivo_salida %}{{ exp.get_motivo_salida_display }}{% else %}—{% endif %}</p>
+                                </div>
+                            </div>
+                            {% if exp.nombre_jefe %}
+                            <p class="text-body mb-2"><strong>Jefe inmediato:</strong> {{ exp.nombre_jefe }}</p>
+                            {% endif %}
+                            {% if exp.salario %}
+                            <p class="text-body mb-2"><strong>Salario:</strong> {{ exp.salario|intcomma }}</p>
+                            {% endif %}
+                            {% if exp.logro %}
+                            <p class="text-body mb-0"><strong>Logros:</strong><br>{{ exp.logro }}</p>
+                            {% endif %}
+                            {% if exp.certificado_laboral %}
+                            <p class="text-body mt-2 mb-0"><a href="{{ exp.certificado_laboral.url }}" target="_blank" class="fw-medium">Ver certificado laboral</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="ri-briefcase-line fs-48 mb-3 d-block"></i>
+                        <p class="mb-0">No hay información laboral registrada.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Tab Académico -->
+                <div class="tab-pane fade" id="pane-academico" role="tabpanel" aria-labelledby="tab-academico" tabindex="0">
+                    {% for edu in educaciones %}
+                    <div class="card border rounded-3 mb-3" style="border-color: rgba(177, 0, 34, 0.2) !important;">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3" style="color: #B10022;">{{ edu.institucion }}</h5>
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <p class="text-body mb-0"><strong>Tipo de estudio:</strong> {{ edu.mostrar_tipo_estudio }}</p>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <p class="text-body mb-0"><strong>Estado:</strong> {{ edu.mostrar_estado_estudios }}</p>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <p class="text-body mb-0"><strong>Carrera / Título:</strong> {% firstof edu.carrera edu.titulo "—" %}</p>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <p class="text-body mb-0"><strong>Profesión:</strong> {% if edu.profesion_estudio %}{{ edu.profesion_estudio.nombre }}{% else %}—{% endif %}</p>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <p class="text-body mb-0"><strong>Fecha inicio:</strong> {{ edu.fecha_inicial|date:"d/m/Y" }}</p>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <p class="text-body mb-0"><strong>Fecha fin:</strong> {% if edu.fecha_final %}{{ edu.fecha_final|date:"d/m/Y" }}{% else %}—{% endif %}</p>
+                                </div>
+                                {% if edu.ciudad_id_004 %}
+                                <div class="col-12 col-md-6">
+                                    <p class="text-body mb-0"><strong>Ciudad:</strong> {{ edu.ciudad_id_004.nombre }}</p>
+                                </div>
+                                {% endif %}
+                                {% if edu.fortaleza_adquiridas %}
+                                <div class="col-12">
+                                    <p class="text-body mb-0"><strong>Fortalezas adquiridas:</strong><br>{{ edu.fortaleza_adquiridas }}</p>
+                                </div>
+                                {% endif %}
+                                {% if edu.certificacion %}
+                                <div class="col-12">
+                                    <a href="{{ edu.certificacion.url }}" target="_blank" class="fw-medium">Ver certificación</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="ri-graduation-cap-line fs-48 mb-3 d-block"></i>
+                        <p class="mb-0">No hay información académica registrada.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Tab Vacantes Aplicadas -->
+                <div class="tab-pane fade" id="pane-vacantes" role="tabpanel" aria-labelledby="tab-vacantes" tabindex="0">
+                    <div class="default-table-area all-projects">
+                        <div class="table-responsive">
+                            <table class="table align-middle text-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col" class="text-center align-middle">Vacante</th>
+                                        <th scope="col" class="text-center align-middle">Cargo</th>
+                                        <th scope="col" class="text-center align-middle">Cliente</th>
+                                        <th scope="col" class="text-center align-middle">Estado</th>
+                                        <th scope="col" class="text-center align-middle">Fecha aplicación</th>
+                                        <th scope="col" class="text-center align-middle">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in aplicaciones %}
+                                    <tr>
+                                        <td class="text-body">{{ app.vacante_id_052.titulo|default:"—" }}</td>
+                                        <td class="text-body">{% if app.vacante_id_052.cargo %}{{ app.vacante_id_052.cargo.nombre_cargo }}{% else %}—{% endif %}</td>
+                                        <td class="text-body">
+                                            {% if app.vacante_id_052.asignacion_cliente_id_064 and app.vacante_id_052.asignacion_cliente_id_064.id_cliente_asignado %}
+                                                {{ app.vacante_id_052.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}
+                                            {% else %}—{% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ app.obtener_estado_con_color.color }} bg-opacity-10 text-{{ app.obtener_estado_con_color.color }} p-2 fs-12 fw-normal">
+                                                {{ app.obtener_estado_con_color.estado }}
+                                            </span>
+                                        </td>
+                                        <td class="text-body">{{ app.fecha_aplicacion|date:"d/m/Y" }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm bg-primary bg-opacity-10 text-primary py-1 px-2" title="Ver detalle aplicación" data-bs-toggle="modal" data-bs-target="#modalDetalleApp{{ app.id }}">
+                                                <i class="material-symbols-outlined fs-16 align-middle">visibility</i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-body py-5">
+                                            <i class="ri-file-list-3-line fs-48 text-muted d-block mb-2"></i>
+                                            No hay vacantes aplicadas.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Hoja de vida -->
+{% if candidato.hoja_de_vida %}
+<div class="modal fade" id="modalHojaVida" tabindex="-1" aria-labelledby="modalHojaVidaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content rounded-3 border-0">
+            <div class="modal-header border-0 py-3 px-4 d-flex align-items-center" style="background-color: rgba(177, 0, 34, 0.1);">
+                <h2 class="fs-18 fw-semibold mb-0" id="modalHojaVidaLabel" style="color: #B10022;">
+                    <i class="ri-file-text-line align-middle me-2"></i>Hoja de vida - {{ candidato.nombre_completo }}
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-0">
+                {% if ".pdf" in candidato.hoja_de_vida.name|lower %}
+                <iframe src="{{ candidato.hoja_de_vida.url }}" class="w-100 border-0" style="min-height: 70vh; height: 80vh;"></iframe>
+                {% else %}
+                <div class="p-4 text-center">
+                    <p class="text-body mb-0">Este archivo no se puede visualizar en el navegador.</p>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer border-0 py-3 px-4 d-flex justify-content-end gap-2" style="background-color: rgba(177, 0, 34, 0.05);">
+                <a href="{{ candidato.hoja_de_vida.url }}" target="_blank" class="btn py-2 px-4 fw-medium" style="background-color: #B10022; color: white;">
+                    <i class="ri-download-line me-2"></i>Descargar
+                </a>
+                <button type="button" class="btn btn-outline-secondary py-2 px-4 fw-medium" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Modales detalle aplicación vacante -->
+{% for app in aplicaciones %}
+<div class="modal fade" id="modalDetalleApp{{ app.id }}" tabindex="-1" aria-labelledby="modalDetalleApp{{ app.id }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 border-0">
+            <div class="modal-header border-0 py-3 px-4 d-flex align-items-center" style="background-color: rgba(177, 0, 34, 0.1);">
+                <h2 class="fs-18 fw-semibold mb-0" id="modalDetalleApp{{ app.id }}Label" style="color: #B10022;">
+                    <i class="ri-file-list-3-line align-middle me-2"></i>Detalle de aplicación
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                            <p class="text-muted small mb-1">Vacante</p>
+                            <p class="fw-medium mb-0">{{ app.vacante_id_052.titulo|default:"—" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                            <p class="text-muted small mb-1">Cargo</p>
+                            <p class="fw-medium mb-0">{% if app.vacante_id_052.cargo %}{{ app.vacante_id_052.cargo.nombre_cargo }}{% else %}—{% endif %}</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                            <p class="text-muted small mb-1">Cliente</p>
+                            <p class="fw-medium mb-0">{% if app.vacante_id_052.asignacion_cliente_id_064 and app.vacante_id_052.asignacion_cliente_id_064.id_cliente_asignado %}{{ app.vacante_id_052.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}{% else %}—{% endif %}</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                            <p class="text-muted small mb-1">Estado</p>
+                            <span class="badge bg-{{ app.obtener_estado_con_color.color }} bg-opacity-10 text-{{ app.obtener_estado_con_color.color }} p-2 fs-12 fw-normal">
+                                {{ app.obtener_estado_con_color.estado }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                            <p class="text-muted small mb-1">Fecha de aplicación</p>
+                            <p class="fw-medium mb-0">{{ app.fecha_aplicacion|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                            <p class="text-muted small mb-1">Última actualización</p>
+                            <p class="fw-medium mb-0">{{ app.fecha_actualizacion|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
+                    {% if app.usuario_reclutador %}
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                            <p class="text-muted small mb-1">Reclutador asignado</p>
+                            <p class="fw-medium mb-0">{{ app.usuario_reclutador.primer_nombre }} {{ app.usuario_reclutador.primer_apellido|default:"" }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if app.vacante_id_052.usuario_asignado %}
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border" style="background-color: rgba(177, 0, 34, 0.03);">
+                            <p class="text-muted small mb-1">Analista asignado</p>
+                            <p class="fw-medium mb-0">{{ app.vacante_id_052.usuario_asignado.primer_nombre }} {{ app.vacante_id_052.usuario_asignado.primer_apellido|default:"" }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="modal-footer border-0 py-3 px-4 d-flex justify-content-end gap-2" style="background-color: rgba(177, 0, 34, 0.05);">
+                <a href="{% url 'reclutados:reclutados_detalle_admin' app.id %}" class="btn py-2 px-4 fw-medium" style="background-color: #B10022; color: white;">
+                    <i class="ri-external-link-line me-2"></i>Ver detalle completo
+                </a>
+                <button type="button" class="btn btn-outline-secondary py-2 px-4 fw-medium" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<style>
+#candidatoTabs .nav-link { color: #6c757d; border: none; border-radius: 0.25rem 0.25rem 0 0; }
+#candidatoTabs .nav-link:hover { color: #B10022; }
+#candidatoTabs .nav-link.active { color: #B10022 !important; font-weight: 600; border-bottom: 2px solid #B10022; margin-bottom: -2px; background: transparent; }
+</style>
+{% endblock %}

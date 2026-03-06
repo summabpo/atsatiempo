@@ -47,7 +47,7 @@ def create_vacanty(request):
 
 # ver todas las vacantes
 @login_required
-# @validar_permisos(*Permiso.obtener_nombres())
+@validar_permisos('acceso_admin')
 def list_vacanty_all(request):
 
     vacantes = query_vacanty_all()

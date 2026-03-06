@@ -12,6 +12,7 @@ def query_vacanty_all():
         'perfil_vacante',
         'cargo',
         'asignacion_cliente_id_064__id_cliente_asignado',
+        'asignacion_cliente_id_064__id_cliente_maestro',
         'usuario_asignado'
     ).annotate(
         nombre_completo=Concat(

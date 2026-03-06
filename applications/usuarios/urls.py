@@ -13,6 +13,7 @@ from applications.usuarios.views.usuario_admin.UsuarioAdminView import (
     usuarios_listar,
     usuarios_candidatos,
     usuarios_internos,
+    usuario_candidato_detalle,
 )
 urlpatterns = [
     #new
@@ -40,6 +41,7 @@ urlpatterns = [
     path('inicio/administrador', dashboardView.dashboard_administrador, name='inicio_administrador'),
     path('usuarios/listar/', usuarios_listar, name='usuarios_listar'),
     path('usuarios/candidatos/', usuarios_candidatos, name='usuarios_candidatos'),
+    path('usuarios/candidatos/<int:pk>/', usuario_candidato_detalle, name='usuario_candidato_detalle'),
     path('usuarios/internos/', usuarios_internos, name='usuarios_internos'),
     
 

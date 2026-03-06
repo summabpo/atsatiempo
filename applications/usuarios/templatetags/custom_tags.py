@@ -28,6 +28,7 @@ URLS_USUARIOS = [
     'usuarios_listar',
     'usuarios_candidatos',
     'usuarios_internos',
+    'usuario_candidato_detalle',
 ]
 
 
