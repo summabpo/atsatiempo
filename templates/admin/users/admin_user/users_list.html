@@ -65,10 +65,10 @@ Listado de {{ titulo_filtro|default:"Usuarios" }}
 	</div>
 
 	<div class="card bg-white border-0 rounded-3 mb-4">
-		<div class="card-body p-3">
+		<div class="card-body p-4">
 			<div class="row">
 				<div class="col-12">
-					<div class="default-table-area">
+					<div class="default-table-area all-projects">
 						<div class="table-responsive">
 							<table class="table align-middle" id="tableUsers">
 								<thead>
@@ -77,7 +77,7 @@ Listado de {{ titulo_filtro|default:"Usuarios" }}
 										<th scope="col" class="text-center">Documento</th>
 										<th scope="col" class="text-center">Correo</th>
 										<th scope="col" class="text-center">Teléfono</th>
-										{% if ocultar_tipo_usuario %}<th scope="col" class="text-center">Edad</th><th scope="col" class="text-center">Aspiración Salarial</th><th scope="col" class="text-center">Género</th><th scope="col" class="text-center">Fecha de Registro</th>{% endif %}
+										{% if ocultar_tipo_usuario %}<th scope="col" class="text-center">Edad</th><th scope="col" class="text-center">Aspiración Salarial</th><th scope="col" class="text-center">Género</th><th scope="col" class="text-center">Fecha de Registro</th><th scope="col" class="text-center">Acciones</th>{% endif %}
 										{% if mostrar_cliente %}<th scope="col" class="text-center">Cliente</th><th scope="col" class="text-center">Tipo de Cliente</th>{% endif %}
 										{% if not ocultar_tipo_usuario %}<th scope="col" class="text-center">Tipo de Usuario</th>{% endif %}
 									</tr>
@@ -110,6 +110,15 @@ Listado de {{ titulo_filtro|default:"Usuarios" }}
 										<td class="text-body text-center">{% if u.candidato_id_101 %}{% if u.candidato_id_101.aspiracion_salarial is not None %}{{ u.candidato_id_101.aspiracion_salarial|intcomma }}{% else %}-{% endif %}{% else %}-{% endif %}</td>
 										<td class="text-body text-center">{% if u.candidato_id_101 and u.candidato_id_101.sexo %}{{ u.candidato_id_101.get_sexo_display }}{% else %}-{% endif %}</td>
 										<td class="text-body text-center">{{ u.date_joined|date:"d/m/Y" }}</td>
+										<td class="text-center">
+											{% if u.candidato_id_101 %}
+											<a href="{% url 'accesses:usuario_candidato_detalle' u.candidato_id_101.id %}" class="btn btn-sm bg-primary bg-opacity-10 text-primary py-1 px-2" title="Ver detalle">
+												<i class="material-symbols-outlined fs-16 align-middle">visibility</i>
+											</a>
+											{% else %}
+											—
+											{% endif %}
+										</td>
 										{% endif %}
 										{% if mostrar_cliente %}<td class="text-body text-center">{% if u.cliente_id_051 %}{{ u.cliente_id_051.razon_social }}{% else %}-{% endif %}</td><td class="text-body text-center">{% if u.cliente_id_051 %}{{ u.cliente_id_051.get_tipo_cliente_display }}{% else %}-{% endif %}</td>{% endif %}
 										{% if not ocultar_tipo_usuario %}<td class="text-body text-center">{% if u.group %}{{ u.group.name }}{% else %}-{% endif %}</td>{% endif %}
