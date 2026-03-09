@@ -1,6 +1,11 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+<style>
+/* Asteriscos de campos obligatorios en rojo */
+.asteriskField { color: #dc3545 !important; }
+</style>
+
 <!-- Sistema de badges de error simplificado -->
 <script>
 // Función simple para detectar errores
@@ -263,6 +268,7 @@ window.debugErrors = function() {
 
 <form method="post" enctype="multipart/form-data" id="form_vacante_todos">
     {% csrf_token %}
+    <p class="text-muted small mb-4"><span class="text-danger fw-bold">*</span> Los campos marcados con asterisco son obligatorios.</p>
     <div class="tab-content" id="myTabstep2Content">
         
         <div class="tab-pane fade show active" id="pane-data1" role="tabpanel" aria-labelledby="tab-data1" tabindex="0">
@@ -426,8 +432,18 @@ window.debugErrors = function() {
 
     
                 <div class="d-flex align-items-center my-4">
-                    <h6 class="mb-0 pe-3 text-primary fw-bold">Funciones y responsabilides del cargo</h6>
+                    <h6 class="mb-0 pe-3 text-primary fw-bold">Funciones y responsabilidades del cargo Principales del Cargo</h6>
                     <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                </div>
+
+                <div class="alert alert-info border-0 mb-4" role="alert">
+                    <div class="d-flex align-items-start">
+                        <span class="material-symbols-outlined me-2 flex-shrink-0" style="font-size: 24px;">info</span>
+                        <div>
+                            <h6 class="alert-heading fw-semibold mb-2">¿Cómo diligenciar las funciones y responsabilidades?</h6>
+                            <p class="mb-0 small">Mencione las <strong>funciones y responsabilidades principales del cargo</strong> de forma clara y específica. Escriba cada función en un bloque separado, comenzando por las más importantes o frecuentes. Use verbos de acción (ej: "Coordinar", "Supervisar", "Elaborar", "Gestionar") y sea concreto en las tareas que el candidato deberá realizar. La primera función es obligatoria; puede agregar hasta dos funciones adicionales si lo considera necesario.</p>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Bloque 1 de funciones - siempre visible -->

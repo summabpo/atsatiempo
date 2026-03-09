@@ -1,4 +1,5 @@
 import json
+from datetime import date, timedelta
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset, Div, HTML, Field
@@ -2286,7 +2287,7 @@ class VacancyFormAllV2(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=False)
+            ), required=True)
     
     modalidad = forms.ChoiceField(
             label='Modalidad',
@@ -2297,7 +2298,7 @@ class VacancyFormAllV2(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=False)
+            ), required=True)
     
     cantidad_presentar = forms.ChoiceField(
         label='Número de candidatos a presentar',
@@ -2308,7 +2309,7 @@ class VacancyFormAllV2(forms.Form):
                 'placeholder': '-->',
             }
         ),
-        required=False
+        required=True
     )
     
     numero_posiciones = forms.ChoiceField(
@@ -2321,7 +2322,7 @@ class VacancyFormAllV2(forms.Form):
                 'data-placeholder': 'Seleccione una opción',
             }
         ),
-        required=False
+        required=True
     )
 
     fecha_presentacion = forms.DateField(
@@ -2333,13 +2334,13 @@ class VacancyFormAllV2(forms.Form):
                 'type': 'date'
             }
             ),
-            required=False
+            required=True
         )
 
     barrio = forms.CharField(
             label='Barrio',
             max_length=100,
-            required=False,
+            required=True,
             widget=forms.TextInput(
                 attrs={
                     'class': 'form-control form-control-solid',
@@ -2351,7 +2352,7 @@ class VacancyFormAllV2(forms.Form):
     direccion = forms.CharField(
             label='Dirección',
             max_length=100,
-            required=False,
+            required=True,
             widget=forms.TextInput(
                 attrs={
                     'class': 'form-control form-control-solid',
@@ -2370,7 +2371,7 @@ class VacancyFormAllV2(forms.Form):
                 'x-mask:dynamic': "$money($input, ',', '.', 0)",  # <-- sin decimales si no los necesitas
                 'id': 'id_salario'
                 }
-            ), required=False)
+            ), required=True)
     
     tipo_salario = forms.ChoiceField(
             label='Tipo de salario',
@@ -2381,7 +2382,7 @@ class VacancyFormAllV2(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=False)
+            ), required=True)
     
     frecuencia_pago = forms.ChoiceField(
             label='Frecuencia de pago',
@@ -2392,10 +2393,10 @@ class VacancyFormAllV2(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=False)
+            ), required=True)
 
     salario_adicional = forms.DecimalField(
-            label='Salación adicional',
+            label='Salario adicional',
             widget=forms.TextInput(
             attrs={
                 'class': 'form-control form-control-solid',
@@ -2415,7 +2416,7 @@ class VacancyFormAllV2(forms.Form):
             'data-control': 'select2',
             'data-placeholder': 'Seleccione una opción',
             }
-            ), required=False)
+            ), required=True)
 
     edad_final = forms.ChoiceField(
             label='Edad máxima',
@@ -2426,7 +2427,7 @@ class VacancyFormAllV2(forms.Form):
             'data-control': 'select2',
             'data-placeholder': 'Seleccione una opción',
             }
-            ), required=False)
+            ), required=True)
 
     genero = forms.ChoiceField(
             label='Genero',
@@ -2437,7 +2438,7 @@ class VacancyFormAllV2(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=False)
+            ), required=True)
 
     
     
@@ -2450,7 +2451,7 @@ class VacancyFormAllV2(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=False)
+            ), required=True)
     
     otro_motivo = forms.CharField(
         label='Especifique el otro motivo',
@@ -2463,7 +2464,7 @@ class VacancyFormAllV2(forms.Form):
     
     funciones_responsabilidades_1 = forms.CharField(
         label='Función y responsabilidad 1',
-        required=False,
+        required=True,
         widget=forms.Textarea(attrs={
             'class': 'form-control',
             'placeholder': 'Ingrese la primera función y responsabilidad',
@@ -2620,7 +2621,7 @@ class VacancyFormAllV2(forms.Form):
             'data-control': 'select2',
             'data-placeholder': 'Seleccione el tipo',
         }),
-        required=False
+        required=True
     )
 
     grupo_profesion = forms.ChoiceField(
@@ -2654,6 +2655,10 @@ class VacancyFormAllV2(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_id = 'form_vacante_cliente'
 
+        # Fecha de presentación: no puede ser hoy ni fechas pasadas
+        fecha_minima = (date.today() + timedelta(days=1)).isoformat()
+        self.fields['fecha_presentacion'].widget.attrs['min'] = fecha_minima
+
         if cliente_id:
             cargos = Cli068Cargo.objects.filter(cliente=cliente_id).order_by('nombre_cargo')
         else:
@@ -2670,7 +2675,7 @@ class VacancyFormAllV2(forms.Form):
             'data-control': 'select2',
             'data-placeholder': 'Seleccion una opción',
             }
-        ), required=False)
+        ), required=True)
 
         lugares_trabajo = Cat004Ciudad.objects.all().order_by('nombre')
         lugar_trabajo_choices = [('', '----------')] + [(lugar.id, f"{lugar.nombre}") for lugar in lugares_trabajo]
@@ -2684,7 +2689,7 @@ class VacancyFormAllV2(forms.Form):
             'data-control': 'select2',
             'data-placeholder': 'Seleccione una opción',
             }
-            ), required=False)
+            ), required=True)
         
 
         self.fields['tipo_horario'] = forms.ChoiceField(
@@ -2744,7 +2749,7 @@ class VacancyFormAllV2(forms.Form):
         for i in range(1, 4):
             # Nombre único para cada campo, ej: 'tiempo_experiencia_1'
             field_name = f'tiempo_experiencia_{i}'
-            
+            is_required = (i == 1)  # Solo el primer bloque es obligatorio
             # Se añade el campo al diccionario de campos del formulario
             self.fields[field_name] = forms.ChoiceField(
                 label=f'Tiempo de experiencia {i}', # Etiqueta dinámica
@@ -2754,7 +2759,7 @@ class VacancyFormAllV2(forms.Form):
                     'data-control': 'select2',
                     'data-placeholder': 'Seleccione una opción',
                 }),
-                required=False
+                required=is_required
             )   
 
             field_name = f'experiencia_especifica_en_{i}'
@@ -2765,17 +2770,17 @@ class VacancyFormAllV2(forms.Form):
                     'class': 'form-control',
                     'placeholder': 'Ej: Desarrollo de APIs con Django Rest Framework'
                 }),
-                required=False
+                required=is_required
             )
 
-            for i in range(1, 3): # Crearemos hasta 3 pares de campos
+            for j in range(1, 3): # Crearemos hasta 2 pares de campos de idiomas
                 # Nombres de campo para esta iteración
-                idioma_field = f'idioma_{i}'
-                nivel_field = f'nivel_idioma_{i}'
+                idioma_field = f'idioma_{j}'
+                nivel_field = f'nivel_idioma_{j}'
 
                 # Crear y añadir el campo 'idioma'
                 self.fields[idioma_field] = forms.ChoiceField(
-                    label=f'Idioma {i}',
+                    label=f'Idioma {j}',
                     choices=IDIOMA_CHOICES_STATIC,
                     widget=forms.Select(attrs={'class': 'form-select'}),
                     required=False
@@ -2810,7 +2815,7 @@ class VacancyFormAllV2(forms.Form):
                 'data-control': 'select2',
                 'data-placeholder': 'Seleccione una opción',
             }
-            ), required=False)
+            ), required=True)
         
         self.fields['estado_estudio'] = forms.ChoiceField(
             label='¿Graduado?',
@@ -2878,7 +2883,7 @@ class VacancyFormAllV2(forms.Form):
                     'style': 'width: 100%; min-height: 38px;'
                 }
             ), 
-            required=False,
+            required=True,
             help_text='Puede seleccionar máximo 2 motivadores'
         )
         
@@ -2893,7 +2898,7 @@ class VacancyFormAllV2(forms.Form):
                     'id': 'id_comentarios'
                 }
             ),
-            required=False
+            required=True
         )
 
         self.fields['descripcion_vacante'] = forms.CharField(
@@ -2907,7 +2912,7 @@ class VacancyFormAllV2(forms.Form):
                     'id': 'id_descripcion_vacante'
                 }
             ),
-            required=False
+            required=True
         )
 
         # Cargar profesiones específicas
@@ -2997,7 +3002,9 @@ class VacancyFormAllV2(forms.Form):
 
         fecha_presentacion = cleaned_data.get('fecha_presentacion')
         if not fecha_presentacion:
-            self.add_error('fecha_presentacion', 'El campo Fecha de presentación es obligatorio.')   
+            self.add_error('fecha_presentacion', 'El campo Fecha de presentación es obligatorio.')
+        elif fecha_presentacion <= date.today():
+            self.add_error('fecha_presentacion', 'La fecha de presentación debe ser posterior a la fecha actual.')
         lugar_trabajo = cleaned_data.get('lugar_trabajo')
         if not lugar_trabajo:
             self.add_error('lugar_trabajo', 'El campo Ciudad es obligatorio.')

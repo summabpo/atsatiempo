@@ -78,11 +78,13 @@ EDAD_CHOICES_STATIC = [('', 'Seleccione una opción... ')] + [
 
 TIEMPO_EXPERIENCIA_CHOICES_STATIC = [('', 'Seleccione una opción... ')] + [
     (6, 'Sin Experiencia'),
+    (0, '6 meses'),
     (1, '1 año'),
     (2, '2 años'),
     (3, '3 años'),
     (4, '4 años'),
     (5, '5 años o más'),
+    
 ]
 
 FRECUENCIA_PAGO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [

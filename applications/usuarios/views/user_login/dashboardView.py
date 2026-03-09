@@ -64,6 +64,14 @@ def dashboard_candidato(request):
 
 
 @login_required
+@validar_permisos('acceso_cliente')
+def dashboard_cliente(request):
+    """ Vista que carga la página de inicio y muestra variables de sesión """
+    context = {}
+    return render(request, 'admin/dashboard/dashboard_client.html', context)
+
+
+@login_required
 @validar_permisos('acceso_admin')
 def dashboard_administrador(request):
     """Dashboard administrador. Cada panel se genera desde views.commons.dashboard_panels."""

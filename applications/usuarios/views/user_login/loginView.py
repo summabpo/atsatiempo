@@ -274,7 +274,7 @@ def dashboard_begin(request):
     if session_variables['grupo_id'] == 3:
         print('Sesion Cliente')
         cliente_id = request.session.get('cliente_id')
-        # vacantes_pendiente_cliente = info_vacantes_pendientes(cliente_id)
+        return redirect('accesses:inicio_cliente')
     else:
         vacantes_pendiente_cliente = None  
 

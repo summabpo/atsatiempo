@@ -295,6 +295,7 @@ class Cli077FitCultural(models.Model):
 class Cli078MotivadoresCandidato(models.Model):
     estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, db_column='estado_id_004')
     nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True, null=True)
     
     def __str__(self):
         return self.nombre
