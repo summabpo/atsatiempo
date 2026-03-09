@@ -35,6 +35,9 @@ urlpatterns = [
     path('mi_perfil/actualizar-imagen/', loginView.actualizar_imagen_perfil, name='actualizar_imagen_perfil'),
     #candidate
     path('inicio/candidato', dashboardView.dashboard_candidato, name='inicio_candidato'),
+
+    #client_user
+    path('cliente/inicio', dashboardView.dashboard_cliente, name='inicio_cliente'),
     
     
     #administrador
