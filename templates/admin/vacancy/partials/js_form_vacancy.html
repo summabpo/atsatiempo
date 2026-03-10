@@ -90,16 +90,11 @@ $(document).ready(function() {
         }
     });
 
-    // Motivadores Candidato - Selección múltiple con máximo 2
+    // Motivadores Candidato - Checkboxes con máximo 2
     function validarMaximoMotivadores() {
-        const valoresMotivador = $('#id_motivadores_candidato').val();
-        
-        if (Array.isArray(valoresMotivador) && valoresMotivador.length > 2) {
-            // Remover la última selección
-            const valoresValidos = valoresMotivador.slice(0, 2);
-            $('#id_motivadores_candidato').val(valoresValidos).trigger('change');
-            
-            // Mostrar mensaje de advertencia
+        const $checked = $('input.motivador-checkbox:checked');
+        if ($checked.length > 2) {
+            $checked.last().prop('checked', false);
             if (typeof toastr !== 'undefined') {
                 toastr.warning('Solo puede seleccionar máximo 2 motivadores');
             } else {
@@ -108,11 +103,13 @@ $(document).ready(function() {
         }
     }
 
-    $('#id_motivadores_candidato').on('change', function() {
+    $(document).on('change', 'input.motivador-checkbox', function() {
         validarMaximoMotivadores();
     });
 
     // Función para mostrar/ocultar campo cantidad_semestres
+    // Nota: No usamos required HTML5 para evitar "An invalid form control is not focusable"
+    // cuando el campo está en un tab oculto. La validación se hace en validarCantidadSemestres().
     function toggleCantidadSemestres() {
         const estadoEstudio = $('#id_estado_estudio').val();
         const cantidadSemestresContainer = $('#cantidad_semestres_container');
@@ -121,7 +118,7 @@ $(document).ready(function() {
         if (estadoEstudio === 'False' || estadoEstudio === false) {
             // Mostrar campo si no está graduado
             cantidadSemestresContainer.show();
-            cantidadSemestresField.prop('required', true);
+            cantidadSemestresField.removeAttr('required');
             
             // Limpiar validaciones previas
             cantidadSemestresField.removeClass('is-invalid is-valid');
@@ -130,7 +127,7 @@ $(document).ready(function() {
         } else {
             // Ocultar campo si está graduado
             cantidadSemestresContainer.hide();
-            cantidadSemestresField.prop('required', false);
+            cantidadSemestresField.removeAttr('required');
             cantidadSemestresField.val(''); // Limpiar el valor
             
             // Limpiar validaciones
@@ -138,6 +135,9 @@ $(document).ready(function() {
             cantidadSemestresField.closest('.form-group').find('.invalid-feedback').remove();
         }
     }
+
+    // Ejecutar al cargar para establecer estado inicial
+    toggleCantidadSemestres();
 
     // Event listener para cambio de estado de estudio
     $('#id_estado_estudio').on('change', function() {
@@ -538,36 +538,7 @@ initializeSelect2('#id_profesion_estudio');
 initializeSelect2('#id_frecuencia_pago');
 initializeSelect2('#id_nivel_idioma');
 initializeSelect2('#id_motivo_vacante');
-// Inicializar Select2 para motivadores con selección múltiple
-$('#id_motivadores_candidato').select2({
-    placeholder: 'Seleccione máximo 2 opciones',
-    allowClear: true,
-    maximumSelectionLength: 2,
-    width: '100%',
-    dropdownParent: $('body'),
-    language: {
-        maximumSelected: function (e) {
-            return "Solo puede seleccionar máximo " + e.maximum + " opciones";
-        }
-    }
-}).on('select2:open', function() {
-    setTimeout(function() {
-        var $search = $('.select2-container--open .select2-search__field');
-        if ($search.length) {
-            $search[0].focus();
-        }
-    }, 100);
-}).on('select2:open select2:close', function() {
-    // Asegurar ancho y altura correctos después de abrir/cerrar
-    $('.motivadores-field-wrapper .select2-container').css({
-        'width': '100%',
-        'min-height': '38px'
-    });
-    $('.motivadores-field-wrapper .select2-selection').css({
-        'width': '100%',
-        'min-height': '38px'
-    });
-});
+// Motivadores: checkboxes (sin Select2)
 
 initializeSelect2('#id_estudios_complementarios_certificado_1');
 initializeSelect2('#id_estudios_complementarios_certificado_2');

@@ -18,6 +18,22 @@ from applications.vacante.models import Cli052Vacante
 #choices
 from applications.services.choices import EDAD_SELECT_CHOICES_STATIC, IDIOMA_CHOICES_STATIC, NIVEL_CHOICHES_STATIC, NIVEL_IDIOMA_CHOICES_STATIC, TIPO_CLIENTE_STATIC, EDAD_CHOICES_STATIC, GENERO_CHOICES_STATIC, TIEMPO_EXPERIENCIA_CHOICES_STATIC, MODALIDAD_CHOICES_STATIC, JORNADA_CHOICES_STATIC, TIPO_HORARIO_CHOICES_STATIC, TIPO_PROFESION_CHOICES_STATIC, TIPO_SALARIO_CHOICES_STATIC, FRECUENCIA_PAGO_CHOICES_STATIC, NIVEL_ESTUDIO_CHOICES_STATIC, TERMINO_CONTRATO_CHOICES_STATIC, HORARIO_CHOICES_STATIC, MOTIVO_VACANTE_CHOICES_STATIC
 
+
+class CheckboxSelectMultipleWithTitle(forms.CheckboxSelectMultiple):
+    """Widget que añade atributo title a cada checkbox para mostrar descripción al pasar el cursor."""
+    def __init__(self, attrs=None, titles=None):
+        super().__init__(attrs)
+        self.titles = titles or {}
+
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex, attrs)
+        if value and str(value) in self.titles:
+            title_text = self.titles[str(value)]
+            if title_text:
+                option['attrs']['title'] = title_text
+        return option
+
+
 class VacanteForm(forms.Form):
     # EXPERIENCIA_TIEMPO = [
     #     ('', 'Seleccione una opción... '),
@@ -2649,6 +2665,9 @@ class VacancyFormAllV2(forms.Form):
     )
     
     def __init__(self, *args, cliente_id=None, **kwargs):
+        # Extraer initial antes de super() para validar fecha_presentacion en modo edición
+        initial_data = kwargs.get('initial', {})
+
         super(VacancyFormAllV2, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
@@ -2656,8 +2675,21 @@ class VacancyFormAllV2(forms.Form):
         self.helper.form_id = 'form_vacante_cliente'
 
         # Fecha de presentación: no puede ser hoy ni fechas pasadas
-        fecha_minima = (date.today() + timedelta(days=1)).isoformat()
-        self.fields['fecha_presentacion'].widget.attrs['min'] = fecha_minima
+        # En modo edición con fecha pasada, no establecer min para evitar error "not focusable"
+        initial_fecha = initial_data.get('fecha_presentacion') if isinstance(initial_data, dict) else None
+        if initial_fecha:
+            try:
+                from datetime import datetime
+                fecha_val = datetime.strptime(str(initial_fecha)[:10], '%Y-%m-%d').date() if initial_fecha else None
+                initial_fecha_pasada = fecha_val and fecha_val <= date.today()
+            except (ValueError, TypeError):
+                initial_fecha_pasada = False
+        else:
+            initial_fecha_pasada = False
+
+        if not initial_fecha_pasada:
+            fecha_minima = (date.today() + timedelta(days=1)).isoformat()
+            self.fields['fecha_presentacion'].widget.attrs['min'] = fecha_minima
 
         if cliente_id:
             cargos = Cli068Cargo.objects.filter(cliente=cliente_id).order_by('nombre_cargo')
@@ -2869,20 +2901,17 @@ class VacancyFormAllV2(forms.Form):
             )
 
         motivadores = Cli078MotivadoresCandidato.objects.filter(estado=1).order_by('id')
-        motivadores_choices = [(motivador.id, f"{motivador.nombre}") for motivador in motivadores]
+        motivadores_choices = [(str(motivador.id), f"{motivador.nombre}") for motivador in motivadores]
+        motivadores_titles = {str(m.id): (m.descripcion or m.nombre) for m in motivadores}
+        self.motivadores_con_descripcion = [(str(m.id), m.nombre, m.descripcion or '') for m in motivadores]
 
         self.fields['motivadores_candidato'] = forms.MultipleChoiceField(
             label='Motivadores del candidato (máximo 2)',
             choices=motivadores_choices,
-            widget=forms.SelectMultiple(
-                attrs={
-                    'class': 'form-select form-select-solid',
-                    'data-control': 'select2',
-                    'data-placeholder': 'Seleccione máximo 2 opciones',
-                    'multiple': 'multiple',
-                    'style': 'width: 100%; min-height: 38px;'
-                }
-            ), 
+            widget=CheckboxSelectMultipleWithTitle(
+                attrs={'class': 'form-check-input motivador-checkbox'},
+                titles=motivadores_titles
+            ),
             required=True,
             help_text='Puede seleccionar máximo 2 motivadores'
         )

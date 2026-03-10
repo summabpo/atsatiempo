@@ -353,7 +353,7 @@ def edit_vacanty_from_client(request, pk, vacante_id):
         'nivel_estudio': perfil_vacante.nivel_estudio if perfil_vacante else None,
         'estado_estudio': perfil_vacante.estado_estudio if perfil_vacante else None,
         'cantidad_semestres': perfil_vacante.cantidad_semestres if perfil_vacante else None,
-        'motivadores_candidato': list(vacante.motivadores.values_list('id', flat=True)) if vacante.motivadores.exists() else [],
+        'motivadores_candidato': [str(x) for x in vacante.motivadores.values_list('id', flat=True)] if vacante.motivadores.exists() else [],
         'comentarios': vacante.comentarios,
         'descripcion_vacante': vacante.descripcion_vacante,
         'tipo_profesion': perfil_vacante.tipo_profesion if perfil_vacante else None,
