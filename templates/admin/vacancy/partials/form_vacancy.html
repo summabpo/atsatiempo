@@ -4,6 +4,14 @@
 <style>
 /* Asteriscos de campos obligatorios en rojo */
 .asteriskField { color: #dc3545 !important; }
+/* Motivadores: grid con subdescripción */
+#id_motivadores_candidato {
+    list-style: none;
+    padding-left: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem 1.5rem;
+}
 </style>
 
 <!-- Sistema de badges de error simplificado -->
@@ -896,9 +904,30 @@ Aquí podrás señalar qué factores predominan en tu empresa o en el rol: estab
                         Selecciona máximo <b>2 motivadores principales</b> que reflejen la propuesta de valor de tu empresa o del cargo. Esto ayudará a generar una conexión auténtica con los candidatos.
                     </p>
                 </div>
-                <div class="col-md-12">
-                    <div class="motivadores-field-wrapper">
-                        {{ form.motivadores_candidato|as_crispy_field }}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label class="form-label">Motivadores del candidato (máximo 2) <span class="asteriskField">*</span></label>
+                            <ul class="list-unstyled mb-0" id="id_motivadores_candidato">
+                                {% for value, nombre, descripcion in form.motivadores_con_descripcion %}
+                                <li class="form-check mb-3">
+                                    <div class="border rounded p-3 bg-white">
+                                        <input type="checkbox" name="motivadores_candidato" value="{{ value }}" id="id_motivadores_candidato_{{ forloop.counter0 }}" class="form-check-input motivador-checkbox" title="{{ descripcion }}" {% if form.motivadores_candidato.value and value in form.motivadores_candidato.value %}checked{% endif %}>
+                                        <label class="form-check-label w-100" for="id_motivadores_candidato_{{ forloop.counter0 }}">
+                                            <span class="fw-semibold">{{ nombre }}</span>
+                                            {% if descripcion %}
+                                            <small class="d-block text-muted mt-1" style="font-size: 0.85rem;">{{ descripcion }}</small>
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            <small class="form-text text-muted">Puede seleccionar máximo 2 motivadores</small>
+                            {% if form.motivadores_candidato.errors %}
+                            <div class="invalid-feedback d-block">{{ form.motivadores_candidato.errors }}</div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div> 
                 <div class="col-md-12">

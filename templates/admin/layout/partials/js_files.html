@@ -42,6 +42,10 @@
 
 <script>
     document.addEventListener('alpine:init', () => {
-        Alpine.plugin(window.mask);
+        if (typeof window.mask === 'function') {
+            Alpine.plugin(window.mask);
+        } else if (window.mask && typeof window.mask.default === 'function') {
+            Alpine.plugin(window.mask.default);
+        }
     });
 </script>
