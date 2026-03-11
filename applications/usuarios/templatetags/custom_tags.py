@@ -442,26 +442,30 @@ def parse_estudios_complementarios(value):
 @register.filter(name='extract_vacancy_sections')
 def extract_vacancy_sections(description):
     """
-    Filtro para extraer secciones específicas de la descripción de la vacante
-    Devuelve una lista de diccionarios con 'title' y 'items'
+    Filtro para extraer secciones específicas de la descripción de la vacante.
+    Devuelve una lista de diccionarios con 'title' y 'items' en este orden:
+    formación, experiencia, funciones, idioma, horarios, salario.
     """
     if not description:
         return []
     
-    sections_to_extract = [
-        'FUNCIONES Y RESPONSABILIDADES',
-        'EXPERIENCIA REQUERIDA',
+    # Orden de visualización: formación → experiencia → funciones → idioma → horarios → salario
+    display_order = [
         'PERFIL ACADÉMICO',
         'ESTUDIOS COMPLEMENTARIOS',
+        'EXPERIENCIA REQUERIDA',
+        'FUNCIONES Y RESPONSABILIDADES',
         'IDIOMAS',
-        'HORARIO DE TRABAJO'
+        'HORARIO DE TRABAJO',
+        'OFERTA SALARIAL',
     ]
+    
+    sections_to_extract = list(display_order)
     
     unwanted_sections = [
         'INFORMACIÓN DEL CARGO',
         'COMPETENCIAS Y HABILIDADES',
         'FIT CULTURAL',
-        'OFERTA SALARIAL',
         'ÚNETE A NUESTRO EQUIPO',
         'OPORTUNIDAD LABORAL'
     ]
@@ -522,4 +526,13 @@ def extract_vacancy_sections(description):
             'items': current_items
         })
     
-    return extracted_sections 
+    # Ordenar según display_order (formación, experiencia, funciones, idioma, horarios, salario)
+    def section_sort_key(s):
+        title = s.get('title', '')
+        for i, ordered in enumerate(display_order):
+            if ordered in title:
+                return i
+        return len(display_order)
+    
+    extracted_sections.sort(key=section_sort_key)
+    return extracted_sections

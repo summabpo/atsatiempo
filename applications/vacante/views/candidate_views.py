@@ -958,8 +958,12 @@ def vacancy_available(request):
 
     # Filtrar las vacantes disponibles para el candidato
     vacantes_disponibles = Cli052Vacante.objects.select_related(
-        'perfil_vacante', 
-        'perfil_vacante__lugar_trabajo'
+        'perfil_vacante',
+        'perfil_vacante__lugar_trabajo',
+        'cargo',
+        'asignacion_cliente_id_064',
+        'asignacion_cliente_id_064__id_cliente_maestro',
+        'asignacion_cliente_id_064__id_cliente_asignado',
     ).filter(
         estado_id_001=1,
         estado_vacante__in=[1, 2]

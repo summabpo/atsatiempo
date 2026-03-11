@@ -41,6 +41,10 @@ Inicio | Dashboard
         transform: translateY(-2px);
         opacity: 0.8;
     }
+    .vacancy-sections .vacancy-section:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+    }
 </style>
 {% endblock %}
 
@@ -183,8 +187,8 @@ Inicio | Dashboard
                                         <div class="job-card d-flex align-items-center border rounded border-primary border-opacity-25 px-3 py-2">
                                             <div class="row w-100">
                                                 <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
-                                                    {% if vacante.asignacion_cliente_id_064.id_cliente_asignado.logo %}
-                                                        <img src="{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.logo.url }}" alt="Logo Cliente" class="img-fluid rounded-circle mb-4" style="width: 80px; height: 80px; object-fit: cover;">
+                                                    {% if vacante.asignacion_cliente_id_064 and vacante.asignacion_cliente_id_064.id_cliente_maestro and vacante.asignacion_cliente_id_064.id_cliente_maestro.logo %}
+                                                        <img src="{{ vacante.asignacion_cliente_id_064.id_cliente_maestro.logo.url }}" alt="Logo Cliente Maestro" class="img-fluid rounded-circle mb-4" style="width: 80px; height: 80px; object-fit: cover;">
                                                     {% else %}
                                                         <img src="{% static 'admin/images/blank.png' %}" alt="Logo por defecto" class="img-fluid rounded-circle mb-2" style="width: 60px; height: 60px; object-fit: cover;">
                                                     {% endif %}
@@ -192,18 +196,18 @@ Inicio | Dashboard
                                                 </div>
                                                 <div class="col-md-10">
                                                     <h5 class="job-title">{{ vacante.titulo|upper }}</h5>
-                                                    <p class="job-meta"><b>{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}</b>. - Hace {{ vacante.fecha_creacion|timesince }}</p>
+                                                    <p class="job-meta">{% if vacante.cargo %}<b>{{ vacante.cargo.nombre_cargo }}</b>{% else %}<b>—</b>{% endif %}. - Hace {{ vacante.fecha_creacion|timesince }}</p>
                                                     <p class="job-meta">{{vacante.perfil_vacante.lugar_trabajo.nombre}}</p>
                                                     {% if vacante.descripcion_vacante %}
                                                     {% with sections=vacante.descripcion_vacante|extract_vacancy_sections %}
                                                         {% if sections %}
-                                                        <div class="job-description text-secondary">
+                                                        <div class="job-description text-secondary vacancy-sections">
                                                             {% for section in sections %}
-                                                                <div class="mb-3">
-                                                                    <strong class="d-block mb-2">{{ section.title }}</strong>
-                                                                    <ul class="mb-0 ps-3">
+                                                                <div class="vacancy-section mb-3 pb-3 border-bottom border-light">
+                                                                    <strong class="d-block mb-2 text-dark small text-uppercase">{{ section.title }}</strong>
+                                                                    <ul class="mb-0 ps-3 small">
                                                                         {% for item in section.items %}
-                                                                            <li>{{ item }}</li>
+                                                                            <li class="mb-1">{{ item }}</li>
                                                                         {% endfor %}
                                                                     </ul>
                                                                 </div>
@@ -236,7 +240,7 @@ Inicio | Dashboard
                                                     {% endif %}
 
                                                     <!-- Habilidades -->
-                                                    <div class="job-skills mt-3 mb-3">
+                                                    {% comment %} <div class="job-skills mt-3 mb-3">
                                                         <strong class="text-secondary d-block mb-2">
                                                             <span class="material-symbols-outlined align-middle text-primary" style="font-size: 1.1em;">psychology_alt</span>
                                                             Skills
@@ -248,7 +252,7 @@ Inicio | Dashboard
                                                                 <span class="badge bg-opacity-10 bg-primary py-1 px-2 text-primary rounded-1 fw-medium fs-12">{{skill.nombre}}</span>
                                                             {% endfor %}
                                                         {% endif %}
-                                                    </div>
+                                                    </div> {% endcomment %}
                                                 </div>
                                             </div>
                                         </div>

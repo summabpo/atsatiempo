@@ -749,6 +749,10 @@ class CandidateForm(forms.Form):
                 except (json.JSONDecodeError, TypeError, AttributeError, IndexError):
                     pass
 
+        # Lista de motivadores con descripción para tooltip al pasar el puntero
+        motivadores_qs = Cli078MotivadoresCandidato.objects.filter(estado_id=1).order_by('id')
+        self.motivadores_con_descripcion = [(m.id, m.nombre, m.descripcion or '') for m in motivadores_qs]
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         # self.helper.layout = Layout(

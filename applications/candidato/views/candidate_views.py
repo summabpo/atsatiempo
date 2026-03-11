@@ -248,6 +248,12 @@ def candidate_info(request):
         if item.descripcion:
             fit_cultural_descriptions[str(item.id)] = item.descripcion
 
+    # IDs de motivadores seleccionados (para checkboxes y re-render tras POST)
+    if form.is_bound and form.motivadores.value():
+        motivadores_selected_ids = list(form.motivadores.value().values_list('pk', flat=True))
+    else:
+        motivadores_selected_ids = form.initial.get('motivadores', [])
+
     # Calcular porcentajes de completitud
     from applications.services.service_candidate import personal_information_calculation
     porcentajes = personal_information_calculation(candidato.id)
@@ -283,6 +289,7 @@ def candidate_info(request):
         'fit_cultural_descriptions': json.dumps(fit_cultural_descriptions),
         'porcentajes': porcentajes,
         'active_section': 'personal',
+        'motivadores_selected_ids': motivadores_selected_ids,
     }
 
     return render(request, 'admin/candidate/candidate_user/info_personal.html', context)
