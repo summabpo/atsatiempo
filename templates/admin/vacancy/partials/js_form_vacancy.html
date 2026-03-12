@@ -396,6 +396,89 @@ $(document).ready(function() {
         }, 100);
     });
 
+    // Funcionalidad para bloques de requerimientos especiales
+    function toggleBloquesRequerimientos() {
+        $('#requerimientos_bloque_1').removeClass('d-none');
+        
+        const tieneReq2 = $('#id_requerimientos_especiales_2').val() && $('#id_requerimientos_especiales_2').val().trim() !== '';
+        const tieneReq3 = $('#id_requerimientos_especiales_3').val() && $('#id_requerimientos_especiales_3').val().trim() !== '';
+        const tieneReq4 = $('#id_requerimientos_especiales_4').val() && $('#id_requerimientos_especiales_4').val().trim() !== '';
+        const tieneReq5 = $('#id_requerimientos_especiales_5').val() && $('#id_requerimientos_especiales_5').val().trim() !== '';
+        
+        if (tieneReq2) {
+            $('#requerimientos_bloque_2').removeClass('d-none');
+            $('#boton_requerimientos_2').addClass('d-none');
+            if (!tieneReq3) {
+                $('#boton_requerimientos_3').removeClass('d-none');
+            } else {
+                $('#boton_requerimientos_3').addClass('d-none');
+            }
+        } else {
+            $('#requerimientos_bloque_2').addClass('d-none');
+            $('#boton_requerimientos_2').removeClass('d-none');
+            $('#boton_requerimientos_3').addClass('d-none');
+        }
+        
+        if (tieneReq3) {
+            $('#requerimientos_bloque_3').removeClass('d-none');
+            $('#boton_requerimientos_3').addClass('d-none');
+            if (!tieneReq4) {
+                $('#boton_requerimientos_4').removeClass('d-none');
+            } else {
+                $('#boton_requerimientos_4').addClass('d-none');
+            }
+        } else {
+            $('#requerimientos_bloque_3').addClass('d-none');
+            $('#boton_requerimientos_4').addClass('d-none');
+        }
+        
+        if (tieneReq4) {
+            $('#requerimientos_bloque_4').removeClass('d-none');
+            $('#boton_requerimientos_4').addClass('d-none');
+            if (!tieneReq5) {
+                $('#boton_requerimientos_5').removeClass('d-none');
+            } else {
+                $('#boton_requerimientos_5').addClass('d-none');
+            }
+        } else {
+            $('#requerimientos_bloque_4').addClass('d-none');
+            $('#boton_requerimientos_5').addClass('d-none');
+        }
+        
+        if (tieneReq5) {
+            $('#requerimientos_bloque_5').removeClass('d-none');
+            $('#boton_requerimientos_5').addClass('d-none');
+        } else {
+            $('#requerimientos_bloque_5').addClass('d-none');
+        }
+    }
+
+    $('#agregar_requerimientos_2').on('click', function() {
+        $('#requerimientos_bloque_2').removeClass('d-none');
+        $('#boton_requerimientos_2').addClass('d-none');
+        $('#boton_requerimientos_3').removeClass('d-none');
+        setTimeout(function() { $('#id_requerimientos_especiales_2').focus(); }, 100);
+    });
+    $('#agregar_requerimientos_3').on('click', function() {
+        $('#requerimientos_bloque_3').removeClass('d-none');
+        $('#boton_requerimientos_3').addClass('d-none');
+        $('#boton_requerimientos_4').removeClass('d-none');
+        setTimeout(function() { $('#id_requerimientos_especiales_3').focus(); }, 100);
+    });
+    $('#agregar_requerimientos_4').on('click', function() {
+        $('#requerimientos_bloque_4').removeClass('d-none');
+        $('#boton_requerimientos_4').addClass('d-none');
+        $('#boton_requerimientos_5').removeClass('d-none');
+        setTimeout(function() { $('#id_requerimientos_especiales_4').focus(); }, 100);
+    });
+    $('#agregar_requerimientos_5').on('click', function() {
+        $('#requerimientos_bloque_5').removeClass('d-none');
+        $('#boton_requerimientos_5').addClass('d-none');
+        setTimeout(function() { $('#id_requerimientos_especiales_5').focus(); }, 100);
+    });
+
+    toggleBloquesRequerimientos();
+
     // Ejecutar al cargar la página
     toggleBloquesEstudiosComp();
 

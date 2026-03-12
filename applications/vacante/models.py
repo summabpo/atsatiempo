@@ -157,6 +157,7 @@ class Cli052Vacante(models.Model):
     data_asignacion_usuario = models.JSONField(null=True, blank=True)
     asignacion_reclutador = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, null=True, blank=True, related_name='vacantes_asignacion_reclutador')
     data_asignacion_reclutador = models.JSONField(null=True, blank=True)
+    requerimientos_especiales = models.JSONField(null=True, blank=True, help_text="Requerimientos especiales")
 
     def __str__(self):
         return self.titulo

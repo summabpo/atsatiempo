@@ -221,7 +221,8 @@ def create_vacanty_from_client(request, pk):
                 asignacion_cliente_id_064=asignacion_cliente,
                 perfil_vacante=perfil_vacante,
                 descripcion_vacante=form.cleaned_data.get('descripcion_vacante'),
-                comentarios=form.cleaned_data.get('comentarios')
+                comentarios=form.cleaned_data.get('comentarios'),
+                requerimientos_especiales=form.cleaned_data.get('requerimientos_especiales')
             )
             
             # Asignar motivadores múltiples
@@ -433,6 +434,13 @@ def edit_vacanty_from_client(request, pk, vacante_id):
                     bloque = funcion.get('bloque', 1)
                     initial[f'funciones_responsabilidades_{bloque}'] = funcion.get('funcion', '')
 
+    # Requerimientos especiales (en vacante, no en perfil)
+    if vacante.requerimientos_especiales:
+        req_list = vacante.requerimientos_especiales
+        if isinstance(req_list, list):
+            for i, req in enumerate(req_list[:5], start=1):
+                initial[f'requerimientos_especiales_{i}'] = str(req) if req else ''
+
     # Fit cultural
     initial['grupo_fit_1'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_1_IDS).values_list('id', flat=True))
     initial['grupo_fit_2'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_2_IDS).values_list('id', flat=True))
@@ -464,6 +472,7 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             vacante.fecha_presentacion = form.cleaned_data['fecha_presentacion']
             vacante.descripcion_vacante = form.cleaned_data['descripcion_vacante']
             vacante.comentarios = form.cleaned_data['comentarios']
+            vacante.requerimientos_especiales = form.cleaned_data.get('requerimientos_especiales')
             # Actualizar motivadores múltiples
             motivadores_ids = form.cleaned_data.get('motivadores_candidato', [])
             if motivadores_ids:

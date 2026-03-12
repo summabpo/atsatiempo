@@ -2,6 +2,40 @@
 {% load crispy_forms_tags %}
 
 <style>
+/* Tabs vacante: número arriba, texto abajo, centrado. Número = estilo original (wh-48, rounded-circle). Texto sin fondo */
+.wizard-tabs2 .nav-link {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 4px;
+    background: transparent !important;
+    border: none !important;
+}
+.wizard-tabs2 .nav-link .wizard-num {
+    /* Mismo estilo original: círculo wh-48, bg-primary bg-opacity-10 */
+}
+.wizard-tabs2 .nav-link.active .wizard-num {
+    background: rgba(var(--bs-primary-rgb), 0.1) !important;
+    color: #dc3545 !important;
+    font-weight: 500;
+}
+/* Solo el número tiene fondo; el texto sin contenedor/fondo (override global wizard-tabs2 span) */
+.wizard-tabs2 .nav-item .nav-link .wizard-text {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 0;
+    background: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+.wizard-tabs2 .nav-item .nav-link.active .wizard-text {
+    background: none !important;
+    background-color: transparent !important;
+    color: #dc3545 !important;
+}
+.wizard-tabs2 .nav-link .error-badge { top: -2px !important; right: -2px !important; }
+
 /* Asteriscos de campos obligatorios en rojo */
 .asteriskField { color: #dc3545 !important; }
 /* Motivadores: grid con subdescripción */
@@ -82,6 +116,11 @@ const sectionFields = {
         'motivadores_candidato', 'otro_motivador'
     ],
     6: [
+        // Requerimientos adicionales
+        'requerimientos_especiales_1', 'requerimientos_especiales_2', 'requerimientos_especiales_3',
+        'requerimientos_especiales_4', 'requerimientos_especiales_5'
+    ],
+    7: [
         // Comentarios finales
         'comentarios', 'descripcion_vacante'
     ]
@@ -92,7 +131,7 @@ function updateErrorBadges() {
     let firstErrorSection = null;
     
     // Mostrar/ocultar badges
-    for (let section = 1; section <= 6; section++) {
+    for (let section = 1; section <= 7; section++) {
         const badge = document.getElementById(`error-badge-${section}`);
         const hasErrors = hasErrorsInSection(sectionFields[section]);
         
@@ -126,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función de prueba
     window.testErrorBadges = function() {
-        for (let i = 1; i <= 6; i++) {
+        for (let i = 1; i <= 7; i++) {
             const badge = document.getElementById(`error-badge-${i}`);
             if (badge) {
                 badge.style.display = 'block';
@@ -136,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para ocultar badges
     window.hideErrorBadges = function() {
-        for (let i = 1; i <= 6; i++) {
+        for (let i = 1; i <= 7; i++) {
             const badge = document.getElementById(`error-badge-${i}`);
             if (badge) {
                 badge.style.display = 'none';
@@ -178,7 +217,7 @@ window.debugErrors = function() {
         {% endfor %}
         
         // Verificar cada sección
-        for (let section = 1; section <= 6; section++) {
+        for (let section = 1; section <= 7; section++) {
             const hasErrors = hasErrorsInSection(sectionFields[section]);
             console.log(`Sección ${section} tiene errores: ${hasErrors}`);
             if (hasErrors) {
@@ -190,7 +229,7 @@ window.debugErrors = function() {
     {% endif %}
     
     // Verificar si los badges existen
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= 7; i++) {
         const badge = document.getElementById(`error-badge-${i}`);
         console.log(`Badge ${i} existe: ${badge !== null}`);
         if (badge) {
@@ -201,75 +240,59 @@ window.debugErrors = function() {
 </script>
 <ul class="nav nav-tabs justify-content-between border-0 mb-4 wizard-tabs2" id="myTabstep2" role="tablist">
     <li class="nav-item" role="presentation">
-        <button class="nav-link p-0 d-flex align-items-center active" id="tab-data1" data-bs-toggle="tab" data-bs-target="#pane-data1" type="button" role="tab" aria-controls="data1-tab-pane" aria-selected="true">
-            <span class="fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-block position-relative">1
-                <span id="error-badge-1" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;">
-                    <span class="visually-hidden">New alerts</span>
-                </span>
+        <button class="nav-link p-0 d-flex active" id="tab-data1" data-bs-toggle="tab" data-bs-target="#pane-data1" type="button" role="tab" aria-controls="data1-tab-pane" aria-selected="true">
+            <span class="wizard-num fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center position-relative">1
+                <span id="error-badge-1" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;"><span class="visually-hidden">New alerts</span></span>
             </span>
-            <div class="text-start ms-3">
-                <h4 class="fs-18 fw-semibold">Datos Principales</h4>
-            </div>
+            <span class="wizard-text">Datos Principales</span>
         </button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link p-0 d-flex align-items-center" id="tab-data2" data-bs-toggle="tab" data-bs-target="#pane-data2" type="button" role="tab" aria-controls="data2-tab-pane" aria-selected="false">
-            <span class="fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-block position-relative">2
-                <span id="error-badge-2" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;">
-                    <span class="visually-hidden">New alerts</span>
-                </span>
+        <button class="nav-link p-0 d-flex" id="tab-data2" data-bs-toggle="tab" data-bs-target="#pane-data2" type="button" role="tab" aria-controls="data2-tab-pane" aria-selected="false">
+            <span class="wizard-num fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center position-relative">2
+                <span id="error-badge-2" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;"><span class="visually-hidden">New alerts</span></span>
             </span>
-            <div class="text-start ms-3">
-                <h4 class="fs-18 fw-semibold">Requisitos Técnicos</h4>
-            </div>
+            <span class="wizard-text">Requisitos Técnicos</span>
         </button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link p-0 d-flex align-items-center" id="tab-data3" data-bs-toggle="tab" data-bs-target="#pane-data3" type="button" role="tab" aria-controls="data3-tab-pane" aria-selected="false">
-            <span class="fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-block position-relative">3
-                <span id="error-badge-3" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;">
-                    <span class="visually-hidden">New alerts</span>
-                </span>
+        <button class="nav-link p-0 d-flex" id="tab-data3" data-bs-toggle="tab" data-bs-target="#pane-data3" type="button" role="tab" aria-controls="data3-tab-pane" aria-selected="false">
+            <span class="wizard-num fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center position-relative">3
+                <span id="error-badge-3" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;"><span class="visually-hidden">New alerts</span></span>
             </span>
-            <div class="text-start ms-3">
-                <h4 class="fs-18 fw-semibold">Competencias</h4>
-            </div>
+            <span class="wizard-text">Competencias</span>
         </button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link p-0 d-flex align-items-center" id="tab-data4" data-bs-toggle="tab" data-bs-target="#pane-data4" type="button" role="tab" aria-controls="data4-tab-pane" aria-selected="false">
-            <span class="fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-block position-relative">4
-                <span id="error-badge-4" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;">
-                    <span class="visually-hidden">New alerts</span>
-                </span>
+        <button class="nav-link p-0 d-flex" id="tab-data4" data-bs-toggle="tab" data-bs-target="#pane-data4" type="button" role="tab" aria-controls="data4-tab-pane" aria-selected="false">
+            <span class="wizard-num fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center position-relative">4
+                <span id="error-badge-4" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;"><span class="visually-hidden">New alerts</span></span>
             </span>
-            <div class="text-start ms-3">
-                <h4 class="fs-18 fw-semibold">Fit Cultural</h4>
-            </div>
+            <span class="wizard-text">Fit Cultural</span>
         </button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link p-0 d-flex align-items-center" id="tab-data5" data-bs-toggle="tab" data-bs-target="#pane-data5" type="button" role="tab" aria-controls="data5-tab-pane" aria-selected="false">
-            <span class="fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-block position-relative">5
-                <span id="error-badge-5" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;">
-                    <span class="visually-hidden">New alerts</span>
-                </span>
+        <button class="nav-link p-0 d-flex" id="tab-data5" data-bs-toggle="tab" data-bs-target="#pane-data5" type="button" role="tab" aria-controls="data5-tab-pane" aria-selected="false">
+            <span class="wizard-num fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center position-relative">5
+                <span id="error-badge-5" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;"><span class="visually-hidden">New alerts</span></span>
             </span>
-            <div class="text-start ms-3">
-                <h4 class="fs-18 fw-semibold">Motivadores</h4>
-            </div>
+            <span class="wizard-text">Motivadores</span>
         </button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link p-0 d-flex align-items-center" id="tab-data6" data-bs-toggle="tab" data-bs-target="#pane-data6" type="button" role="tab" aria-controls="data6-tab-pane" aria-selected="false">
-            <span class="fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-block position-relative">6
-                <span id="error-badge-6" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;">
-                    <span class="visually-hidden">New alerts</span>
-                </span>
+        <button class="nav-link p-0 d-flex" id="tab-data6" data-bs-toggle="tab" data-bs-target="#pane-data6" type="button" role="tab" aria-controls="data6-tab-pane" aria-selected="false">
+            <span class="wizard-num fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center position-relative">6
+                <span id="error-badge-6" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;"><span class="visually-hidden">New alerts</span></span>
             </span>
-            <div class="text-start ms-3">
-                <h4 class="fs-18 fw-semibold">Comentarios</h4>
-            </div>
+            <span class="wizard-text">Requerimientos adicionales</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link p-0 d-flex" id="tab-data7" data-bs-toggle="tab" data-bs-target="#pane-data7" type="button" role="tab" aria-controls="data7-tab-pane" aria-selected="false">
+            <span class="wizard-num fs-20 fw-bold text-primary wh-48 bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center position-relative">7
+                <span id="error-badge-7" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle error-badge" style="display: none;"><span class="visually-hidden">New alerts</span></span>
+            </span>
+            <span class="wizard-text">Comentarios</span>
         </button>
     </li>
 </ul>
@@ -949,7 +972,102 @@ Aquí podrás señalar qué factores predominan en tu empresa o en el rol: estab
             </div>
         </div>
 
-        <div class="tab-pane fade" id="pane-data6" role="tabpanel" aria-labelledby="teb-data6" tabindex="0">
+        <div class="tab-pane fade" id="pane-data6" role="tabpanel" aria-labelledby="tab-data6" tabindex="0">
+            <h4 class="fs-18 fw-semibold">Requerimientos adicionales</h4>
+            <p class="text-gray-light mb-4">Agregue hasta 5 requerimientos especiales que no estén cubiertos en las secciones anteriores</p>
+            <div class="row mb-4 p-3 border rounded bg-primary bg-opacity-10">
+                <div class="d-flex align-items-center my-4">
+                    <h6 class="mb-0 pe-3 text-primary fw-bold">Requerimientos especiales</h6>
+                    <hr class="flex-grow-1 m-0 border-top border-1 border-secondary opacity-20">
+                </div>
+                <div class="alert alert-info border-0 mb-4" role="alert">
+                    <div class="d-flex align-items-start">
+                        <span class="material-symbols-outlined me-2 flex-shrink-0" style="font-size: 24px;">info</span>
+                        <div>
+                            <h6 class="alert-heading fw-semibold mb-2">Requerimientos especiales</h6>
+                            <p class="mb-0 small">Agregue hasta 5 requerimientos adicionales que no estén cubiertos en los campos anteriores (ej: disponibilidad para viajar, licencia de conducción, etc.)</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Bloque 1 de requerimientos especiales - siempre visible -->
+                <div class="row" id="requerimientos_bloque_1">
+                    <div class="col-md-12">
+                        {{ form.requerimientos_especiales_1|as_crispy_field }}
+                    </div>
+                </div>
+                <!-- Bloque 2 de requerimientos especiales - oculto por defecto -->
+                <div class="row d-none" id="requerimientos_bloque_2">
+                    <div class="col-md-12">
+                        {{ form.requerimientos_especiales_2|as_crispy_field }}
+                    </div>
+                </div>
+                <!-- Bloque 3 de requerimientos especiales - oculto por defecto -->
+                <div class="row d-none" id="requerimientos_bloque_3">
+                    <div class="col-md-12">
+                        {{ form.requerimientos_especiales_3|as_crispy_field }}
+                    </div>
+                </div>
+                <!-- Bloque 4 de requerimientos especiales - oculto por defecto -->
+                <div class="row d-none" id="requerimientos_bloque_4">
+                    <div class="col-md-12">
+                        {{ form.requerimientos_especiales_4|as_crispy_field }}
+                    </div>
+                </div>
+                <!-- Bloque 5 de requerimientos especiales - oculto por defecto -->
+                <div class="row d-none" id="requerimientos_bloque_5">
+                    <div class="col-md-12">
+                        {{ form.requerimientos_especiales_5|as_crispy_field }}
+                    </div>
+                </div>
+                <!-- Botón para agregar más requerimientos -->
+                <div class="row" id="boton_requerimientos_2">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_requerimientos_2">
+                            <i class="fas fa-plus me-2"></i>Agregar requerimiento 2
+                        </button>
+                    </div>
+                </div>
+                <div class="row d-none" id="boton_requerimientos_3">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_requerimientos_3">
+                            <i class="fas fa-plus me-2"></i>Agregar requerimiento 3
+                        </button>
+                    </div>
+                </div>
+                <div class="row d-none" id="boton_requerimientos_4">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_requerimientos_4">
+                            <i class="fas fa-plus me-2"></i>Agregar requerimiento 4
+                        </button>
+                    </div>
+                </div>
+                <div class="row d-none" id="boton_requerimientos_5">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary" id="agregar_requerimientos_5">
+                            <i class="fas fa-plus me-2"></i>Agregar requerimiento 5 (Opcional)
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group d-flex gap-3">
+                        <button class="btn btn-primary bg-primary bg-opacity-10 text-primary py-3 px-5 fw-semibold border-0"
+                        onclick="
+                                event.preventDefault();
+                                bootstrap.Tab.getOrCreateInstance(document.querySelector('[data-bs-target=\'#pane-data5\']')).show();
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                ">Volver</button>
+                        <button class="btn btn-primary py-3 px-5 fw-semibold text-white"
+                        onclick="
+                                event.preventDefault();
+                                bootstrap.Tab.getOrCreateInstance(document.querySelector('[data-bs-target=\'#pane-data7\']')).show();
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                ">Siguiente</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="pane-data7" role="tabpanel" aria-labelledby="tab-data7" tabindex="0">
             <h4 class="fs-18 fw-semibold">Insights y comentarios finales</h4>
             <p class="text-gray-light mb-4">Comentarios finales sobre los retos o prioridades del cargo:</p>
             <div class="row mb-4 p-3 border rounded bg-primary bg-opacity-10">
@@ -968,7 +1086,7 @@ Aquí podrás señalar qué factores predominan en tu empresa o en el rol: estab
                         <button class="btn btn-primary bg-primary bg-opacity-10 text-primary py-3 px-5 fw-semibold border-0"
                         onclick="
                                 event.preventDefault();
-                                bootstrap.Tab.getOrCreateInstance(document.querySelector('[data-bs-target=\'#pane-data4\']')).show();
+                                bootstrap.Tab.getOrCreateInstance(document.querySelector('[data-bs-target=\'#pane-data6\']')).show();
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                                 ">Volver</button>
                         <button id="form_vacante_todos" type="submit" class="btn btn-primary py-3 px-5 fw-semibold text-white" form="form_vacante_todos">Guardar</button>

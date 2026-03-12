@@ -2900,6 +2900,17 @@ class VacancyFormAllV2(forms.Form):
                 required=False
             )
 
+        # Requerimientos especiales (hasta 5)
+        for i in range(1, 6):
+            self.fields[f'requerimientos_especiales_{i}'] = forms.CharField(
+                label=f'Requerimiento {i}',
+                widget=forms.TextInput(attrs={
+                    'class': 'form-control form-control-solid',
+                    'placeholder': 'Ej: Disponibilidad para viajar, Licencia de conducción'
+                }),
+                required=False
+            )
+
         motivadores = Cli078MotivadoresCandidato.objects.filter(estado=1).order_by('id')
         motivadores_choices = [(str(motivador.id), f"{motivador.nombre}") for motivador in motivadores]
         motivadores_titles = {str(m.id): (m.descripcion or m.nombre) for m in motivadores}
@@ -2921,7 +2932,7 @@ class VacancyFormAllV2(forms.Form):
             widget=forms.Textarea(
                 attrs={
                     'class': 'form-control form-control-solid',
-                    'placeholder': 'Ingrese la descripción de la vacante',
+                    'placeholder': 'Ingrese Información Adicional Relevante para el cargo',
                     'rows': 5,
                     'cols': 30,
                     'id': 'id_comentarios'
@@ -3250,5 +3261,13 @@ class VacancyFormAllV2(forms.Form):
                 ])
             else:
                 cleaned_data['profesion_estudio_listado'] = ""
-        
+
+        # Requerimientos especiales: convertir a lista JSON (solo los no vacíos)
+        requerimientos_list = []
+        for i in range(1, 6):
+            req = cleaned_data.get(f'requerimientos_especiales_{i}') or ''
+            if req and str(req).strip():
+                requerimientos_list.append(str(req).strip())
+        cleaned_data['requerimientos_especiales'] = requerimientos_list if requerimientos_list else None
+
         return cleaned_data
