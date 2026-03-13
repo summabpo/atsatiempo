@@ -475,7 +475,7 @@ def list_vacanty_all(request):
     vacantes = vacantes.filter(
         estado_id_001=1,  # Asumiendo que ese es el campo correcto para el estado
         asignacion_cliente_id_064__id_cliente_asignado=cliente
-    )
+    ).order_by('-fecha_creacion')  # Más recientes primero, luego las más antiguas
 
     context ={ 
         'vacantes': vacantes,

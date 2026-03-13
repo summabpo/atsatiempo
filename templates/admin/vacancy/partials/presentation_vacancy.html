@@ -120,7 +120,7 @@
                         <div class="card-body">
                             <p class="text-secondary" style="text-align: justify;">
                                 {% if vacante.descripcion_vacante %}
-                                    {{ vacante.descripcion_vacante }}
+                                    {{ vacante.descripcion_vacante|remove_unete_equipo }}
                                 {% else %}
                                     No hay descripción disponible para esta vacante.
                                 {% endif %}

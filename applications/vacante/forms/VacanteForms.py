@@ -2986,10 +2986,7 @@ class VacancyFormAllV2(forms.Form):
         if not hora_final:
             self.add_error(f'hora_final_{bloque_num}', f'La hora final del bloque {bloque_num} es obligatoria para horario {tipo_horario}.')
 
-        # Si todos están completos, validar lógica de horarios
-        if all([dia_inicio, dia_final, hora_inicio, hora_final]):
-            if dia_inicio == dia_final and hora_inicio >= hora_final:
-                self.add_error(f'hora_final_{bloque_num}', f'La hora final debe ser mayor que la inicial en el bloque {bloque_num}.')
+        # No se valida hora_final > hora_inicio para permitir turnos rotativos (ej: 22:00 a 02:00)
 
     def _validar_bloque_horario_opcional(self, cleaned_data, bloque_num, tipo_horario):
         """Valida un bloque de horario opcional - si se llena parcialmente, debe estar completo"""
@@ -3012,10 +3009,7 @@ class VacancyFormAllV2(forms.Form):
             if not hora_final:
                 self.add_error(f'hora_final_{bloque_num}', f'Debe completar este campo en el bloque de horario {bloque_num}')
         
-        elif todos_diligenciados:
-            # Si todos están diligenciados, validar que la hora final sea mayor
-            if dia_inicio == dia_final and hora_inicio >= hora_final:
-                self.add_error(f'hora_final_{bloque_num}', f'La hora final debe ser mayor que la inicial en el bloque {bloque_num}')
+        # No se valida hora_final > hora_inicio para permitir turnos rotativos (ej: 22:00 a 02:00)
 
     def clean(self):
         cleaned_data = super().clean()

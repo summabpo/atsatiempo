@@ -614,7 +614,7 @@ class CandidateForm(forms.Form):
         label='Mi perfil',
         required=True,
         widget=forms.Textarea(attrs={
-            'placeholder': 'Por favor escriba su perfil del candidato aquí.',
+            'placeholder': 'Cuéntanos a qué te dedicas, qué experiencia tienes y qué sabes hacer. Así podremos encontrarte oportunidades de trabajo que se ajusten a tu perfil.',
             'class': 'form-control form-control-solid',
             'rows': 4
         })

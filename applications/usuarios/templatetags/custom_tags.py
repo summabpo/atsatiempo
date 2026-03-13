@@ -536,3 +536,27 @@ def extract_vacancy_sections(description):
     
     extracted_sections.sort(key=section_sort_key)
     return extracted_sections
+
+
+@register.filter(name='remove_unete_equipo')
+def remove_unete_equipo(value):
+    """Elimina el mensaje de invitación a postularse para no mostrarlo al cliente."""
+    if not value or not isinstance(value, str):
+        return value
+    # Fragmentos del mensaje a eliminar (pueden estar en líneas separadas)
+    fragmentos = [
+        "🎉 ¡ÚNETE A NUESTRO EQUIPO!",
+        "¡ÚNETE A NUESTRO EQUIPO!",
+        "Si cumples con el perfil descrito y estás interesado(a) en formar parte de nuestro equipo, "
+        "te invitamos a postularte. Ofrecemos un ambiente de trabajo dinámico, oportunidades de "
+        "crecimiento profesional y un equipo comprometido con la excelencia.",
+        "📧 ¡Esperamos tu postulación!",
+        "¡Esperamos tu postulación!",
+    ]
+    result = value
+    for frag in fragmentos:
+        result = result.replace(frag, '')
+    # Limpiar líneas vacías múltiples y espacios extra
+    lines = [line.strip() for line in result.split('\n') if line.strip()]
+    result = '\n\n'.join(lines)
+    return result.strip()

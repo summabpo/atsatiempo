@@ -1097,6 +1097,247 @@ Aquí podrás señalar qué factores predominan en tu empresa o en el rol: estab
     </div>
 </form>
 
+<!-- Botón flotante Resumen vacante -->
+<button type="button" class="btn btn-primary shadow-lg position-fixed d-flex align-items-center gap-2" id="btnVerVacante" style="bottom: 24px; right: 24px; z-index: 1050; border-radius: 8px;">
+    <span class="material-symbols-outlined" style="font-size: 20px;">summarize</span>
+    <span>Resumen vacante</span>
+</button>
+
+<!-- Modal resumen vacante -->
+<div class="modal fade" id="modalResumenVacante" tabindex="-1" aria-labelledby="modalResumenVacanteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 900px;">
+        <div class="modal-content border-0 shadow-lg overflow-hidden">
+            <div class="modal-header border-0 py-4" style="background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.08) 0%, rgba(var(--bs-primary-rgb), 0.02) 100%);">
+                <h5 class="modal-title fw-bold text-primary d-flex align-items-center" id="modalResumenVacanteLabel">
+                    <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; background: rgba(var(--bs-primary-rgb), 0.15);">
+                        <span class="material-symbols-outlined text-primary" style="font-size: 24px;">summarize</span>
+                    </span>
+                    Resumen de la vacante
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4" id="modalResumenVacanteBody" style="background: #fafbfc;">
+                <p class="text-muted text-center py-5">Cargando resumen...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const LABELS = {
+        cargo: 'Cargo', termino_contrato: 'Término contrato', modalidad: 'Modalidad', numero_posiciones: 'Nº posiciones',
+        cantidad_presentar: 'Cantidad a presentar', fecha_presentacion: 'Fecha presentación',
+        lugar_trabajo: 'Lugar de trabajo', barrio: 'Barrio', direccion: 'Dirección',
+        salario: 'Salario', tipo_salario: 'Tipo salario', frecuencia_pago: 'Frecuencia pago', salario_adicional: 'Salario adicional',
+        edad_inicial: 'Edad inicial', edad_final: 'Edad final', genero: 'Género',
+        motivo_vacante: 'Motivo vacante', otro_motivo: 'Otro motivo',
+        tipo_horario: 'Tipo horario',
+        horario_inicio_1: 'Horario inicio 1', horario_final_1: 'Horario final 1', hora_inicio_1: 'Hora inicio 1', hora_final_1: 'Hora final 1',
+        horario_inicio_2: 'Horario inicio 2', horario_final_2: 'Horario final 2', hora_inicio_2: 'Hora inicio 2', hora_final_2: 'Hora final 2',
+        horario_inicio_3: 'Horario inicio 3', horario_final_3: 'Horario final 3', hora_inicio_3: 'Hora inicio 3', hora_final_3: 'Hora final 3',
+        funciones_responsabilidades_1: 'Función 1', funciones_responsabilidades_2: 'Función 2', funciones_responsabilidades_3: 'Función 3',
+        tiempo_experiencia_1: 'Tiempo exp. 1', experiencia_especifica_en_1: 'Experiencia 1',
+        tiempo_experiencia_2: 'Tiempo exp. 2', experiencia_especifica_en_2: 'Experiencia 2',
+        tiempo_experiencia_3: 'Tiempo exp. 3', experiencia_especifica_en_3: 'Experiencia 3',
+        idioma_1: 'Idioma 1', nivel_idioma_1: 'Nivel 1', idioma_2: 'Idioma 2', nivel_idioma_2: 'Nivel 2',
+        tipo_profesion: 'Tipo profesión', profesion_estudio: 'Profesión', grupo_profesion: 'Grupo profesión',
+        profesion_estudio_listado: 'Profesión listado', nivel_estudio: 'Nivel estudio', estado_estudio: 'Estado estudio', cantidad_semestres: 'Semestres',
+        estudios_complementarios_1: 'Estudio comp. 1', estudios_complementarios_certificado_1: 'Certificado 1',
+        estudios_complementarios_2: 'Estudio comp. 2', estudios_complementarios_certificado_2: 'Certificado 2',
+        estudios_complementarios_3: 'Estudio comp. 3', estudios_complementarios_certificado_3: 'Certificado 3',
+        skill_relacionales: 'Skills relacionales', skill_personales: 'Skills personales', skill_cognitivas: 'Skills cognitivas',
+        skill_digitales: 'Skills digitales', skill_liderazgo: 'Skills liderazgo',
+        grupo_fit_1: 'Estilo trabajo predominante en el área', grupo_fit_2: 'Tipo de liderazgo presente',
+        grupo_fit_3: 'Comunicación organizacional', grupo_fit_4: 'Ritmo de trabajo', grupo_fit_5: 'Estilo toma de decisiones',
+        motivadores_candidato: 'Motivadores', otro_motivador: 'Otro motivador',
+        requerimientos_especiales_1: 'Requerimiento 1', requerimientos_especiales_2: 'Requerimiento 2',
+        requerimientos_especiales_3: 'Requerimiento 3', requerimientos_especiales_4: 'Requerimiento 4', requerimientos_especiales_5: 'Requerimiento 5',
+        comentarios: 'Comentarios', descripcion_vacante: 'Descripción vacante'
+    };
+
+    const SECTION_ICONS = {
+        'Información básica': 'info', 'Ubicación': 'map', 'Salario': 'payments', 'Edad y género': 'group',
+        'Horarios': 'schedule', 'Funciones y responsabilidades': 'checklist', 'Experiencia': 'work_history',
+        'Idiomas': 'translate', 'Estudios': 'school', 'Estudios complementarios': 'workspace_premium',
+        'Competencias': 'psychology', 'Fit cultural': 'diversity_3', 'Motivadores': 'emoji_events',
+        'Requerimientos especiales': 'verified', 'Comentarios': 'comment'
+    };
+
+    function getFieldValue(el) {
+        if (!el) return '';
+        const tag = (el.tagName || '').toLowerCase();
+        const type = (el.type || '').toLowerCase();
+        if (tag === 'select') {
+            const opt = el.options[el.selectedIndex];
+            return opt ? opt.text.trim() : '';
+        }
+        if (tag === 'textarea') return (el.value || '').trim();
+        if (tag === 'input') {
+            if (type === 'checkbox' || type === 'radio') return el.checked ? (el.value || 'Sí') : '';
+            return (el.value || '').trim();
+        }
+        return (el.value || '').trim();
+    }
+
+    function getMultiCheckboxValue(name, useFwSemibold) {
+        const checked = document.querySelectorAll('input[name="' + name + '"]:checked');
+        if (!checked.length) return '';
+        return Array.from(checked).map(cb => {
+            const label = document.querySelector('label[for="' + cb.id + '"]');
+            if (label) {
+                const span = useFwSemibold ? label.querySelector('.fw-semibold') : null;
+                return (span ? span.textContent : label.textContent).trim();
+            }
+            return cb.value;
+        }).join(', ');
+    }
+
+    function getMotivadoresValue() { return getMultiCheckboxValue('motivadores_candidato', true); }
+
+    function getRadioLabel(name) {
+        const checked = document.querySelector('input[name="' + name + '"]:checked');
+        if (!checked) return '';
+        const label = document.querySelector('label[for="' + checked.id + '"]');
+        return label ? label.textContent.trim() : checked.value;
+    }
+
+    function isValidValue(val) {
+        if (!val || typeof val !== 'string') return !!val;
+        const v = val.trim();
+        if (!v) return false;
+        const placeholders = ['seleccione', '----------', 'sin especificar', 'seleccione una opción', 'seleccione un', 'selecciona', 'ninguno', 'n/a', '--'];
+        const lower = v.toLowerCase();
+        return !placeholders.some(p => lower === p || lower.startsWith(p + ' ') || lower.startsWith(p + '...'));
+    }
+
+    const FIELD_TO_BLOCK = {
+        horario_inicio_2: 'bloque_2', horario_final_2: 'bloque_2', hora_inicio_2: 'bloque_2', hora_final_2: 'bloque_2',
+        horario_inicio_3: 'bloque_3', horario_final_3: 'bloque_3', hora_inicio_3: 'bloque_3', hora_final_3: 'bloque_3',
+        funciones_responsabilidades_2: 'funciones_bloque_2', funciones_responsabilidades_3: 'funciones_bloque_3',
+        tiempo_experiencia_2: 'experiencia_bloque_2', experiencia_especifica_en_2: 'experiencia_bloque_2',
+        tiempo_experiencia_3: 'experiencia_bloque_3', experiencia_especifica_en_3: 'experiencia_bloque_3',
+        idioma_2: 'idiomas_bloque_2', nivel_idioma_2: 'idiomas_bloque_2',
+        estudios_complementarios_2: 'estudios_comp_bloque_2', estudios_complementarios_certificado_2: 'estudios_comp_bloque_2',
+        estudios_complementarios_3: 'estudios_comp_bloque_3', estudios_complementarios_certificado_3: 'estudios_comp_bloque_3',
+        requerimientos_especiales_2: 'requerimientos_bloque_2', requerimientos_especiales_3: 'requerimientos_bloque_3',
+        requerimientos_especiales_4: 'requerimientos_bloque_4', requerimientos_especiales_5: 'requerimientos_bloque_5'
+    };
+
+    function isFieldInVisibleBlock(fieldName) {
+        const blockId = FIELD_TO_BLOCK[fieldName];
+        if (!blockId) return true;
+        const block = document.getElementById(blockId);
+        return !block || !block.classList.contains('d-none');
+    }
+
+    function buildResumen() {
+        const form = document.getElementById('form_vacante_todos');
+        if (!form) return '';
+
+        const sections = [
+            { title: 'Información básica', fields: ['cargo', 'termino_contrato', 'modalidad', 'numero_posiciones', 'cantidad_presentar', 'fecha_presentacion'] },
+            { title: 'Ubicación', fields: ['lugar_trabajo', 'barrio', 'direccion'] },
+            { title: 'Salario', fields: ['salario', 'tipo_salario', 'frecuencia_pago', 'salario_adicional'] },
+            { title: 'Edad y género', fields: ['edad_inicial', 'edad_final', 'genero', 'motivo_vacante', 'otro_motivo'] },
+            { title: 'Horarios', fields: ['tipo_horario', 'horario_inicio_1', 'horario_final_1', 'hora_inicio_1', 'hora_final_1', 'horario_inicio_2', 'horario_final_2', 'hora_inicio_2', 'hora_final_2', 'horario_inicio_3', 'horario_final_3', 'hora_inicio_3', 'hora_final_3'] },
+            { title: 'Funciones y responsabilidades', fields: ['funciones_responsabilidades_1', 'funciones_responsabilidades_2', 'funciones_responsabilidades_3'] },
+            { title: 'Experiencia', fields: ['tiempo_experiencia_1', 'experiencia_especifica_en_1', 'tiempo_experiencia_2', 'experiencia_especifica_en_2', 'tiempo_experiencia_3', 'experiencia_especifica_en_3'] },
+            { title: 'Idiomas', fields: ['idioma_1', 'nivel_idioma_1', 'idioma_2', 'nivel_idioma_2'] },
+            { title: 'Estudios', fields: ['tipo_profesion', 'profesion_estudio', 'grupo_profesion', 'profesion_estudio_listado', 'nivel_estudio', 'estado_estudio', 'cantidad_semestres'] },
+            { title: 'Estudios complementarios', fields: ['estudios_complementarios_1', 'estudios_complementarios_certificado_1', 'estudios_complementarios_2', 'estudios_complementarios_certificado_2', 'estudios_complementarios_3', 'estudios_complementarios_certificado_3'] },
+            { title: 'Competencias', fields: ['skill_relacionales', 'skill_personales', 'skill_cognitivas', 'skill_digitales', 'skill_liderazgo'] },
+            { title: 'Fit cultural', fields: ['grupo_fit_1', 'grupo_fit_2', 'grupo_fit_3', 'grupo_fit_4', 'grupo_fit_5'] },
+            { title: 'Motivadores', fields: ['motivadores_candidato', 'otro_motivador'] },
+            { title: 'Requerimientos especiales', fields: ['requerimientos_especiales_1', 'requerimientos_especiales_2', 'requerimientos_especiales_3', 'requerimientos_especiales_4', 'requerimientos_especiales_5'] },
+            { title: 'Comentarios', fields: ['comentarios', 'descripcion_vacante'] }
+        ];
+
+        let html = '';
+        for (const sec of sections) {
+            const rows = [];
+            const multiCheckboxFields = ['skill_relacionales', 'skill_personales', 'skill_cognitivas', 'skill_digitales', 'skill_liderazgo'];
+            const radioFields = ['grupo_fit_1', 'grupo_fit_2', 'grupo_fit_3', 'grupo_fit_4', 'grupo_fit_5'];
+            for (const f of sec.fields) {
+                let val = '';
+                if (f === 'motivadores_candidato') val = getMotivadoresValue();
+                else if (multiCheckboxFields.includes(f)) val = getMultiCheckboxValue(f, false);
+                else if (radioFields.includes(f)) val = getRadioLabel(f);
+                else {
+                    const el = form.querySelector('[name="' + f + '"]');
+                    val = getFieldValue(el);
+                }
+                if (val && isValidValue(String(val)) && isFieldInVisibleBlock(f)) rows.push({ label: LABELS[f] || f, value: val, field: f });
+            }
+            if (rows.length) {
+                const secIcon = SECTION_ICONS[sec.title] || 'info';
+                html += '<div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">';
+                html += '  <div class="card-header bg-primary bg-opacity-10 align-middle border-0">';
+                html += '    <p class="text-primary my-2 fs-6 fw-semibold mb-0">';
+                html += '      <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">' + secIcon + '</span>';
+                html += sec.title.toUpperCase();
+                html += '    </p>';
+                html += '  </div>';
+                html += '  <div class="card-body">';
+                html += '    <div class="row g-3">';
+                const fieldIcons = { cargo: 'work', lugar_trabajo: 'map', barrio: 'location_on', salario: 'payments', edad_inicial: 'group', tipo_horario: 'schedule', funciones_responsabilidades_1: 'checklist', experiencia_especifica_en_1: 'work_history', idioma_1: 'translate', tipo_profesion: 'school', skill_relacionales: 'psychology', grupo_fit_1: 'diversity_3', motivadores_candidato: 'emoji_events', requerimientos_especiales_1: 'verified', comentarios: 'comment' };
+                const fullWidthFields = ['funciones_responsabilidades_1', 'funciones_responsabilidades_2', 'funciones_responsabilidades_3', 'experiencia_especifica_en_1', 'experiencia_especifica_en_2', 'experiencia_especifica_en_3', 'comentarios', 'descripcion_vacante'];
+                rows.forEach(r => {
+                    const v = String(r.value).length > 350 ? String(r.value).substring(0, 350) + '...' : r.value;
+                    const escaped = (v || '-').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const itemIcon = fieldIcons[r.field] || 'check';
+                    const colClass = fullWidthFields.includes(r.field) ? 'col-12' : 'col-md-6';
+                    html += '      <div class="' + colClass + '">';
+                    html += '        <div class="d-flex align-items-start p-2 rounded" style="background: rgba(0,0,0,0.02);">';
+                    html += '          <span class="material-symbols-outlined text-primary me-2 flex-shrink-0" style="font-size: 18px;">' + itemIcon + '</span>';
+                    html += '          <div class="flex-grow-1 min-w-0">';
+                    html += '            <div class="small text-muted fw-semibold mb-0">' + r.label + '</div>';
+                    html += '            <div class="text-dark small">' + escaped + '</div>';
+                    html += '          </div>';
+                    html += '        </div>';
+                    html += '      </div>';
+                });
+                html += '    </div>';
+                html += '  </div>';
+                html += '</div>';
+            }
+        }
+        return html || '<div class="text-center py-5"><p class="text-muted mb-0"><i class="fas fa-inbox fa-2x mb-3 d-block text-secondary"></i>Aún no hay datos cargados en el formulario.</p></div>';
+    }
+
+    function updateModalContent() {
+        const body = document.getElementById('modalResumenVacanteBody');
+        if (body) body.innerHTML = buildResumen();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('btnVerVacante');
+        const modal = document.getElementById('modalResumenVacante');
+        if (!btn || !modal) return;
+
+        btn.addEventListener('click', function() {
+            updateModalContent();
+            const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
+            bsModal.show();
+        });
+
+        const form = document.getElementById('form_vacante_todos');
+        if (form) {
+            const events = ['input', 'change', 'keyup'];
+            const handler = function() { updateModalContent(); };
+            form.querySelectorAll('input, select, textarea').forEach(function(el) {
+                events.forEach(function(ev) { el.addEventListener(ev, handler); });
+            });
+            document.querySelectorAll('.motivador-checkbox').forEach(function(cb) {
+                cb.addEventListener('change', handler);
+            });
+        }
+
+        modal.addEventListener('show.bs.modal', updateModalContent);
+    });
+})();
+</script>
+
 <style>
 /* Estilos para los badges de error - MÁS VISIBLE */
 .error-badge {
