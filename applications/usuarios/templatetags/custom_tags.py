@@ -1,5 +1,6 @@
 from django import template
 import json
+import re
 from datetime import date
 
 register = template.Library()
@@ -536,6 +537,97 @@ def extract_vacancy_sections(description):
     
     extracted_sections.sort(key=section_sort_key)
     return extracted_sections
+
+
+@register.filter(name='format_descripcion_vacante')
+def format_descripcion_vacante(value):
+    """
+    Parsea la descripción de la vacante y devuelve secciones estructuradas con título e items.
+    Convierte bullets (•) en listas y preserva la estructura para mejor visualización.
+    """
+    if not value or not isinstance(value, str):
+        return []
+    # Eliminar mensaje de invitación a postularse
+    fragmentos = [
+        "🎉 ¡ÚNETE A NUESTRO EQUIPO!", "¡ÚNETE A NUESTRO EQUIPO!",
+        "Si cumples con el perfil descrito y estás interesado(a) en formar parte de nuestro equipo, "
+        "te invitamos a postularte. Ofrecemos un ambiente de trabajo dinámico, oportunidades de "
+        "crecimiento profesional y un equipo comprometido con la excelencia.",
+        "📧 ¡Esperamos tu postulación!", "¡Esperamos tu postulación!",
+    ]
+    text = value
+    for frag in fragmentos:
+        text = text.replace(frag, '')
+    lines_raw = [line.strip() for line in text.split('\n') if line.strip()]
+    text = '\n'.join(lines_raw)
+    if not text:
+        return []
+
+    # Secciones conocidas en orden de aparición (todas, no excluir ninguna)
+    section_markers = [
+        'OPORTUNIDAD LABORAL',
+        'INFORMACIÓN DEL CARGO',
+        'FUNCIONES Y RESPONSABILIDADES',
+        'EXPERIENCIA REQUERIDA',
+        'PERFIL ACADÉMICO',
+        'ESTUDIOS COMPLEMENTARIOS',
+        'IDIOMAS',
+        'HORARIO DE TRABAJO',
+        'COMPETENCIAS Y HABILIDADES',
+        'FIT CULTURAL',
+    ]
+
+    # Patrón para eliminar emojis al limpiar títulos
+    emoji_pattern = re.compile(
+        "["
+        "\U0001F300-\U0001F9FF"  # Emojis
+        "\U00002702-\U000027B0"
+        "\U000024C2-\U0001F251"
+        "]+",
+        flags=re.UNICODE
+    )
+
+    lines = text.split('\n')
+    sections = []
+    current_section = None
+    current_items = []
+
+    for line in lines:
+        line_stripped = line.strip()
+        if not line_stripped:
+            continue
+
+        # ¿Es un título de sección?
+        is_section = False
+        for marker in section_markers:
+            if marker in line_stripped and len(line_stripped) < 120:
+                if current_section:
+                    sections.append({
+                        'title': current_section,
+                        'items': current_items
+                    })
+                # Limpiar emojis del título para mostrar
+                clean_title = emoji_pattern.sub('', line_stripped).strip()
+                if clean_title.endswith(':'):
+                    clean_title = clean_title[:-1].strip()
+                current_section = clean_title
+                current_items = []
+                is_section = True
+                break
+
+        if not is_section and current_section:
+            # Es un ítem de la sección actual
+            item = line_stripped.lstrip('•').lstrip('-').strip()
+            if item:
+                current_items.append(item)
+
+    if current_section:
+        sections.append({
+            'title': current_section,
+            'items': current_items
+        })
+
+    return sections
 
 
 @register.filter(name='remove_unete_equipo')

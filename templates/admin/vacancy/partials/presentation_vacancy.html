@@ -118,13 +118,35 @@
                             </p>
                         </div>
                         <div class="card-body">
-                            <p class="text-secondary" style="text-align: justify;">
-                                {% if vacante.descripcion_vacante %}
-                                    {{ vacante.descripcion_vacante|remove_unete_equipo }}
-                                {% else %}
-                                    No hay descripción disponible para esta vacante.
-                                {% endif %}
-                            </p>
+                            {% if vacante.descripcion_vacante %}
+                                {% with descripcion_secciones=vacante.descripcion_vacante|format_descripcion_vacante %}
+                                    {% if descripcion_secciones %}
+                                        <div class="descripcion-vacante-estructurada text-secondary">
+                                            {% for seccion in descripcion_secciones %}
+                                                <div class="mb-4 pb-3 {% if not forloop.last %}border-bottom border-light{% endif %}">
+                                                    <h6 class="text-primary fw-semibold mb-2 text-uppercase" style="font-size: 0.95rem;">{{ seccion.title }}</h6>
+                                                    {% if seccion.items %}
+                                                        <ul class="list-unstyled mb-0 ps-0">
+                                                            {% for item in seccion.items %}
+                                                                <li class="mb-2 d-flex align-items-start">
+                                                                    <span class="material-symbols-outlined text-primary me-2 flex-shrink-0" style="font-size: 18px; vertical-align: middle;">check</span>
+                                                                    <span style="text-align: justify;">{{ item }}</span>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    {% else %}
+                                                        <p class="mb-0 text-muted fst-italic small">Sin información</p>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-secondary mb-0" style="text-align: justify;">{{ vacante.descripcion_vacante|remove_unete_equipo|linebreaks }}</p>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                <p class="text-secondary mb-0">No hay descripción disponible para esta vacante.</p>
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}
@@ -249,6 +271,27 @@
                             {% endif %}
                         </div>
                     </div>
+
+                    <!-- Requerimientos especiales -->
+                    {% if vacante.requerimientos_especiales %}
+                    <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
+                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+                            <p class="text-primary my-2 fs-6 fw-semibold">
+                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">verified</span>
+                                REQUERIMIENTOS ESPECIALES
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled text-secondary">
+                                {% for req in vacante.requerimientos_especiales %}
+                                    {% if req %}
+                                    <li><span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">check</span>{{ req }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endif %}
 
                 </div>
 
