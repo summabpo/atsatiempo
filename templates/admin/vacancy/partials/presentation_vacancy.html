@@ -608,7 +608,8 @@
                         </div>
                     </div>
 
-                    <!-- Habilidades -->
+                    <!-- Habilidades (oculta para candidatos) -->
+                    {% if not is_candidato|default:False %}
                     <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
                         <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
                             <p class="text-primary my-2 fs-6 fw-semibold">
@@ -638,6 +639,7 @@
                         </div>
                         
                     </div>
+                    {% endif %}
 
                     
                     {% if request.session.grupo_id == 1 or request.session.grupo_id == 3 %}
