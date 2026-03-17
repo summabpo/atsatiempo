@@ -1,0 +1,191 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Crear Estudio | Talent Tray
+{% endblock %}
+
+{% block styles %}
+<style>
+    #form_estudio .select2-container .select2-selection--single .select2-selection__clear {
+        position: absolute !important;
+        right: 28px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        line-height: 1 !important;
+        opacity: 1 !important;
+    }
+    #form_estudio .select2-container .select2-selection--single .select2-selection__rendered {
+        padding-right: 45px !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">CREAR ESTUDIO</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover">Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item">
+					<a href="{% url 'candidatos:candidato_info_academica' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover">Información Académica</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Crear Estudio</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<!-- Start Your Code -->
+	<div class="row">
+		<div class="col-2"></div>
+		<div class="col-8" id="estudios_candidato">
+			<div class="d-flex gap-2 mb-3">
+				<a href="{% url 'candidatos:candidato_info_academica' %}" class="btn btn-outline-secondary py-2 px-4">Volver</a>
+			</div>
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+					<form method="post" id="form_estudio" enctype="multipart/form-data">
+						{% csrf_token %}
+						{% crispy form %}
+						<button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100 mt-3">Guardar</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="col-2"></div>
+	</div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+	$(document).ready(function () {
+		function toggleEstadoEstudiosFields() {
+			var estadoEstudios = $('#id_estado_estudios').val();
+			var isGraduado = estadoEstudios === 'G';
+			var isAplazado = estadoEstudios === 'A';
+			var isEnCurso = estadoEstudios === 'C';
+			
+			var $titulo = $('#div_id_titulo');
+			var $fechaInicial = $('#div_id_fecha_inicial');
+			var $fechaFinal = $('#div_id_fecha_final');
+			var $certificacion = $('#div_id_certificacion');
+			
+			if (isGraduado) {
+				$titulo.show();
+				$fechaInicial.show();
+				$fechaFinal.show();
+				$certificacion.show();
+				$('#id_titulo').attr('required', 'required');
+				$('#id_fecha_inicial').attr('required', 'required');
+				$('#id_fecha_final').attr('required', 'required');
+			} else if (isAplazado) {
+				$titulo.hide();
+				$fechaInicial.hide();
+				$fechaFinal.show();
+				$certificacion.hide();
+				$('#id_titulo').removeAttr('required');
+				$('#id_fecha_inicial').removeAttr('required');
+				$('#id_fecha_final').attr('required', 'required');
+				$('#id_titulo').val('');
+				$('#id_fecha_inicial').val('');
+				$('#id_certificacion').val('');
+			} else if (isEnCurso) {
+				$titulo.hide();
+				$fechaInicial.show();
+				$fechaFinal.hide();
+				$certificacion.hide();
+				$('#id_titulo').removeAttr('required');
+				$('#id_fecha_inicial').attr('required', 'required');
+				$('#id_fecha_final').removeAttr('required');
+				$('#id_titulo').val('');
+				$('#id_fecha_final').val('');
+				$('#id_certificacion').val('');
+			} else {
+				$titulo.hide();
+				$fechaInicial.show();
+				$fechaFinal.hide();
+				$certificacion.hide();
+				$('#id_titulo').removeAttr('required');
+				$('#id_fecha_final').removeAttr('required');
+			}
+		}
+		
+		function toggleSinEstudiosFields() {
+			var tipoEstudio = $('#id_tipo_estudio').val();
+			var isSinEstudios = tipoEstudio === '1';
+			
+			var camposAfectados = [
+				'#div_id_institucion',
+				'#div_id_fecha_inicial',
+				'#div_id_fecha_final',
+				'#div_id_titulo',
+				'#div_id_ciudad_id_004',
+				'#div_id_profesion_estudio',
+				'#div_id_estado_estudios',
+				'#div_id_certificacion'
+			];
+			
+			camposAfectados.forEach(function(selector) {
+				var $campo = $(selector);
+				if (isSinEstudios) {
+					$campo.hide();
+					var fieldId = selector.replace('#div_id_', 'id_');
+					$('#' + fieldId).removeAttr('required');
+				} else {
+					$campo.show();
+				}
+			});
+		}
+		
+		toggleSinEstudiosFields();
+		toggleEstadoEstudiosFields();
+		
+		$('#id_tipo_estudio').on('change', function() {
+			toggleSinEstudiosFields();
+			if ($(this).val() !== '1') {
+				toggleEstadoEstudiosFields();
+			}
+		});
+		
+		$('#id_estado_estudios').on('change', toggleEstadoEstudiosFields);
+		
+		var select2Options = {
+			width: '100%',
+			placeholder: 'Seleccione una opción',
+			allowClear: true,
+			minimumResultsForSearch: 0,
+			dropdownParent: $('#estudios_candidato'),
+			language: {
+				noResults: function() { return 'No se encontraron resultados'; },
+				searching: function() { return 'Buscando...'; }
+			}
+		};
+		$('#id_tipo_estudio, #id_ciudad_id_004, #id_profesion_estudio, #id_estado_estudios').each(function() {
+			var $el = $(this);
+			if ($el.length && !$el.hasClass('select2-hidden-accessible')) {
+				$el.select2(select2Options).on('select2:open', function() {
+					setTimeout(function() {
+						var $search = $('.select2-container--open .select2-search__field');
+						if ($search.length) {
+							$search[0].focus();
+						}
+					}, 100);
+				});
+			}
+		});
+	});
+</script>
+{% endblock js %}

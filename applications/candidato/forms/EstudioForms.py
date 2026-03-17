@@ -340,6 +340,7 @@ class candidateStudyForm(forms.Form):
             self.fields['certificacion'].required = False
         
         self.helper = FormHelper()
+        self.helper.form_tag = False
         self.helper.form_method = 'post'
         self.helper.form_id = 'form_estudio'
         self.helper.layout = Layout(

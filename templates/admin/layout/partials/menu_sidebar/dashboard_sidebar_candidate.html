@@ -6,8 +6,10 @@
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'candidato_info_personal' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_academica' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_academica_crear' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_academica_editar' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_laboral' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'candidato_info_laboral_crear' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_laboral_editar' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_habilidades' %}open{% endif %}
     {% if request.resolver_match.url_name == 'candidato_info_redes' %}open{% endif %}
@@ -27,13 +29,15 @@
             </a>
             <a href="{% url 'candidatos:candidato_info_academica' %}"  class="menu-link  
             {% if request.resolver_match.url_name == 'candidato_info_academica' %}active{% endif %} 
+            {% if request.resolver_match.url_name == 'candidato_info_academica_crear' %}active{% endif %}
             {% if request.resolver_match.url_name == 'candidato_info_academica_editar' %}active{% endif %} 
             ">
                 Información Académica
             </a>
             <a href="{% url 'candidatos:candidato_info_laboral' %}"  class="menu-link  
-            {% if request.resolver_match.url_name == 'candidato_info_laboral' %}active{% endif %} 
-            {% if request.resolver_match.url_name == 'candidato_info_laboral_editar' %}active{% endif %} 
+            {% if request.resolver_match.url_name == 'candidato_info_laboral' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'candidato_info_laboral_crear' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'candidato_info_laboral_editar' %}active{% endif %}
             ">
                 Experiencia Laboral
             </a>

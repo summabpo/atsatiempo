@@ -297,87 +297,9 @@ def candidate_info(request):
 @login_required
 @validar_permisos('acceso_candidato')
 def candidate_info_academy(request):
-    form_errors = False
     candidato_id = request.session.get('candidato_id')
 
     studies = Can103Educacion.objects.filter(candidato_id_101=candidato_id).order_by('-fecha_inicial')
-    form = candidateStudyForm()
-
-    if request.method == 'POST':
-        form = candidateStudyForm(request.POST, request.FILES)
-        if form.is_valid():
-            tipo_estudio = form.cleaned_data['tipo_estudio']
-            candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
-            
-            # Si es "Sin estudios" (tipo_estudio == '1'), crear un registro mínimo
-            if tipo_estudio == '1':
-                from datetime import date
-                Can103Educacion.objects.create(
-                    estado_id_001=Cat001Estado.objects.get(id=1),
-                    institucion='Sin estudios',
-                    grado_en=False,
-                    fecha_inicial=date.today(),
-                    fecha_final=None,
-                    titulo=None,
-                    candidato_id_101=candidato_id_101,
-                    ciudad_id_004=None,
-                    tipo_estudio=tipo_estudio,
-                    certificacion=None,
-                    profesion_estudio=None
-                )
-            else:
-                # Si no es "Sin estudios", crear el registro con todos los datos
-                institucion = form.cleaned_data['institucion']
-                fecha_inicial = form.cleaned_data.get('fecha_inicial')
-                fecha_final = form.cleaned_data.get('fecha_final') if form.cleaned_data.get('fecha_final') else None
-                titulo = form.cleaned_data.get('titulo') if form.cleaned_data.get('titulo') else None
-                # carrera = form.cleaned_data['carrera']
-                # fortaleza_adquiridas = form.cleaned_data['fortaleza_adquiridas']
-                ciudad_obj_004 = form.cleaned_data['ciudad_id_004']
-                if form.cleaned_data.get('certificacion'):
-                    certificacion = form.cleaned_data['certificacion']
-                else:
-                    certificacion = None
-                
-                profesion_estudio = form.cleaned_data.get('profesion_estudio') if form.cleaned_data.get('profesion_estudio') else None
-                estado_estudios = form.cleaned_data.get('estado_estudios', None)
-                
-                # Si el estado es "Aplazado" y no hay fecha_inicial, usar fecha_final como fecha_inicial
-                if estado_estudios == 'A' and not fecha_inicial and fecha_final:
-                    fecha_inicial = fecha_final
-                
-                # Si fecha_inicial aún es None, usar la fecha actual como fallback
-                if not fecha_inicial:
-                    from datetime import date
-                    fecha_inicial = date.today()
-                
-                # Determinar grado_en basado en estado_estudios
-                grado_en = (estado_estudios == 'G')
-                
-                Can103Educacion.objects.create(
-                    estado_id_001=Cat001Estado.objects.get(id=1),  # Cambia esto según tu lógica
-                    institucion=institucion,
-                    grado_en=grado_en,
-                    fecha_inicial=fecha_inicial,
-                    fecha_final=fecha_final,
-                    titulo=titulo,
-                    # carrera=carrera,
-                    # fortaleza_adquiridas=fortaleza_adquiridas,
-                    candidato_id_101=candidato_id_101,
-                    ciudad_id_004=ciudad_obj_004,
-                    tipo_estudio=tipo_estudio,
-                    certificacion=certificacion,
-                    profesion_estudio=profesion_estudio if profesion_estudio else None,
-                    estado_estudios=estado_estudios
-                )
-            
-            messages.success(request, 'Información académica actualizada exitosamente.')
-            return redirect('candidatos:candidato_info_academica')
-        else:
-            form_errors = True
-            messages.error(request, 'Error al actualizar la información académica.')
-    else:
-        form = candidateStudyForm(request.POST or None)
 
     # Calcular porcentajes de completitud
     from applications.services.service_candidate import personal_information_calculation
@@ -411,12 +333,85 @@ def candidate_info_academy(request):
 
     context = {
         'studies': studies,
-        'form': form,
-        'form_errors': form_errors,
         'porcentajes': porcentajes,
         'active_section': 'academica',
     }
     return render(request, 'admin/candidate/candidate_user/info_academy.html', context)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def candidate_info_academy_create(request):
+    form_errors = False
+    candidato_id = request.session.get('candidato_id')
+
+    if request.method == 'POST':
+        form = candidateStudyForm(request.POST, request.FILES)
+        if form.is_valid():
+            tipo_estudio = form.cleaned_data['tipo_estudio']
+            candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
+
+            if tipo_estudio == '1':
+                from datetime import date
+                Can103Educacion.objects.create(
+                    estado_id_001=Cat001Estado.objects.get(id=1),
+                    institucion='Sin estudios',
+                    grado_en=False,
+                    fecha_inicial=date.today(),
+                    fecha_final=None,
+                    titulo=None,
+                    candidato_id_101=candidato_id_101,
+                    ciudad_id_004=None,
+                    tipo_estudio=tipo_estudio,
+                    certificacion=None,
+                    profesion_estudio=None
+                )
+            else:
+                institucion = form.cleaned_data['institucion']
+                fecha_inicial = form.cleaned_data.get('fecha_inicial')
+                fecha_final = form.cleaned_data.get('fecha_final') if form.cleaned_data.get('fecha_final') else None
+                titulo = form.cleaned_data.get('titulo') if form.cleaned_data.get('titulo') else None
+                ciudad_obj_004 = form.cleaned_data['ciudad_id_004']
+                certificacion = form.cleaned_data.get('certificacion') if form.cleaned_data.get('certificacion') else None
+                profesion_estudio = form.cleaned_data.get('profesion_estudio') if form.cleaned_data.get('profesion_estudio') else None
+                estado_estudios = form.cleaned_data.get('estado_estudios', None)
+
+                if estado_estudios == 'A' and not fecha_inicial and fecha_final:
+                    fecha_inicial = fecha_final
+                if not fecha_inicial:
+                    from datetime import date
+                    fecha_inicial = date.today()
+
+                grado_en = (estado_estudios == 'G')
+
+                Can103Educacion.objects.create(
+                    estado_id_001=Cat001Estado.objects.get(id=1),
+                    institucion=institucion,
+                    grado_en=grado_en,
+                    fecha_inicial=fecha_inicial,
+                    fecha_final=fecha_final,
+                    titulo=titulo,
+                    candidato_id_101=candidato_id_101,
+                    ciudad_id_004=ciudad_obj_004,
+                    tipo_estudio=tipo_estudio,
+                    certificacion=certificacion,
+                    profesion_estudio=profesion_estudio,
+                    estado_estudios=estado_estudios
+                )
+
+            messages.success(request, 'Información académica creada exitosamente.')
+            return redirect('candidatos:candidato_info_academica')
+        else:
+            form_errors = True
+            messages.error(request, 'Error al crear la información académica.')
+    else:
+        form = candidateStudyForm()
+
+    context = {
+        'form': form,
+        'form_errors': form_errors,
+    }
+    return render(request, 'admin/candidate/candidate_user/info_academy_create.html', context)
+            
 
 @login_required
 @validar_permisos('acceso_candidato')
@@ -520,127 +515,9 @@ def candidate_info_academy_edit(request, pk):
 @login_required
 @validar_permisos('acceso_candidato')
 def candidate_info_job(request):
-    form_errors = False
     candidato_id = request.session.get('candidato_id')
 
     jobs = Can102Experiencia.objects.filter(candidato_id_101=candidato_id).order_by('-fecha_inicial')
-    
-    if request.method == 'POST':
-        form = candidateJobForm(request.POST, request.FILES)
-        
-        # Si hay un nuevo archivo y no está marcado "Sin experiencia laboral", validarlo y guardarlo si pasa
-        experiencia_temporal_id = None
-        if 'certificado_laboral' in request.FILES and not form.data.get('experiencia_laboral'):
-            certificado_laboral = request.FILES['certificado_laboral']
-            # Validar tamaño (máximo 10 MB)
-            max_size_mb = 10
-            if certificado_laboral.size <= max_size_mb * 1024 * 1024:
-                # Validar tipo de archivo
-                import os
-                allowed_extensions = ['.pdf', '.jpg', '.jpeg', '.png']
-                extension = os.path.splitext(certificado_laboral.name)[1].lower()
-                if extension in allowed_extensions:
-                    # Si pasa las validaciones, crear un objeto temporal con el archivo
-                    candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
-                    experiencia_temporal = Can102Experiencia.objects.create(
-                        estado_id_001=Cat001Estado.objects.get(id=1),
-                        entidad='Temporal',
-                        sector='',
-                        fecha_inicial=timezone.now().date(),
-                        candidato_id_101=candidato_id_101,
-                        cargo='',
-                        experiencia_laboral=False,
-                        certificado_laboral=certificado_laboral
-                    )
-                    experiencia_temporal_id = experiencia_temporal.id
-        
-        if form.is_valid():
-            experiencia_laboral = form.cleaned_data.get('experiencia_laboral', False)
-            candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
-            
-            # Si hay un objeto temporal, actualizarlo con los datos completos
-            if experiencia_temporal_id:
-                experiencia = Can102Experiencia.objects.get(id=experiencia_temporal_id)
-                experiencia.entidad = form.cleaned_data['entidad']
-                experiencia.sector = form.cleaned_data['sector']
-                experiencia.fecha_inicial = form.cleaned_data['fecha_inicial']
-                experiencia.fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
-                experiencia.activo = form.cleaned_data['activo']
-                experiencia.logro = form.cleaned_data['logro']
-                experiencia.cargo = form.cleaned_data['cargo']
-                experiencia.motivo_salida = form.cleaned_data['motivo_salida']
-                experiencia.salario = form.cleaned_data['salario'] if form.cleaned_data['salario'] else None
-                experiencia.modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
-                experiencia.nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
-                experiencia.save()
-            # Si está marcado "Sin experiencia laboral", crear un registro mínimo
-            elif experiencia_laboral:
-                from datetime import date
-                Can102Experiencia.objects.create(
-                    estado_id_001=Cat001Estado.objects.get(id=1),
-                    entidad='Sin experiencia laboral',
-                    sector='',
-                    fecha_inicial=date.today(),
-                    fecha_final=None,
-                    activo=False,
-                    logro=None,
-                    candidato_id_101=candidato_id_101,
-                    cargo='',
-                    motivo_salida=None,
-                    salario=None,
-                    modalidad_trabajo=None,
-                    nombre_jefe=None,
-                    experiencia_laboral=True
-                )
-            else:
-                # Si no está marcado, crear el registro con todos los datos
-                entidad = form.cleaned_data['entidad']
-                sector = form.cleaned_data['sector']
-                fecha_inicial = form.cleaned_data['fecha_inicial']
-                fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
-                activo = form.cleaned_data['activo']
-                logro = form.cleaned_data['logro']
-                cargo = form.cleaned_data['cargo']
-                motivo_salida = form.cleaned_data['motivo_salida']
-                salario = form.cleaned_data['salario'] if form.cleaned_data['salario'] else None
-                modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
-                nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
-                certificado_laboral = form.cleaned_data.get('certificado_laboral')
-
-                experiencia = Can102Experiencia.objects.create(
-                    estado_id_001=Cat001Estado.objects.get(id=1),  # Cambia esto según tu lógica
-                    entidad=entidad,
-                    sector=sector,
-                    fecha_inicial=fecha_inicial,
-                    fecha_final=fecha_final,
-                    activo=activo,
-                    logro=logro,
-                    candidato_id_101=candidato_id_101,
-                    cargo=cargo,
-                    motivo_salida=motivo_salida,
-                    salario=salario,
-                    modalidad_trabajo=modalidad_trabajo,
-                    nombre_jefe=nombre_jefe,
-                    experiencia_laboral=False
-                )
-                
-                # Guardar el certificado laboral si existe (si no se guardó antes en el temporal)
-                if certificado_laboral:
-                    experiencia.certificado_laboral = certificado_laboral
-                    experiencia.save()
-            
-            messages.success(request, 'Información laboral actualizada exitosamente.')
-            return redirect('candidatos:candidato_info_laboral')
-        else:
-            form_errors = True
-            messages.error(request, 'Error al crear la información laboral.')
-            # Si hay un objeto temporal pero el formulario tiene errores, mantenerlo para mostrar el archivo
-            if experiencia_temporal_id:
-                experiencia_temporal = Can102Experiencia.objects.get(id=experiencia_temporal_id)
-                # Actualizar el initial del formulario para mostrar el archivo guardado
-                form.initial['certificado_laboral'] = experiencia_temporal.certificado_laboral
-    else:
-        form = candidateJobForm()
 
     # Calcular porcentajes de completitud
     from applications.services.service_candidate import personal_information_calculation
@@ -674,12 +551,134 @@ def candidate_info_job(request):
 
     context = {
         'jobs': jobs,
-        'form': form,
-        'form_errors': form_errors,
         'porcentajes': porcentajes,
         'active_section': 'laboral',
     }
     return render(request, 'admin/candidate/candidate_user/info_job.html', context)
+
+@login_required
+@validar_permisos('acceso_candidato')
+def candidate_info_job_create(request):
+    form_errors = False
+    candidato_id = request.session.get('candidato_id')
+
+    if request.method == 'POST':
+        form = candidateJobForm(request.POST, request.FILES)
+
+        experiencia_temporal_id = None
+        if 'certificado_laboral' in request.FILES and not form.data.get('experiencia_laboral'):
+            certificado_laboral = request.FILES['certificado_laboral']
+            max_size_mb = 10
+            if certificado_laboral.size <= max_size_mb * 1024 * 1024:
+                import os
+                allowed_extensions = ['.pdf', '.jpg', '.jpeg', '.png']
+                extension = os.path.splitext(certificado_laboral.name)[1].lower()
+                if extension in allowed_extensions:
+                    candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
+                    experiencia_temporal = Can102Experiencia.objects.create(
+                        estado_id_001=Cat001Estado.objects.get(id=1),
+                        entidad='Temporal',
+                        sector='',
+                        fecha_inicial=timezone.now().date(),
+                        candidato_id_101=candidato_id_101,
+                        cargo='',
+                        experiencia_laboral=False,
+                        certificado_laboral=certificado_laboral
+                    )
+                    experiencia_temporal_id = experiencia_temporal.id
+
+        if form.is_valid():
+            experiencia_laboral = form.cleaned_data.get('experiencia_laboral', False)
+            candidato_id_101 = Can101Candidato.objects.get(id=candidato_id)
+
+            if experiencia_temporal_id:
+                experiencia = Can102Experiencia.objects.get(id=experiencia_temporal_id)
+                experiencia.entidad = form.cleaned_data['entidad']
+                experiencia.sector = form.cleaned_data['sector']
+                experiencia.fecha_inicial = form.cleaned_data['fecha_inicial']
+                experiencia.fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
+                experiencia.activo = form.cleaned_data['activo']
+                experiencia.logro = form.cleaned_data['logro']
+                experiencia.cargo = form.cleaned_data['cargo']
+                experiencia.motivo_salida = form.cleaned_data['motivo_salida']
+                experiencia.salario = form.cleaned_data['salario'] if form.cleaned_data['salario'] else None
+                experiencia.modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
+                experiencia.nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
+                experiencia.save()
+            elif experiencia_laboral:
+                from datetime import date
+                Can102Experiencia.objects.create(
+                    estado_id_001=Cat001Estado.objects.get(id=1),
+                    entidad='Sin experiencia laboral',
+                    sector='',
+                    fecha_inicial=date.today(),
+                    fecha_final=None,
+                    activo=False,
+                    logro=None,
+                    candidato_id_101=candidato_id_101,
+                    cargo='',
+                    motivo_salida=None,
+                    salario=None,
+                    modalidad_trabajo=None,
+                    nombre_jefe=None,
+                    experiencia_laboral=True
+                )
+            else:
+                entidad = form.cleaned_data['entidad']
+                sector = form.cleaned_data['sector']
+                fecha_inicial = form.cleaned_data['fecha_inicial']
+                fecha_final = form.cleaned_data['fecha_final'] if form.cleaned_data['fecha_final'] else None
+                activo = form.cleaned_data['activo']
+                logro = form.cleaned_data['logro']
+                cargo = form.cleaned_data['cargo']
+                motivo_salida = form.cleaned_data['motivo_salida']
+                salario = form.cleaned_data['salario'] if form.cleaned_data['salario'] else None
+                modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
+                nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
+                certificado_laboral = form.cleaned_data.get('certificado_laboral')
+
+                experiencia = Can102Experiencia.objects.create(
+                    estado_id_001=Cat001Estado.objects.get(id=1),
+                    entidad=entidad,
+                    sector=sector,
+                    fecha_inicial=fecha_inicial,
+                    fecha_final=fecha_final,
+                    activo=activo,
+                    logro=logro,
+                    candidato_id_101=candidato_id_101,
+                    cargo=cargo,
+                    motivo_salida=motivo_salida,
+                    salario=salario,
+                    modalidad_trabajo=modalidad_trabajo,
+                    nombre_jefe=nombre_jefe,
+                    experiencia_laboral=False
+                )
+
+                if certificado_laboral:
+                    experiencia.certificado_laboral = certificado_laboral
+                    experiencia.save()
+
+            messages.success(request, 'Información laboral creada exitosamente.')
+            return redirect('candidatos:candidato_info_laboral')
+        else:
+            form_errors = True
+            messages.error(request, 'Error al crear la información laboral.')
+            if experiencia_temporal_id:
+                experiencia_temporal = Can102Experiencia.objects.get(id=experiencia_temporal_id)
+                form.initial['certificado_laboral'] = experiencia_temporal.certificado_laboral
+    else:
+        form = candidateJobForm()
+
+    context = {
+        'form': form,
+        'form_errors': form_errors,
+    }
+    return render(request, 'admin/candidate/candidate_user/info_job_create.html', context)
+    context = {
+        'form': form,
+        'form_errors': form_errors,
+    }
+    return render(request, 'admin/candidate/candidate_user/info_job_create.html', context)
 
 @login_required
 @validar_permisos('acceso_candidato')

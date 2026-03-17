@@ -1,0 +1,126 @@
+{% extends 'admin/layout/dashboard_base.html' %} 
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Crear Experiencia Laboral | Talent Tray
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">CREAR EXPERIENCIA LABORAL</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover">Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item">
+					<a href="{% url 'candidatos:candidato_info_laboral' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover">Información Laboral</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Crear Experiencia Laboral</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<!-- Start Your Code -->
+	<div class="row">
+		<div class="col-2"></div>
+		<div class="col-8" id="trabajos_candidato">
+			<div class="d-flex gap-2 mb-3">
+				<a href="{% url 'candidatos:candidato_info_laboral' %}" class="btn btn-outline-secondary py-2 px-4">Volver</a>
+			</div>
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-body p-4">
+					<form method="post" id="form_trabajo" enctype="multipart/form-data">
+						{% csrf_token %}
+						{% crispy form %}
+						<button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100 mt-3">Guardar</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="col-2"></div>
+	</div>
+</div>
+{% endblock %}
+
+{% block js %} 
+<script>
+	$(document).ready(function () {
+		function toggleActivoFields() {
+			if ($('#id_activo').is(':checked')) {
+				$('.campo-activo').hide();
+			} else {
+				$('.campo-activo').show();
+			}
+		}
+
+		function toggleSinExperienciaFields() {
+			var sinExperiencia = $('#id_experiencia_laboral').is(':checked');
+			
+			var camposAfectados = [
+				'#div_id_entidad',
+				'#div_id_sector',
+				'#div_id_cargo',
+				'#div_id_activo',
+				'#div_id_fecha_inicial',
+				'#div_id_fecha_final',
+				'#div_id_motivo_salida',
+				'#div_id_salario',
+				'#div_id_modalidad_trabajo',
+				'#div_id_nombre_jefe',
+				'#div_id_logro',
+				'#div_id_certificado_laboral'
+			];
+			
+			camposAfectados.forEach(function(selector) {
+				var $campo = $(selector);
+				if (sinExperiencia) {
+					$campo.hide();
+					var fieldId = selector.replace('#div_id_', 'id_');
+					$('#' + fieldId).removeAttr('required');
+				} else {
+					$campo.show();
+				}
+			});
+		}
+
+		toggleActivoFields();
+		toggleSinExperienciaFields();
+
+		$('#id_activo').change(toggleActivoFields);
+		
+		$('#id_experiencia_laboral').change(function() {
+			toggleSinExperienciaFields();
+			if (!$(this).is(':checked')) {
+				toggleActivoFields();
+			}
+		});
+	});
+
+	if (typeof initializeSelect2 === 'function') {
+		initializeSelect2('#id_motivo_salida');
+		initializeSelect2('#id_modalidad_trabajo');
+	} else {
+		$('#id_motivo_salida, #id_modalidad_trabajo').each(function() {
+			$(this).select2({
+				width: '100%',
+				placeholder: 'Seleccione una opción',
+				allowClear: true
+			});
+		});
+	}
+</script>
+{% endblock js %}
