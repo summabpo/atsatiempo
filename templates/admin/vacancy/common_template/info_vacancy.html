@@ -149,17 +149,6 @@
                 {% endwith %}
             {% endif %}
 
-            <!-- Habilidades -->
-            {% if vacante.habilidades.all %}
-            <div class="mb-4">
-                <h3 class="mb-3">Habilidades</h3>
-                <div class="job-tags">
-                    {% for skill in vacante.habilidades.all %}
-                        <span class="badge bg-opacity-10 bg-primary py-1 px-2 text-primary rounded-1 fw-medium fs-12 me-2 mb-2">{{skill.nombre}}</span>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
             {% else %}
             <!-- Descripción completa para no candidatos -->
             <h3 class="mb-3">Descripción</h3>

@@ -60,6 +60,7 @@ def query_vacanty_with_skills_and_details():
     ).prefetch_related(
         'soft_skills_id_053',
         'hard_skills_id_054',
+        'habilidades',
         'perfil_vacante__profesion_estudio',
         'perfil_vacante__lugar_trabajo',
         'perfil_vacante__estado',
@@ -257,5 +258,22 @@ def get_vacanty_questions(vacante_id):
                             "pregunta": pregunta
                         })
                         preguntas_set.add(pregunta_key)
+
+    # Requerimientos especiales o adicionales (sección 6 del formulario de vacante)
+    requerimientos_especiales = getattr(vacante, 'requerimientos_especiales', None)
+    if requerimientos_especiales and isinstance(requerimientos_especiales, list):
+        for req in requerimientos_especiales:
+            if req and str(req).strip():
+                req_texto = str(req).strip()
+                pregunta_req = f"¿Cumple con el siguiente requerimiento: {req_texto}?"
+                pregunta_key = ("requerimiento_especial", pregunta_req)
+                if pregunta_key not in preguntas_set:
+                    preguntas.append({
+                        "bloque": 6,
+                        "tipo_pregunta": "requerimiento_especial",
+                        "pregunta": pregunta_req,
+                        "valores_relacionados": {"requerimiento": req_texto}
+                    })
+                    preguntas_set.add(pregunta_key)
 
     return preguntas
