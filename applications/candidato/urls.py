@@ -16,7 +16,9 @@ urlpatterns = [
     path( url_principal+'informacion/basica/upload/hoja-vida', candidate_views.candidato_upload_hoja_vida, name='candidato_upload_hoja_vida'),
     path( url_principal+'informacion/basica/upload/video', candidate_views.candidato_upload_video, name='candidato_upload_video'),
     path( url_principal+'informacion/academica', candidate_views.candidate_info_academy, name='candidato_info_academica'),
+    path( url_principal+'informacion/academica/crear', candidate_views.candidate_info_academy_create, name='candidato_info_academica_crear'),
     path( url_principal+'informacion/laboral', candidate_views.candidate_info_job, name='candidato_info_laboral'),
+    path( url_principal+'informacion/laboral/crear', candidate_views.candidate_info_job_create, name='candidato_info_laboral_crear'),
     path( url_principal+'informacion/habilidades', candidate_views.candidate_info_skills, name='candidato_info_habilidades'),
     path( url_principal+'informacion/redes', candidate_views.candidate_info_social_network, name='candidato_info_redes'),
     
