@@ -2,7 +2,7 @@ from datetime import timedelta
 from django.db import models
 from django.db.models import Count
 from django.utils import timezone
-from applications.common.models import Cat001Estado, Cat004Ciudad
+from applications.common.models import Cat001Estado, Cat004Ciudad, Cat005AsignacionQr
 from applications.cliente.models import Cli051Cliente, Cli069Requisito, Cli070AsignacionRequisito
 from applications.candidato.models import Can101Candidato
 from applications.services.choices import ESTADO_APLICACION_CHOICES_STATIC, ESTADO_APLICACION_COLOR_STATIC, ESTADO_RECLUTADO_CHOICES_STATIC
@@ -194,3 +194,19 @@ class Cli083ConfiabilidadRiesgoCargado(models.Model):
         db_table = 'cli_083_confiabilidad_riesgo_cargado'
         verbose_name = 'CONFIABILIDAD RIESGO CARGADO'
         verbose_name_plural = 'CONFIABILIDAD RIESGO CARGADOS'
+
+
+class Cli084AsignacionRegistroReclutado(models.Model):
+    """Registro de candidatos que se registraron mediante el QR del reclutador."""
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.DO_NOTHING, db_column='estado_id_001', related_name='asignaciones_registro_reclutado')
+    usuario_registrado = models.ForeignKey(UsuarioBase, on_delete=models.CASCADE, db_column='usuario_registrado', related_name='registros_qr_reclutador')
+    asignacion_qr_005 = models.ForeignKey(Cat005AsignacionQr, on_delete=models.CASCADE, db_column='asignacion_qr_005', related_name='registros_reclutados')
+    fecha_hora = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Registro {self.id} - {self.fecha_hora}"
+
+    class Meta:
+        db_table = 'cli_084_asignacion_registro_reclutado'
+        verbose_name = 'ASIGNACIÓN REGISTRO RECLUTADO'
+        verbose_name_plural = 'ASIGNACIONES REGISTRO RECLUTADO'

@@ -50,6 +50,7 @@
                                     
                                 </div>
                                 {% csrf_token %}
+                                {% if token_qr %}<input type="hidden" name="token" value="{{ token_qr }}">{% endif %}
                                 {% crispy form %}
                                 <div class="form-group">
                                     <p>

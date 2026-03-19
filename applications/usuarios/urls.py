@@ -33,6 +33,7 @@ urlpatterns = [
     path('mi_perfil/', loginView.my_profile, name='my_profile'),
     path('mi_perfil/cambiar-contrasena/', loginView.cambiar_contrasena_perfil, name='cambiar_contrasena_perfil'),
     path('mi_perfil/actualizar-imagen/', loginView.actualizar_imagen_perfil, name='actualizar_imagen_perfil'),
+    path('generar-qr/', loginView.generar_qr_imagen, name='generar_qr'),
     #candidate
     path('inicio/candidato', dashboardView.dashboard_candidato, name='inicio_candidato'),
 
