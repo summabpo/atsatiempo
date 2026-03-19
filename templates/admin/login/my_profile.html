@@ -81,6 +81,12 @@ Mi Perfil | Talent Tray
 							<span class="material-symbols-outlined me-2">lock</span>
 							Cambiar Contraseña
 						</button>
+						{% if show_qr_registro and asignacion_qr %}
+						<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalQrRegistro">
+							<span class="material-symbols-outlined me-2">qr_code_2</span>
+							QR Registro
+						</button>
+						{% endif %}
 					</div>
 				</div>
 			</div>
@@ -159,4 +165,76 @@ Mi Perfil | Talent Tray
 		</div>
 	</div>
 </div>
+
+{% if show_qr_registro and asignacion_qr %}
+<!-- Modal QR Registro -->
+<div class="modal fade" id="modalQrRegistro" tabindex="-1" aria-labelledby="modalQrRegistroLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalQrRegistroLabel">
+					<span class="material-symbols-outlined me-2 align-middle">qr_code_2</span>
+					QR Registro
+				</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body text-center">
+				<p class="text-muted mb-3">Escanea este código QR para acceder al registro de candidatos</p>
+				{% if asignacion_qr.qr_code and asignacion_qr.qr_code.url %}
+				<img src="{{ asignacion_qr.qr_code.url }}" alt="QR Registro" class="img-fluid rounded border p-2" style="max-width: 280px;">
+				{% elif url_registro_token %}
+				<img src="{% url 'accesses:generar_qr' %}?data={{ url_registro_token|urlencode }}" alt="QR Registro" class="img-fluid rounded border p-2" style="max-width: 280px;">
+				{% endif %}
+				{% if url_registro_token %}
+				<div class="mt-3">
+					<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center mx-auto" id="btnCopiarEnlace" data-url="{{ url_registro_token }}">
+						<span class="material-symbols-outlined me-2">content_copy</span>
+						<span class="btn-copy-text">Copiar enlace</span>
+					</button>
+				</div>
+				{% endif %}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+{% if show_qr_registro and url_registro_token %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	var btn = document.getElementById('btnCopiarEnlace');
+	if (btn) {
+		btn.addEventListener('click', function() {
+			var url = this.getAttribute('data-url');
+			if (!url) return;
+			var mostrarCopiado = function() {
+				var span = btn.querySelector('.btn-copy-text');
+				if (span) {
+					span.textContent = '¡Copiado!';
+					setTimeout(function() { span.textContent = 'Copiar enlace'; }, 2000);
+				}
+			};
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				navigator.clipboard.writeText(url).then(mostrarCopiado);
+			} else {
+				var input = document.createElement('input');
+				input.value = url;
+				input.style.position = 'fixed';
+				input.style.opacity = '0';
+				document.body.appendChild(input);
+				input.select();
+				try {
+					document.execCommand('copy');
+					mostrarCopiado();
+				} catch (e) {}
+				document.body.removeChild(input);
+			}
+		});
+	}
+});
+</script>
+{% endif %}
 {% endblock %}

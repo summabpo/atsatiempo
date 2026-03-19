@@ -449,7 +449,17 @@ def create_vacanty_v2(request):
             messages.success(request, 'Vacante creada correctamente')
             return redirect('vacantes:vacantes_listado_cliente')
         else:
-            messages.error(request, 'Por favor revise el formulario, errores encontrados.')
+            error_messages = []
+            for field, errors in form.errors.items():
+                if field == '__all__':
+                    for error in errors:
+                        error_messages.append(str(error))
+                else:
+                    field_obj = form.fields.get(field)
+                    field_label = field_obj.label if (field_obj and field_obj.label) else field.replace('_', ' ').title()
+                    error_messages.append(f"{field_label}: {', '.join(str(e) for e in errors)}")
+            msg = 'Por favor revise el formulario. ' + ' | '.join(error_messages) if error_messages else 'Por favor revise el formulario.'
+            messages.error(request, msg)
             
     else:
         form = VacancyFormAllV2(cliente_id=cliente_id)
@@ -689,7 +699,7 @@ def detail_vacancy(request, pk):
     initial['grupo_fit_5'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_5_IDS).values_list('id', flat=True))
 
     if request.method == 'POST':
-        form = VacancyFormAllV2(request.POST, cliente_id=cliente_id)
+        form = VacancyFormAllV2(request.POST, cliente_id=cliente_id, es_edicion=True)
         if form.is_valid():
 
             # Update existing data
@@ -850,10 +860,20 @@ def detail_vacancy(request, pk):
             messages.success(request, 'Vacante editada correctamente')
             return redirect('vacantes:vacantes_propias', pk=pk)
         else:
-            messages.error(request, 'Por favor revise el formulario, errores encontrados.')
+            error_messages = []
+            for field, errors in form.errors.items():
+                if field == '__all__':
+                    for error in errors:
+                        error_messages.append(str(error))
+                else:
+                    field_obj = form.fields.get(field)
+                    field_label = field_obj.label if (field_obj and field_obj.label) else field.replace('_', ' ').title()
+                    error_messages.append(f"{field_label}: {', '.join(str(e) for e in errors)}")
+            msg = 'Por favor revise el formulario. ' + ' | '.join(error_messages) if error_messages else 'Por favor revise el formulario.'
+            messages.error(request, msg)
 
     else:
-        form = VacancyFormAllV2(initial=initial, cliente_id=cliente_id)
+        form = VacancyFormAllV2(initial=initial, cliente_id=cliente_id, es_edicion=True)
 
     context ={
         'vacante': vacante,

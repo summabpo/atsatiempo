@@ -186,21 +186,33 @@ Detalle vacante
                     <div class="card bg-white border-0 rounded-3 mb-4">
                         <div class="card-body p-4">
                             <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                                {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
+
+                                {% else %}
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link active" id="match-tab" data-bs-toggle="tab" data-bs-target="#match-tab-pane" type="button" role="tab" aria-controls="match-tab-pane" aria-selected="true">Match Candidato Vacante</button>
                                 </li>
+                                {% endif %}
+                                
+                                {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="candidato-tab" data-bs-toggle="tab" data-bs-target="#candidato-tab-pane" type="button" role="tab" aria-controls="candidato-tab-pane" aria-selected="true">Perfil Candidato</button>
+                                </li>
+                                {% else %}
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link " id="candidato-tab" data-bs-toggle="tab" data-bs-target="#candidato-tab-pane" type="button" role="tab" aria-controls="candidato-tab-pane" aria-selected="true">Perfil Candidato</button>
                                 </li>
-                                <li class="nav-item" role="presentation">
+                                {% endif %}
+                                
+                                {% comment %} <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="entrevista-tab" data-bs-toggle="tab" data-bs-target="#entrevista-tab-pane" type="button" role="tab" aria-controls="entrevista-tab-pane" aria-selected="false">Entrevistas</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
+                                </li> {% endcomment %}
+                                {% comment %} <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions-tab-pane" type="button" role="tab" aria-controls="questions-tab-pane" aria-selected="false">Preguntas</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="historico-tab" data-bs-toggle="tab" data-bs-target="#historico-tab-pane" type="button" role="tab" aria-controls="historico-tab-pane" aria-selected="false">Histórico</button>
-                                </li>
+                                </li> {% endcomment %}
                                 {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="respuesta-cliente-tab" data-bs-toggle="tab" data-bs-target="#respuesta-cliente-tab-pane" type="button" role="tab" aria-controls="respuesta-cliente-tab-pane" aria-selected="false">Reporte Final</button>
@@ -208,10 +220,20 @@ Detalle vacante
                                 {% endif %}
                             </ul>
                             <div class="tab-content" id="myTabContent">
+                                {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
+
+                                {% else %}
                                 <div class="tab-pane fade show active" id="match-tab-pane" role="tabpanel" aria-labelledby="match-tab" tabindex="0">
                                     {% include "admin/vacancy/common_template/info_vacancy.html" %}
                                 </div>
+                                {% endif %}
+
+                                {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
+                                <div class="tab-pane fade show active" id="candidato-tab-pane" role="tabpanel" aria-labelledby="candidato-tab" tabindex="0">
+                                {% else %}
                                 <div class="tab-pane fade" id="candidato-tab-pane" role="tabpanel" aria-labelledby="candidato-tab" tabindex="0">
+                                {% endif %}
+                                
                                     <div style="max-width: 1200px; width: 100%; margin-left: auto; margin-right: auto;">
                                         <!-- Contenido Principal del Dashboard -->
                                         <main style="display: flex; flex-wrap: wrap; margin-left: -1rem; margin-right: -1rem;">
@@ -336,7 +358,8 @@ Detalle vacante
                                         </main>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="entrevista-tab-pane" role="tabpanel" aria-labelledby="entrevista-tab" tabindex="0">
+                                
+                                {% comment %} <div class="tab-pane fade" id="entrevista-tab-pane" role="tabpanel" aria-labelledby="entrevista-tab" tabindex="0">
                                     {% if reclutado.estado_aplicacion != 4 and reclutado.estado_aplicacion != 7 and reclutado.estado_aplicacion != 8 and reclutado.estado_aplicacion != 10 and reclutado.estado_aplicacion != 11 and reclutado.estado_aplicacion != 12 %}
                                     <div class="row">
                                         <div class="col-12 text-center">
@@ -412,8 +435,8 @@ Detalle vacante
                                             </table>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="tab-pane fade" id="questions-tab-pane" role="tabpanel" aria-labelledby="questions-tab" tabindex="0">
+                                </div> {% endcomment %}
+                                {% comment %} <div class="tab-pane fade" id="questions-tab-pane" role="tabpanel" aria-labelledby="questions-tab" tabindex="0">
                                     <div class="row">
                                         {% if reclutado.preguntas_reclutamiento %}
                                             <div class="col-12">
@@ -456,8 +479,8 @@ Detalle vacante
                                             </div>
                                         {% endif %}
                                     </div>
-                                </div>
-                                <div class="tab-pane fade" id="historico-tab-pane" role="tabpanel" aria-labelledby="historico-tab" tabindex="0">
+                                </div> {% endcomment %}
+                                {% comment %} <div class="tab-pane fade" id="historico-tab-pane" role="tabpanel" aria-labelledby="historico-tab" tabindex="0">
                                     <div class="accordion-body">
                                         <div class="card bg-white border-0 rounded-3 mb-4">
                                             <div class="card-body p-4">
@@ -506,7 +529,7 @@ Detalle vacante
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> {% endcomment %}
                                 {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
                                 <div class="tab-pane fade" id="respuesta-cliente-tab-pane" role="tabpanel" aria-labelledby="respuesta-cliente-tab" tabindex="0">
                                     {% if datos_reporte_final %}

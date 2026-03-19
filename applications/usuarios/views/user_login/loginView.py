@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
 from django.contrib import messages # type: ignore
 from django.http import HttpResponse # type: ignore
+from applications.reclutado.views.common_views import crear_registro_cli084
 from applications.services.service_candidate import personal_information_calculation
 from applications.services.service_vacanty import query_vacanty_all, query_vacanty_with_skills_and_details
 
@@ -180,6 +181,7 @@ def candidate_registration(request):
             segundo_nombre = form.cleaned_data['segundo_nombre']
             primer_apellido = form.cleaned_data['primer_apellido']
             segundo_apellido = form.cleaned_data['segundo_apellido']
+            
 
             if password1 == password2:
                 if UsuarioBase.objects.filter(username=email).exists():
@@ -230,6 +232,11 @@ def candidate_registration(request):
 
                     # Envia el metodo
                     enviar_correo('bienvenida', contexto, 'Creación de Usuario ATS', [email], correo_remitente=None)
+
+                    token_qr = request.POST.get('token') or request.GET.get('token')
+                    if token_qr:
+                        from applications.reclutado.views.common_views import crear_registro_cli084
+                        crear_registro_cli084(token_qr, user)
                     
                     frase_aleatoria = 'Se ha enviado un correo electronico para su validar el mismo.'
                     messages.success(request, frase_aleatoria)
@@ -241,8 +248,9 @@ def candidate_registration(request):
     else:
         form = SignupFormCandidato()
 
+    token_qr = request.GET.get('token')
     login_f = random.choice(frases_inicio_sesion)
-    return render(request, 'admin/login/candidate_registration.html', {'form': form, 'login_f':login_f,} )
+    return render(request, 'admin/login/candidate_registration.html', {'form': form, 'login_f': login_f, 'token_qr': token_qr})
 
 #pantalla inicio
 # @login_required
@@ -619,6 +627,8 @@ def confirm_password_form(request, token):
 @validar_permisos(*Permiso.obtener_nombres())
 def my_profile(request):
     """Vista de perfil del usuario logueado: nombre, tipo, correo, teléfono, imagen y opción para cambiar contraseña."""
+    from applications.common.views.QrCode import get_or_create_asignacion_qr
+
     usuario = get_object_or_404(UsuarioBase, id=request.user.id)
     
     nombre_completo = f'{usuario.primer_nombre or ""} {usuario.segundo_nombre or ""} {usuario.primer_apellido or ""} {usuario.segundo_apellido or ""}'.strip() or usuario.username
@@ -641,6 +651,17 @@ def my_profile(request):
         url_actualizar_imagen = reverse('accesses:actualizar_imagen_perfil')
     except Exception:
         url_actualizar_imagen = '/mi_perfil/actualizar-imagen/'
+
+    show_qr_registro = False
+    asignacion_qr = None
+    url_registro_token = None
+    grupo_id = request.session.get('grupo_id')
+    if grupo_id in (1, 7):
+        show_qr_registro = True
+        asignacion_qr = get_or_create_asignacion_qr(usuario, request)
+        if asignacion_qr and asignacion_qr.token_qr:
+            url_base = f"{request.scheme}://{request.get_host()}"
+            url_registro_token = f"{url_base}/registro/candidato/?token={asignacion_qr.token_qr}"
     
     context = {
         'usuario': usuario,
@@ -652,8 +673,18 @@ def my_profile(request):
         'form_cambio_password': form_cambio_password,
         'url_cambiar_contrasena': url_cambiar_contrasena,
         'url_actualizar_imagen': url_actualizar_imagen,
+        'show_qr_registro': show_qr_registro,
+        'asignacion_qr': asignacion_qr,
+        'url_registro_token': url_registro_token,
     }
     return render(request, 'admin/login/my_profile.html', context)
+
+
+@login_required
+def generar_qr_imagen(request):
+    """Genera imagen QR para la URL proporcionada en el parámetro data."""
+    from applications.common.views.QrCode import generate_qr
+    return generate_qr(request)
 
 
 @login_required

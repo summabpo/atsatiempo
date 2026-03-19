@@ -2664,7 +2664,7 @@ class VacancyFormAllV2(forms.Form):
         required=False
     )
     
-    def __init__(self, *args, cliente_id=None, **kwargs):
+    def __init__(self, *args, cliente_id=None, es_edicion=None, **kwargs):
         # Extraer initial antes de super() para validar fecha_presentacion en modo edición
         initial_data = kwargs.get('initial', {})
 
@@ -2674,20 +2674,12 @@ class VacancyFormAllV2(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_id = 'form_vacante_cliente'
 
-        # Fecha de presentación: no puede ser hoy ni fechas pasadas
-        # En modo edición con fecha pasada, no establecer min para evitar error "not focusable"
+        # Fecha de presentación: en crear, no puede ser hoy ni fechas pasadas
+        # En editar, permitir conservar la fecha existente (incluso si es pasada)
         initial_fecha = initial_data.get('fecha_presentacion') if isinstance(initial_data, dict) else None
-        if initial_fecha:
-            try:
-                from datetime import datetime
-                fecha_val = datetime.strptime(str(initial_fecha)[:10], '%Y-%m-%d').date() if initial_fecha else None
-                initial_fecha_pasada = fecha_val and fecha_val <= date.today()
-            except (ValueError, TypeError):
-                initial_fecha_pasada = False
-        else:
-            initial_fecha_pasada = False
+        self._es_edicion = es_edicion if es_edicion is not None else bool(initial_fecha)
 
-        if not initial_fecha_pasada:
+        if not self._es_edicion:
             fecha_minima = (date.today() + timedelta(days=1)).isoformat()
             self.fields['fecha_presentacion'].widget.attrs['min'] = fecha_minima
 
@@ -3037,7 +3029,7 @@ class VacancyFormAllV2(forms.Form):
         fecha_presentacion = cleaned_data.get('fecha_presentacion')
         if not fecha_presentacion:
             self.add_error('fecha_presentacion', 'El campo Fecha de presentación es obligatorio.')
-        elif fecha_presentacion <= date.today():
+        elif not getattr(self, '_es_edicion', False) and fecha_presentacion <= date.today():
             self.add_error('fecha_presentacion', 'La fecha de presentación debe ser posterior a la fecha actual.')
         lugar_trabajo = cleaned_data.get('lugar_trabajo')
         if not lugar_trabajo:
