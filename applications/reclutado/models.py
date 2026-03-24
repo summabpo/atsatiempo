@@ -33,6 +33,13 @@ class Cli056AplicacionVacante(models.Model):
     def __str__(self):
         return str(self.id)
 
+    @classmethod
+    def contar_estado_seleccionado(cls, vacante_id):
+        """Cantidad de aplicaciones con estado_aplicacion = 8 (Seleccionado) para una vacante."""
+        return cls.objects.filter(
+            vacante_id_052=vacante_id, estado_aplicacion=8
+        ).count()
+
     def calcular_cantidades_y_porcentajes(vacante_id):
         total_aplicaciones = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante_id).count()
 

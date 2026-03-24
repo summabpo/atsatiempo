@@ -244,26 +244,34 @@ def detail_recruited(request, pk):
     respuesta_cliente_data = None
     
     # Verificar si ya existe una respuesta del cliente
-    if asignacion_vacante.estado_aplicacion in [12, 13] and asignacion_vacante.registro_reclutamiento:
+    if asignacion_vacante.estado_aplicacion in [8, 12, 13] and asignacion_vacante.registro_reclutamiento:
         if isinstance(asignacion_vacante.registro_reclutamiento, dict):
             descripcion_respuesta = asignacion_vacante.registro_reclutamiento.get('descripcion_respuesta_cliente', '')
             if descripcion_respuesta:
                 tiene_respuesta_cliente = True
+                es_apto = asignacion_vacante.estado_aplicacion in (8, 13)
                 respuesta_cliente_data = {
-                    'estado': 'Apto' if asignacion_vacante.estado_aplicacion == 13 else 'No Apto',
+                    'estado': 'Seleccionado' if es_apto else 'No Apto',
                     'estado_codigo': asignacion_vacante.estado_aplicacion,
                     'descripcion': descripcion_respuesta,
-                    'color_badge': 'success' if asignacion_vacante.estado_aplicacion == 13 else 'danger'
+                    'color_badge': 'success' if es_apto else 'danger'
                 }
     
     if request.method == 'POST' and 'submit' in request.POST and request.POST.get('submit') == 'Guardar Respuesta':
         form_respuesta_cliente = RespuestaClienteForm(request.POST)
         if form_respuesta_cliente.is_valid():
-            estado_respuesta = int(form_respuesta_cliente.cleaned_data['estado_respuesta'])
+            estado_form = int(form_respuesta_cliente.cleaned_data['estado_respuesta'])
+            # Seleccionado → siempre estado de aplicación 8 (compat. 13 en datos antiguos)
+            if estado_form in (8, 13):
+                estado_final = 8
+            elif estado_form == 12:
+                estado_final = 12
+            else:
+                estado_final = estado_form
             descripcion = form_respuesta_cliente.cleaned_data['descripcion']
             
             # Actualizar estado_aplicacion
-            asignacion_vacante.estado_aplicacion = estado_respuesta
+            asignacion_vacante.estado_aplicacion = estado_final
             
             # Obtener o inicializar registro_reclutamiento
             registro_reclutamiento = asignacion_vacante.registro_reclutamiento if asignacion_vacante.registro_reclutamiento else {}
@@ -277,9 +285,111 @@ def detail_recruited(request, pk):
             asignacion_vacante.registro_reclutamiento = registro_reclutamiento
             asignacion_vacante.save()
             
-            # Crear historial
-            crear_historial_aplicacion(asignacion_vacante, estado_respuesta, request.session.get('_auth_user_id'), f'Respuesta del cliente: {"Apto" if estado_respuesta == 13 else "No Apto"}')
-            
+            # Crear historial (mismo estado persistido en la aplicación)
+            _etiq = 'Seleccionado' if estado_final == 8 else 'No Apto'
+            crear_historial_aplicacion(
+                asignacion_vacante, estado_final, request.session.get('_auth_user_id'),
+                f'Respuesta del cliente: {_etiq}'
+            )
+
+            nombre_candidato_mail = ' '.join(
+                p for p in (
+                    info_candidato.primer_nombre,
+                    info_candidato.segundo_nombre,
+                    info_candidato.primer_apellido,
+                    info_candidato.segundo_apellido,
+                ) if p
+            ).strip()
+            nombre_candidato_saludo = (info_candidato.primer_nombre or '').strip() or (nombre_candidato_mail.split()[0] if nombre_candidato_mail else 'Candidato')
+            # Nombre comercial del headhunter origen (maestro), no del cliente/headhunter asignado
+            _asignacion = getattr(vacante, 'asignacion_cliente_id_064', None)
+            _maestro = getattr(_asignacion, 'id_cliente_maestro', None) if _asignacion else None
+            if _maestro and (_maestro.razon_social or '').strip():
+                nombre_empresa_cliente = _maestro.razon_social.strip()
+            elif cliente and (cliente.razon_social or '').strip():
+                nombre_empresa_cliente = cliente.razon_social.strip()
+            else:
+                nombre_empresa_cliente = 'Cliente'
+
+            contexto_interno = {
+                'cliente': nombre_empresa_cliente,
+                'vacante': vacante.titulo,
+                'id_vacante': vacante.id,
+                'nombre_candidato': nombre_candidato_mail or str(info_candidato.id),
+                'descripcion_respuesta': descripcion,
+                'url': url_actual,
+            }
+            contexto_candidato = {
+                'nombre_empresa_cliente': nombre_empresa_cliente,
+                'nombre_candidato_saludo': nombre_candidato_saludo,
+                'vacante': vacante.titulo,
+                'url': url_actual,
+            }
+
+            correos_internos = []
+            if getattr(vacante, 'usuario_asignado', None) and vacante.usuario_asignado.email:
+                correos_internos.append(vacante.usuario_asignado.email.strip())
+            if getattr(vacante, 'asignacion_reclutador', None) and vacante.asignacion_reclutador.email:
+                correos_internos.append(vacante.asignacion_reclutador.email.strip())
+            vistos_i = set()
+            lista_internos = []
+            for em in correos_internos:
+                if em:
+                    k = em.lower()
+                    if k not in vistos_i:
+                        vistos_i.add(k)
+                        lista_internos.append(em)
+
+            email_candidato = (info_candidato.email or '').strip()
+            lista_candidato = [email_candidato] if email_candidato else []
+
+            if estado_final == 8:
+                if lista_internos:
+                    try:
+                        enviar_correo(
+                            'respuesta_cliente_seleccionado_correo',
+                            contexto_interno,
+                            f'Respuesta del cliente — Candidato seleccionado · Vacante {vacante.id}',
+                            lista_internos,
+                            correo_remitente=None,
+                        )
+                    except Exception:
+                        pass
+                if lista_candidato:
+                    try:
+                        enviar_correo(
+                            'candidato_respuesta_cliente_seleccionado_correo',
+                            contexto_candidato,
+                            f'{nombre_empresa_cliente} — Has sido seleccionado · {vacante.titulo}',
+                            lista_candidato,
+                            correo_remitente=None,
+                        )
+                    except Exception:
+                        pass
+            elif estado_final == 12:
+                if lista_internos:
+                    try:
+                        enviar_correo(
+                            'respuesta_cliente_no_seleccionado_correo',
+                            contexto_interno,
+                            f'Respuesta del cliente — No continúa · Vacante {vacante.id}',
+                            lista_internos,
+                            correo_remitente=None,
+                        )
+                    except Exception:
+                        pass
+                if lista_candidato:
+                    try:
+                        enviar_correo(
+                            'candidato_respuesta_cliente_no_seleccionado_correo',
+                            contexto_candidato,
+                            f'{nombre_empresa_cliente} — Gracias por tu participación',
+                            lista_candidato,
+                            correo_remitente=None,
+                        )
+                    except Exception:
+                        pass
+
             messages.success(request, 'Respuesta guardada exitosamente.')
             return redirect('reclutados:reclutados_detalle_cliente', pk=pk)
         else:
@@ -291,7 +401,7 @@ def detail_recruited(request, pk):
 
     # Obtener datos del reporte final si el estado_aplicacion es 8 (Seleccionado) o si hay respuesta del cliente
     datos_reporte_final = None
-    if asignacion_vacante.estado_aplicacion == 8 or tiene_respuesta_cliente:
+    if asignacion_vacante.estado_aplicacion == 3 or tiene_respuesta_cliente:
         try:
             datos_reporte_final = _procesar_datos_reporte_final(request, asignacion_vacante.id)
         except Exception as e:

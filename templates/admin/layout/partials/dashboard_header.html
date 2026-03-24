@@ -88,7 +88,8 @@
                 <ul class="d-flex align-items-center justify-content-center justify-content-sm-end ps-0 mb-0 list-unstyled">
                     <li class="header-right-item">
                         <span class="fw-normal text-white me-4 flex-grow-1">
-                            {% if request.session.user_login.cliente_nombre %}{{ request.session.user_login.cliente_nombre }}{% else %} {% endif %}
+                            {% if request.session.user_login.cliente_nombre %}{{ request.session.user_login.cliente_nombre }} | {{ request.session.tipo_usuario }} {% else %} {% endif %}
+                            
                         </span>
                     </li>
                     <li class="header-right-item">

@@ -199,7 +199,7 @@ ESTADO_APLICACION_CHOICES_STATIC = [
     (10, 'Cancelada'),
     (11, 'Desiste'),
     (12, 'No Apto'),
-    (13, 'Seleccionado por Headhunter'),
+    (13, 'Seleccionado por Cliente'),
 ]
 
 ESTADO_APLICACION_COLOR_STATIC = {
@@ -215,6 +215,7 @@ ESTADO_APLICACION_COLOR_STATIC = {
     10: ('Cancelada', 'secondary'),
     11: ('Desiste', 'secondary'),
     12: ('No Apto', 'danger'),
+    13: ('Seleccionado por Cliente', 'success'),
 }
 
 ESTADO_RECLUTADO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [

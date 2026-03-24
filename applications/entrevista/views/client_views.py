@@ -151,9 +151,9 @@ def management_interview(request, pk):
 
             #validación estados.
             if estado_asignacion == 2:
-                estado_vacante = 8 # Se cambia estado de la vacante a seleccionado
+                estado_vacante = 3 # Se cambia estado de la vacante a seleccionado
                 observacion_historial = 'Se aprueba el candidato, siguen en proceso.'
-                crear_historial_aplicacion(asignacion_vacante, 8, request.session.get('_auth_user_id'), 'Seleccionado por el cliente.')
+                crear_historial_aplicacion(asignacion_vacante, 3, request.session.get('_auth_user_id'), 'Seleccionado por el cliente.')
             if estado_asignacion == 3:
                 estado_vacante = 12  # No Apto Entrevista No Aprobada
                 observacion_historial = 'Candidato No Apto en Entrevista'

@@ -33,9 +33,17 @@ def crear_historial_aplicacion(aplicacion_vacante, estado, usuario=None, descrip
         descripcion=descripcion
     )
 
+
     aplicacion_vacante.estado_aplicacion = estado
     aplicacion_vacante.fecha_actualizacion = now()
     aplicacion_vacante.save()
+
+    if estado == 8:
+        cantidad_seleccionados = Cli056AplicacionVacante.contar_estado_seleccionado(aplicacion_vacante.vacante_id_052.id)
+        if cantidad_seleccionados == aplicacion_vacante.vacante_id_052.numero_posiciones:
+            aplicacion_vacante.estado_vacante = 3
+            aplicacion_vacante.fecha_cierre = now()
+            aplicacion_vacante.save()
 
     if validar_vacante_cierre(vacante_id=aplicacion_vacante.vacante_id_052.id) == True:
         # crea el registro del historial

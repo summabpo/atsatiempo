@@ -17,11 +17,15 @@ def enviar_correo(tipo_correo, contexto, asunto, lista_destinatarios, correo_rem
         'cancelacion_vacante_correo' : 'admin/mails/cancelacion_vacante_correo.html',
         'creacion_vacante' : 'admin/mails/creacion_vacante_correo.html',
         'cambio_password' : 'admin/mails/cambio_password.html',
+        'respuesta_cliente_seleccionado_correo': 'admin/mails/respuesta_cliente_seleccionado_correo.html',
+        'respuesta_cliente_no_seleccionado_correo': 'admin/mails/respuesta_cliente_no_seleccionado_correo.html',
+        'candidato_respuesta_cliente_seleccionado_correo': 'admin/mails/candidato_respuesta_cliente_seleccionado_correo.html',
+        'candidato_respuesta_cliente_no_seleccionado_correo': 'admin/mails/candidato_respuesta_cliente_no_seleccionado_correo.html',
     }
 
     nombre_plantilla = plantilla_correo.get(tipo_correo)
 
-    if not plantilla_correo:
+    if not nombre_plantilla:
         raise ValueError(f"Tipo de correo no reconocido: {tipo_correo}")
 
     mensaje = render_to_string(nombre_plantilla, contexto)
