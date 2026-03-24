@@ -43,7 +43,9 @@ def query_vacanty_detail():
         'perfil_vacante',
         'cargo',
         'asignacion_cliente_id_064__id_cliente_asignado',
-        'usuario_asignado'
+        'asignacion_cliente_id_064__id_cliente_maestro',
+        'usuario_asignado',
+        'asignacion_reclutador',
     )
 
 def query_vacanty_with_skills_and_details():

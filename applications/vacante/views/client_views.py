@@ -517,7 +517,7 @@ def vacancy_management_from_client(request, pk, vacante_id):
     preguntas = get_vacanty_questions(vacante.id)
 
     # Obtener los reclutados asociados a la vacante con estado_aplicacion = 8 (Seleccionado)
-    reclutados = query_recruited_vacancy_id(vacante.id).filter(estado_aplicacion=8)
+    reclutados = query_recruited_vacancy_id(vacante.id).filter(estado_aplicacion=3)
     
     # Para este template solo mostramos finalistas (estado_aplicacion = 8)
     # Ordenar por fecha de aplicación ascendente

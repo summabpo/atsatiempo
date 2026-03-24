@@ -204,9 +204,9 @@ Detalle vacante
                                 </li>
                                 {% endif %}
                                 
-                                {% comment %} <li class="nav-item" role="presentation">
+                                <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="entrevista-tab" data-bs-toggle="tab" data-bs-target="#entrevista-tab-pane" type="button" role="tab" aria-controls="entrevista-tab-pane" aria-selected="false">Entrevistas</button>
-                                </li> {% endcomment %}
+                                </li> 
                                 {% comment %} <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions-tab-pane" type="button" role="tab" aria-controls="questions-tab-pane" aria-selected="false">Preguntas</button>
                                 </li>
@@ -359,7 +359,7 @@ Detalle vacante
                                     </div>
                                 </div>
                                 
-                                {% comment %} <div class="tab-pane fade" id="entrevista-tab-pane" role="tabpanel" aria-labelledby="entrevista-tab" tabindex="0">
+                                <div class="tab-pane fade" id="entrevista-tab-pane" role="tabpanel" aria-labelledby="entrevista-tab" tabindex="0">
                                     {% if reclutado.estado_aplicacion != 4 and reclutado.estado_aplicacion != 7 and reclutado.estado_aplicacion != 8 and reclutado.estado_aplicacion != 10 and reclutado.estado_aplicacion != 11 and reclutado.estado_aplicacion != 12 %}
                                     <div class="row">
                                         <div class="col-12 text-center">
@@ -435,7 +435,7 @@ Detalle vacante
                                             </table>
                                         </div>
                                     </div>
-                                </div> {% endcomment %}
+                                </div>
                                 {% comment %} <div class="tab-pane fade" id="questions-tab-pane" role="tabpanel" aria-labelledby="questions-tab" tabindex="0">
                                     <div class="row">
                                         {% if reclutado.preguntas_reclutamiento %}
@@ -530,10 +530,11 @@ Detalle vacante
                                         </div>
                                     </div>
                                 </div> {% endcomment %}
+                                
                                 {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
                                 <div class="tab-pane fade" id="respuesta-cliente-tab-pane" role="tabpanel" aria-labelledby="respuesta-cliente-tab" tabindex="0">
                                     {% if datos_reporte_final %}
-                                        {% if reclutado.estado_aplicacion == 8 or tiene_respuesta_cliente %}
+                                        {% if reclutado.estado_aplicacion == 3 or tiene_respuesta_cliente %}
                                             <!-- Mostrar reporte final cuando estado_aplicacion es 8 o cuando hay respuesta del cliente -->
                                             {% include "admin/recruited/partials/reporte_final_content.html" %}
                                         {% endif %}
