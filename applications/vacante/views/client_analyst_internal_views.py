@@ -92,7 +92,7 @@ def edit_vacancy(request, pk, vacante_id):
         'modalidad': perfil_vacante.modalidad if perfil_vacante else None,
         'cantidad_presentar': vacante.cantidad_presentar,
         'numero_posiciones': vacante.numero_posiciones,
-        'fecha_presentacion': vacante.fecha_presentacion.strftime('%Y-%m-%d') if vacante.fecha_presentacion else None,
+        'fecha_presentacion': vacante.fecha_presentacion_para_input_date(),
         'barrio': perfil_vacante.barrio if perfil_vacante else None,
         'direccion': perfil_vacante.direccion if perfil_vacante else None,
         'salario': str(perfil_vacante.salario) if perfil_vacante and perfil_vacante.salario else None,
@@ -185,7 +185,9 @@ def edit_vacancy(request, pk, vacante_id):
     initial['grupo_fit_5'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_5_IDS).values_list('id', flat=True))
 
     if request.method == 'POST':
-        form = VacancyFormAllV2(request.POST, cliente_id=pk, es_edicion=True)
+        form = VacancyFormAllV2(
+            request.POST, initial=initial, cliente_id=pk, es_edicion=True
+        )
         if form.is_valid():
 
             # Update existing data
@@ -193,7 +195,7 @@ def edit_vacancy(request, pk, vacante_id):
             vacante.cargo = Cli068Cargo.objects.get(id=form.cleaned_data['cargo'])
             vacante.numero_posiciones = form.cleaned_data['numero_posiciones']
             vacante.cantidad_presentar = form.cleaned_data['cantidad_presentar']
-            vacante.fecha_presentacion = form.cleaned_data['fecha_presentacion']
+            # fecha_presentacion no se altera al editar (campo deshabilitado en el formulario)
             vacante.descripcion_vacante = form.cleaned_data['descripcion_vacante']
             vacante.comentarios = form.cleaned_data['comentarios']
             vacante.requerimientos_especiales = form.cleaned_data.get('requerimientos_especiales')

@@ -204,9 +204,13 @@ Detalle vacante
                                 </li>
                                 {% endif %}
                                 
+                                {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
+
+                                {% else %}
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="entrevista-tab" data-bs-toggle="tab" data-bs-target="#entrevista-tab-pane" type="button" role="tab" aria-controls="entrevista-tab-pane" aria-selected="false">Entrevistas</button>
                                 </li> 
+                                {% endif %}
                                 {% comment %} <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions-tab-pane" type="button" role="tab" aria-controls="questions-tab-pane" aria-selected="false">Preguntas</button>
                                 </li>
@@ -251,10 +255,10 @@ Detalle vacante
                                                         {% endif %}
                                                         <h2 style="font-size: 1.5rem; font-weight: 600; color: #212529; margin: 0;">{{ candidato.nombre_completo }}</h2>
                                                         <p style="color: #6c757d; margin: 0.25rem 0 1.5rem 0;">Desarrollador de Software Senior</p>
-                                                        <button style="background-color: #b10022; color: #ffffff; font-weight: 500; padding: 0.6rem 1.2rem; border-radius: 0.5rem; display: inline-flex; align-items: center; border: none; cursor: pointer; font-size: 0.9rem;">
-                                                            <span class="material-symbols-outlined text-white" style="margin-right: 0.75rem;">download</span>
-                                                            Descargar Hoja de Vida
-                                                        </button>
+                                                        <a href="{% url 'reclutados:reclutados_hoja_vida_pdf' pk=reclutado.id %}" target="_blank" rel="noopener noreferrer" class="text-decoration-none" style="background-color: #b10022; color: #ffffff; font-weight: 500; padding: 0.6rem 1.2rem; border-radius: 0.5rem; display: inline-flex; align-items: center; border: none; cursor: pointer; font-size: 0.9rem;">
+                                                            <span class="material-symbols-outlined text-white" style="margin-right: 0.75rem;">open_in_new</span>
+                                                            Ver hoja de vida (PDF)
+                                                        </a>
                                                     </div>
                                                     <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid #dee2e6;">
                                                         <h3 style="font-size: 1rem; font-weight: 600; color: #212529; margin-top: 1.5rem; margin-bottom: 1rem;">Información de Contacto</h3>
@@ -359,6 +363,9 @@ Detalle vacante
                                     </div>
                                 </div>
                                 
+                                {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
+
+                                {% else %}
                                 <div class="tab-pane fade" id="entrevista-tab-pane" role="tabpanel" aria-labelledby="entrevista-tab" tabindex="0">
                                     {% if reclutado.estado_aplicacion != 4 and reclutado.estado_aplicacion != 7 and reclutado.estado_aplicacion != 8 and reclutado.estado_aplicacion != 10 and reclutado.estado_aplicacion != 11 and reclutado.estado_aplicacion != 12 %}
                                     <div class="row">
@@ -436,6 +443,7 @@ Detalle vacante
                                         </div>
                                     </div>
                                 </div>
+                                {% endif %}
                                 {% comment %} <div class="tab-pane fade" id="questions-tab-pane" role="tabpanel" aria-labelledby="questions-tab" tabindex="0">
                                     <div class="row">
                                         {% if reclutado.preguntas_reclutamiento %}
