@@ -2682,6 +2682,15 @@ class VacancyFormAllV2(forms.Form):
         if not self._es_edicion:
             fecha_minima = (date.today() + timedelta(days=1)).isoformat()
             self.fields['fecha_presentacion'].widget.attrs['min'] = fecha_minima
+        else:
+            # Edición: la fecha queda fijada; no se modifica en guardado ni en pantalla.
+            self.fields['fecha_presentacion'].disabled = True
+            self.fields['fecha_presentacion'].help_text = (
+                'No se puede modificar al editar la vacante.'
+            )
+            wattrs = self.fields['fecha_presentacion'].widget.attrs
+            wattrs['class'] = (wattrs.get('class', '') + ' bg-light').strip()
+            wattrs['title'] = 'Fecha fijada al crear la vacante'
 
         if cliente_id:
             cargos = Cli068Cargo.objects.filter(cliente=cliente_id).order_by('nombre_cargo')

@@ -59,7 +59,9 @@ def create_vacanty(request):
             cargo = form.cleaned_data['cargo']                              #perfil de la vacante
             numero_posiciones = form.cleaned_data['numero_posiciones']      #perfil de la vacante
             cantidad_presentar = form.cleaned_data['cantidad_presentar']     #perfil de la vacante    
-            fecha_presentacion = form.cleaned_data['fecha_presentacion']    #vacante
+            fecha_presentacion = Cli052Vacante.fecha_presentacion_desde_date_formulario(
+                form.cleaned_data['fecha_presentacion']
+            )
             
 
             #detalles del trabajo
@@ -225,14 +227,18 @@ def create_vacanty_v2(request):
     # Verificar si el cliente_id está en la sesión
     cliente_id = request.session.get('cliente_id')
 
-    asignacion_cliente = Cli064AsignacionCliente.objects.get(id_cliente_asignado=cliente_id)
-    
     form = VacancyFormAllV2(cliente_id=cliente_id)
 
     if request.method == 'POST':
         form = VacancyFormAllV2(request.POST, cliente_id=cliente_id)
 
         if form.is_valid():
+            # Misma lógica que create_vacanty: asegurar registro de asignación cliente
+            asignacion_cliente, _ = Cli064AsignacionCliente.objects.get_or_create(
+                id_cliente_maestro=Cli051Cliente.objects.get(id=1000),
+                id_cliente_asignado=Cli051Cliente.objects.get(id=cliente_id),
+                defaults={'tipo_asignacion': '1', 'estado': Cat001Estado.objects.get(id=1)},
+            )
             # --- 1. Recolecta los datos de los campos JSON en listas de Python ---
             # Motivo de la vacante
             motivo_vacante_data = {
@@ -414,7 +420,9 @@ def create_vacanty_v2(request):
                 numero_posiciones=form.cleaned_data['numero_posiciones'],
                 cantidad_presentar=form.cleaned_data['cantidad_presentar'],
                 titulo=f'Vacante para el cargo: {cargo_obj.nombre_cargo}',
-                fecha_presentacion=form.cleaned_data['fecha_presentacion'],
+                fecha_presentacion=Cli052Vacante.fecha_presentacion_desde_date_formulario(
+                    form.cleaned_data['fecha_presentacion']
+                ),
                 asignacion_cliente_id_064=asignacion_cliente,
                 perfil_vacante=perfil_vacante,
                 descripcion_vacante=form.cleaned_data.get('descripcion_vacante'),
@@ -606,7 +614,7 @@ def detail_vacancy(request, pk):
         'modalidad': perfil_vacante.modalidad if perfil_vacante else None,
         'cantidad_presentar': vacante.cantidad_presentar,
         'numero_posiciones': vacante.numero_posiciones,
-        'fecha_presentacion': vacante.fecha_presentacion.strftime('%Y-%m-%d') if vacante.fecha_presentacion else None,
+        'fecha_presentacion': vacante.fecha_presentacion_para_input_date(),
         'barrio': perfil_vacante.barrio if perfil_vacante else None,
         'direccion': perfil_vacante.direccion if perfil_vacante else None,
         'salario': str(perfil_vacante.salario) if perfil_vacante and perfil_vacante.salario else None,
@@ -699,7 +707,9 @@ def detail_vacancy(request, pk):
     initial['grupo_fit_5'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_5_IDS).values_list('id', flat=True))
 
     if request.method == 'POST':
-        form = VacancyFormAllV2(request.POST, cliente_id=cliente_id, es_edicion=True)
+        form = VacancyFormAllV2(
+            request.POST, initial=initial, cliente_id=cliente_id, es_edicion=True
+        )
         if form.is_valid():
 
             # Update existing data
@@ -707,7 +717,7 @@ def detail_vacancy(request, pk):
             vacante.cargo = Cli068Cargo.objects.get(id=form.cleaned_data['cargo'])
             vacante.numero_posiciones = form.cleaned_data['numero_posiciones']
             vacante.cantidad_presentar = form.cleaned_data['cantidad_presentar']
-            vacante.fecha_presentacion = form.cleaned_data['fecha_presentacion']
+            # fecha_presentacion no se altera al editar (campo deshabilitado en el formulario)
             vacante.descripcion_vacante = form.cleaned_data['descripcion_vacante']
             vacante.comentarios = form.cleaned_data['comentarios']
             vacante.requerimientos_especiales = form.cleaned_data.get('requerimientos_especiales')

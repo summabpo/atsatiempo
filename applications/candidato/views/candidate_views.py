@@ -248,11 +248,37 @@ def candidate_info(request):
         if item.descripcion:
             fit_cultural_descriptions[str(item.id)] = item.descripcion
 
-    # IDs de motivadores seleccionados (para checkboxes y re-render tras POST)
-    if form.is_bound and form.motivadores.value():
-        motivadores_selected_ids = list(form.motivadores.value().values_list('pk', flat=True))
+    # IDs de motivadores seleccionados (checkboxes; misma lista de ints que en el template: m_id in ...)
+    # En POST (incl. formulario inválido) la fuente fiable es request.POST: conserva lo marcado aunque falle clean().
+    def _normalize_motivador_ids(seq):
+        out = []
+        for x in seq or []:
+            try:
+                out.append(int(x))
+            except (TypeError, ValueError):
+                continue
+        return out
+
+    motivadores_selected_ids = []
+    if request.method == 'POST':
+        motivadores_selected_ids = _normalize_motivador_ids(
+            request.POST.getlist('motivadores')
+        )
+        if not motivadores_selected_ids and form.is_bound and 'motivadores' in form.fields:
+            val = form['motivadores'].value()
+            if val is not None and val != '' and val != []:
+                if hasattr(val, 'values_list'):
+                    motivadores_selected_ids = _normalize_motivador_ids(
+                        val.values_list('pk', flat=True)
+                    )
+                else:
+                    motivadores_selected_ids = _normalize_motivador_ids(
+                        [getattr(x, 'pk', x) for x in val]
+                    )
     else:
-        motivadores_selected_ids = form.initial.get('motivadores', [])
+        motivadores_selected_ids = _normalize_motivador_ids(
+            (form.initial or {}).get('motivadores', []) or []
+        )
 
     # Calcular porcentajes de completitud
     from applications.services.service_candidate import personal_information_calculation

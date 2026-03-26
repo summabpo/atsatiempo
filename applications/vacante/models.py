@@ -162,6 +162,32 @@ class Cli052Vacante(models.Model):
     def __str__(self):
         return self.titulo
 
+    def fecha_presentacion_para_input_date(self):
+        """Fecha calendario (YYYY-MM-DD) en zona local para input type=date (evita cambio de día por UTC)."""
+        from django.utils import timezone
+
+        if not self.fecha_presentacion:
+            return None
+        dt = self.fecha_presentacion
+        if timezone.is_aware(dt):
+            return timezone.localtime(dt).date().isoformat()
+        return dt.date().isoformat()
+
+    @staticmethod
+    def fecha_presentacion_desde_date_formulario(fecha):
+        """Convierte date del formulario a datetime con medianoche en la zona del proyecto."""
+        from datetime import datetime, time as dt_time
+
+        from django.conf import settings
+        from django.utils import timezone
+
+        if fecha is None:
+            return None
+        dt = datetime.combine(fecha, dt_time.min)
+        if settings.USE_TZ:
+            return timezone.make_aware(dt, timezone.get_current_timezone())
+        return dt
+
     @classmethod
     def contar_vacantes_por_estado(cls, cliente_id):
         total_vacantes = cls.objects.filter(cliente_id_051=cliente_id).count()

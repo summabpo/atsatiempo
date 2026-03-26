@@ -14,7 +14,7 @@ from applications.usuarios.models import Permiso, UsuarioBase
 from applications.common.models import Cat001Estado, Cat004Ciudad
 from applications.candidato.models import Can101Candidato
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 import json
 from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
@@ -28,6 +28,57 @@ from applications.services.service_vacanty import  query_vacanty_detail
 from applications.services.service_recruited import consultar_historial_aplicacion_vacante, query_recruited_vacancy_id
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 from applications.reclutado.views.admin_views import _procesar_datos_reporte_final
+from applications.reclutado.candidato_hoja_vida_pdf import build_hoja_vida_pdf, safe_filename_part
+
+
+def _puede_descargar_hoja_vida_pdf(request, asignacion_vacante):
+    """Misma lógica de acceso que el detalle del reclutado (cliente, admin, internos, reclutador)."""
+    if getattr(request.user, 'is_superuser', False):
+        return True
+    grupo_id = request.session.get('grupo_id')
+    vacante = asignacion_vacante.vacante_id_052
+    id_cliente_vacante = vacante.asignacion_cliente_id_064.id_cliente_asignado.id
+    if grupo_id == 1:
+        return True
+    if grupo_id in (3, 5, 6):
+        return True
+    if request.session.get('cliente_id') == id_cliente_vacante:
+        return True
+    reclutador = getattr(vacante, 'asignacion_reclutador_id', None)
+    if reclutador and reclutador == request.user.id:
+        return True
+    return False
+
+
+@login_required
+@validar_permisos(
+    'acceso_admin',
+    'acceso_cliente',
+    'acceso_analista_seleccion_ats',
+    'acceso_analista_seleccion',
+    'acceso_cliente_entrevistador',
+    'acceso_reclutador',
+)
+def descargar_hoja_vida_pdf(request, pk):
+    """
+    Descarga la hoja de vida del candidato en PDF (datos del sistema).
+    pk: id de Cli056AplicacionVacante.
+    """
+    asignacion_vacante = get_object_or_404(Cli056AplicacionVacante, id=pk)
+    if not _puede_descargar_hoja_vida_pdf(request, asignacion_vacante):
+        return HttpResponseForbidden('No tiene permisos para descargar esta hoja de vida.')
+
+    candidato = get_object_or_404(Can101Candidato, id=asignacion_vacante.candidato_101_id)
+    info_detalle = buscar_candidato(candidato.id)
+    vacante = query_vacanty_detail().get(id=asignacion_vacante.vacante_id_052_id)
+    titulo_vacante = getattr(vacante, 'titulo', None)
+
+    pdf_buffer = build_hoja_vida_pdf(request, candidato, info_detalle, vacante_titulo=titulo_vacante)
+    nombre_archivo = f"Hoja_de_vida_{safe_filename_part(candidato.nombre_completo())}_{candidato.id}.pdf"
+    response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
+    # inline: el navegador muestra el PDF (útil al abrir en nueva pestaña)
+    response['Content-Disposition'] = f'inline; filename="{nombre_archivo}"'
+    return response
 
 #detalle de la vacante
 @login_required

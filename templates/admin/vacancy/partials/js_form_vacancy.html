@@ -2,6 +2,16 @@
 <script>
 $(document).ready(function() {
 
+    // Enter en <input> de una línea no debe enviar el formulario ni cambiar de pestaña; solo Guardar envía.
+    $('#form_vacante_todos').on('keydown', function(e) {
+        if (e.key !== 'Enter') return;
+        const el = e.target;
+        if (!el || el.tagName !== 'INPUT') return;
+        const t = (el.type || '').toLowerCase();
+        if (t === 'submit' || t === 'button' || t === 'checkbox' || t === 'radio' || t === 'file' || t === 'hidden') return;
+        e.preventDefault();
+    });
+
     // Otro motivo vacante
     function toggleOtroMotivo() {
         const valorMotivo = $('#id_motivo_vacante').val();

@@ -30,6 +30,44 @@ from applications.services.service_client import query_client_detail
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
 
+def _asignacion_cliente_para_vacante_desde_admin(request, pk):
+    """
+    Resuelve o crea Cli064AsignacionCliente al guardar vacante desde admin/headhunter.
+    - Grupo 3 (headhunter): maestro = cliente en sesión, asignado = pk, tipo '2'.
+    - Resto (p. ej. admin grupo 1): maestro 1000, asignado = pk, tipo '1' (igual que el cliente).
+    """
+    raw_gid = request.session.get('grupo_id')
+    try:
+        grupo_id = int(raw_gid) if raw_gid is not None else None
+    except (TypeError, ValueError):
+        grupo_id = None
+
+    estado_activo = Cat001Estado.objects.get(id=1)
+    cliente_asignado = Cli051Cliente.objects.get(id=pk)
+
+    if grupo_id == 3:
+        cliente_maestro_id = request.session.get('cliente_id')
+        if not cliente_maestro_id:
+            raise ValueError(
+                'No hay cliente en sesión. Use una cuenta headhunter con cliente asignado.'
+            )
+        cliente_maestro = Cli051Cliente.objects.get(id=cliente_maestro_id)
+        asignacion, _ = Cli064AsignacionCliente.objects.get_or_create(
+            id_cliente_maestro=cliente_maestro,
+            id_cliente_asignado=cliente_asignado,
+            defaults={'tipo_asignacion': '2', 'estado': estado_activo},
+        )
+        return asignacion
+
+    cliente_maestro = Cli051Cliente.objects.get(id=1000)
+    asignacion, _ = Cli064AsignacionCliente.objects.get_or_create(
+        id_cliente_maestro=cliente_maestro,
+        id_cliente_asignado=cliente_asignado,
+        defaults={'tipo_asignacion': '1', 'estado': estado_activo},
+    )
+    return asignacion
+
+
 #crear todas las vacantes
 @login_required
 # @validar_permisos(*Permiso.obtener_nombres())
@@ -73,198 +111,201 @@ def create_vacanty_from_client(request, pk):
         asignacion_cliente_id_064__tipo_asignacion='1'  # Aquí va el campo correcto
     )
 
-    grupo_id = request.session.get('grupo_id')
-    if grupo_id == 1:
-        asignacion_cliente = Cli064AsignacionCliente.objects.get(id_cliente_asignado=pk, tipo_asignacion='1')
-    elif grupo_id == 3:
-        cliente_id = request.session.get('cliente_id')
-        asignacion_cliente = Cli064AsignacionCliente.objects.get(id_cliente_asignado=pk, id_cliente_maestro=cliente_id, tipo_asignacion='2')
-
-    print(f'asignacion_cliente: {asignacion_cliente.id}')
-
     form = VacancyFormAllV2(cliente_id=pk)
 
     if request.method == 'POST':
         form = VacancyFormAllV2(request.POST, cliente_id=pk)
 
         if form.is_valid():
-            # --- 1. Recolecta los datos de los campos JSON en listas de Python ---
-            # Motivo de la vacante (tu lógica original ya era correcta)
-            motivo_vacante_data = {
-                "motivo": form.cleaned_data.get('motivo_vacante'),
-                "otro_motivo": form.cleaned_data.get('otro_motivo')
-            }
+            try:
+                asignacion_cliente = _asignacion_cliente_para_vacante_desde_admin(request, pk)
+            except (Cli051Cliente.DoesNotExist, ValueError) as exc:
+                messages.error(
+                    request,
+                    f'No se pudo registrar la asignación del cliente: {exc}',
+                )
+                asignacion_cliente = None
 
-            # Horarios con estructura mejorada
-            tipo_horario = form.cleaned_data.get('tipo_horario')
-            horarios_data = {
-                "tipo": tipo_horario,
-                "bloques": []
-            }
-            
-            for i in range(1, 4):
-                horario_inicio = form.cleaned_data.get(f'horario_inicio_{i}')
-                horario_final = form.cleaned_data.get(f'horario_final_{i}')
-                hora_inicio = form.cleaned_data.get(f'hora_inicio_{i}')
-                hora_final = form.cleaned_data.get(f'hora_final_{i}')
+            if asignacion_cliente is not None:
+                # --- 1. Recolecta los datos de los campos JSON en listas de Python ---
+                # Motivo de la vacante (tu lógica original ya era correcta)
+                motivo_vacante_data = {
+                    "motivo": form.cleaned_data.get('motivo_vacante'),
+                    "otro_motivo": form.cleaned_data.get('otro_motivo')
+                }
+
+                # Horarios con estructura mejorada
+                tipo_horario = form.cleaned_data.get('tipo_horario')
+                horarios_data = {
+                    "tipo": tipo_horario,
+                    "bloques": []
+                }
                 
-                if all([horario_inicio, horario_final, hora_inicio, hora_final]):
-                    horarios_data["bloques"].append({
-                        "dia_inicio": horario_inicio,
-                        "dia_final": horario_final,
-                        "hora_inicio": str(hora_inicio),
-                        "hora_final": str(hora_final),
-                        "bloque": i
-                    })
-            
-            # Funciones y responsabilidades
-            funciones_data = []
-            for i in range(1,4):
-                funcion = form.cleaned_data.get(f'funciones_responsabilidades_{i}')
-                if funcion:
-                    funciones_data.append({"bloque": i, "funcion": funcion})
-
-            # Experiencia laboral
-            experiencia_data = []
-            for i in range(1,4):
-                tiempo_experiencia = form.cleaned_data.get(f'tiempo_experiencia_{i}')
-                experiencia_especifica = form.cleaned_data.get(f'experiencia_especifica_en_{i}')
-                if tiempo_experiencia and experiencia_especifica:
-                    experiencia_data.append({
-                        "bloque": i,
-                        "tiempo_experiencia" : tiempo_experiencia,
-                        "experiencia_especifica" : experiencia_especifica,
-                    })
-
-            # Idiomas
-            idiomas_data = []
-            for i in range(1,3): # Asumiendo 2 bloques de idiomas
-                idioma = form.cleaned_data.get(f'idioma_{i}')
-                nivel_idioma = form.cleaned_data.get(f'nivel_idioma_{i}')
-                if idioma and nivel_idioma:
-                    idiomas_data.append({
-                        "bloque": i,
-                        "idioma" : idioma,
-                        "nivel" : nivel_idioma, # Corregido para que coincida con la lectura
-                    })
-            
-            # Estudios complementarios
-            estudios_data = []
-            for i in range(1,4):
-                estudio = form.cleaned_data.get(f'estudios_complementarios_{i}')
-                certificado = form.cleaned_data.get(f'estudios_complementarios_certificado_{i}')
-                if estudio: # Certificado puede ser False
-                    estudios_data.append({
-                        "bloque": i,
-                        "estudio" : estudio,
-                        "certificado" : certificado,
-                    })
-
-            # --- 2. Crea el Perfil de la Vacante pasando los objetos Python ---
-            # Handle grupo_profesion field properly
-            grupo_profesion_value = form.cleaned_data['grupo_profesion']
-            grupo_profesion_obj = None
-            if grupo_profesion_value and grupo_profesion_value != '':
-                try:
-                    grupo_profesion_obj = Cli075GrupoProfesion.objects.get(id=grupo_profesion_value)
-                except Cli075GrupoProfesion.DoesNotExist:
-                    grupo_profesion_obj = None
-            
-            # Handle profesion_estudio field properly
-            profesion_estudio_value = form.cleaned_data['profesion_estudio']
-            profesion_estudio_obj = None
-            if profesion_estudio_value and profesion_estudio_value != '':
-                try:
-                    profesion_estudio_obj = Cli055ProfesionEstudio.objects.get(id=profesion_estudio_value)
-                except Cli055ProfesionEstudio.DoesNotExist:
-                    profesion_estudio_obj = None
-            
-            perfil_vacante = Cli073PerfilVacante.objects.create(
-                edad_inicial=form.cleaned_data['edad_inicial'],
-                edad_final=form.cleaned_data['edad_final'],
-                genero=form.cleaned_data['genero'],
-                tiempo_experiencia=1,
-                modalidad=form.cleaned_data['modalidad'],
-                salario=form.cleaned_data['salario'].replace('.', ''),
-                tipo_salario=form.cleaned_data['tipo_salario'],
-                frecuencia_pago=form.cleaned_data['frecuencia_pago'],
-                salario_adicional=form.cleaned_data['salario_adicional'],
-                profesion_estudio=profesion_estudio_obj,
-                nivel_estudio=form.cleaned_data['nivel_estudio'],
-                estado_estudio=form.cleaned_data['estado_estudio'],
-                lugar_trabajo_id=form.cleaned_data['lugar_trabajo'],
-                barrio=form.cleaned_data['barrio'],
-                direccion=form.cleaned_data['direccion'],
-                termino_contrato=form.cleaned_data['termino_contrato'],
-                tipo_horario=tipo_horario,  # ✅ Agregado campo tipo_horario
-                # ✅ Pasa las listas de Python directamente
-                motivo_vacante=motivo_vacante_data,
-                horario=horarios_data,
-                experiencia_laboral=experiencia_data,
-                idiomas=idiomas_data,
-                estudio_complementario=estudios_data,
-                funciones_responsabilidades=funciones_data,
-                tipo_profesion=form.cleaned_data['tipo_profesion'],
-                profesion_estudio_listado=form.cleaned_data['profesion_estudio_listado'],
-                grupo_profesion=grupo_profesion_obj
-            )
-
-            # --- 3. Crea la Vacante ---
-            cargo_obj = Cli068Cargo.objects.get(id=form.cleaned_data['cargo'])
-            
-            vacante = Cli052Vacante.objects.create(
-                cargo=cargo_obj,
-                numero_posiciones=form.cleaned_data['numero_posiciones'],
-                cantidad_presentar=form.cleaned_data['cantidad_presentar'],
-                titulo=f'Vacante para el cargo: {cargo_obj.nombre_cargo}',
-                fecha_presentacion=form.cleaned_data['fecha_presentacion'],
-                asignacion_cliente_id_064=asignacion_cliente,
-                perfil_vacante=perfil_vacante,
-                descripcion_vacante=form.cleaned_data.get('descripcion_vacante'),
-                comentarios=form.cleaned_data.get('comentarios'),
-                requerimientos_especiales=form.cleaned_data.get('requerimientos_especiales')
-            )
-            
-            # Asignar motivadores múltiples
-            motivadores_ids = form.cleaned_data.get('motivadores_candidato', [])
-            if motivadores_ids:
-                motivadores_objects = Cli078MotivadoresCandidato.objects.filter(id__in=motivadores_ids)
-                vacante.motivadores.set(motivadores_objects)
-            
-            # 1. Combina todos los objetos skill del formulario en una sola lista
-            skills_seleccionadas = (
-                list(form.cleaned_data.get('skill_relacionales', [])) +
-                list(form.cleaned_data.get('skill_personales', [])) +
-                list(form.cleaned_data.get('skill_cognitivas', [])) +
-                list(form.cleaned_data.get('skill_digitales', [])) +
-                list(form.cleaned_data.get('skill_liderazgo', []))
-            )
-
-            # 2. Usa .set() en tu nuevo campo 'habilidades'. Django hace todo el trabajo.
-            if skills_seleccionadas:
-                vacante.habilidades.set(skills_seleccionadas)
-
-            # Fit Cultural (Los campos son ModelChoiceField, no ModelMultipleChoiceField)
-            fit_cultural_objects = []
-            
-            # Agregar cada selección individual si existe
-            if form.cleaned_data.get('grupo_fit_1'):
-                fit_cultural_objects.append(form.cleaned_data['grupo_fit_1'])
-            if form.cleaned_data.get('grupo_fit_2'):
-                fit_cultural_objects.append(form.cleaned_data['grupo_fit_2'])
-            if form.cleaned_data.get('grupo_fit_3'):
-                fit_cultural_objects.append(form.cleaned_data['grupo_fit_3'])
-            if form.cleaned_data.get('grupo_fit_4'):
-                fit_cultural_objects.append(form.cleaned_data['grupo_fit_4'])
-            if form.cleaned_data.get('grupo_fit_5'):
-                fit_cultural_objects.append(form.cleaned_data['grupo_fit_5'])
-
-            if fit_cultural_objects:
-                # .set() espera una lista de objetos o de IDs. Ambas funcionan.
-                vacante.fit_cultural.set(fit_cultural_objects)
-            
-            messages.success(request, 'Vacante creada correctamente')
-            return redirect('vacantes:vacantes_propias', pk=pk)
+                for i in range(1, 4):
+                    horario_inicio = form.cleaned_data.get(f'horario_inicio_{i}')
+                    horario_final = form.cleaned_data.get(f'horario_final_{i}')
+                    hora_inicio = form.cleaned_data.get(f'hora_inicio_{i}')
+                    hora_final = form.cleaned_data.get(f'hora_final_{i}')
+                    
+                    if all([horario_inicio, horario_final, hora_inicio, hora_final]):
+                        horarios_data["bloques"].append({
+                            "dia_inicio": horario_inicio,
+                            "dia_final": horario_final,
+                            "hora_inicio": str(hora_inicio),
+                            "hora_final": str(hora_final),
+                            "bloque": i
+                        })
+                
+                # Funciones y responsabilidades
+                funciones_data = []
+                for i in range(1,4):
+                    funcion = form.cleaned_data.get(f'funciones_responsabilidades_{i}')
+                    if funcion:
+                        funciones_data.append({"bloque": i, "funcion": funcion})
+    
+                # Experiencia laboral
+                experiencia_data = []
+                for i in range(1,4):
+                    tiempo_experiencia = form.cleaned_data.get(f'tiempo_experiencia_{i}')
+                    experiencia_especifica = form.cleaned_data.get(f'experiencia_especifica_en_{i}')
+                    if tiempo_experiencia and experiencia_especifica:
+                        experiencia_data.append({
+                            "bloque": i,
+                            "tiempo_experiencia" : tiempo_experiencia,
+                            "experiencia_especifica" : experiencia_especifica,
+                        })
+    
+                # Idiomas
+                idiomas_data = []
+                for i in range(1,3): # Asumiendo 2 bloques de idiomas
+                    idioma = form.cleaned_data.get(f'idioma_{i}')
+                    nivel_idioma = form.cleaned_data.get(f'nivel_idioma_{i}')
+                    if idioma and nivel_idioma:
+                        idiomas_data.append({
+                            "bloque": i,
+                            "idioma" : idioma,
+                            "nivel" : nivel_idioma, # Corregido para que coincida con la lectura
+                        })
+                
+                # Estudios complementarios
+                estudios_data = []
+                for i in range(1,4):
+                    estudio = form.cleaned_data.get(f'estudios_complementarios_{i}')
+                    certificado = form.cleaned_data.get(f'estudios_complementarios_certificado_{i}')
+                    if estudio: # Certificado puede ser False
+                        estudios_data.append({
+                            "bloque": i,
+                            "estudio" : estudio,
+                            "certificado" : certificado,
+                        })
+    
+                # --- 2. Crea el Perfil de la Vacante pasando los objetos Python ---
+                # Handle grupo_profesion field properly
+                grupo_profesion_value = form.cleaned_data['grupo_profesion']
+                grupo_profesion_obj = None
+                if grupo_profesion_value and grupo_profesion_value != '':
+                    try:
+                        grupo_profesion_obj = Cli075GrupoProfesion.objects.get(id=grupo_profesion_value)
+                    except Cli075GrupoProfesion.DoesNotExist:
+                        grupo_profesion_obj = None
+                
+                # Handle profesion_estudio field properly
+                profesion_estudio_value = form.cleaned_data['profesion_estudio']
+                profesion_estudio_obj = None
+                if profesion_estudio_value and profesion_estudio_value != '':
+                    try:
+                        profesion_estudio_obj = Cli055ProfesionEstudio.objects.get(id=profesion_estudio_value)
+                    except Cli055ProfesionEstudio.DoesNotExist:
+                        profesion_estudio_obj = None
+                
+                perfil_vacante = Cli073PerfilVacante.objects.create(
+                    edad_inicial=form.cleaned_data['edad_inicial'],
+                    edad_final=form.cleaned_data['edad_final'],
+                    genero=form.cleaned_data['genero'],
+                    tiempo_experiencia=1,
+                    modalidad=form.cleaned_data['modalidad'],
+                    salario=form.cleaned_data['salario'].replace('.', ''),
+                    tipo_salario=form.cleaned_data['tipo_salario'],
+                    frecuencia_pago=form.cleaned_data['frecuencia_pago'],
+                    salario_adicional=form.cleaned_data['salario_adicional'],
+                    profesion_estudio=profesion_estudio_obj,
+                    nivel_estudio=form.cleaned_data['nivel_estudio'],
+                    estado_estudio=form.cleaned_data['estado_estudio'],
+                    lugar_trabajo_id=form.cleaned_data['lugar_trabajo'],
+                    barrio=form.cleaned_data['barrio'],
+                    direccion=form.cleaned_data['direccion'],
+                    termino_contrato=form.cleaned_data['termino_contrato'],
+                    tipo_horario=tipo_horario,  # ✅ Agregado campo tipo_horario
+                    # ✅ Pasa las listas de Python directamente
+                    motivo_vacante=motivo_vacante_data,
+                    horario=horarios_data,
+                    experiencia_laboral=experiencia_data,
+                    idiomas=idiomas_data,
+                    estudio_complementario=estudios_data,
+                    funciones_responsabilidades=funciones_data,
+                    tipo_profesion=form.cleaned_data['tipo_profesion'],
+                    profesion_estudio_listado=form.cleaned_data['profesion_estudio_listado'],
+                    grupo_profesion=grupo_profesion_obj
+                )
+    
+                # --- 3. Crea la Vacante ---
+                cargo_obj = Cli068Cargo.objects.get(id=form.cleaned_data['cargo'])
+                
+                vacante = Cli052Vacante.objects.create(
+                    cargo=cargo_obj,
+                    numero_posiciones=form.cleaned_data['numero_posiciones'],
+                    cantidad_presentar=form.cleaned_data['cantidad_presentar'],
+                    titulo=f'Vacante para el cargo: {cargo_obj.nombre_cargo}',
+                    fecha_presentacion=Cli052Vacante.fecha_presentacion_desde_date_formulario(
+                        form.cleaned_data['fecha_presentacion']
+                    ),
+                    asignacion_cliente_id_064=asignacion_cliente,
+                    perfil_vacante=perfil_vacante,
+                    descripcion_vacante=form.cleaned_data.get('descripcion_vacante'),
+                    comentarios=form.cleaned_data.get('comentarios'),
+                    requerimientos_especiales=form.cleaned_data.get('requerimientos_especiales')
+                )
+                
+                # Asignar motivadores múltiples
+                motivadores_ids = form.cleaned_data.get('motivadores_candidato', [])
+                if motivadores_ids:
+                    motivadores_objects = Cli078MotivadoresCandidato.objects.filter(id__in=motivadores_ids)
+                    vacante.motivadores.set(motivadores_objects)
+                
+                # 1. Combina todos los objetos skill del formulario en una sola lista
+                skills_seleccionadas = (
+                    list(form.cleaned_data.get('skill_relacionales', [])) +
+                    list(form.cleaned_data.get('skill_personales', [])) +
+                    list(form.cleaned_data.get('skill_cognitivas', [])) +
+                    list(form.cleaned_data.get('skill_digitales', [])) +
+                    list(form.cleaned_data.get('skill_liderazgo', []))
+                )
+    
+                # 2. Usa .set() en tu nuevo campo 'habilidades'. Django hace todo el trabajo.
+                if skills_seleccionadas:
+                    vacante.habilidades.set(skills_seleccionadas)
+    
+                # Fit Cultural (Los campos son ModelChoiceField, no ModelMultipleChoiceField)
+                fit_cultural_objects = []
+                
+                # Agregar cada selección individual si existe
+                if form.cleaned_data.get('grupo_fit_1'):
+                    fit_cultural_objects.append(form.cleaned_data['grupo_fit_1'])
+                if form.cleaned_data.get('grupo_fit_2'):
+                    fit_cultural_objects.append(form.cleaned_data['grupo_fit_2'])
+                if form.cleaned_data.get('grupo_fit_3'):
+                    fit_cultural_objects.append(form.cleaned_data['grupo_fit_3'])
+                if form.cleaned_data.get('grupo_fit_4'):
+                    fit_cultural_objects.append(form.cleaned_data['grupo_fit_4'])
+                if form.cleaned_data.get('grupo_fit_5'):
+                    fit_cultural_objects.append(form.cleaned_data['grupo_fit_5'])
+    
+                if fit_cultural_objects:
+                    # .set() espera una lista de objetos o de IDs. Ambas funcionan.
+                    vacante.fit_cultural.set(fit_cultural_objects)
+                
+                messages.success(request, 'Vacante creada correctamente')
+                return redirect('vacantes:vacantes_propias', pk=pk)
         else:
             # Procesar los errores del formulario para mostrarlos de forma legible
             error_messages = []
@@ -337,7 +378,7 @@ def edit_vacanty_from_client(request, pk, vacante_id):
         'modalidad': perfil_vacante.modalidad if perfil_vacante else None,
         'cantidad_presentar': vacante.cantidad_presentar,
         'numero_posiciones': vacante.numero_posiciones,
-        'fecha_presentacion': vacante.fecha_presentacion.strftime('%Y-%m-%d') if vacante.fecha_presentacion else None,
+        'fecha_presentacion': vacante.fecha_presentacion_para_input_date(),
         'barrio': perfil_vacante.barrio if perfil_vacante else None,
         'direccion': perfil_vacante.direccion if perfil_vacante else None,
         'salario': str(perfil_vacante.salario) if perfil_vacante and perfil_vacante.salario else None,
@@ -447,7 +488,9 @@ def edit_vacanty_from_client(request, pk, vacante_id):
     initial['grupo_fit_5'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_5_IDS).values_list('id', flat=True))
 
     if request.method == 'POST':
-        form = VacancyFormAllV2(request.POST, cliente_id=pk, es_edicion=True)
+        form = VacancyFormAllV2(
+            request.POST, initial=initial, cliente_id=pk, es_edicion=True
+        )
         print("Formulario válido:", form.is_valid())
         if form.is_valid():
 
@@ -467,7 +510,7 @@ def edit_vacanty_from_client(request, pk, vacante_id):
             vacante.cargo = Cli068Cargo.objects.get(id=cargo)
             vacante.numero_posiciones = form.cleaned_data['numero_posiciones']
             vacante.cantidad_presentar = form.cleaned_data['cantidad_presentar']
-            vacante.fecha_presentacion = form.cleaned_data['fecha_presentacion']
+            # fecha_presentacion no se altera al editar (campo deshabilitado en el formulario)
             vacante.descripcion_vacante = form.cleaned_data['descripcion_vacante']
             vacante.comentarios = form.cleaned_data['comentarios']
             vacante.requerimientos_especiales = form.cleaned_data.get('requerimientos_especiales')
