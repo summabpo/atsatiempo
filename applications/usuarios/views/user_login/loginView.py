@@ -286,6 +286,12 @@ def dashboard_begin(request):
     else:
         vacantes_pendiente_cliente = None  
 
+    if session_variables['grupo_id'] == 5:
+        print('Sesion Analista Selección')
+        return redirect('accesses:inicio_analista_internal')
+    else:
+        analista_seleccion_pendiente = None
+
     if session_variables['grupo_id'] == 7:
         cliente_id = request.session.get('cliente_id')
         print('Sesion Reclutador')

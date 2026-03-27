@@ -4,7 +4,7 @@ Cada función retorna un diccionario con los datos necesarios para renderizar su
 """
 from django.utils import timezone
 from datetime import timedelta
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db.models.functions import ExtractMonth
 
 
@@ -178,4 +178,60 @@ def get_panel_profesion_estudio():
     return {
         'profesion_labels': profesion_labels,
         'profesion_data': profesion_data,
+    }
+
+
+def get_panel_metricas_analista_interno(user_id):
+    """
+    Métricas del dashboard analista interno (vacantes asignadas al usuario).
+    - vacantes_asignadas_analista: vacantes activas con usuario_asignado = user_id
+    - vacantes_pendientes_entrevista: vacantes distintas con ≥1 aplicación en estado Aplicado (1)
+    - vacantes_pendientes_respuesta_cliente: vacantes distintas con aplicación en 8/12/13 sin descripcion_respuesta_cliente
+    - vacantes_terminadas: vacantes finalizadas (estado_vacante=3) asignadas al analista
+    """
+    from applications.vacante.models import Cli052Vacante
+    from applications.reclutado.models import Cli056AplicacionVacante
+
+    vacantes_terminadas = Cli052Vacante.objects.filter(
+        usuario_asignado_id=user_id,
+        estado_id_001=1,
+        estado_vacante=3,
+    ).count()
+
+    vacantes_qs = Cli052Vacante.objects.filter(usuario_asignado_id=user_id, estado_id_001=1)
+    vacantes_asignadas_analista = vacantes_qs.count()
+    vac_ids = list(vacantes_qs.values_list('id', flat=True))
+    if not vac_ids:
+        return {
+            'vacantes_asignadas_analista': 0,
+            'vacantes_pendientes_entrevista': 0,
+            'vacantes_pendientes_respuesta_cliente': 0,
+            'vacantes_terminadas': vacantes_terminadas,
+        }
+
+    vacantes_pendientes_entrevista = (
+        Cli056AplicacionVacante.objects.filter(
+            vacante_id_052_id__in=vac_ids,
+            estado_aplicacion=1,
+        )
+        .values('vacante_id_052_id')
+        .distinct()
+        .count()
+    )
+
+    qs_resp = Cli056AplicacionVacante.objects.filter(
+        vacante_id_052_id__in=vac_ids,
+        estado_aplicacion__in=[8, 12, 13],
+    ).filter(
+        Q(registro_reclutamiento__isnull=True)
+        | Q(registro_reclutamiento__descripcion_respuesta_cliente__isnull=True)
+        | Q(registro_reclutamiento__descripcion_respuesta_cliente='')
+    )
+    vacantes_pendientes_respuesta_cliente = qs_resp.values('vacante_id_052_id').distinct().count()
+
+    return {
+        'vacantes_asignadas_analista': vacantes_asignadas_analista,
+        'vacantes_pendientes_entrevista': vacantes_pendientes_entrevista,
+        'vacantes_pendientes_respuesta_cliente': vacantes_pendientes_respuesta_cliente,
+        'vacantes_terminadas': vacantes_terminadas,
     }

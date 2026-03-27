@@ -1,5 +1,6 @@
 import re
 from django import forms
+from django.template.loader import render_to_string
 from django.utils import timezone
 from datetime import datetime
 from crispy_forms.helper import FormHelper
@@ -238,6 +239,7 @@ class candidateJobForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
+        funciones_inicial = kwargs.pop('funciones_inicial', [''])
         super().__init__(*args, **kwargs)
 
         # Si experiencia_laboral está marcado, hacer los demás campos opcionales
@@ -262,7 +264,11 @@ class candidateJobForm(forms.Form):
         if not self.instance:
             self.fields['motivo_salida'].widget.attrs['data-dropdown-parent'] = '#trabajos_candidato'
             self.fields['modalidad_trabajo'].widget.attrs['data-dropdown-parent'] = '#trabajos_candidato'
-            
+
+        funciones_html = render_to_string(
+            'admin/candidate/candidate_user/_info_job_funciones_desempenadas.html',
+            {'funciones_inicial': funciones_inicial},
+        )
 
         self.helper.layout = Layout(
             Div(
@@ -281,6 +287,7 @@ class candidateJobForm(forms.Form):
                 Div('nombre_jefe', css_class='col-12 campo-activo campo-experiencia'),
                 Div('logro', css_class='col-12 campo-experiencia'),
                 Div('certificado_laboral', css_class='col-12 campo-experiencia'),
+                HTML(funciones_html),
                 css_class='row'
             ),
             css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
@@ -293,7 +300,7 @@ class candidateJobForm(forms.Form):
         
         # Si está marcado "Sin experiencia laboral", no validar los demás campos
         if experiencia_laboral:
-            # Permitir guardar sin validar los demás campos
+            cleaned_data['funciones_desempenadas'] = None
             return cleaned_data
         
         # Si no está marcado, validar todos los campos normalmente
@@ -339,6 +346,21 @@ class candidateJobForm(forms.Form):
         if logro:
             if len(logro.split()) > 500:
                 self.add_error('logro','La descripción debe contener máximo 500 palabras')
+
+        raw_funciones = self.data.getlist('funciones_desempenadas')
+        if len(raw_funciones) > 5:
+            self.add_error(None, 'Máximo 5 funciones desempeñadas.')
+        funciones_list = []
+        for v in raw_funciones[:5]:
+            t = (v or '').strip()
+            if t:
+                if len(t) > 800:
+                    self.add_error(None, 'Cada función desempeñada no puede superar 800 caracteres.')
+                else:
+                    funciones_list.append(t)
+        if not funciones_list:
+            self.add_error(None, 'Indique al menos una función desempeñada.')
+        cleaned_data['funciones_desempenadas'] = funciones_list if funciones_list else None
 
         # Validación del certificado laboral
         certificado_laboral = cleaned_data.get('certificado_laboral')

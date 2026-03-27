@@ -243,19 +243,6 @@ def detail_recruited(request, pk):
     # Obtener información de la vacante
     vacante = asignacion_vacante.vacante_id_052
     
-    # Obtener el JSON match
-    json_match_raw = asignacion_vacante.json_match
-    if json_match_raw:
-        try:
-            if isinstance(json_match_raw, str):
-                json_match = json.loads(json_match_raw)
-            else:
-                json_match = json_match_raw
-        except (json.JSONDecodeError, TypeError):
-            json_match = {}
-    else:
-        json_match = {}
-    
     # Obtener el JSON match inicial
     json_match_inicial_raw = asignacion_vacante.json_match_inicial
     if json_match_inicial_raw:
@@ -268,7 +255,44 @@ def detail_recruited(request, pk):
             json_match_inicial = {}
     else:
         json_match_inicial = {}
-    
+
+    match_inicial_gauge_pct = None
+    match_inicial_gauge_pct_int = None
+    _pond = json_match_inicial.get('ponderaciones') if isinstance(json_match_inicial, dict) else None
+    if isinstance(_pond, dict):
+        try:
+            total_v = _pond.get('total')
+            total_max_v = _pond.get('total_maximo')
+            if total_v is not None and total_max_v is not None:
+                total_f = float(total_v)
+                total_max_f = float(total_max_v)
+                if total_max_f > 0:
+                    match_inicial_gauge_pct = round(min(100.0, (total_f / total_max_f) * 100.0), 1)
+                elif total_f >= 0:
+                    match_inicial_gauge_pct = round(min(100.0, total_f), 1)
+            elif total_v is not None:
+                match_inicial_gauge_pct = round(min(100.0, float(total_v)), 1)
+        except (TypeError, ValueError):
+            match_inicial_gauge_pct = None
+        if match_inicial_gauge_pct is not None:
+            match_inicial_gauge_pct_int = int(round(match_inicial_gauge_pct))
+
+    match_inicial_gauge_color = None
+    match_inicial_gauge_nivel = None
+    if match_inicial_gauge_pct_int is not None:
+        if match_inicial_gauge_pct_int >= 80:
+            match_inicial_gauge_color = '#28a745'
+            match_inicial_gauge_nivel = 'ALTO NIVEL DE AFINIDAD'
+        elif match_inicial_gauge_pct_int >= 60:
+            match_inicial_gauge_color = '#ffc107'
+            match_inicial_gauge_nivel = 'MEDIO NIVEL DE AFINIDAD'
+        elif match_inicial_gauge_pct_int >= 40:
+            match_inicial_gauge_color = '#fd7e14'
+            match_inicial_gauge_nivel = 'BAJO NIVEL DE AFINIDAD'
+        else:
+            match_inicial_gauge_color = '#dc3545'
+            match_inicial_gauge_nivel = 'MUY BAJO NIVEL DE AFINIDAD'
+
     # Obtener historial de cambios de estado
     registro_reclutamiento = asignacion_vacante.registro_reclutamiento
     historial_estados = []
@@ -384,8 +408,11 @@ def detail_recruited(request, pk):
         'reclutado': asignacion_vacante,
         'vacante': vacante,
         'info_detalle_candidato': info_detalle_candidato,
-        'json_match': json_match,
         'json_match_inicial': json_match_inicial,
+        'match_inicial_gauge_pct': match_inicial_gauge_pct,
+        'match_inicial_gauge_pct_int': match_inicial_gauge_pct_int,
+        'match_inicial_gauge_color': match_inicial_gauge_color,
+        'match_inicial_gauge_nivel': match_inicial_gauge_nivel,
         'form': form,
         'historial_estados': historial_estados,
         'preguntas_reclutamiento': preguntas_reclutamiento,

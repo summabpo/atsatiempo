@@ -28,7 +28,7 @@ from applications.services.service_vacanty import  query_vacanty_detail
 from applications.services.service_recruited import consultar_historial_aplicacion_vacante, query_recruited_vacancy_id
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 from applications.reclutado.views.admin_views import _procesar_datos_reporte_final
-from applications.reclutado.candidato_hoja_vida_pdf import build_hoja_vida_pdf, safe_filename_part
+from applications.reclutado.views.candidato_hoja_vida_pdf import build_hoja_vida_pdf, safe_filename_part
 
 
 def _puede_descargar_hoja_vida_pdf(request, asignacion_vacante):
@@ -74,7 +74,7 @@ def descargar_hoja_vida_pdf(request, pk):
     titulo_vacante = getattr(vacante, 'titulo', None)
 
     pdf_buffer = build_hoja_vida_pdf(request, candidato, info_detalle, vacante_titulo=titulo_vacante)
-    nombre_archivo = f"Hoja_de_vida_{safe_filename_part(candidato.nombre_completo())}_{candidato.id}.pdf"
+    nombre_archivo = f"Hoja_de_vida_{safe_filename_part(candidato.nombre_completo())}.pdf"
     response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
     # inline: el navegador muestra el PDF (útil al abrir en nueva pestaña)
     response['Content-Disposition'] = f'inline; filename="{nombre_archivo}"'

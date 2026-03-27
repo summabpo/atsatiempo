@@ -28,8 +28,8 @@ Detalle vacante
 				{% endif %}
 				{% if request.session.grupo_id == 5 %}
 				<li class="breadcrumb-item active" aria-current="page">
-					<a href="{% url 'vacantes:vacantes_asignadas' %}" class="d-flex align-items-center text-decoration-none">
-						<span class="text-secondary fw-medium hover" >Vacantes Propias</span>
+					<a href="{% url 'vacantes:vacantes_asignadas_analista_interno' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover">Vacantes Asignadas</span>
 					</a>
 				</li>
 				{% endif %}

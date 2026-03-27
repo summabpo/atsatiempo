@@ -49,6 +49,9 @@ def buscar_candidato(candidato_id):
                 'activo': ex.activo,
                 'logro': ex.logro,
                 'estado': str(ex.estado_id_001),
+                'funciones_desempenadas': list(ex.funciones_desempenadas)
+                if isinstance(ex.funciones_desempenadas, list)
+                else [],
             } for ex in experiencias
         ],
         'skills': [

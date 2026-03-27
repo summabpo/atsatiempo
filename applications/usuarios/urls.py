@@ -35,10 +35,13 @@ urlpatterns = [
     path('mi_perfil/actualizar-imagen/', loginView.actualizar_imagen_perfil, name='actualizar_imagen_perfil'),
     path('generar-qr/', loginView.generar_qr_imagen, name='generar_qr'),
     #candidate
-    path('inicio/candidato', dashboardView.dashboard_candidato, name='inicio_candidato'),
+    path('candidato/inicio', dashboardView.dashboard_candidato, name='inicio_candidato'),
 
     #client_user
     path('cliente/inicio', dashboardView.dashboard_cliente, name='inicio_cliente'),
+
+    #analista_internal_user
+    path('analista_internal/inicio', dashboardView.dashboard_analista_internal, name='inicio_analista_internal'),
     
     
     #administrador

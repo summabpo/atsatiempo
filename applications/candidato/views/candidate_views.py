@@ -17,6 +17,19 @@ from applications.candidato.models import Can101Candidato, Can102Experiencia, Ca
 from applications.candidato.forms.CandidatoForms import CandidateForm
 from applications.candidato.forms.EstudioForms import EstudioCandidatoForm, candidateStudyForm
 from applications.candidato.forms.ExperienciaForms import candidateJobForm
+
+
+def _funciones_desempenadas_template_rows(post, job=None):
+    """Filas para repoblar el bloque de funciones (crear/editar)."""
+    if post is not None:
+        rows = post.getlist('funciones_desempenadas')[:5]
+        if rows:
+            return rows
+    if job is not None:
+        fd = getattr(job, 'funciones_desempenadas', None)
+        if isinstance(fd, list) and len(fd) > 0:
+            return fd[:5]
+    return ['']
 from applications.candidato.forms.HabilidadForms import CandidateHabilityForm, CandidateHabilityFormList
 from applications.candidato.forms.SocialForms import SocialNetworkForm
 
@@ -589,7 +602,11 @@ def candidate_info_job_create(request):
     candidato_id = request.session.get('candidato_id')
 
     if request.method == 'POST':
-        form = candidateJobForm(request.POST, request.FILES)
+        form = candidateJobForm(
+            request.POST,
+            request.FILES,
+            funciones_inicial=_funciones_desempenadas_template_rows(request.POST, None),
+        )
 
         experiencia_temporal_id = None
         if 'certificado_laboral' in request.FILES and not form.data.get('experiencia_laboral'):
@@ -630,6 +647,7 @@ def candidate_info_job_create(request):
                 experiencia.salario = form.cleaned_data['salario'] if form.cleaned_data['salario'] else None
                 experiencia.modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
                 experiencia.nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
+                experiencia.funciones_desempenadas = form.cleaned_data.get('funciones_desempenadas')
                 experiencia.save()
             elif experiencia_laboral:
                 from datetime import date
@@ -647,7 +665,8 @@ def candidate_info_job_create(request):
                     salario=None,
                     modalidad_trabajo=None,
                     nombre_jefe=None,
-                    experiencia_laboral=True
+                    experiencia_laboral=True,
+                    funciones_desempenadas=None,
                 )
             else:
                 entidad = form.cleaned_data['entidad']
@@ -677,7 +696,8 @@ def candidate_info_job_create(request):
                     salario=salario,
                     modalidad_trabajo=modalidad_trabajo,
                     nombre_jefe=nombre_jefe,
-                    experiencia_laboral=False
+                    experiencia_laboral=False,
+                    funciones_desempenadas=form.cleaned_data.get('funciones_desempenadas'),
                 )
 
                 if certificado_laboral:
@@ -693,13 +713,10 @@ def candidate_info_job_create(request):
                 experiencia_temporal = Can102Experiencia.objects.get(id=experiencia_temporal_id)
                 form.initial['certificado_laboral'] = experiencia_temporal.certificado_laboral
     else:
-        form = candidateJobForm()
+        form = candidateJobForm(
+            funciones_inicial=_funciones_desempenadas_template_rows(None, None),
+        )
 
-    context = {
-        'form': form,
-        'form_errors': form_errors,
-    }
-    return render(request, 'admin/candidate/candidate_user/info_job_create.html', context)
     context = {
         'form': form,
         'form_errors': form_errors,
@@ -715,6 +732,10 @@ def candidate_info_job_edit(request, pk):
     # Obtener la experiencia laboral del candidato (ajusta según tu modelo)
     job = Can102Experiencia.objects.get(id=pk)
 
+    funciones_inicial = _funciones_desempenadas_template_rows(
+        request.POST if request.method == 'POST' else None,
+        job,
+    )
 
     # Inicializar el formulario con los datos de la experiencia laboral
     initial={
@@ -736,7 +757,13 @@ def candidate_info_job_edit(request, pk):
     
 
     if request.method == 'POST':
-        form = candidateJobForm(request.POST, request.FILES, initial=initial, instance=True)
+        form = candidateJobForm(
+            request.POST,
+            request.FILES,
+            initial=initial,
+            instance=True,
+            funciones_inicial=funciones_inicial,
+        )
         
         # Si hay un nuevo archivo, validarlo y guardarlo si pasa las validaciones, incluso si hay otros errores
         if 'certificado_laboral' in request.FILES:
@@ -773,6 +800,7 @@ def candidate_info_job_edit(request, pk):
                 job.modalidad_trabajo = None
                 job.nombre_jefe = None
                 job.experiencia_laboral = True
+                job.funciones_desempenadas = None
             else:
                 # Si no está marcado, actualizar con todos los datos
                 job.entidad = form.cleaned_data['entidad']
@@ -787,6 +815,7 @@ def candidate_info_job_edit(request, pk):
                 job.modalidad_trabajo = form.cleaned_data['modalidad_trabajo']
                 job.nombre_jefe = form.cleaned_data['nombre_jefe'] if form.cleaned_data['nombre_jefe'] else None
                 job.experiencia_laboral = False
+                job.funciones_desempenadas = form.cleaned_data.get('funciones_desempenadas')
                 
                 # Guardar el certificado laboral si se proporciona uno nuevo (si no se guardó antes)
                 if 'certificado_laboral' not in request.FILES or job.certificado_laboral != request.FILES.get('certificado_laboral'):
@@ -801,9 +830,19 @@ def candidate_info_job_edit(request, pk):
         else:
             messages.error(request, 'Error al actualizar la información laboral.')
             # Reconstruir el formulario con el initial actualizado para mantener el archivo
-            form = candidateJobForm(request.POST, request.FILES, initial=initial, instance=True)
+            form = candidateJobForm(
+                request.POST,
+                request.FILES,
+                initial=initial,
+                instance=True,
+                funciones_inicial=funciones_inicial,
+            )
     else:
-        form = candidateJobForm(initial=initial, instance=True)
+        form = candidateJobForm(
+            initial=initial,
+            instance=True,
+            funciones_inicial=funciones_inicial,
+        )
     # Renderizar la plantilla con la información de la experiencia laboral
     context = {
         'form': form,

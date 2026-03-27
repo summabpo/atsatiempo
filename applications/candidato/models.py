@@ -97,6 +97,7 @@ class Can102Experiencia(models.Model):
     nombre_jefe = models.CharField(max_length=100, blank=True, null=True)
     experiencia_laboral = models.BooleanField(default=False)
     certificado_laboral = models.FileField(upload_to='media_uploads/media_uploads/certificados_laborales/', blank=True, null=True, verbose_name="Certificado de Laboral")
+    funciones_desempenadas = models.JSONField(blank=True, null=True)
 
     def __str__(self):
         return self.entidad
