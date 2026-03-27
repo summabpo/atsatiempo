@@ -141,7 +141,7 @@
                                             {% endfor %}
                                         </div>
                                     {% else %}
-                                        <p class="text-secondary mb-0" style="text-align: justify;">{{ vacante.descripcion_vacante|remove_unete_equipo|linebreaks }}</p>
+                                        <p class="text-secondary mb-0" style="text-align: justify;">{{ vacante.descripcion_vacante|remove_unete_equipo|strip_funciones_descripcion|linebreaks }}</p>
                                     {% endif %}
                                 {% endwith %}
                             {% else %}
@@ -186,9 +186,14 @@
                                             {% for exp in exp_list %}
                                                 <li class="mb-2">
                                                     <span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">work</span>
-                                                    </span>
-                                                    {% if exp.tiempo_experiencia == "1" %}
+                                                    {% if exp.tiempo_experiencia == "0" or exp.tiempo_experiencia == 0 %}
+                                                        6 meses
+                                                    {% elif exp.tiempo_experiencia == "6" or exp.tiempo_experiencia == 6 %}
+                                                        Sin experiencia
+                                                    {% elif exp.tiempo_experiencia == "1" or exp.tiempo_experiencia == 1 %}
                                                         1 año
+                                                    {% elif exp.tiempo_experiencia == "5" or exp.tiempo_experiencia == 5 %}
+                                                        5 años o más
                                                     {% else %}
                                                         {{ exp.tiempo_experiencia }} años
                                                     {% endif %}

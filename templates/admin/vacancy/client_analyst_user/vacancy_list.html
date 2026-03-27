@@ -64,9 +64,9 @@ Listado de vacantes
                                                 <td class="text-center">
                                                     <div class="d-flex justify-content-center align-items-center gap-1">
                                                         <div class="d-flex justify-content-center align-items-center gap-1" alt="Gestionar" title="Gestionar">
-                                                            <a href="{% url 'vacantes:vacantes_editar_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                            {% comment %} <a href="{% url 'vacantes:vacantes_editar_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
                                                                 <i class="material-symbols-outlined fs-16">edit</i>
-                                                            </a>
+                                                            </a> {% endcomment %}
                                                             <a href="{% url 'vacantes:vacantes_gestion_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
                                                                 <i class="material-symbols-outlined fs-16">inbox_customize</i>
                                                             </a>

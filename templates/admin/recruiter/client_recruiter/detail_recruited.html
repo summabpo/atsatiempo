@@ -9,6 +9,20 @@ Detalle Candidato - Reclutador
 {% endblock %}
 
 {% block content %}
+<style>
+@keyframes tachometerFadePct {
+	from {
+		opacity: 0;
+		transform: translateY(10px) scale(0.97);
+		filter: blur(3px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+		filter: blur(0);
+	}
+}
+</style>
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
 		<div class="d-flex align-items-center gap-3">
@@ -84,6 +98,18 @@ Detalle Candidato - Reclutador
                     {% endif %}
                     
                 {% endif %}
+				{% if request.session.grupo_id == 5 %}
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_asignadas_analista_interno' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover">Vacantes Asignadas</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_gestion_analista_interno' vacante.id %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover">Gestión de Vacante</span>
+					</a>
+				</li>
+				{% endif %}
 				{% if request.session.grupo_id == 7 %}
 
 				
@@ -115,22 +141,10 @@ Detalle Candidato - Reclutador
 				</div>
 				<div class="card-body p-4">
 					<div class="row">
-						<div class="col-4">
-							<div class="d-flex align-items-center">
-								<div class="flex-shrink-0">
-									{% if candidato.imagen_perfil %}
-										<img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2" style="width: 100px; height: 100px; object-fit: cover;" alt="{{ candidato.nombre_completo }}">
-									{% else %}
-										<img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2" style="width: 100px; height: 100px; object-fit: cover;" alt="user">
-									{% endif %}
-								</div>
-								<div class="flex-grow-1 ms-3">
-									<h4 class="fs-17 mb-1 fw-semibold">{{ candidato.nombre_completo }}</h4>
-									<span class="fs-14 text-muted">Candidato</span>
-								</div>
-							</div>
+						<div class="col-12 col-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
+							{% include "admin/recruiter/partials/match_inicial_medidor_media_dona.html" %}
 						</div>
-						<div class="col-8">
+						<div class="col-12 col-lg-7">
 							<div class="row">
 								<div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
 									<div class="d-flex align-items-center mb-4">
@@ -190,10 +204,7 @@ Detalle Candidato - Reclutador
 							<button class="nav-link" id="respuestas-tab" data-bs-toggle="tab" data-bs-target="#respuestas-tab-pane" type="button" role="tab" aria-controls="respuestas-tab-pane" aria-selected="false">Respuestas de Aplicación</button>
 						</li>
 						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="match-tab" data-bs-toggle="tab" data-bs-target="#match-tab-pane" type="button" role="tab" aria-controls="match-tab-pane" aria-selected="false">Match Candidato Vacante</button>
-						</li>
-						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="match-inicial-tab" data-bs-toggle="tab" data-bs-target="#match-inicial-tab-pane" type="button" role="tab" aria-controls="match-inicial-tab-pane" aria-selected="false">Match Inicial</button>
+							<button class="nav-link" id="match-inicial-tab" data-bs-toggle="tab" data-bs-target="#match-inicial-tab-pane" type="button" role="tab" aria-controls="match-inicial-tab-pane" aria-selected="false">Match Perfil</button>
 						</li>
 					</ul>
 					<div class="tab-content" id="myTabContent">
@@ -305,7 +316,15 @@ Detalle Candidato - Reclutador
 													<div class="position-absolute start-0 top-0" style="width: 14px; height: 14px; background-color: #B10022; border-radius: 50%; transform: translateX(-6px); border: 2px solid #ffffff;"></div>
 													<p class="fw-semibold mb-1">{{ exp.entidad }} ({{ exp.sector }})</p>
 													<p class="text-muted mb-1">{{ exp.cargo }}</p>
-													<p class="text-muted small mb-0">{{ exp.fecha_inicial|date:"Y" }} - {{ exp.fecha_final|date:"Y"|default:"Actual" }}</p>
+													<p class="text-muted small mb-2">{{ exp.fecha_inicial|date:"Y" }} - {{ exp.fecha_final|date:"Y"|default:"Actual" }}</p>
+													{% if exp.funciones_desempenadas %}
+													<p class="text-muted small fw-semibold mb-1">Funciones desempeñadas</p>
+													<ul class="list-unstyled mb-0 small text-muted">
+														{% for funcion in exp.funciones_desempenadas %}
+														<li class="mb-1 ps-1"><span class="text-primary me-1">•</span>{{ funcion }}</li>
+														{% endfor %}
+													</ul>
+													{% endif %}
 												</div>
 												{% endfor %}
 											{% else %}
@@ -363,16 +382,6 @@ Detalle Candidato - Reclutador
 										<i class="material-symbols-outlined me-2" style="vertical-align: middle;">info</i>
 										No hay respuestas de aplicación disponibles para este candidato.
 									</p>
-								</div>
-							{% endif %}
-						</div>
-						<!-- Tab Match -->
-						<div class="tab-pane fade" id="match-tab-pane" role="tabpanel" aria-labelledby="match-tab" tabindex="0">
-							{% if json_match %}
-								{% include "admin/vacancy/partials/match_candidate_vacancy.html" %}
-							{% else %}
-								<div class="alert alert-info">
-									<p class="mb-0">No hay información de match disponible.</p>
 								</div>
 							{% endif %}
 						</div>
@@ -707,7 +716,7 @@ Detalle Candidato - Reclutador
 								{% endif %}
 							{% else %}
 								<div class="alert alert-info">
-									<p class="mb-0">No hay información de match inicial disponible.</p>
+									<p class="mb-0">No hay información de correspondencia con el perfil disponible.</p>
 								</div>
 							{% endif %}
 						</div>

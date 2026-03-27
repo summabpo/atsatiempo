@@ -1,0 +1,52 @@
+{% comment %}Tacómetro media dona: animación SMIL del arco + pathLength{% endcomment %}
+{% if match_inicial_gauge_pct is not None and match_inicial_gauge_color %}
+<div class="flex-shrink-0 text-center tachometer-match-perfil rounded-3 px-3 py-2 bg-white border shadow-sm"
+	style="min-width: 172px; max-width: 210px;"
+	title="Ponderación total respecto al máximo (Match Perfil)">
+	<div class="mx-auto" style="width: 160px;">
+		<svg viewBox="0 0 200 120" width="160" height="96" class="d-block mx-auto" style="overflow: visible;" aria-hidden="true" role="img">
+			<defs>
+				<filter id="tachometer-shadow-inicial" x="-15%" y="-15%" width="130%" height="130%">
+					<feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-opacity="0.1"/>
+				</filter>
+			</defs>
+			<path pathLength="100"
+				d="M 20 100 A 80 80 0 0 1 180 100"
+				fill="none"
+				stroke="#e9ecef"
+				stroke-width="14"
+				stroke-linecap="round"
+				filter="url(#tachometer-shadow-inicial)"/>
+			<path pathLength="100"
+				d="M 20 100 A 80 80 0 0 1 180 100"
+				fill="none"
+				stroke="{{ match_inicial_gauge_color }}"
+				stroke-width="14"
+				stroke-linecap="round"
+				stroke-dasharray="0 100"
+				stroke-dashoffset="0">
+				<animate attributeName="stroke-dasharray"
+					from="0 100"
+					to="{{ match_inicial_gauge_pct_int }} 100"
+					dur="1s"
+					fill="freeze"
+					calcMode="spline"
+					keySplines="0.16 1 0.3 1"
+					keyTimes="0;1"/>
+			</path>
+			<circle cx="20" cy="100" r="3.5" fill="{{ match_inicial_gauge_color }}">
+				<animate attributeName="opacity" values="0.35;1" dur="0.35s" begin="0s" fill="freeze"/>
+			</circle>
+			<circle cx="180" cy="100" r="3.5" fill="{{ match_inicial_gauge_color }}">
+				<animate attributeName="opacity" values="0.35;1" dur="0.35s" begin="0.65s" fill="freeze"/>
+			</circle>
+		</svg>
+	</div>
+	<div class="fw-bold mt-1 tachometer-pct-reveal" style="font-size: 1.75rem; color: {{ match_inicial_gauge_color }}; line-height: 1.15; opacity: 0; animation: tachometerFadePct 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.88s both;">
+		{{ match_inicial_gauge_pct_int }}<span style="font-size: 1.05rem;">%</span>
+	</div>
+	<p class="fw-semibold mb-0 mt-1 px-1 tachometer-nivel-reveal" style="font-size: 0.72rem; color: {{ match_inicial_gauge_color }}; line-height: 1.3; opacity: 0; animation: tachometerFadePct 0.55s cubic-bezier(0.22, 1, 0.36, 1) 1.02s both;">
+		{{ match_inicial_gauge_nivel }}
+	</p>
+</div>
+{% endif %}

@@ -12,24 +12,26 @@ Inicio | Dashboard
 
 {% block content %}
 <div class="main-content-container overflow-hidden">
+	{% block dashboard_heading %}
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
 		<h3 class="mb-0">
 			Bienvenido(a), <span class="text-primary">{{ request.session.user_login.primer_nombre }}</span>
-			</h3>
+		</h3>
 		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
 			<ol class="breadcrumb align-items-center mb-0 lh-1">
 				<li class="breadcrumb-item">
 					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
 						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
-						<span class="text-secondary fw-medium hover" >Inicio</span>
+						<span class="text-secondary fw-medium hover">Inicio</span>
 					</a>
 				</li>
-				
 			</ol>
 		</nav>
 	</div>
+	{% endblock dashboard_heading %}
 
 	<!-- Paneles superiores -->
+	{% block dashboard_metric_cards %}
 	<div class="row mb-4">
 		<div class="col-md-3">
 			<div class="card border-0 rounded-3 bg-white shadow-sm h-100">
@@ -112,7 +114,9 @@ Inicio | Dashboard
 			</div>
 		</div>
 	</div>
+	{% endblock dashboard_metric_cards %}
 
+	{% block dashboard_chart_candidatos_dia %}
 	<!-- Candidatos registrados por día -->
 	<div class="row mb-4">
 		<div class="col-12">
@@ -129,7 +133,9 @@ Inicio | Dashboard
 			</div>
 		</div>
 	</div>
+	{% endblock dashboard_chart_candidatos_dia %}
 
+	{% block dashboard_metricas_candidatos_inferior %}
 	<!-- Candidatos registrados por mes (año en curso) -->
 	<div class="row mb-4">
 		<div class="col-12">
@@ -247,13 +253,8 @@ Inicio | Dashboard
 			</div>
 		</div>
 	</div>
+	{% endblock dashboard_metricas_candidatos_inferior %}
 
-	<!-- Panel: Candidatos por profesión o estudio -->
-	<div class="row">
-		
-	</div>
-
-	
 </div>
 {% endblock %}
 

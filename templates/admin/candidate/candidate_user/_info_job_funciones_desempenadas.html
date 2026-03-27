@@ -1,0 +1,75 @@
+<div id="div_funciones_desempenadas_wrap" class="col-12 campo-experiencia mt-3 pt-3 border-top border-primary border-opacity-25">
+	<label class="form-label fw-semibold text-primary mb-2">Funciones desempeñadas</label>
+	<div id="funciones-desempenadas-list" class="d-flex flex-column gap-2"></div>
+	<button type="button" id="btn-add-funcion-desempenada" class="btn btn-sm btn-outline-primary mt-2">
+		<i class="ri-add-line align-middle me-1"></i>Agregar función
+	</button>
+	<small class="text-muted d-block mt-2">Hasta 5 funciones. Debe indicar al menos una.</small>
+</div>
+{{ funciones_inicial|json_script:"funciones-desempenadas-data" }}
+<script>
+(function () {
+	var MAX = 5;
+	var dataEl = document.getElementById('funciones-desempenadas-data');
+	var listEl = document.getElementById('funciones-desempenadas-list');
+	var btnAdd = document.getElementById('btn-add-funcion-desempenada');
+	if (!listEl || !btnAdd) return;
+
+	function collectFromInputs() {
+		var inputs = listEl.querySelectorAll('input[name="funciones_desempenadas"]');
+		return Array.prototype.map.call(inputs, function (i) { return i.value; });
+	}
+
+	var inicial = [''];
+	if (dataEl && dataEl.textContent) {
+		try {
+			inicial = JSON.parse(dataEl.textContent);
+		} catch (e) { inicial = ['']; }
+	}
+	if (!Array.isArray(inicial) || inicial.length === 0) inicial = [''];
+
+	function render() {
+		listEl.innerHTML = '';
+		inicial.forEach(function (val, idx) {
+			var row = document.createElement('div');
+			row.className = 'input-group input-group-sm shadow-sm';
+			var inp = document.createElement('input');
+			inp.type = 'text';
+			inp.name = 'funciones_desempenadas';
+			inp.className = 'form-control';
+			inp.maxLength = 800;
+			inp.placeholder = 'Describa una función desempeñada';
+			inp.value = val || '';
+			row.appendChild(inp);
+			var btnRm = document.createElement('button');
+			btnRm.type = 'button';
+			btnRm.className = 'btn btn-outline-danger';
+			btnRm.setAttribute('title', 'Quitar');
+			btnRm.innerHTML = '<i class="ri-close-line"></i>';
+			btnRm.disabled = inicial.length <= 1;
+			btnRm.addEventListener('click', function () {
+				inicial = collectFromInputs();
+				if (inicial.length <= 1) {
+					inp.value = '';
+					return;
+				}
+				inicial.splice(idx, 1);
+				render();
+			});
+			row.appendChild(btnRm);
+			listEl.appendChild(row);
+		});
+		btnAdd.disabled = inicial.length >= MAX;
+		btnAdd.style.display = inicial.length >= MAX ? 'none' : 'inline-block';
+	}
+
+	btnAdd.addEventListener('click', function () {
+		inicial = collectFromInputs();
+		if (inicial.length >= MAX) return;
+		inicial.push('');
+		render();
+	});
+
+	render();
+})();
+</script>

@@ -46,6 +46,9 @@ Crear Experiencia Laboral | Talent Tray
 					<form method="post" id="form_trabajo" enctype="multipart/form-data">
 						{% csrf_token %}
 						{% crispy form %}
+						{% if form.non_field_errors %}
+						<div class="alert alert-danger small mt-2">{{ form.non_field_errors }}</div>
+						{% endif %}
 						<button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100 mt-3">Guardar</button>
 					</form>
 				</div>
@@ -82,7 +85,8 @@ Crear Experiencia Laboral | Talent Tray
 				'#div_id_modalidad_trabajo',
 				'#div_id_nombre_jefe',
 				'#div_id_logro',
-				'#div_id_certificado_laboral'
+				'#div_id_certificado_laboral',
+				'#div_funciones_desempenadas_wrap'
 			];
 			
 			camposAfectados.forEach(function(selector) {

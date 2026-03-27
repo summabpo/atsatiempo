@@ -139,11 +139,11 @@ Vacantes Propias
                                             <tr>
                                                         <th scope="col" class="text-center">Imagen</th>
                                                         <th scope="col" class="text-center">Candidato</th>
-                                                        <th scope="col" class="text-center">Fecha Registro</th>
+                                                        <th scope="col" class="text-center">Fecha Aplicó Vacante</th>
                                                         <th scope="col" class="text-center">Edad</th>
                                                         <th scope="col" class="text-center">Nivel de Estudio</th>
-                                                        <th scope="col" class="text-center">Puntaje Match</th>
-                                                        <th scope="col" class="text-center">Match Inicial</th>
+                                                        {% comment %} <th scope="col" class="text-center">Puntaje Match</th> {% endcomment %}
+                                                        <th scope="col" class="text-center">Match Perfil</th>
                                                         <th scope="col" class="text-center">Acciones</th>
                                             </tr>
                                         </thead>
@@ -186,7 +186,7 @@ Vacantes Propias
                                                                 {% endif %}
                                                             {% endwith %}
                                                         </td>
-                                                        <td class="text-center">
+                                                        {% comment %} <td class="text-center">
                                                             {% with porcentaje=e.json_match|get_match_porcentaje %}
                                                                 {% if porcentaje %}
                                                                     {% if porcentaje >= 80 %}
@@ -202,7 +202,7 @@ Vacantes Propias
                                                                     <span class="text-muted">-</span>
                                                                 {% endif %}
                                                             {% endwith %}
-                                                        </td>
+                                                        </td> {% endcomment %}
                                                         <td class="text-center">
                                                             {% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}
                                                                 {% if porcentaje_inicial %}
@@ -245,11 +245,11 @@ Vacantes Propias
                                                     <tr>
                                                         <th scope="col" class="text-center">Imagen</th>
                                                         <th scope="col" class="text-center">Candidato</th>
-                                                        <th scope="col" class="text-center">Fecha Registro</th>
+                                                        <th scope="col" class="text-center">Fecha Aplicó Vacante</th>
                                                         <th scope="col" class="text-center">Edad</th>
                                                         <th scope="col" class="text-center">Nivel de Estudio</th>
-                                                        <th scope="col" class="text-center">Puntaje Match</th>
-                                                        <th scope="col" class="text-center">Match Inicial</th>
+                                                        {% comment %} <th scope="col" class="text-center">Puntaje Match</th> {% endcomment %}
+                                                        <th scope="col" class="text-center">Match Perfil</th>
                                                         <th scope="col" class="text-center">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -292,7 +292,7 @@ Vacantes Propias
                                                                 {% endif %}
                                                             {% endwith %}
                                                         </td>
-                                                        <td class="text-center">
+                                                        {% comment %} <td class="text-center">
                                                             {% with porcentaje=e.json_match|get_match_porcentaje %}
                                                                 {% if porcentaje %}
                                                                     {% if porcentaje >= 80 %}
@@ -308,7 +308,7 @@ Vacantes Propias
                                                                     <span class="text-muted">-</span>
                                                                 {% endif %}
                                                             {% endwith %}
-                                                        </td>
+                                                        </td> {% endcomment %}
 
                                                         <td class="text-center">
                                                             {% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}
@@ -352,11 +352,11 @@ Vacantes Propias
                                                     <tr>
                                                         <th scope="col" class="text-center">Imagen</th>
                                                         <th scope="col" class="text-center">Candidato</th>
-                                                        <th scope="col" class="text-center">Fecha Registro</th>
+                                                        <th scope="col" class="text-center">Fecha Aplicó Vacante</th>
                                                         <th scope="col" class="text-center">Edad</th>
                                                         <th scope="col" class="text-center">Nivel de Estudio</th>
-                                                        <th scope="col" class="text-center">Puntaje Match</th>
-                                                        <th scope="col" class="text-center">Match Inicial</th>
+                                                        {% comment %} <th scope="col" class="text-center">Puntaje Match</th> {% endcomment %}
+                                                        <th scope="col" class="text-center">Match Perfil</th>
                                                         <th scope="col" class="text-center">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -399,7 +399,7 @@ Vacantes Propias
                                                                 {% endif %}
                                                             {% endwith %}
                                                         </td>
-                                                        <td class="text-center">
+                                                        {% comment %} <td class="text-center">
                                                             {% with porcentaje=e.json_match|get_match_porcentaje %}
                                                                 {% if porcentaje %}
                                                                     {% if porcentaje >= 80 %}
@@ -415,7 +415,7 @@ Vacantes Propias
                                                                     <span class="text-muted">-</span>
                                                                 {% endif %}
                                                             {% endwith %}
-                                                        </td>
+                                                        </td> {% endcomment %}
                                                         <td class="text-center">
                                                             {% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}
                                                                 {% if porcentaje_inicial %}
@@ -473,11 +473,10 @@ Vacantes Propias
                                                     <tr>
                                                         <th scope="col" class="text-center">Imagen</th>
                                                         <th scope="col" class="text-center">Candidato</th>
-                                                        <th scope="col" class="text-center">Fecha Registro</th>
+                                                        <th scope="col" class="text-center">Fecha Aplicó Vacante</th>
                                                         <th scope="col" class="text-center">Edad</th>
                                                         <th scope="col" class="text-center">Nivel de Estudio</th>
-                                                        <th scope="col" class="text-center">Puntaje Match</th>
-                                                        <th scope="col" class="text-center">Match Inicial</th>
+                                                        <th scope="col" class="text-center">Match Perfil</th>
                                                         <th scope="col" class="text-center">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -520,7 +519,7 @@ Vacantes Propias
                                                                 {% endif %}
                                                             {% endwith %}
                                                         </td>
-                                                        <td class="text-center">
+                                                        {% comment %} <td class="text-center">
                                                             {% with porcentaje=e.json_match|get_match_porcentaje %}
                                                                 {% if porcentaje %}
                                                                     {% if porcentaje >= 80 %}
@@ -536,7 +535,7 @@ Vacantes Propias
                                                                     <span class="text-muted">-</span>
                                                                 {% endif %}
                                                             {% endwith %}
-                                                        </td>
+                                                        </td> {% endcomment %}
                                                         <td class="text-center">
                                                             {% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}
                                                                 {% if porcentaje_inicial %}

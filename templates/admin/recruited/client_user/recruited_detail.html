@@ -98,13 +98,13 @@ Detalle vacante
 
                 {% if request.session.grupo_id == 5 %}
                     <li class="breadcrumb-item active" aria-current="page">
-                        <a href="{% url 'vacantes:vacantes_asignadas' %}" class="d-flex align-items-center text-decoration-none">
-                            <span class="text-secondary fw-medium hover" >Vacantes Asignadas</span>
+                        <a href="{% url 'vacantes:vacantes_asignadas_analista_interno' %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover">Vacantes Asignadas</span>
                         </a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
-                        <a href="{% url 'vacantes:vacantes_gestion_propias' vacante.asignacion_cliente_id_064.id_cliente_asignado.id vacante.id %}" class="d-flex align-items-center text-decoration-none">
-                            <span class="text-secondary fw-medium hover" >Gestión de Vacante</span>
+                        <a href="{% url 'vacantes:vacantes_gestion_analista_interno' vacante.id %}" class="d-flex align-items-center text-decoration-none">
+                            <span class="text-secondary fw-medium hover">Gestión de Vacante</span>
                         </a>
                     </li>
                 {% endif %}

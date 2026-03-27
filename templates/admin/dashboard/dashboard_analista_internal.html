@@ -1,0 +1,141 @@
+{% extends 'admin/dashboard/dashboard_admin.html' %}
+
+{% block title %}
+Inicio | Analista interno
+{% endblock %}
+
+{% block dashboard_heading %}
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+	<div class="flex-grow-1 min-w-0">
+		<h3 class="mb-0 fs-18 fw-semibold text-dark">Panel de analista interno</h3>
+		<p class="text-muted mb-0 small mt-1">Resumen de vacantes y seguimiento</p>
+	</div>
+	<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+		<ol class="breadcrumb align-items-center mb-0 lh-1">
+			<li class="breadcrumb-item">
+				<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+					<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+					<span class="text-secondary fw-medium hover">Inicio</span>
+				</a>
+			</li>
+			<li class="breadcrumb-item active" aria-current="page">
+				<span class="fw-medium">Analista interno</span>
+			</li>
+		</ol>
+	</nav>
+</div>
+{% endblock dashboard_heading %}
+
+{% block dashboard_metric_cards %}
+<div class="row mb-4">
+	<div class="col-12">
+		<div class="alert alert-info mb-0 rounded-3 py-4 px-4 px-md-5" role="alert">
+			<div class="d-flex align-items-start">
+				<i class="ri-information-line me-2 flex-shrink-0" style="font-size: 1.25rem; line-height: 1.4;"></i>
+				<div class="flex-grow-1 min-w-0">
+					<p class="text-uppercase small fw-semibold mb-2" style="letter-spacing: 0.06em;">Un mensaje para ti</p>
+					<h2 class="alert-heading h5 fw-semibold mb-3">
+						¡Hola, <span class="text-info-emphasis">{{ request.session.user_login.primer_nombre }}</span>!
+					</h2>
+					<p class="mb-3 lh-lg small">
+						Nos alegra enormemente verte de nuevo. Sabemos que detrás de cada cifra hay personas que confían en el proceso:
+						candidatos que buscan una oportunidad y equipos que necesitan el talento adecuado. Tu dedicación hace posible ese encuentro;
+						gracias por seguir poniendo empeño, criterio y corazón en lo que haces.
+					</p>
+					<p class="mb-0 fw-medium small">
+						Que este día sea tan bueno como el impacto que generas.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row mb-4">
+	<div class="col-md-6 col-xl-3">
+		<div class="card border-0 rounded-3 bg-white shadow-sm h-100">
+			<div class="card-body p-4 d-flex align-items-center justify-content-between">
+				<div class="d-flex align-items-center flex-grow-1 min-w-0">
+					<div class="flex-shrink-0 me-3">
+						<div class="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+							<span class="material-symbols-outlined text-primary" style="font-size: 32px;">assignment</span>
+						</div>
+					</div>
+					<div class="min-w-0">
+						<h4 class="fw-semibold mb-0 text-primary fs-20">{{ vacantes_asignadas_analista|default:0 }}</h4>
+						<small class="text-muted d-block">Vacantes asignadas</small>
+					</div>
+				</div>
+				<a href="{% url 'vacantes:vacantes_asignadas' %}" class="btn btn-sm bg-primary bg-opacity-10 text-primary flex-shrink-0 ms-2" title="Ver vacantes asignadas">
+					<span class="material-symbols-outlined fs-18">arrow_forward</span>
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-xl-3">
+		<div class="card border-0 rounded-3 bg-danger bg-opacity-10 shadow-sm h-100 border-start border-danger border-4">
+			<div class="card-body p-4 d-flex align-items-center justify-content-between">
+				<div class="d-flex align-items-center flex-grow-1 min-w-0">
+					<div class="flex-shrink-0 me-3">
+						<div class="rounded-3 bg-danger bg-opacity-25 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+							<span class="material-symbols-outlined text-danger" style="font-size: 32px;">event_upcoming</span>
+						</div>
+					</div>
+					<div class="min-w-0">
+						<h4 class="fw-semibold mb-0 text-danger fs-20">{{ vacantes_pendientes_entrevista|default:0 }}</h4>
+						<small class="text-danger-emphasis d-block">Vacantes con candidatos pendientes de entrevista</small>
+					</div>
+				</div>
+				<a href="{% url 'vacantes:vacantes_asignadas' %}" class="btn btn-sm bg-danger bg-opacity-25 text-danger flex-shrink-0 ms-2" title="Gestionar vacantes">
+					<span class="material-symbols-outlined fs-18">arrow_forward</span>
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-xl-3">
+		<div class="card border-0 rounded-3 bg-warning bg-opacity-10 shadow-sm h-100 border-start border-warning border-4">
+			<div class="card-body p-4 d-flex align-items-center justify-content-between">
+				<div class="d-flex align-items-center flex-grow-1 min-w-0">
+					<div class="flex-shrink-0 me-3">
+						<div class="rounded-3 bg-warning bg-opacity-25 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+							<span class="material-symbols-outlined text-warning-emphasis" style="font-size: 32px;">mark_chat_unread</span>
+						</div>
+					</div>
+					<div class="min-w-0">
+						<h4 class="fw-semibold mb-0 text-warning-emphasis fs-20">{{ vacantes_pendientes_respuesta_cliente|default:0 }}</h4>
+						<small class="text-body-secondary d-block">Vacantes pendientes de respuesta del cliente</small>
+					</div>
+				</div>
+				<a href="{% url 'vacantes:vacantes_asignadas' %}" class="btn btn-sm bg-warning bg-opacity-25 text-warning-emphasis flex-shrink-0 ms-2" title="Gestionar vacantes">
+					<span class="material-symbols-outlined fs-18">arrow_forward</span>
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-xl-3">
+		<div class="card border-0 rounded-3 bg-success bg-opacity-10 shadow-sm h-100 border-start border-success border-4">
+			<div class="card-body p-4 d-flex align-items-center justify-content-between">
+				<div class="d-flex align-items-center flex-grow-1 min-w-0">
+					<div class="flex-shrink-0 me-3">
+						<div class="rounded-3 bg-success bg-opacity-25 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+							<span class="material-symbols-outlined text-success" style="font-size: 32px;">task_alt</span>
+						</div>
+					</div>
+					<div class="min-w-0">
+						<h4 class="fw-semibold mb-0 text-success fs-20">{{ vacantes_terminadas|default:0 }}</h4>
+						<small class="text-success-emphasis d-block">Vacantes terminadas</small>
+					</div>
+				</div>
+				<a href="{% url 'vacantes:vacantes_asignadas' %}" class="btn btn-sm bg-success bg-opacity-25 text-success flex-shrink-0 ms-2" title="Ver vacantes">
+					<span class="material-symbols-outlined fs-18">arrow_forward</span>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock dashboard_metric_cards %}
+
+{% block dashboard_chart_candidatos_dia %}{% endblock dashboard_chart_candidatos_dia %}
+
+{% block dashboard_metricas_candidatos_inferior %}{% endblock dashboard_metricas_candidatos_inferior %}
+
+{% block js %}{% endblock %}

@@ -10,6 +10,7 @@ from applications.usuarios.views.commons.dashboard_panels import (
     get_panel_ciudad_residencia,
     get_panel_tipo_estudio,
     get_panel_profesion_estudio,
+    get_panel_metricas_analista_interno,
 )
 
 # consultas
@@ -83,3 +84,13 @@ def dashboard_administrador(request):
     context.update(get_panel_tipo_estudio())
     context.update(get_panel_profesion_estudio())
     return render(request, 'admin/dashboard/dashboard_admin.html', context)
+
+
+
+@login_required
+@validar_permisos('acceso_analista_seleccion')
+def dashboard_analista_internal(request):
+    """Dashboard analista interno: solo métricas de vacantes asignadas (sin gráficos de candidatos)."""
+    context = {}
+    context.update(get_panel_metricas_analista_interno(request.user.id))
+    return render(request, 'admin/dashboard/dashboard_analista_internal.html', context)

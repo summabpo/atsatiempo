@@ -539,6 +539,88 @@ def extract_vacancy_sections(description):
     return extracted_sections
 
 
+# Encabezados de sección que ya se muestran en otras tarjetas de la ficha (presentación vacante).
+_DESCRIPCION_DROP_HEADER_MAX = 120
+
+# Subcadenas que identifican inicio de una sección a omitir en la descripción (título corto tipo encabezado).
+def _line_starts_drop_descripcion_section(ls):
+    if not ls or len(ls) >= _DESCRIPCION_DROP_HEADER_MAX:
+        return False
+    u = ls.upper()
+    if 'FUNCIONES' in u and 'RESPONSABILIDADES' in u:
+        return True
+    if 'EXPERIENCIA' in u and 'REQUERIDA' in u:
+        return True
+    if 'PERFIL' in u and 'ACAD' in u:
+        return True
+    if 'HORARIO' in u and 'TRABAJO' in u:
+        return True
+    if 'IDIOMAS' in u:
+        return True
+    return False
+
+
+# Encabezados de sección que sí deben mostrarse en la descripción (fin de un bloque omitido).
+_DESCRIPCION_KEEP_MARKERS = (
+    'OPORTUNIDAD LABORAL',
+    'INFORMACIÓN DEL CARGO',
+    'ESTUDIOS COMPLEMENTARIOS',
+    'COMPETENCIAS Y HABILIDADES',
+    'FIT CULTURAL',
+)
+
+
+def _line_starts_keep_descripcion_section(ls):
+    if not ls or len(ls) >= _DESCRIPCION_DROP_HEADER_MAX:
+        return False
+    return any(m in ls for m in _DESCRIPCION_KEEP_MARKERS)
+
+
+def _drop_descripcion_secciones_duplicadas_ficha(text):
+    """
+    Quita bloques de la descripción que en la presentación ya tienen tarjeta propia
+    (funciones, experiencia, perfil académico, horarios, idiomas).
+    """
+    if not text or not isinstance(text, str):
+        return text
+    lines = text.split('\n')
+    out = []
+    skip = False
+    for line in lines:
+        ls = line.strip()
+        if not skip:
+            if ls and _line_starts_drop_descripcion_section(ls):
+                skip = True
+                continue
+            out.append(line)
+        else:
+            if ls and _line_starts_keep_descripcion_section(ls):
+                skip = False
+                out.append(line)
+    return '\n'.join(out)
+
+
+def _omitir_seccion_descripcion_por_titulo(ct_up):
+    """ct_up: título de sección ya en mayúsculas (parser)."""
+    if 'FUNCIONES' in ct_up and 'RESPONSABILIDADES' in ct_up:
+        return True
+    if 'EXPERIENCIA' in ct_up and 'REQUERIDA' in ct_up:
+        return True
+    if 'PERFIL' in ct_up and 'ACAD' in ct_up:
+        return True
+    if 'HORARIO' in ct_up and 'TRABAJO' in ct_up:
+        return True
+    if 'IDIOMAS' in ct_up:
+        return True
+    return False
+
+
+@register.filter(name='strip_funciones_descripcion')
+def strip_funciones_descripcion(value):
+    """Elimina de la descripción bloques que se muestran en otras secciones de la ficha."""
+    return _drop_descripcion_secciones_duplicadas_ficha(value or '')
+
+
 @register.filter(name='format_descripcion_vacante')
 def format_descripcion_vacante(value):
     """
@@ -558,12 +640,13 @@ def format_descripcion_vacante(value):
     text = value
     for frag in fragmentos:
         text = text.replace(frag, '')
+    text = _drop_descripcion_secciones_duplicadas_ficha(text)
     lines_raw = [line.strip() for line in text.split('\n') if line.strip()]
     text = '\n'.join(lines_raw)
     if not text:
         return []
 
-    # Secciones conocidas en orden de aparición (todas, no excluir ninguna)
+    # Secciones conocidas. Varias se omiten en presentación (se muestran en otras tarjetas de la ficha).
     section_markers = [
         'OPORTUNIDAD LABORAL',
         'INFORMACIÓN DEL CARGO',
@@ -610,6 +693,12 @@ def format_descripcion_vacante(value):
                 clean_title = emoji_pattern.sub('', line_stripped).strip()
                 if clean_title.endswith(':'):
                     clean_title = clean_title[:-1].strip()
+                ct_up = clean_title.upper()
+                if _omitir_seccion_descripcion_por_titulo(ct_up):
+                    current_section = None
+                    current_items = []
+                    is_section = True
+                    break
                 current_section = clean_title
                 current_items = []
                 is_section = True
