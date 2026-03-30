@@ -242,7 +242,23 @@ def detail_recruited(request, pk):
     
     # Obtener información de la vacante
     vacante = asignacion_vacante.vacante_id_052
-    
+
+    # Otras aplicaciones del mismo candidato con vacantes del mismo cliente asignado (asignación 064)
+    otras_aplicaciones_mismo_cliente = []
+    cliente_asignado_otros_procesos = None
+    asig_vac = getattr(vacante, 'asignacion_cliente_id_064', None)
+    if asig_vac and getattr(asig_vac, 'id_cliente_asignado_id', None):
+        cliente_asignado_otros_procesos = asig_vac.id_cliente_asignado
+        otras_aplicaciones_mismo_cliente = list(
+            Cli056AplicacionVacante.objects.filter(
+                candidato_101_id=candidato.id,
+                vacante_id_052__asignacion_cliente_id_064__id_cliente_asignado_id=asig_vac.id_cliente_asignado_id,
+            )
+            .exclude(pk=asignacion_vacante.pk)
+            .select_related('vacante_id_052', 'vacante_id_052__cargo')
+            .order_by('-fecha_aplicacion', '-id')
+        )
+
     # Obtener el JSON match inicial
     json_match_inicial_raw = asignacion_vacante.json_match_inicial
     if json_match_inicial_raw:
@@ -419,6 +435,8 @@ def detail_recruited(request, pk):
         'preguntas_vacante': preguntas_vacante,
         'candidato_anterior': candidato_anterior,
         'candidato_siguiente': candidato_siguiente,
+        'otras_aplicaciones_mismo_cliente': otras_aplicaciones_mismo_cliente,
+        'cliente_asignado_otros_procesos': cliente_asignado_otros_procesos,
     }
     
     return render(request, 'admin/recruiter/client_recruiter/detail_recruited.html', context)

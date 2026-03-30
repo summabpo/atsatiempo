@@ -63,52 +63,7 @@
                         </div>
                     </div>
 
-                    <!-- Información clave -->
-                    <div class="d-flex flex-wrap gap-3 mb-4 pb-4 ">
-                        <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-center flex-grow-1">
-                            <h6 class="text-muted small mb-1" style="font-weight: 700;">Salario (COP)</h6>
-                            <p class="h5 mb-0" style="font-weight: 700;">
-                                {% if vacante.perfil_vacante.salario %}
-                                    ${{ vacante.perfil_vacante.salario|format_number }}
-                                    {% if vacante.perfil_vacante.salario_adicional %}
-                                        - $ {{ vacante.perfil_vacante.salario_adicional|format_number }}
-                                    {% endif %}
-                                {% else %}
-                                    A convenir
-                                {% endif %}
-                            </p>
-                        </div>
-                        <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-center flex-grow-1">
-                            <h6 class="text-muted small mb-1" style="font-weight: 700;">Contrato</h6>
-                            <p class="h5 mb-0" style="font-weight: 700;">
-                                {% if vacante.perfil_vacante.termino_contrato == 'F' %}
-                                    Fijo
-                                {% elif vacante.perfil_vacante.termino_contrato == 'I' %}
-                                    Indefinido
-                                {% elif vacante.perfil_vacante.termino_contrato == 'O' %}
-                                    Obra Labor
-                                {% else %}
-                                    Sin especificar
-                                {% endif %}
-                            </p>
-                        </div>
-                        <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-center flex-grow-1">
-                            <h6 class="text-muted small mb-1" style="font-weight: 700;">Modalidad</h6>
-                            <p class="h5 mb-0" style="font-weight: 700;">
-                                {% if vacante.perfil_vacante.modalidad == 'R' %}
-                                    Remoto
-                                {% elif vacante.perfil_vacante.modalidad == 'P' %}
-                                    Presencial
-                                {% elif vacante.perfil_vacante.modalidad == 'H' %}
-                                    Híbrido
-                                {% else %}
-                                    Sin especificar
-                                {% endif %}
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Descripción del cargo -->
+                    <!-- 1. Descripción del cargo -->
                     {% if not is_candidato %}
                     <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
                         <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
@@ -151,72 +106,54 @@
                     </div>
                     {% endif %}
 
-                    <!-- Responsabilidades del cargo -->
+                    <!-- 2. Información del cargo -->
                     <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
-                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
                             <p class="text-primary my-2 fs-6 fw-semibold">
-                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">checklist</span>
-                                RESPONSABILIDADES DEL CARGO
+                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">assignment</span>
+                                INFORMACIÓN DEL CARGO
                             </p>
                         </div>
                         <div class="card-body">
-                            {% if vacante.perfil_vacante.funciones_responsabilidades %}
-                            <ul class="list-unstyled text-secondary">
-                                {% for funcion in vacante.perfil_vacante.funciones_responsabilidades %}
-                                <li><span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">check</span>{{ funcion.funcion }}</li>
-                                {% endfor %}
-                            </ul>
-                            {% endif %}
+                            <div class="d-flex flex-wrap gap-3">
+                                <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-center flex-grow-1">
+                                    <h6 class="text-muted small mb-1" style="font-weight: 700;">Contrato</h6>
+                                    <p class="h5 mb-0" style="font-weight: 700;">
+                                        {% if vacante.perfil_vacante.termino_contrato == 'F' %}
+                                            Fijo
+                                        {% elif vacante.perfil_vacante.termino_contrato == 'I' %}
+                                            Indefinido
+                                        {% elif vacante.perfil_vacante.termino_contrato == 'O' %}
+                                            Obra Labor
+                                        {% else %}
+                                            Sin especificar
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-center flex-grow-1">
+                                    <h6 class="text-muted small mb-1" style="font-weight: 700;">Modalidad</h6>
+                                    <p class="h5 mb-0" style="font-weight: 700;">
+                                        {% if vacante.perfil_vacante.modalidad == 'R' %}
+                                            Remoto
+                                        {% elif vacante.perfil_vacante.modalidad == 'P' %}
+                                            Presencial
+                                        {% elif vacante.perfil_vacante.modalidad == 'H' %}
+                                            Híbrido
+                                        {% else %}
+                                            Sin especificar
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Experiencia para el cargo -->
+                    <!-- 3. Perfil académico -->
                     <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
-                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
-                            <p class="text-primary my-2 fs-6 fw-semibold">
-                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">work_history</span>
-                                EXPERIENCIA LABORAL REQUERIDA
-                            </p>
-                        </div>
-                        <div class="card-body">
-                            {% if vacante.perfil_vacante.experiencia_laboral %}
-                                {% with exp_list=vacante.perfil_vacante.experiencia_laboral %}
-                                    {% if exp_list %}
-                                        <ul class="list-unstyled text-secondary">
-                                            {% for exp in exp_list %}
-                                                <li class="mb-2">
-                                                    <span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">work</span>
-                                                    {% if exp.tiempo_experiencia == "0" or exp.tiempo_experiencia == 0 %}
-                                                        6 meses
-                                                    {% elif exp.tiempo_experiencia == "6" or exp.tiempo_experiencia == 6 %}
-                                                        Sin experiencia
-                                                    {% elif exp.tiempo_experiencia == "1" or exp.tiempo_experiencia == 1 %}
-                                                        1 año
-                                                    {% elif exp.tiempo_experiencia == "5" or exp.tiempo_experiencia == 5 %}
-                                                        5 años o más
-                                                    {% else %}
-                                                        {{ exp.tiempo_experiencia }} años
-                                                    {% endif %}
-                                                    en {{ exp.experiencia_especifica }}
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% else %}
-                                        <span class="text-muted fst-italic">No hay experiencia laboral específica registrada para esta vacante.</span>
-                                    {% endif %}
-                                {% endwith %}
-                            {% else %}
-                                <span class="text-muted fst-italic">No hay experiencia laboral específica registrada para esta vacante.</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Estudios -->
-                    <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
-                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
                             <p class="text-primary my-2 fs-6 fw-semibold">
                                 <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">school</span>
-                                ESTUDIOS
+                                PERFIL ACADÉMICO
                             </p>
                         </div>
                         <div class="card-body">
@@ -277,10 +214,86 @@
                         </div>
                     </div>
 
-                    <!-- Requerimientos especiales -->
+                    <!-- Estudios complementarios -->
+                    <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
+                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                            <p class="text-primary my-2 fs-6 fw-semibold">
+                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">workspace_premium</span>
+                                ESTUDIOS COMPLEMENTARIOS
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Estudios o conocimientos complementarios que requieren esta vacante.</p>
+                            {% if vacante.perfil_vacante.estudio_complementario %}
+                                {% with estudios=vacante.perfil_vacante.estudio_complementario|parse_estudios_complementarios %}
+                                    {% if estudios %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for estudio in estudios %}
+                                        <li class="list-group-item">
+                                            <b>{{ estudio.estudio|upper }}</b>
+                                            {% if estudio.certificado %}
+                                                <span class="badge bg-success-subtle text-success float-end" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 18px;">verified</span>Certificado
+                                                </span>
+                                            {% endif %}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">No hay estudios complementarios registrados para esta vacante.</span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                <span class="text-muted fst-italic">No hay estudios complementarios registrados para esta vacante.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 4. Experiencia laboral requerida -->
+                    <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
+                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                            <p class="text-primary my-2 fs-6 fw-semibold">
+                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">work_history</span>
+                                EXPERIENCIA LABORAL REQUERIDA
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            {% if vacante.perfil_vacante.experiencia_laboral %}
+                                {% with exp_list=vacante.perfil_vacante.experiencia_laboral %}
+                                    {% if exp_list %}
+                                        <ul class="list-unstyled text-secondary">
+                                            {% for exp in exp_list %}
+                                                <li class="mb-2">
+                                                    <span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">work</span>
+                                                    {% if exp.tiempo_experiencia == "0" or exp.tiempo_experiencia == 0 %}
+                                                        6 meses
+                                                    {% elif exp.tiempo_experiencia == "6" or exp.tiempo_experiencia == 6 %}
+                                                        Sin experiencia
+                                                    {% elif exp.tiempo_experiencia == "1" or exp.tiempo_experiencia == 1 %}
+                                                        1 año
+                                                    {% elif exp.tiempo_experiencia == "5" or exp.tiempo_experiencia == 5 %}
+                                                        5 años o más
+                                                    {% else %}
+                                                        {{ exp.tiempo_experiencia }} años
+                                                    {% endif %}
+                                                    en {{ exp.experiencia_especifica }}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">No hay experiencia laboral específica registrada para esta vacante.</span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                <span class="text-muted fst-italic">No hay experiencia laboral específica registrada para esta vacante.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 5. Requerimientos especiales -->
                     {% if vacante.requerimientos_especiales %}
                     <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
-                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
                             <p class="text-primary my-2 fs-6 fw-semibold">
                                 <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">verified</span>
                                 REQUERIMIENTOS ESPECIALES
@@ -297,6 +310,151 @@
                         </div>
                     </div>
                     {% endif %}
+
+                    <!-- 6. Funciones y responsabilidades -->
+                    <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
+                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                            <p class="text-primary my-2 fs-6 fw-semibold">
+                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">checklist</span>
+                                FUNCIONES Y RESPONSABILIDADES
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            {% if vacante.perfil_vacante.funciones_responsabilidades %}
+                            <ul class="list-unstyled text-secondary">
+                                {% for funcion in vacante.perfil_vacante.funciones_responsabilidades %}
+                                <li><span class="material-symbols-outlined text-primary me-1" style="font-size: 18px; vertical-align: middle;">check</span>{{ funcion.funcion }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 7. Idiomas -->
+                    <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
+                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                            <p class="text-primary my-2 fs-6 fw-semibold">
+                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">translate</span>
+                                IDIOMAS
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Idiomas que requieren esta vacante.</p>
+                            {% if vacante.perfil_vacante.idiomas %}
+                            <ul class="list-group list-group-flush">
+                                {% for idioma in vacante.perfil_vacante.idiomas %}
+                                <li class="list-group-item">
+                                    <div class="d-flex align-items-start">
+                                        <span class="material-symbols-outlined text-primary me-2 mt-1" style="font-size: 20px;">translate</span>
+                                        <div>
+                                            <span class="fw-bold d-block mb-1">
+                                                {% if idioma.idioma == "ES" %}
+                                                    Español
+                                                {% elif idioma.idioma == "EN" %}
+                                                    Inglés
+                                                {% elif idioma.idioma == "FR" %}
+                                                    Francés
+                                                {% elif idioma.idioma == "DE" %}
+                                                    Alemán
+                                                {% elif idioma.idioma == "IT" %}
+                                                    Italiano
+                                                {% elif idioma.idioma == "PT" %}
+                                                    Portugués
+                                                {% elif idioma.idioma == "RU" %}
+                                                    Ruso
+                                                {% elif idioma.idioma == "ZH" %}
+                                                    Chino
+                                                {% elif idioma.idioma == "JP" %}
+                                                    Japonés
+                                                {% elif idioma.idioma == "AR" %}
+                                                    Árabe
+                                                {% else %}
+                                                    {{ idioma.idioma|upper }}
+                                                {% endif %}
+                                            </span>
+                                            <span class="text-secondary" style="font-size: 0.98rem;">
+                                                Nivel: {{ idioma.nivel }}
+                                            </span>
+                                            {% if idioma.nivel_idioma == "1" %}
+                                                <span class="badge bg-success-subtle text-success ms-2" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 18px;">verified</span>Certificado
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                                <span class="text-muted fst-italic">No hay idiomas registrados para esta vacante.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 8. Horario de trabajo -->
+                    <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
+                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                            <p class="text-primary my-2 fs-6 fw-semibold">
+                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">schedule</span>
+                                HORARIO DE TRABAJO
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Horarios de trabajo que requieren esta vacante.</p>
+                            {% if vacante.perfil_vacante.horario %}
+                                {% with horarios_data=vacante.perfil_vacante.horario|parse_horarios_json %}
+                                    {% if horarios_data.tipo_display %}
+                                    <p class="mb-3">
+                                        <strong class="text-primary">Tipo de Horario:</strong>
+                                        <span class="text-secondary">{{ horarios_data.tipo_display }}</span>
+                                    </p>
+                                    {% endif %}
+                                    {% if horarios_data.bloques %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for bloque in horarios_data.bloques %}
+                                            <li class="list-group-item">
+                                                <b>{{ bloque.rango_dias }}</b>
+                                                <span class="badge bg-primary bg-opacity-10 text-primary float-end" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
+                                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 18px;">schedule</span>
+                                                    {{ bloque.hora_inicio }} - {{ bloque.hora_final }}
+                                                </span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">No hay horarios específicos registrados para esta vacante.</span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                <span class="text-muted fst-italic">No hay horarios específicos registrados para esta vacante.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 9. Oferta salarial -->
+                    <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
+                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                            <p class="text-primary my-2 fs-6 fw-semibold">
+                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">payments</span>
+                                OFERTA SALARIAL
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-center">
+                                <h6 class="text-muted small mb-1" style="font-weight: 700;">Salario (COP)</h6>
+                                <p class="h5 mb-0" style="font-weight: 700;">
+                                    {% if vacante.perfil_vacante.salario %}
+                                        ${{ vacante.perfil_vacante.salario|format_number }}
+                                        {% if vacante.perfil_vacante.salario_adicional %}
+                                            - $ {{ vacante.perfil_vacante.salario_adicional|format_number }}
+                                        {% endif %}
+                                    {% else %}
+                                        A convenir
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
 
@@ -475,144 +633,6 @@
                     </div>
                     {% endif %}
 
-                    <!-- Horarios -->
-                    <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
-                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
-                            <p class="text-primary my-2 fs-6 fw-semibold">
-                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">schedule</span>
-                                HORARIOS
-                            </p>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">Horarios de trabajo que requieren esta vacante.</p>
-                            {% if vacante.perfil_vacante.horario %}
-                                {% with horarios_data=vacante.perfil_vacante.horario|parse_horarios_json %}
-                                    {% if horarios_data.tipo_display %}
-                                    <p class="mb-3">
-                                        <strong class="text-primary">Tipo de Horario:</strong> 
-                                        <span class="text-secondary">{{ horarios_data.tipo_display }}</span>
-                                    </p>
-                                    {% endif %}
-                                    {% if horarios_data.bloques %}
-                                    <ul class="list-group list-group-flush">
-                                        {% for bloque in horarios_data.bloques %}
-                                            <li class="list-group-item">
-                                                <b>{{ bloque.rango_dias }}</b>
-                                                <span class="badge bg-primary bg-opacity-10 text-primary float-end" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
-                                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 18px;">schedule</span>
-                                                    {{ bloque.hora_inicio }} - {{ bloque.hora_final }}
-                                                </span>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                    {% else %}
-                                        <span class="text-muted fst-italic">No hay horarios específicos registrados para esta vacante.</span>
-                                    {% endif %}
-                                {% endwith %}
-                            {% else %}
-                                <span class="text-muted fst-italic">No hay horarios específicos registrados para esta vacante.</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Estudios complementarios -->
-                    <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
-                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
-                            <p class="text-primary my-2 fs-6 fw-semibold">
-                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">workspace_premium</span>
-                                ESTUDIOS COMPLEMENTARIOS
-                            </p>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">Estudios o conocimientos complementarios que requieren esta vacante.</p>
-                            {% if vacante.perfil_vacante.estudio_complementario %}
-                                {% with estudios=vacante.perfil_vacante.estudio_complementario|parse_estudios_complementarios %}
-                                    {% if estudios %}
-                                    <ul class="list-group list-group-flush">
-                                        {% for estudio in estudios %}
-                                        <li class="list-group-item">
-                                            <b>{{ estudio.estudio|upper }}</b>
-                                            {% if estudio.certificado %}
-                                                <span class="badge bg-success-subtle text-success float-end" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
-                                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 18px;">verified</span>Certificado
-                                                </span>
-                                            {% endif %}
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                    {% else %}
-                                        <span class="text-muted fst-italic">No hay estudios complementarios registrados para esta vacante.</span>
-                                    {% endif %}
-                                {% endwith %}
-                            {% else %}
-                                <span class="text-muted fst-italic">No hay estudios complementarios registrados para esta vacante.</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Idiomas -->
-                    <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
-                        <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
-                            <p class="text-primary my-2 fs-6 fw-semibold">
-                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 20px;">translate</span>
-                                IDIOMAS
-                            </p>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">Idiomas que requieren esta vacante.</p>
-                            {% if vacante.perfil_vacante.idiomas %}
-                            <ul class="list-group list-group-flush">
-                                {% for idioma in vacante.perfil_vacante.idiomas %}
-                                <li class="list-group-item">
-                                    <div class="d-flex align-items-start">
-                                        <span class="material-symbols-outlined text-primary me-2 mt-1" style="font-size: 20px;">translate</span>
-                                        <div>
-                                            <span class="fw-bold d-block mb-1">
-                                                {# Mostrar nombre del idioma en texto, no solo el código #}
-                                                {% if idioma.idioma == "ES" %}
-                                                    Español
-                                                {% elif idioma.idioma == "EN" %}
-                                                    Inglés
-                                                {% elif idioma.idioma == "FR" %}
-                                                    Francés
-                                                {% elif idioma.idioma == "DE" %}
-                                                    Alemán
-                                                {% elif idioma.idioma == "IT" %}
-                                                    Italiano
-                                                {% elif idioma.idioma == "PT" %}
-                                                    Portugués
-                                                {% elif idioma.idioma == "RU" %}
-                                                    Ruso
-                                                {% elif idioma.idioma == "ZH" %}
-                                                    Chino
-                                                {% elif idioma.idioma == "JP" %}
-                                                    Japonés
-                                                {% elif idioma.idioma == "AR" %}
-                                                    Árabe
-                                                {% else %}
-                                                    {{ idioma.idioma|upper }}
-                                                {% endif %}
-                                            </span>
-                                            <span class="text-secondary" style="font-size: 0.98rem;">
-                                                Nivel: {{ idioma.nivel }}
-                                                
-                                            </span>
-                                            {% if idioma.nivel_idioma == "1" %}
-                                                <span class="badge bg-success-subtle text-success ms-2" style="font-size: 0.8rem; font-weight: 600; padding: 0.5em 0.9em;">
-                                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 18px;">verified</span>Certificado
-                                                </span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </li>
-                                {% endfor %}
-                            </ul>
-                            {% else %}
-                                <span class="text-muted fst-italic">No hay idiomas registrados para esta vacante.</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
                     <!-- Habilidades (oculta para candidatos) -->
                     {% if not is_candidato|default:False %}
                     <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-2 shadow-sm">
@@ -725,12 +745,12 @@
         <div class="card-footer bg-white text-center p-3 mb-4">
 
             {% if request.session.grupo_id == 1 or request.session.grupo_id == 3 %}
-            <a href="{% url 'vacantes:vacantes_editar_propias' data.cliente.id vacante.id %}" class="btn bg-primary text-primary bg-opacity-10 px-5 me-2" style="font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">
+            {% comment %} <a href="{% url 'vacantes:vacantes_editar_propias' data.cliente.id vacante.id %}" class="btn bg-primary text-primary bg-opacity-10 px-5 me-2" style="font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">
                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 20px;">edit</span>Editar Vacante
             </a>
             <button class="btn bg-info text-info bg-opacity-10" style="font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">
                 <span class="material-symbols-outlined align-middle me-2" style="font-size: 20px;">download</span>Exportar Datos
-            </button>
+            </button> {% endcomment %}
             {% endif %}
             
         </div>

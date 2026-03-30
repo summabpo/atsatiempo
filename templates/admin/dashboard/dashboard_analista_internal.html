@@ -38,12 +38,7 @@ Inicio | Analista interno
 						¡Hola, <span class="text-info-emphasis">{{ request.session.user_login.primer_nombre }}</span>!
 					</h2>
 					<p class="mb-3 lh-lg small">
-						Nos alegra enormemente verte de nuevo. Sabemos que detrás de cada cifra hay personas que confían en el proceso:
-						candidatos que buscan una oportunidad y equipos que necesitan el talento adecuado. Tu dedicación hace posible ese encuentro;
-						gracias por seguir poniendo empeño, criterio y corazón en lo que haces.
-					</p>
-					<p class="mb-0 fw-medium small">
-						Que este día sea tan bueno como el impacto que generas.
+						Bienvenido a Talent Try. Aquí podrás gestionar tus vacantes y procesos de reclutamiento de forma ágil y precisa. Este es tu espacio para construir procesos de selección de alto impacto: cada dato que registres sobre el cliente y el cargo influye directamente en el match entre el talento, la cultura y los resultados.
 					</p>
 				</div>
 			</div>
@@ -134,8 +129,309 @@ Inicio | Analista interno
 </div>
 {% endblock dashboard_metric_cards %}
 
-{% block dashboard_chart_candidatos_dia %}{% endblock dashboard_chart_candidatos_dia %}
+{% block dashboard_chart_candidatos_dia %}
+<div class="row mb-4">
+	<div class="col-12">
+		<div class="card bg-white border-0 rounded-3 mb-4 shadow-sm">
+			<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center flex-wrap gap-2">
+				<h2 class="fs-18 fw-semibold mb-0 text-primary">
+					<span class="material-symbols-outlined align-middle me-2">monitoring</span>
+					Medición de vacantes (mismas métricas del resumen superior)
+				</h2>
+			</div>
+			<div class="card-body p-4">
+				<p class="text-muted small mb-3">Cantidad por categoría; los colores siguen el mismo criterio que las tarjetas de arriba.</p>
+				<div id="chartVacantesAnalistaInternal" style="min-height: 320px;"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row mb-4 g-4">
+	<div class="col-lg-5">
+		<div class="card bg-white border-0 rounded-3 shadow-sm h-100">
+			<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+				<h2 class="fs-18 fw-semibold mb-0 text-primary">
+					<span class="material-symbols-outlined align-middle me-2">donut_large</span>
+					Distribución (gráfica de dona)
+				</h2>
+			</div>
+			<div class="card-body p-4">
+				<p class="text-muted small mb-2">Proporción de cada métrica sobre el total sumado de las cuatro.</p>
+				<div id="chartDonutVacantesAnalista" style="min-height: 360px;"></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-7">
+		<div class="card bg-white border-0 rounded-3 shadow-sm h-100">
+			<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+				<h2 class="fs-18 fw-semibold mb-0 text-primary">
+					<span class="material-symbols-outlined align-middle me-2">speed</span>
+					Tacómetros (indicador radial)
+				</h2>
+			</div>
+			<div class="card-body p-4">
+				<p class="text-muted small mb-3">Cada arco llega al porcentaje respecto al <strong>máximo</strong> entre las cuatro cantidades; el número interior es la cantidad real.</p>
+				<div class="row g-2 justify-content-center text-center">
+					<div class="col-6 col-md-3">
+						<div id="gaugeVacAsignadas" class="analista-mini-gauge"></div>
+						<small class="text-muted d-block mt-n2 px-1 lh-sm">Asignadas</small>
+					</div>
+					<div class="col-6 col-md-3">
+						<div id="gaugeVacEntrevista" class="analista-mini-gauge"></div>
+						<small class="text-muted d-block mt-n2 px-1 lh-sm">Pend. entrevista</small>
+					</div>
+					<div class="col-6 col-md-3">
+						<div id="gaugeVacRespuesta" class="analista-mini-gauge"></div>
+						<small class="text-muted d-block mt-n2 px-1 lh-sm">Pend. respuesta</small>
+					</div>
+					<div class="col-6 col-md-3">
+						<div id="gaugeVacTerminadas" class="analista-mini-gauge"></div>
+						<small class="text-muted d-block mt-n2 px-1 lh-sm">Terminadas</small>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<style>
+	.analista-mini-gauge { min-height: 200px; margin: 0 auto; max-width: 200px; }
+</style>
+{% endblock dashboard_chart_candidatos_dia %}
 
 {% block dashboard_metricas_candidatos_inferior %}{% endblock dashboard_metricas_candidatos_inferior %}
 
-{% block js %}{% endblock %}
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	if (typeof ApexCharts === 'undefined') {
+		return;
+	}
+	var categorias = [
+		'Vacantes asignadas',
+		'Pendientes de entrevista',
+		'Pendientes respuesta cliente',
+		'Vacantes terminadas'
+	];
+	var valores = [
+		{{ vacantes_asignadas_analista|default:0 }},
+		{{ vacantes_pendientes_entrevista|default:0 }},
+		{{ vacantes_pendientes_respuesta_cliente|default:0 }},
+		{{ vacantes_terminadas|default:0 }}
+	];
+	var colores = ['#0d6efd', '#dc3545', '#ffc107', '#198754'];
+	var maxVal = Math.max.apply(null, valores.concat([0]));
+
+	function renderBarChart() {
+		var chartEl = document.querySelector('#chartVacantesAnalistaInternal');
+		if (!chartEl) {
+			return;
+		}
+		var options = {
+			series: [{
+				name: 'Vacantes',
+				data: valores
+			}],
+			chart: {
+				type: 'bar',
+				height: 320,
+				toolbar: { show: false },
+				zoom: { enabled: false },
+				fontFamily: 'inherit',
+				animations: { enabled: true }
+			},
+			plotOptions: {
+				bar: {
+					horizontal: true,
+					borderRadius: 6,
+					barHeight: '72%',
+					distributed: true,
+					dataLabels: { position: 'top' }
+				}
+			},
+			dataLabels: {
+				enabled: true,
+				offsetX: 32,
+				style: {
+					fontSize: '13px',
+					fontWeight: 600,
+					colors: ['#212529']
+				}
+			},
+			colors: colores,
+			legend: { show: false },
+			xaxis: {
+				categories: categorias,
+				labels: { style: { fontSize: '12px', colors: '#6c757d' } },
+				title: { text: 'Cantidad', style: { fontSize: '12px', color: '#6c757d' } }
+			},
+			yaxis: {
+				labels: {
+					style: { fontSize: '12px', colors: '#495057' },
+					maxWidth: 220
+				}
+			},
+			grid: {
+				borderColor: '#e9ecef',
+				strokeDashArray: 4,
+				xaxis: { lines: { show: true } },
+				yaxis: { lines: { show: false } }
+			},
+			tooltip: {
+				y: { formatter: function(val) { return val + ' vacante(s)'; } }
+			},
+			noData: {
+				text: 'No hay datos de vacantes para mostrar',
+				align: 'center',
+				verticalAlign: 'middle'
+			}
+		};
+		new ApexCharts(chartEl, options).render();
+	}
+
+	function renderDonutChart() {
+		var donutEl = document.querySelector('#chartDonutVacantesAnalista');
+		if (!donutEl) {
+			return;
+		}
+		var sum = valores.reduce(function(a, b) { return a + b; }, 0);
+		var series = valores;
+		var labels = categorias;
+		var donutColors = colores;
+		if (sum === 0) {
+			series = [1];
+			labels = ['Sin datos'];
+			donutColors = ['#dee2e6'];
+		}
+		var donutOptions = {
+			series: series,
+			chart: {
+				type: 'donut',
+				height: 360,
+				fontFamily: 'inherit',
+				toolbar: { show: false }
+			},
+			labels: labels,
+			colors: donutColors,
+			legend: {
+				position: 'bottom',
+				fontSize: '12px',
+				itemMargin: { horizontal: 8, vertical: 4 }
+			},
+			plotOptions: {
+				pie: {
+					donut: {
+						size: '68%',
+						labels: {
+							show: sum > 0,
+							name: { show: true, fontSize: '14px' },
+							value: {
+								show: true,
+								fontSize: '22px',
+								fontWeight: 600,
+								formatter: function (val) {
+									return String(val);
+								}
+							},
+							total: {
+								show: true,
+								showAlways: true,
+								label: 'Total',
+								fontSize: '12px',
+								formatter: function () {
+									return String(sum);
+								}
+							}
+						}
+					}
+				}
+			},
+			dataLabels: {
+				enabled: sum > 0,
+				style: { fontSize: '11px', fontWeight: 600 }
+			},
+			tooltip: {
+				enabled: sum > 0,
+				y: {
+					formatter: function (val) {
+						return val + ' vacante(s)';
+					}
+				}
+			},
+			stroke: { width: 2, colors: ['#fff'] }
+		};
+		new ApexCharts(donutEl, donutOptions).render();
+	}
+
+	function renderGaugeMini(elId, value, color) {
+		var el = document.querySelector(elId);
+		if (!el) {
+			return;
+		}
+		var pct = maxVal > 0 ? Math.round((100 * value) / maxVal) : 0;
+		var gaugeOpts = {
+			series: [pct],
+			colors: [color],
+			chart: {
+				type: 'radialBar',
+				height: 215,
+				fontFamily: 'inherit',
+				toolbar: { show: false },
+				animations: { enabled: true }
+			},
+			plotOptions: {
+				radialBar: {
+					startAngle: -120,
+					endAngle: 120,
+					hollow: {
+						size: '58%',
+						background: 'transparent'
+					},
+					track: {
+						background: '#e9ecef',
+						strokeWidth: '100%'
+					},
+					dataLabels: {
+						show: true,
+						name: {
+							show: true,
+							fontSize: '11px',
+							fontWeight: 600,
+							color: '#6c757d',
+							offsetY: 24,
+							formatter: function () {
+								return pct + '% del máx.';
+							}
+						},
+						value: {
+							show: true,
+							fontSize: '1.125rem',
+							fontWeight: 700,
+							offsetY: -6,
+							color: '#212529',
+							formatter: function () {
+								return String(value);
+							}
+						}
+					}
+				}
+			},
+			stroke: { lineCap: 'round' }
+		};
+		new ApexCharts(el, gaugeOpts).render();
+	}
+
+	function renderRadialGauges() {
+		renderGaugeMini('#gaugeVacAsignadas', valores[0], colores[0]);
+		renderGaugeMini('#gaugeVacEntrevista', valores[1], colores[1]);
+		renderGaugeMini('#gaugeVacRespuesta', valores[2], colores[2]);
+		renderGaugeMini('#gaugeVacTerminadas', valores[3], colores[3]);
+	}
+
+	setTimeout(function () {
+		renderBarChart();
+		renderDonutChart();
+		renderRadialGauges();
+	}, 100);
+});
+</script>
+{% endblock %}

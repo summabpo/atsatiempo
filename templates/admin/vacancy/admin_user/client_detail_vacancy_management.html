@@ -97,10 +97,9 @@ Vacantes Propias
                 <div class="card-body p-4">
                     <nav>
                         <div class="nav nav-tabs mb-4" id="nav-tab" role="tablist">
-                            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Información</button>
+                            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Perfil Vacante</button>
                             <button class="nav-link" id="nav-reclutado-tab" data-bs-toggle="tab" data-bs-target="#nav-reclutado" type="button" role="tab" aria-controls="nav-reclutado" aria-selected="false">Reclutados</button>
                             <button class="nav-link" id="nav-entrevista-tab" data-bs-toggle="tab" data-bs-target="#nav-entrevista" type="button" role="tab" aria-controls="nav-entrevista" aria-selected="false">Entrevista</button>
-                            <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Preguntas Vacante</button>
                             {% if request.session.grupo_id != 5  %}
                             <button class="nav-link" id="nav-analista-tab" data-bs-toggle="tab" data-bs-target="#nav-analista" type="button" role="tab" aria-controls="nav-analista" aria-selected="false">Analista Selección</button>
                             <button class="nav-link" id="nav-reclutador-tab" data-bs-toggle="tab" data-bs-target="#nav-reclutador" type="button" role="tab" aria-controls="nav-reclutador" aria-selected="false">Reclutador</button>
@@ -110,22 +109,49 @@ Vacantes Propias
                     <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
                             {% include 'admin/vacancy/partials/presentation_vacancy.html' %}
+
+                            <div class="card bg-white border-1 border-primary border-opacity-25 rounded-3 mb-4 shadow-sm mt-4">
+                                <div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+                                    <p class="text-primary my-2 fs-6 fw-semibold mb-0">
+                                        <i class="bi bi-question-circle me-1"></i>
+                                        Preguntas de la vacante
+                                    </p>
+                                </div>
+                                <div class="card-body p-4">
+                                    {% if preguntas %}
+                                        <ul class="list-unstyled mb-0 ps-0">
+                                            {% for pregunta in preguntas %}
+                                                <li class="d-flex align-items-start mb-3 pb-3 {% if not forloop.last %}border-bottom border-light{% endif %}">
+                                                    <span class="me-2 mt-1 flex-shrink-0">
+                                                        <i class="material-symbols-outlined text-primary">help</i>
+                                                    </span>
+                                                    <span class="text-secondary">{{ pregunta.pregunta }}</span>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <div class="alert alert-info mb-0 rounded-3">
+                                            No hay preguntas generadas para esta vacante.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
                         <div class="tab-pane fade" id="nav-reclutado" role="tabpanel" aria-labelledby="nav-reclutado-tab" tabindex="0">
                             <!-- Sub-tabs para estados dentro del tab Reclutados -->
                             <nav>
                                 <div class="nav nav-tabs mb-4" id="nav-estados-tab" role="tablist">
                                     <button class="nav-link active" id="nav-recibido-tab" data-bs-toggle="tab" data-bs-target="#nav-recibido" type="button" role="tab" aria-controls="nav-recibido" aria-selected="true">
-                                        Recibido <span class="badge bg-warning text-dark ms-2">{{ reclutados_recibido|length }}</span>
+                                        Aspirantes <span class="badge bg-warning text-dark ms-2">{{ reclutados_recibido|length }}</span>
                                     </button>
                                     <button class="nav-link" id="nav-seleccionado-tab" data-bs-toggle="tab" data-bs-target="#nav-seleccionado" type="button" role="tab" aria-controls="nav-seleccionado" aria-selected="false">
-                                        Seleccionado <span class="badge bg-success text-white ms-2">{{ reclutados_seleccionado|length }}</span>
+                                        Precalificados por CV <span class="badge bg-success text-white ms-2">{{ reclutados_seleccionado|length }}</span>
                                     </button>
                                     <button class="nav-link" id="nav-finalizalista-tab" data-bs-toggle="tab" data-bs-target="#nav-finalizalista" type="button" role="tab" aria-controls="nav-finalizalista" aria-selected="false">
-                                        Finalista <span class="badge bg-primary text-white ms-2">{{ reclutados_finalizalista|length }}</span>
+                                        Aprobados para Entrevista <span class="badge bg-primary text-white ms-2">{{ reclutados_finalizalista|length }}</span>
                                     </button>
                                     <button class="nav-link" id="nav-descartado-tab" data-bs-toggle="tab" data-bs-target="#nav-descartado" type="button" role="tab" aria-controls="nav-descartado" aria-selected="false">
-                                        Descartado <span class="badge bg-danger text-white ms-2">{{ reclutados_descartado|length }}</span>
+                                        No aprobados por CV <span class="badge bg-danger text-white ms-2">{{ reclutados_descartado|length }}</span>
                                     </button>
                                 </div>
                             </nav>
@@ -660,35 +686,6 @@ Vacantes Propias
                                             {% endfor %}
                                         </tbody>
                                     </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">
-                        
-                            <div class="mb-4">
-                                <div class="px-2 pt-2 pb-0">
-                                    <span class="fw-semibold text-secondary" style="font-size: 1.05rem;">
-                                        <i class="bi bi-question-circle me-1 text-primary"></i>
-                                        Preguntas generadas para la vacante
-                                    </span>
-                                </div>
-                                <div class="pt-2 px-2">
-                                    {% if preguntas %}
-                                        <ul class="ps-0 mb-0" style="list-style: none;">
-                                            {% for pregunta in preguntas %}
-                                                <li class="d-flex align-items-start mb-2">
-                                                    <span class="me-2 mt-1">
-                                                        <i class="material-symbols-outlined text-primary">help</i>
-                                                    </span>
-                                                    <span>{{ pregunta.pregunta }}</span>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% else %}
-                                        <div class="alert alert-info mb-0">
-                                            No hay preguntas generadas para esta vacante.
-                                        </div>
-                                    {% endif %}
                                 </div>
                             </div>
                         </div>

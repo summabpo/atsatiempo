@@ -695,15 +695,6 @@ Detalle Candidato - Reclutador
 
 		<!-- Columna lateral con formulario de cambio de estado -->
 		<div class="col-md-3">
-			<div class="card bg-white border-0 rounded-3 mb-4">
-				<div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
-					<p class="text-primary my-2 fs-5 fw-semibold">Cambiar Estado</p>
-				</div>
-				<div class="card-body p-4">
-					{% crispy form %}
-				</div>
-			</div>
-
 			<!-- Respuestas de aplicación (panel lateral) -->
 			<div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-header bg-primary bg-opacity-10 align-middle border-0">
@@ -782,6 +773,73 @@ Detalle Candidato - Reclutador
 				</div>
 			</div>
 			{% endif %}
+
+			{% if otras_aplicaciones_mismo_cliente %}
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+					<p class="text-primary my-2 fs-5 fw-semibold mb-1">
+						<i class="material-symbols-outlined align-middle me-1" style="vertical-align: middle;">work_history</i>
+						Otros procesos con la misma empresa
+					</p>
+					{% if cliente_asignado_otros_procesos %}
+					<p class="small text-muted mb-0 ps-1">
+						Cliente asignado: <strong>{{ cliente_asignado_otros_procesos.razon_social }}</strong>. Orden: del proceso más reciente al más antiguo.
+					</p>
+					{% endif %}
+				</div>
+				<div class="card-body p-4">
+					<p class="text-muted small mb-4">
+						Cada punto agrupa ID de aplicación, cargo, fecha de postulación, estado en la vacante y acceso al detalle.
+					</p>
+					{% for otra in otras_aplicaciones_mismo_cliente %}
+					<div class="position-relative ps-4 pb-4 mb-3">
+						<div class="position-absolute start-0 top-0 h-100" style="width: 2px; background-color: #dee2e6;"></div>
+						<div class="position-absolute start-0 top-0" style="width: 14px; height: 14px; background-color: #B10022; border-radius: 50%; transform: translateX(-6px); border: 2px solid #ffffff;"></div>
+						<p class="text-muted small mb-1">
+							<i class="material-symbols-outlined align-middle me-1" style="font-size: 16px; vertical-align: middle;">calendar_month</i>
+							{% if otra.fecha_aplicacion %}
+								Aplicó el {{ otra.fecha_aplicacion|date:"d/m/Y H:i" }}
+							{% else %}
+								Fecha de aplicación no registrada
+							{% endif %}
+						</p>
+						<p class="fw-semibold mb-1 text-dark">
+							{% if otra.vacante_id_052.cargo %}
+								{{ otra.vacante_id_052.cargo.nombre_cargo }}
+							{% else %}
+								{{ otra.vacante_id_052.titulo|default:"Vacante sin título" }}
+							{% endif %}
+						</p>
+						<p class="text-muted small mb-2">
+							<strong class="text-secondary">ID aplicación:</strong> {{ otra.id }}
+						</p>
+						<div class="mb-2">
+							<small class="text-muted d-block mb-1">Estado en la vacante</small>
+							{% with info_est=otra.obtener_estado_con_color %}
+								<span class="badge rounded-pill
+									{% if info_est.color == 'success' %}bg-success-subtle text-success-emphasis{% elif info_est.color == 'danger' %}bg-danger-subtle text-danger-emphasis{% elif info_est.color == 'warning' %}bg-warning-subtle text-warning-emphasis{% elif info_est.color == 'info' %}bg-info-subtle text-info-emphasis{% elif info_est.color == 'primary' %}bg-primary-subtle text-primary-emphasis{% else %}bg-secondary-subtle text-secondary-emphasis{% endif %}">
+									{{ otra.get_estado_aplicacion_display }}
+								</span>
+							{% endwith %}
+						</div>
+						<a href="{% url 'reclutados:reclutados_detalle_reclutador' otra.id %}" class="btn btn-sm bg-primary bg-opacity-10 text-primary">
+							<i class="material-symbols-outlined align-middle" style="font-size: 18px;">open_in_new</i>
+							Ver proceso
+						</a>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+			{% endif %}
+
+			<div class="card bg-white border-0 rounded-3 mb-4">
+				<div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
+					<p class="text-primary my-2 fs-5 fw-semibold">Cambiar Estado</p>
+				</div>
+				<div class="card-body p-4">
+					{% crispy form %}
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

@@ -109,10 +109,10 @@ class ActualizarEstadoReclutadoForm(forms.Form):
     estado_reclutamiento = forms.ChoiceField(
         label="Nuevo Estado",
         choices=[('', 'Seleccione una opción...')] + [
-            (1, 'Recibido'),
-            (2, 'Seleccionado'),
-            (3, 'Finalista'),
-            (4, 'Descartado'),
+            (1, 'Aspirantes'),
+            (2, 'precalificado por cv'),
+            (3, 'Aprobado para entrevista'),
+            (4, 'No aprobado por cv'),
         ],
         required=True,
         widget=forms.Select(attrs={'class': 'form-select select2'})

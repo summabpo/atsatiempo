@@ -557,14 +557,16 @@ def _line_starts_drop_descripcion_section(ls):
         return True
     if 'IDIOMAS' in u:
         return True
+    if 'ESTUDIOS' in u and 'COMPLEMENTAR' in u:
+        return True
     return False
 
 
 # Encabezados de sección que sí deben mostrarse en la descripción (fin de un bloque omitido).
+# Nota: "Estudios complementarios" no va aquí: se omiten en texto porque tienen tarjeta propia en la ficha.
 _DESCRIPCION_KEEP_MARKERS = (
     'OPORTUNIDAD LABORAL',
     'INFORMACIÓN DEL CARGO',
-    'ESTUDIOS COMPLEMENTARIOS',
     'COMPETENCIAS Y HABILIDADES',
     'FIT CULTURAL',
 )
@@ -579,7 +581,7 @@ def _line_starts_keep_descripcion_section(ls):
 def _drop_descripcion_secciones_duplicadas_ficha(text):
     """
     Quita bloques de la descripción que en la presentación ya tienen tarjeta propia
-    (funciones, experiencia, perfil académico, horarios, idiomas).
+    (funciones, experiencia, perfil académico, horarios, idiomas, estudios complementarios).
     """
     if not text or not isinstance(text, str):
         return text
@@ -612,12 +614,14 @@ def _omitir_seccion_descripcion_por_titulo(ct_up):
         return True
     if 'IDIOMAS' in ct_up:
         return True
+    if 'ESTUDIOS' in ct_up and 'COMPLEMENTAR' in ct_up:
+        return True
     return False
 
 
 @register.filter(name='strip_funciones_descripcion')
 def strip_funciones_descripcion(value):
-    """Elimina de la descripción bloques que se muestran en otras secciones de la ficha."""
+    """Elimina de la descripción bloques que se muestran en otras secciones de la ficha (incl. estudios complementarios)."""
     return _drop_descripcion_secciones_duplicadas_ficha(value or '')
 
 
@@ -646,7 +650,7 @@ def format_descripcion_vacante(value):
     if not text:
         return []
 
-    # Secciones conocidas. Varias se omiten en presentación (se muestran en otras tarjetas de la ficha).
+    # Secciones conocidas. Varias se omiten en presentación (se muestran en otras tarjetas de la ficha; p. ej. estudios complementarios).
     section_markers = [
         'OPORTUNIDAD LABORAL',
         'INFORMACIÓN DEL CARGO',
