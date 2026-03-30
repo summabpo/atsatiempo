@@ -110,7 +110,7 @@ class ActualizarEstadoReclutadoForm(forms.Form):
         label="Nuevo Estado",
         choices=[('', 'Seleccione una opción...')] + [
             (1, 'Aspirantes'),
-            (2, 'precalificado por cv'),
+            (2, 'Precalificado por cv'),
             (3, 'Aprobado para entrevista'),
             (4, 'No aprobado por cv'),
         ],
