@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+
 from django import forms
 from django.utils.html import format_html
 from crispy_forms.helper import FormHelper
@@ -6,6 +8,13 @@ from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import UsuarioBase
 from django.utils import timezone
 from datetime import datetime, time
+
+# Meridiano de referencia para fecha mínima y validación (Colombia)
+_BOGOTA_TZ = ZoneInfo('America/Bogota')
+
+
+def _fecha_actual_bogota():
+    return timezone.now().astimezone(_BOGOTA_TZ).date()
 
 
 class EntrevistaCrearForm(forms.Form):
@@ -67,6 +76,9 @@ class EntrevistaCrearForm(forms.Form):
         vacante = kwargs.pop('vacante', None)
         modal_id = kwargs.pop('modal_id', None)  # ID del modal para dropdown-parent
         super().__init__(*args, **kwargs)
+
+        # Fecha mínima = hoy en Bogotá (input type=date en navegador local)
+        self.fields['fecha_entrevista'].widget.attrs['min'] = _fecha_actual_bogota().isoformat()
 
         # Configuración de Crispy Forms
         self.helper = FormHelper()
@@ -159,11 +171,14 @@ class EntrevistaCrearForm(forms.Form):
         if isinstance(fecha_entrevista, str):
             fecha_entrevista = datetime.strptime(fecha_entrevista, "%Y-%m-%d").date()
 
-        # valida fecha
+        # valida fecha respecto al calendario de Bogotá (no fechas pasadas en ese meridiano)
         if fecha_entrevista:
-            fecha_actual = timezone.now().date()
-            if fecha_entrevista < fecha_actual:
-                self.add_error('fecha_entrevista', 'La fecha de la entrevista no puede ser anterior a la fecha actual.')
+            hoy_bogota = _fecha_actual_bogota()
+            if fecha_entrevista < hoy_bogota:
+                self.add_error(
+                    'fecha_entrevista',
+                    'La fecha de la entrevista no puede ser anterior al día actual (hora Colombia).',
+                )
 
         return cleaned_data
     

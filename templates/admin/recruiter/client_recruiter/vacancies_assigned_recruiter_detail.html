@@ -1,6 +1,7 @@
 {% extends 'admin/layout/dashboard_base.html' %} 
 
 {% load static %}
+{% load tz %}
 {% load crispy_forms_tags %}
 {% load humanize %}
 {% load custom_tags %}
@@ -12,6 +13,23 @@ Gestión de Vacante - Reclutador
 {% block content %}
 <!-- DataTables CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<style>
+    #tablefinalista .form-check-input.checkbox-finalista-vis {
+        width: 1.15rem;
+        height: 1.15rem;
+        border-width: 2px;
+        border-color: var(--bs-primary);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    #tablefinalista .form-check-input.checkbox-finalista-vis:checked {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+    #tablefinalista .th-seleccionar-todos {
+        min-width: 5.75rem;
+    }
+</style>
 
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
@@ -62,16 +80,16 @@ Gestión de Vacante - Reclutador
                             <nav>
                                 <div class="nav nav-tabs mb-4" id="nav-estados-tab" role="tablist">
                                     <button class="nav-link active" id="nav-recibido-tab" data-bs-toggle="tab" data-bs-target="#nav-recibido" type="button" role="tab" aria-controls="nav-recibido" aria-selected="true">
-                                        Recibido <span class="badge bg-warning text-dark ms-2">{{ reclutados_recibido|length }}</span>
+                                        Aspirantes <span class="badge bg-warning text-dark ms-2">{{ reclutados_recibido|length }}</span>
                                     </button>
                                     <button class="nav-link" id="nav-seleccionado-tab" data-bs-toggle="tab" data-bs-target="#nav-seleccionado" type="button" role="tab" aria-controls="nav-seleccionado" aria-selected="false">
-                                        Seleccionado <span class="badge bg-success text-white ms-2">{{ reclutados_seleccionado|length }}</span>
+                                        Precalificados por CV <span class="badge bg-success text-white ms-2">{{ reclutados_seleccionado|length }}</span>
                                     </button>
                                     <button class="nav-link" id="nav-finalizalista-tab" data-bs-toggle="tab" data-bs-target="#nav-finalizalista" type="button" role="tab" aria-controls="nav-finalizalista" aria-selected="false">
-                                        Finalista <span class="badge bg-primary text-white ms-2">{{ reclutados_finalizalista|length }}</span>
+                                        Aprobados para Entrevista <span class="badge bg-primary text-white ms-2">{{ reclutados_finalizalista|length }}</span>
                                     </button>
                                     <button class="nav-link" id="nav-descartado-tab" data-bs-toggle="tab" data-bs-target="#nav-descartado" type="button" role="tab" aria-controls="nav-descartado" aria-selected="false">
-                                        Descartado <span class="badge bg-danger text-white ms-2">{{ reclutados_descartado|length }}</span>
+                                        No aprobados por CV <span class="badge bg-danger text-white ms-2">{{ reclutados_descartado|length }}</span>
                                     </button>
                                 </div>
                             </nav>
@@ -98,8 +116,7 @@ Gestión de Vacante - Reclutador
                                                                     <th scope="col" class="text-center">Fecha Registro</th>
                                                                     <th scope="col" class="text-center">Edad</th>
                                                                     <th scope="col" class="text-center">Nivel de Estudio</th>
-                                                                    <th scope="col" class="text-center">Puntaje Match</th>
-                                                                    <th scope="col" class="text-center">Match Inicial</th>
+                                                                    <th scope="col" class="text-center">Match Perfil</th>
                                                                     <th scope="col" class="text-center">Acciones</th>
                                                                 </tr>
                                                             </thead>
@@ -135,23 +152,6 @@ Gestión de Vacante - Reclutador
                                                                                 {% endfor %}
                                                                             {% else %}
                                                                                 -
-                                                                            {% endif %}
-                                                                        {% endwith %}
-                                                                    </td>
-                                                                    <td class="text-center">
-                                                                        {% with porcentaje=e.json_match|get_match_porcentaje %}
-                                                                            {% if porcentaje %}
-                                                                                {% if porcentaje >= 80 %}
-                                                                                    <span class="badge bg-success text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                                {% elif porcentaje >= 60 %}
-                                                                                    <span class="badge bg-warning text-dark p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                                {% elif porcentaje >= 40 %}
-                                                                                    <span class="badge bg-info text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                                {% else %}
-                                                                                    <span class="badge bg-secondary text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                                {% endif %}
-                                                                            {% else %}
-                                                                                <span class="text-muted">-</span>
                                                                             {% endif %}
                                                                         {% endwith %}
                                                                     </td>
@@ -201,8 +201,7 @@ Gestión de Vacante - Reclutador
                                                         <th scope="col" class="text-center">Fecha Registro</th>
                                                         <th scope="col" class="text-center">Edad</th>
                                                         <th scope="col" class="text-center">Nivel de Estudio</th>
-                                                        <th scope="col" class="text-center">Puntaje Match</th>
-                                                        <th scope="col" class="text-center">Match Inicial</th>
+                                                        <th scope="col" class="text-center">Match Perfil</th>
                                                         <th scope="col" class="text-center">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -242,23 +241,6 @@ Gestión de Vacante - Reclutador
                                                             {% endwith %}
                                                         </td>
                                                         <td class="text-center">
-                                                            {% with porcentaje=e.json_match|get_match_porcentaje %}
-                                                                {% if porcentaje %}
-                                                                    {% if porcentaje >= 80 %}
-                                                                        <span class="badge bg-success text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% elif porcentaje >= 60 %}
-                                                                        <span class="badge bg-warning text-dark p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% elif porcentaje >= 40 %}
-                                                                        <span class="badge bg-info text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% else %}
-                                                                        <span class="badge bg-secondary text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% endif %}
-                                                                {% else %}
-                                                                    <span class="text-muted">-</span>
-                                                                {% endif %}
-                                                            {% endwith %}
-                                                        </td>
-                                                        <td class="text-center">
                                                             {% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}
                                                                 {% if porcentaje_inicial %}
                                                                     {% if porcentaje_inicial >= 80 %}
@@ -290,8 +272,8 @@ Gestión de Vacante - Reclutador
                                 
                                 <!-- Tab: finalista -->
                                 <div class="tab-pane fade" id="nav-finalizalista" role="tabpanel" aria-labelledby="nav-finalizalista-tab" tabindex="0">
-                                    <div class="mb-3 d-flex justify-content-start align-items-center">
-                                        <button type="button" id="btnAsignarEntrevistas" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 d-flex align-items-center justify-content-center" disabled>
+                                    <div class="mb-3 d-flex justify-content-center align-items-center">
+                                        <button type="button" id="btnAsignarEntrevistas" class="btn bg-success bg-opacity-10 fw-medium text-success py-2 px-4 d-flex align-items-center justify-content-center" disabled>
                                             <i class="material-symbols-outlined me-2">group_add</i>
                                             Asignar Entrevistas (<span id="contadorSeleccionados">0</span>)
                                         </button>
@@ -301,16 +283,18 @@ Gestión de Vacante - Reclutador
                                             <table class="table align-middle text-center" id="tablefinalista">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col" class="text-center" style="width: 40px;">
-                                                            <input type="checkbox" id="selectAllFinalistas" class="form-check-input">
+                                                        <th scope="col" class="text-center align-middle th-seleccionar-todos p-2">
+                                                            <div class="d-flex flex-column align-items-center justify-content-center gap-1">
+                                                                <span class="text-secondary fw-semibold lh-sm mb-0 user-select-none" style="font-size: 0.65rem;">Seleccionar<br>todos</span>
+                                                                <input type="checkbox" id="selectAllFinalistas" class="form-check-input checkbox-finalista-vis mt-0" title="Seleccionar todos" aria-label="Seleccionar todos los candidatos de la lista">
+                                                            </div>
                                                         </th>
                                                         <th scope="col" class="text-center">Imagen</th>
                                                         <th scope="col" class="text-center">Candidato</th>
                                                         <th scope="col" class="text-center">Fecha Registro</th>
                                                         <th scope="col" class="text-center">Edad</th>
                                                         <th scope="col" class="text-center">Nivel de Estudio</th>
-                                                        <th scope="col" class="text-center">Puntaje Match</th>
-                                                        <th scope="col" class="text-center">Match Inicial</th>
+                                                        <th scope="col" class="text-center">Match Perfil</th>
                                                         <th scope="col" class="text-center">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -318,7 +302,7 @@ Gestión de Vacante - Reclutador
                                                     {% for e in reclutados_finalizalista %}
                                                     <tr>
                                                         <td class="text-center">
-                                                            <input type="checkbox" class="form-check-input checkbox-finalista" data-id="{{ e.id }}" data-nombre="{{ e.candidato_nombre }}" data-email="{{ e.candidato_email }}" data-imagen="{% if e.candidato_101.imagen_perfil %}{{ e.candidato_101.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}">
+                                                            <input type="checkbox" class="form-check-input checkbox-finalista checkbox-finalista-vis" data-id="{{ e.id }}" data-nombre="{{ e.candidato_nombre }}" data-email="{{ e.candidato_email }}" data-imagen="{% if e.candidato_101.imagen_perfil %}{{ e.candidato_101.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}">
                                                         </td>
                                                         <td class="text-center">
                                                             {% if e.candidato_101.imagen_perfil %}
@@ -349,23 +333,6 @@ Gestión de Vacante - Reclutador
                                                                     {% endfor %}
                                                                 {% else %}
                                                                     -
-                                                                {% endif %}
-                                                            {% endwith %}
-                                                        </td>
-                                                        <td class="text-center">
-                                                            {% with porcentaje=e.json_match|get_match_porcentaje %}
-                                                                {% if porcentaje %}
-                                                                    {% if porcentaje >= 80 %}
-                                                                        <span class="badge bg-success text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% elif porcentaje >= 60 %}
-                                                                        <span class="badge bg-warning text-dark p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% elif porcentaje >= 40 %}
-                                                                        <span class="badge bg-info text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% else %}
-                                                                        <span class="badge bg-secondary text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% endif %}
-                                                                {% else %}
-                                                                    <span class="text-muted">-</span>
                                                                 {% endif %}
                                                             {% endwith %}
                                                         </td>
@@ -411,8 +378,7 @@ Gestión de Vacante - Reclutador
                                                         <th scope="col" class="text-center">Fecha Registro</th>
                                                         <th scope="col" class="text-center">Edad</th>
                                                         <th scope="col" class="text-center">Nivel de Estudio</th>
-                                                        <th scope="col" class="text-center">Puntaje Match</th>
-                                                        <th scope="col" class="text-center">Match Inicial</th>
+                                                        <th scope="col" class="text-center">Match Perfil</th>
                                                         <th scope="col" class="text-center">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -448,23 +414,6 @@ Gestión de Vacante - Reclutador
                                                                     {% endfor %}
                                                                 {% else %}
                                                                     -
-                                                                {% endif %}
-                                                            {% endwith %}
-                                                        </td>
-                                                        <td class="text-center">
-                                                            {% with porcentaje=e.json_match|get_match_porcentaje %}
-                                                                {% if porcentaje %}
-                                                                    {% if porcentaje >= 80 %}
-                                                                        <span class="badge bg-success text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% elif porcentaje >= 60 %}
-                                                                        <span class="badge bg-warning text-dark p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% elif porcentaje >= 40 %}
-                                                                        <span class="badge bg-info text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% else %}
-                                                                        <span class="badge bg-secondary text-white p-2">{{ porcentaje|floatformat:1 }}%</span>
-                                                                    {% endif %}
-                                                                {% else %}
-                                                                    <span class="text-muted">-</span>
                                                                 {% endif %}
                                                             {% endwith %}
                                                         </td>
@@ -688,26 +637,26 @@ $(document).ready(function() {
                 // Configuración específica según la tabla
                 var config = $.extend({}, dataTableConfig);
                 
-                // tablefinalista tiene una columna adicional de checkbox (9 columnas)
+                // tablefinalista: checkbox + 7 columnas (8 en total)
                 if (tableId === 'tablefinalista') {
                     config.columnDefs = [
                         {
-                            "targets": [0, 1, 8], // Columna de Checkbox (0), Imagen (1) y Acciones (8)
+                            "targets": [0, 1, 7], // Checkbox (0), Imagen (1) y Acciones (7)
                             "orderable": false,
                             "searchable": false
                         }
                     ];
-                    config.order = [[3, "asc"]]; // Ordenar por Fecha Registro (columna 3) ascendente
+                    config.order = [[3, "asc"]]; // Fecha Registro (columna 3)
                 } else {
-                    // Para las demás tablas (8 columnas: Imagen, Candidato, Fecha, Edad, Nivel, Match, Match Inicial, Acciones)
+                    // 7 columnas: Imagen, Candidato, Fecha, Edad, Nivel, Match Perfil, Acciones
                     config.columnDefs = [
                         {
-                            "targets": [0, 7], // Columna de Imagen (0) y Acciones (7)
+                            "targets": [0, 6], // Imagen (0) y Acciones (6)
                             "orderable": false,
                             "searchable": false
                         }
                     ];
-                    config.order = [[2, "asc"]]; // Ordenar por Fecha Registro (columna 2) ascendente
+                    config.order = [[2, "asc"]]; // Fecha Registro (columna 2)
                 }
                 
                 var table = tableElement.DataTable(config);

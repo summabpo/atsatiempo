@@ -11,6 +11,7 @@ from applications.usuarios.views.commons.dashboard_panels import (
     get_panel_tipo_estudio,
     get_panel_profesion_estudio,
     get_panel_metricas_analista_interno,
+    get_panel_metricas_reclutador,
 )
 
 # consultas
@@ -94,3 +95,14 @@ def dashboard_analista_internal(request):
     context = {}
     context.update(get_panel_metricas_analista_interno(request.user.id))
     return render(request, 'admin/dashboard/dashboard_analista_internal.html', context)
+
+
+@login_required
+@validar_permisos('acceso_reclutador')
+def dashboard_reclutador(request):
+    """Dashboard reclutador: vacantes asignadas y conteos por estado de reclutamiento y de aplicación."""
+    context = {}
+    context.update(get_panel_metricas_reclutador(request.user.id))
+    return render(request, 'admin/dashboard/dashboard_reclutador.html', context)
+
+

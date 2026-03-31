@@ -1,0 +1,212 @@
+{% extends 'admin/layout/dashboard_base.html' %}
+
+{% load static %}
+
+{% block title %}
+Inicio | Reclutador
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+		<div class="flex-grow-1 min-w-0">
+			<h3 class="mb-0 fs-18 fw-semibold text-dark">Panel de reclutador</h3>
+			<p class="text-muted mb-0 small mt-1">Resumen de vacantes asignadas y candidatos por etapa</p>
+		</div>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio_reclutador' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover">Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Reclutador</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<div class="row mb-4">
+		<div class="col-12">
+			<div class="alert alert-primary mb-0 rounded-3 py-4 px-4 px-md-5 border-0 bg-primary bg-opacity-10" role="alert">
+				<div class="d-flex align-items-start">
+					<i class="ri-user-search-line me-2 flex-shrink-0 text-primary" style="font-size: 1.25rem; line-height: 1.4;"></i>
+					<div class="flex-grow-1 min-w-0">
+						<p class="text-uppercase small fw-semibold mb-2 text-primary" style="letter-spacing: 0.06em;">Resumen</p>
+						<h2 class="alert-heading h5 fw-semibold mb-2 text-dark">
+							¡Hola, <span class="text-primary">{{ request.session.user_login.primer_nombre }}</span>!
+						</h2>
+						<p class="mb-0 lh-lg small text-secondary">
+							Aquí ves las vacantes que te asignaron y el total de postulaciones, desglosadas por etapa de reclutamiento (aspirantes, precalificación, entrevista, descarte) y por selección en el proceso del cliente.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Fila 1: resumen global -->
+	<div class="row mb-3 g-3">
+		<div class="col-md-4">
+			<div class="card border-0 rounded-3 bg-white shadow-sm h-100">
+				<div class="card-body p-4 d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center flex-grow-1 min-w-0">
+						<div class="flex-shrink-0 me-3">
+							<div class="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+								<span class="material-symbols-outlined text-primary" style="font-size: 32px;">work</span>
+							</div>
+						</div>
+						<div class="min-w-0">
+							<h4 class="fw-semibold mb-0 text-primary fs-20">{{ vacantes_asignadas_reclutador|default:0 }}</h4>
+							<small class="text-muted d-block text-nowrap">Vacantes asignadas</small>
+						</div>
+					</div>
+					<a href="{% url 'reclutados:vacantes_asignadas_reclutador' %}" class="btn btn-sm bg-primary bg-opacity-10 text-primary flex-shrink-0 ms-2" title="Ver vacantes">
+						<span class="material-symbols-outlined fs-18">arrow_forward</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card border-0 rounded-3 bg-white shadow-sm h-100 border-start border-info border-4">
+				<div class="card-body p-4 d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center flex-grow-1 min-w-0">
+						<div class="flex-shrink-0 me-3">
+							<div class="rounded-3 bg-info bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+								<span class="material-symbols-outlined text-info" style="font-size: 32px;">groups</span>
+							</div>
+						</div>
+						<div class="min-w-0">
+							<h4 class="fw-semibold mb-0 text-info fs-20">{{ total_aplicaciones_reclutador|default:0 }}</h4>
+							<small class="text-muted d-block text-nowrap">Total postulaciones</small>
+						</div>
+					</div>
+					<a href="{% url 'reclutados:vacantes_asignadas_reclutador' %}" class="btn btn-sm bg-info bg-opacity-10 text-info flex-shrink-0 ms-2" title="Gestionar vacantes">
+						<span class="material-symbols-outlined fs-18">arrow_forward</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card border-0 rounded-3 bg-white shadow-sm h-100 border-start border-success border-4">
+				<div class="card-body p-4 d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center flex-grow-1 min-w-0">
+						<div class="flex-shrink-0 me-3">
+							<div class="rounded-3 bg-success bg-opacity-25 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+								<span class="material-symbols-outlined text-success" style="font-size: 32px;">emoji_events</span>
+							</div>
+						</div>
+						<div class="min-w-0">
+							<h4 class="fw-semibold mb-0 text-success fs-20">{{ seleccionados_pipeline_reclutador|default:0 }}</h4>
+							<small class="text-muted d-block">Seleccionados (proceso cliente)</small>
+						</div>
+					</div>
+					<a href="{% url 'reclutados:vacantes_asignadas_reclutador' %}" class="btn btn-sm bg-success bg-opacity-10 text-success flex-shrink-0 ms-2" title="Ver vacantes">
+						<span class="material-symbols-outlined fs-18">arrow_forward</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Fila 2: etapas de reclutamiento (1–4) -->
+	<div class="row mb-4 g-3">
+		<div class="col-md-6 col-xl-3">
+			<div class="card border-0 rounded-3 bg-white shadow-sm h-100 border-start border-warning border-4">
+				<div class="card-body p-4 d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center flex-grow-1 min-w-0">
+						<div class="flex-shrink-0 me-3">
+							<div class="rounded-3 bg-warning bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+								<span class="material-symbols-outlined text-warning-emphasis" style="font-size: 32px;">person_search</span>
+							</div>
+						</div>
+						<div class="min-w-0">
+							<h4 class="fw-semibold mb-0 text-warning-emphasis fs-20">{{ aspirantes_reclutador|default:0 }}</h4>
+							<small class="text-muted d-block">Aspirantes</small>
+						</div>
+					</div>
+					<a href="{% url 'reclutados:vacantes_asignadas_reclutador' %}" class="btn btn-sm bg-warning bg-opacity-10 text-warning-emphasis flex-shrink-0 ms-2" title="Ver listados">
+						<span class="material-symbols-outlined fs-18">arrow_forward</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6 col-xl-3">
+			<div class="card border-0 rounded-3 bg-white shadow-sm h-100 border-start border-success border-4">
+				<div class="card-body p-4 d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center flex-grow-1 min-w-0">
+						<div class="flex-shrink-0 me-3">
+							<div class="rounded-3 bg-success bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+								<span class="material-symbols-outlined text-success" style="font-size: 32px;">fact_check</span>
+							</div>
+						</div>
+						<div class="min-w-0">
+							<h4 class="fw-semibold mb-0 text-success fs-20">{{ precalificados_reclutador|default:0 }}</h4>
+							<small class="text-muted d-block">Precalificados (por CV)</small>
+						</div>
+					</div>
+					<a href="{% url 'reclutados:vacantes_asignadas_reclutador' %}" class="btn btn-sm bg-success bg-opacity-10 text-success flex-shrink-0 ms-2" title="Ver listados">
+						<span class="material-symbols-outlined fs-18">arrow_forward</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6 col-xl-3">
+			<div class="card border-0 rounded-3 bg-white shadow-sm h-100 border-start border-primary border-4">
+				<div class="card-body p-4 d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center flex-grow-1 min-w-0">
+						<div class="flex-shrink-0 me-3">
+							<div class="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+								<span class="material-symbols-outlined text-primary" style="font-size: 32px;">event_available</span>
+							</div>
+						</div>
+						<div class="min-w-0">
+							<h4 class="fw-semibold mb-0 text-primary fs-20">{{ aprobados_entrevista_reclutador|default:0 }}</h4>
+							<small class="text-muted d-block">Aprobados para entrevista</small>
+						</div>
+					</div>
+					<a href="{% url 'reclutados:vacantes_asignadas_reclutador' %}" class="btn btn-sm bg-primary bg-opacity-10 text-primary flex-shrink-0 ms-2" title="Ver listados">
+						<span class="material-symbols-outlined fs-18">arrow_forward</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6 col-xl-3">
+			<div class="card border-0 rounded-3 bg-white shadow-sm h-100 border-start border-danger border-4">
+				<div class="card-body p-4 d-flex align-items-center justify-content-between">
+					<div class="d-flex align-items-center flex-grow-1 min-w-0">
+						<div class="flex-shrink-0 me-3">
+							<div class="rounded-3 bg-danger bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+								<span class="material-symbols-outlined text-danger" style="font-size: 32px;">person_off</span>
+							</div>
+						</div>
+						<div class="min-w-0">
+							<h4 class="fw-semibold mb-0 text-danger fs-20">{{ descartados_reclutador|default:0 }}</h4>
+							<small class="text-muted d-block">No aprobados por CV</small>
+						</div>
+					</div>
+					<a href="{% url 'reclutados:vacantes_asignadas_reclutador' %}" class="btn btn-sm bg-danger bg-opacity-10 text-danger flex-shrink-0 ms-2" title="Ver listados">
+						<span class="material-symbols-outlined fs-18">arrow_forward</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row mb-4">
+		<div class="col-12">
+			<div class="card border-0 rounded-3 bg-light">
+				<div class="card-body p-4">
+					<div class="small text-secondary mb-0">
+						<strong class="text-dark d-block mb-1">Criterios</strong>
+						Las tarjetas de etapa usan <strong>estado de reclutamiento</strong>: <strong>1</strong> = aspirantes, <strong>2</strong> = precalificados (CV), <strong>3</strong> = aprobados para entrevista, <strong>4</strong> = descartados.
+						“Seleccionados (proceso cliente)” usa el <strong>estado de aplicación</strong> de la vacante (Seleccionado o Seleccionado por cliente).
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

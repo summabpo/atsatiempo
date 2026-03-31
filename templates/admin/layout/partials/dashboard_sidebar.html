@@ -2,7 +2,7 @@
 {% load static %}
 <div class="sidebar-area " id="sidebar-area">
 	<div class="logo position-relative">
-        <a href="{% url 'accesses:inicio' %}" class="d-block text-decoration-none position-relative">
+        <a href="{% if request.session.grupo_id == 7 %}{% url 'accesses:inicio_reclutador' %}{% else %}{% url 'accesses:inicio' %}{% endif %}" class="d-block text-decoration-none position-relative">
             <img src="{% static 'admin/images/logo-icon.png' %}" alt="logo-icon" />
             <span class="logo-text fw-bold text-dark">TALENT TRAY</span>
         </a>
@@ -21,12 +21,14 @@
             {% if request.resolver_match.url_name == 'inicio_candidato' %}open{% endif %}
             {% if request.resolver_match.url_name == 'inicio_administrador' %}open{% endif %}
             {% if request.resolver_match.url_name == 'inicio_analista_internal' %}open{% endif %}
+            {% if request.resolver_match.url_name == 'inicio_reclutador' %}open{% endif %}
             ">
             <a href="javascript:void(0);" class="menu-link menu-toggle 
             {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}
             {% if request.resolver_match.url_name == 'inicio_candidato' %}active{% endif %}
             {% if request.resolver_match.url_name == 'inicio_administrador' %}active{% endif %}
             {% if request.resolver_match.url_name == 'inicio_analista_internal' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'inicio_reclutador' %}active{% endif %}
             ">
                 <span class="material-symbols-outlined menu-icon">Dashboard</span>
                 <span class="title">Dashboard</span>
@@ -34,11 +36,12 @@
             </a>
             <ul class="menu-sub">
                 <li class="menu-item">
-                    <a href="{% if request.session.grupo_id == 5 %}{% url 'accesses:inicio_analista_internal' %}{% else %}{% url 'accesses:inicio' %}{% endif %}" class="menu-link 
+                    <a href="{% if request.session.grupo_id == 5 %}{% url 'accesses:inicio_analista_internal' %}{% elif request.session.grupo_id == 7 %}{% url 'accesses:inicio_reclutador' %}{% else %}{% url 'accesses:inicio' %}{% endif %}" class="menu-link 
                     {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}
                     {% if request.resolver_match.url_name == 'inicio_candidato' %}active{% endif %}
                     {% if request.resolver_match.url_name == 'inicio_administrador' %}active{% endif %}
                     {% if request.resolver_match.url_name == 'inicio_analista_internal' %}active{% endif %}
+                    {% if request.resolver_match.url_name == 'inicio_reclutador' %}active{% endif %}
                     ">
                         Inicio
                     </a>

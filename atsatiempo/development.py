@@ -21,6 +21,10 @@ DATABASES = {
         'PASSWORD':  os.getenv('DB_PASSWORD'),  
         'HOST':  os.getenv('DB_HOST'),
         'PORT':  os.getenv('DB_PORT'),
+        # Coherente con USE_TZ=True: Django guarda UTC; la sesión PG en UTC evita desfaces al interpretar timestamptz
+        'OPTIONS': {
+            'options': '-c timezone=UTC',
+        },
     },
 }
 
