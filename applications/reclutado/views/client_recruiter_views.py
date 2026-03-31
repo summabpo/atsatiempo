@@ -4,6 +4,10 @@ from django.db.models import F, Count, Q, Value, Case, When, CharField
 from django.contrib import messages
 from django.utils import timezone
 from datetime import date, timedelta
+from zoneinfo import ZoneInfo
+
+# Hora civil Colombia para registros en JSON (evita guardar ISO solo en UTC y confundir al leer en BD/UI)
+_BOGOTA_TZ = ZoneInfo('America/Bogota')
 from applications.common.models import Cat001Estado
 from applications.usuarios.decorators  import validar_permisos
 from applications.candidato.models import Can103Educacion
@@ -393,7 +397,9 @@ def detail_recruited(request, pk):
             
             # Crear el registro del cambio de estado según el formato especificado
             nuevo_registro = {
-                "fecha_hora_actualizacion": timezone.now().isoformat(),
+                "fecha_hora_actualizacion": timezone.now()
+                .astimezone(_BOGOTA_TZ)
+                .isoformat(),
                 "id_usuario_registro": request.user.id,
                 "comentario": comentario,
                 "estado_anterior": {

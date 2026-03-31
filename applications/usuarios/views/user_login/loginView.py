@@ -293,10 +293,8 @@ def dashboard_begin(request):
         analista_seleccion_pendiente = None
 
     if session_variables['grupo_id'] == 7:
-        cliente_id = request.session.get('cliente_id')
         print('Sesion Reclutador')
-    else:
-        reclutador_pendiente = None
+        return redirect('accesses:inicio_reclutador')
 
     # Si quieres pasar las variables de sesión al template
     context = {

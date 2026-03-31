@@ -4,7 +4,7 @@ from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset, Div, HTML
 from applications.reclutado.models import Cli056AplicacionVacante
 from applications.candidato.models import Can101Candidato
 from applications.usuarios.models import UsuarioBase
-from applications.services.choices import NIVEL_ESTUDIO_CHOICES_STATIC
+from applications.services.choices import NIVEL_ESTUDIO_CHOICES_STATIC, ESTADO_RECLUTADO_CHOICES_STATIC
 from django.utils import timezone
 from datetime import datetime, time
 
@@ -108,12 +108,7 @@ class ReclutadoCrearForm(forms.Form):
 class ActualizarEstadoReclutadoForm(forms.Form):
     estado_reclutamiento = forms.ChoiceField(
         label="Nuevo Estado",
-        choices=[('', 'Seleccione una opción...')] + [
-            (1, 'Aspirantes'),
-            (2, 'Precalificado por cv'),
-            (3, 'Aprobado para entrevista'),
-            (4, 'No aprobado por cv'),
-        ],
+        choices=ESTADO_RECLUTADO_CHOICES_STATIC,
         required=True,
         widget=forms.Select(attrs={'class': 'form-select select2'})
     )

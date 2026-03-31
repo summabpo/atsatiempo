@@ -235,3 +235,48 @@ def get_panel_metricas_analista_interno(user_id):
         'vacantes_pendientes_respuesta_cliente': vacantes_pendientes_respuesta_cliente,
         'vacantes_terminadas': vacantes_terminadas,
     }
+
+
+def get_panel_metricas_reclutador(user_id):
+    """
+    Métricas del dashboard reclutador (vacantes con asignacion_reclutador = usuario).
+    - vacantes_asignadas_reclutador: vacantes activas asignadas al reclutador
+    - total_aplicaciones_reclutador: total de aplicaciones en esas vacantes
+    - aspirantes_reclutador: estado_reclutamiento = 1 (aspirantes / recibidos)
+    - precalificados_reclutador: estado_reclutamiento = 2 (precalificados por CV)
+    - aprobados_entrevista_reclutador: estado_reclutamiento = 3 (aprobados para entrevista)
+    - descartados_reclutador: estado_reclutamiento = 4
+    - seleccionados_pipeline_reclutador: estado_aplicacion en 8 o 13 (seleccionado en el proceso)
+    """
+    from applications.vacante.models import Cli052Vacante
+    from applications.reclutado.models import Cli056AplicacionVacante
+
+    vacantes_qs = Cli052Vacante.objects.filter(
+        asignacion_reclutador_id=user_id,
+        estado_id_001=1,
+    )
+    vacantes_asignadas_reclutador = vacantes_qs.count()
+    vac_ids = list(vacantes_qs.values_list('id', flat=True))
+
+    if not vac_ids:
+        return {
+            'vacantes_asignadas_reclutador': 0,
+            'total_aplicaciones_reclutador': 0,
+            'aspirantes_reclutador': 0,
+            'precalificados_reclutador': 0,
+            'aprobados_entrevista_reclutador': 0,
+            'descartados_reclutador': 0,
+            'seleccionados_pipeline_reclutador': 0,
+        }
+
+    base = Cli056AplicacionVacante.objects.filter(vacante_id_052_id__in=vac_ids)
+    
+    return {
+        'vacantes_asignadas_reclutador': vacantes_asignadas_reclutador,
+        'total_aplicaciones_reclutador': base.count(),
+        'aspirantes_reclutador': base.filter(estado_reclutamiento=1).count(),
+        'precalificados_reclutador': base.filter(estado_reclutamiento=2).count(),
+        'aprobados_entrevista_reclutador': base.filter(estado_reclutamiento=3).count(),
+        'descartados_reclutador': base.filter(estado_reclutamiento=4).count(),
+        'seleccionados_pipeline_reclutador': base.filter(estado_aplicacion__in=[8, 13]).count(),
+    }

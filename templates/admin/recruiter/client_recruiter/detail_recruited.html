@@ -197,13 +197,13 @@ Detalle Candidato - Reclutador
 										<div class="flex-grow-1 ms-3">
 											<h4 class="fs-14 fw-semibold mb-1">Estado Actual</h4>
 											{% if reclutado.estado_reclutamiento == 1 %}
-												<span class="badge bg-warning text-dark py-1 px-2 rounded-1 fw-medium fs-12">Aspirante</span>
+												<span class="badge bg-warning text-dark py-1 px-2 rounded-1 fw-medium fs-12">Aspirantes</span>
 											{% elif reclutado.estado_reclutamiento == 2 %}
-												<span class="badge bg-success text-white py-1 px-2 rounded-1 fw-medium fs-12">Seleccionado</span>
+												<span class="badge bg-success text-white py-1 px-2 rounded-1 fw-medium fs-12">Precalificados por CV</span>
 											{% elif reclutado.estado_reclutamiento == 3 %}
-												<span class="badge bg-primary text-white py-1 px-2 rounded-1 fw-medium fs-12">Finalista</span>
+												<span class="badge bg-primary text-white py-1 px-2 rounded-1 fw-medium fs-12">Aprobados para Entrevista</span>
 											{% elif reclutado.estado_reclutamiento == 4 %}
-												<span class="badge bg-danger text-white py-1 px-2 rounded-1 fw-medium fs-12">Descartado</span>
+												<span class="badge bg-danger text-white py-1 px-2 rounded-1 fw-medium fs-12">No aprobados por CV</span>
 											{% endif %}
 										</div>
 									</div>

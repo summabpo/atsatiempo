@@ -219,15 +219,15 @@ ESTADO_APLICACION_COLOR_STATIC = {
 }
 
 ESTADO_RECLUTADO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
-    (1, 'Recibido'),
-    (2, 'Seleccionado'),
-    (3, 'Finalizalista'),
-    (4, 'Descartado'),
+    (1, 'Aspirantes'),
+    (2, 'Precalificados por CV'),
+    (3, 'Aprobados para Entrevista'),
+    (4, 'No aprobados por CV'),
 ]
 
 ESTADO_RECLUTADO_COLOR_STATIC = {
-    1: ('Recibido', 'warning'),
-    2: ('Seleccionado', 'success'),
-    3: ('Finalizalista', 'primary'),
-    4: ('Descartado', 'danger'),
+    1: ('Aspirantes', 'warning'),
+    2: ('Precalificados por CV', 'success'),
+    3: ('Aprobados para Entrevista', 'primary'),
+    4: ('No aprobados por CV', 'danger'),
 }

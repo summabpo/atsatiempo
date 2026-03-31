@@ -42,6 +42,10 @@ urlpatterns = [
 
     #analista_internal_user
     path('analista_internal/inicio', dashboardView.dashboard_analista_internal, name='inicio_analista_internal'),
+
+    #reclutador
+    path('reclutador/inicio', dashboardView.dashboard_reclutador, name='inicio_reclutador'),
+
     
     
     #administrador
