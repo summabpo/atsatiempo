@@ -747,9 +747,13 @@ Detalle Candidato - Reclutador
 							<div class="position-absolute start-0 top-0 h-100" style="width: 2px; background-color: #dee2e6;"></div>
 							<div class="position-absolute start-0 top-0" style="width: 12px; height: 12px; background-color: #B10022; border-radius: 50%; transform: translateX(-5px); border: 2px solid #ffffff;"></div>
 							<div class="small text-muted mb-1">
-								{% if registro.fecha_hora_actualizacion %}
+								{% if registro.fecha_actualizacion and registro.hora_actualizacion %}
+									{{ registro.fecha_actualizacion }} · {{ registro.hora_actualizacion }}
+								{% elif registro.fecha_hora_actualizacion %}
 									{% if "T" in registro.fecha_hora_actualizacion %}
-										{{ registro.fecha_hora_actualizacion|slice:":10"|date:"d/m/Y" }} {{ registro.fecha_hora_actualizacion|slice:"11:16" }}
+										{% with s=registro.fecha_hora_actualizacion %}
+											{{ s|slice:"8:10" }}/{{ s|slice:"5:7" }}/{{ s|slice:":4" }} · {{ s|slice:"11:16" }}
+										{% endwith %}
 									{% else %}
 										{{ registro.fecha_hora_actualizacion }}
 									{% endif %}

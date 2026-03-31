@@ -25,6 +25,7 @@ from applications.vacante.forms.VacanteForms import VacancyFormAll
 
 #query
 from applications.services.service_vacanty import  query_vacanty_detail
+from applications.services.service_client import query_client_detail
 from applications.services.service_recruited import consultar_historial_aplicacion_vacante, query_recruited_vacancy_id
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 from applications.reclutado.views.admin_views import _procesar_datos_reporte_final
@@ -459,12 +460,23 @@ def detail_recruited(request, pk):
             # Si hay error al procesar el reporte, dejar datos_reporte_final como None
             datos_reporte_final = None
 
+    # Mismo contexto que gestión de vacante (presentation_vacancy.html): data cliente + no vista candidato
+    data = query_client_detail(cliente.id)
+    if not data:
+        data = {
+            'cliente': {
+                'razon_social': getattr(cliente, 'razon_social', '') or '',
+            }
+        }
+
     context ={
         'form': form,
         'form_respuesta_cliente': form_respuesta_cliente,
         'tiene_respuesta_cliente': tiene_respuesta_cliente,
         'respuesta_cliente_data': respuesta_cliente_data,
         'vacante': vacante,
+        'data': data,
+        'is_candidato': False,
         'reclutados': reclutados,
         'candidato': info_candidato,
         'reclutado': asignacion_vacante,

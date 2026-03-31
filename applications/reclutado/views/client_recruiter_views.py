@@ -396,10 +396,11 @@ def detail_recruited(request, pk):
             estado_nuevo_nombre = dict(ESTADO_RECLUTADO_CHOICES_STATIC).get(nuevo_estado, 'Desconocido')
             
             # Crear el registro del cambio de estado según el formato especificado
+            ahora_bogota = timezone.now().astimezone(_BOGOTA_TZ)
             nuevo_registro = {
-                "fecha_hora_actualizacion": timezone.now()
-                .astimezone(_BOGOTA_TZ)
-                .isoformat(),
+                "fecha_actualizacion": ahora_bogota.strftime("%d/%m/%Y"),
+                "hora_actualizacion": ahora_bogota.strftime("%H:%M"),
+                "fecha_hora_actualizacion": ahora_bogota.isoformat(),
                 "id_usuario_registro": request.user.id,
                 "comentario": comentario,
                 "estado_anterior": {
