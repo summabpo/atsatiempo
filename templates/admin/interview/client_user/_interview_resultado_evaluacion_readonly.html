@@ -1,0 +1,198 @@
+{# Resultados de evaluación + modales de documentos (solo lectura) #}
+                                    {# Resultados de Evaluación #}
+                                    <div class="card border-0 mb-4">
+                                        <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                                            <h5 class="card-title mb-0 text-primary">
+                                                <i class="ri-file-list-3-line me-2"></i>Resultados de Evaluación
+                                            </h5>
+                                        </div>
+                                        <div class="card-body bg-white">
+                                            {% if resultado_data.habilidades %}
+                                            <div class="mb-4 pb-4 border-bottom">
+                                                <h6 class="fw-bold mb-3 text-primary">1. MATCH 360 PREDICTIVO DEL TALENTO (CONCEPTO DE LAS HABILIDADES)</h6>
+                                                <ul class="ps-0 mb-0 list-unstyled">
+                                                    {% for skill_id, data in resultado_data.habilidades.items %}
+                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                                        <div class="d-flex align-items-start flex-grow-1">
+                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">psychology</span>
+                                                            <div>
+                                                                <span class="fw-medium text-uppercase">{{ data.nombre|default:"Habilidad" }}</span>
+                                                                {% if data.observacion %}
+                                                                <p class="text-muted small mb-0 mt-1">{{ data.observacion }}</p>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-shrink-0">
+                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ data.calificacion|default:"-" }}/10</span>
+                                                        </div>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if resultado_data.fit_cultural %}
+                                            <div class="mb-4 pb-4 border-bottom">
+                                                <h6 class="fw-bold mb-3 text-primary">2. FIT CULTURAL</h6>
+                                                <ul class="ps-0 mb-0 list-unstyled">
+                                                    {% for fc_id, data in resultado_data.fit_cultural.items %}
+                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                                        <div class="d-flex align-items-start flex-grow-1">
+                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">groups</span>
+                                                            <div>
+                                                                <span class="fw-medium text-uppercase">{{ data.nombre|default:"Fit cultural" }}</span>
+                                                                {% if data.observacion %}
+                                                                <p class="text-muted small mb-0 mt-1">{{ data.observacion }}</p>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-shrink-0">
+                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ data.calificacion|default:"-" }}/10</span>
+                                                        </div>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if resultado_data.motivadores %}
+                                            <div class="mb-4 pb-4 border-bottom">
+                                                <h6 class="fw-bold mb-3 text-primary">3. MOTIVADORES</h6>
+                                                <ul class="ps-0 mb-0 list-unstyled">
+                                                    {% for m_id, data in resultado_data.motivadores.items %}
+                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                                        <div class="d-flex align-items-start flex-grow-1">
+                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">emoji_events</span>
+                                                            <div>
+                                                                <span class="fw-medium text-uppercase">{{ data.nombre|default:"Motivador" }}</span>
+                                                                {% if data.observacion %}
+                                                                <p class="text-muted small mb-0 mt-1">{{ data.observacion }}</p>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-shrink-0">
+                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ data.calificacion|default:"-" }}/10</span>
+                                                        </div>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if resultado_data.pruebas %}
+                                            <div class="mb-4 pb-4 border-bottom">
+                                                <h6 class="fw-bold mb-3 text-primary">4. PRUEBAS (Resultados y análisis psicotécnicos)</h6>
+                                                <ul class="ps-0 mb-0 list-unstyled">
+                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                                        <div class="d-flex align-items-start flex-grow-1">
+                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">quiz</span>
+                                                            <div>
+                                                                <span class="fw-medium">Pruebas y análisis psicotécnicos</span>
+                                                                {% if resultado_data.pruebas.observacion %}
+                                                                <p class="text-muted small mb-0 mt-1">{{ resultado_data.pruebas.observacion }}</p>
+                                                                {% endif %}
+                                                                {% if resultado_data.prueba_cargada_obj and resultado_data.prueba_cargada_obj.prueba_cargada %}
+                                                                <div class="mt-2">
+                                                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalPruebaCargada">
+                                                                        <i class="material-symbols-outlined fs-14 me-1">visibility</i>Ver documento
+                                                                    </button>
+                                                                </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-shrink-0">
+                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ resultado_data.pruebas.calificacion|default:"-" }}/10</span>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if resultado_data.confiabilidad %}
+                                            <div class="mb-0">
+                                                <h6 class="fw-bold mb-3 text-primary">5. ÍNDICE Y CONFIABILIDAD DEL RIESGO</h6>
+                                                <ul class="ps-0 mb-0 list-unstyled">
+                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
+                                                        <div class="d-flex align-items-start flex-grow-1">
+                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">verified_user</span>
+                                                            <div>
+                                                                <span class="fw-medium">Índice y confiabilidad del riesgo</span>
+                                                                {% if resultado_data.confiabilidad.observacion %}
+                                                                <p class="text-muted small mb-0 mt-1">{{ resultado_data.confiabilidad.observacion }}</p>
+                                                                {% endif %}
+                                                                {% if resultado_data.confiabilidad_cargada_obj and resultado_data.confiabilidad_cargada_obj.documento_cargado %}
+                                                                <div class="mt-2">
+                                                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalConfiabilidadCargada">
+                                                                        <i class="material-symbols-outlined fs-14 me-1">visibility</i>Ver documento
+                                                                    </button>
+                                                                </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-shrink-0">
+                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ resultado_data.confiabilidad.calificacion|default:"-" }}/10</span>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                {% if resultado_data.prueba_cargada_obj and resultado_data.prueba_cargada_obj.prueba_cargada %}
+                                {% with archivo_url=resultado_data.prueba_cargada_obj.prueba_cargada.url %}
+                                <div class="modal fade" id="modalPruebaCargada" tabindex="-1" aria-labelledby="modalPruebaCargadaLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header border-0 pb-0">
+                                                <h5 class="modal-title fw-semibold text-primary" id="modalPruebaCargadaLabel">Prueba cargada</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                            </div>
+                                            <div class="modal-body p-0" style="min-height: 70vh;">
+                                                <div class="d-flex align-items-center justify-content-center p-2 p-md-3" style="min-height: 70vh; overflow: auto;">
+                                                    {% if archivo_url|slice:"-4:" == ".pdf" or archivo_url|slice:"-4:" == ".PDF" %}
+                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Prueba cargada"></iframe>
+                                                    {% elif archivo_url|slice:"-4:" == ".jpg" or archivo_url|slice:"-4:" == ".JPG" or archivo_url|slice:"-4:" == ".png" or archivo_url|slice:"-4:" == ".PNG" %}
+                                                        <img src="{{ archivo_url }}" alt="Prueba cargada" class="img-fluid w-100" style="max-width: 100%; height: auto; max-height: 70vh; object-fit: contain; display: block;">
+                                                    {% else %}
+                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Prueba cargada"></iframe>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-0">
+                                                <a href="{{ archivo_url }}" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100"><i class="material-symbols-outlined fs-14 me-1">visibility</i>Abrir en nueva pestaña</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                                {% endif %}
+
+                                {% if resultado_data.confiabilidad_cargada_obj and resultado_data.confiabilidad_cargada_obj.documento_cargado %}
+                                {% with archivo_url=resultado_data.confiabilidad_cargada_obj.documento_cargado.url %}
+                                <div class="modal fade" id="modalConfiabilidadCargada" tabindex="-1" aria-labelledby="modalConfiabilidadCargadaLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header border-0 pb-0">
+                                                <h5 class="modal-title fw-semibold text-primary" id="modalConfiabilidadCargadaLabel">Documento índice y confiabilidad del riesgo</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                            </div>
+                                            <div class="modal-body p-0" style="min-height: 70vh;">
+                                                <div class="d-flex align-items-center justify-content-center p-2 p-md-3" style="min-height: 70vh; overflow: auto;">
+                                                    {% if archivo_url|slice:"-4:" == ".pdf" or archivo_url|slice:"-4:" == ".PDF" %}
+                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Documento confiabilidad"></iframe>
+                                                    {% elif archivo_url|slice:"-4:" == ".jpg" or archivo_url|slice:"-4:" == ".JPG" or archivo_url|slice:"-4:" == ".png" or archivo_url|slice:"-4:" == ".PNG" %}
+                                                        <img src="{{ archivo_url }}" alt="Documento confiabilidad" class="img-fluid w-100" style="max-width: 100%; height: auto; max-height: 70vh; object-fit: contain; display: block;">
+                                                    {% else %}
+                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Documento confiabilidad"></iframe>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-0">
+                                                <a href="{{ archivo_url }}" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100"><i class="material-symbols-outlined fs-14 me-1">visibility</i>Abrir en nueva pestaña</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                                {% endif %}
