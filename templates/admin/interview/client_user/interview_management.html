@@ -10,6 +10,29 @@ Detalle vacante
 {% block content %}
 <!-- DataTables CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<style>
+/* Pestañas: mismo criterio que reclutado/detalle (tab activo resaltado en rojo #B10022) */
+#interviewTabs.nav-tabs .nav-link {
+	font-size: 0.95rem;
+	font-weight: 600;
+	padding: 0.6rem 1.1rem;
+	color: var(--bs-secondary);
+	border-radius: 0.375rem 0.375rem 0 0;
+	transition: color 0.15s ease, background-color 0.15s ease;
+}
+#interviewTabs.nav-tabs .nav-link:hover:not(.active) {
+	color: #B10022;
+	background-color: rgba(177, 0, 34, 0.06);
+}
+#interviewTabs.nav-tabs .nav-link.active {
+	font-size: 1rem;
+	font-weight: 700;
+	color: #B10022 !important;
+	background-color: rgba(177, 0, 34, 0.1) !important;
+	border-color: var(--bs-border-color) var(--bs-border-color) var(--bs-body-bg) !important;
+	box-shadow: inset 0 -3px 0 0 #B10022;
+}
+</style>
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
 		<h3 class="mb-0 text-primary">Resultado de Entrevista</h3>
@@ -126,35 +149,35 @@ Detalle vacante
 	</div>
     <div class="row">
 		<div class="col-12">
-            <div class="card border-0 rounded-3 mb-4">
-                <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary bg-opacity-10 align-middle border-0 py-3 px-4">
                     <h2 class="fs-18 fw-semibold mb-0 text-primary">Gestión de entrevista</h2>
                 </div>
-                <div class="card-header bg-white border-0 border-bottom py-3 px-4">
-                    <ul class="nav nav-tabs card-header-tabs" id="interviewTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="tab-gestion-btn" data-bs-toggle="tab" data-bs-target="#tab-gestion" type="button" role="tab" aria-controls="tab-gestion" aria-selected="true">
-                                <i class="ri-file-edit-line me-1"></i>Entrevista
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="tab-candidato-btn" data-bs-toggle="tab" data-bs-target="#tab-candidato" type="button" role="tab" aria-controls="tab-candidato" aria-selected="false">
-                                <i class="ri-user-line me-1"></i>Información del candidato
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="tab-requisitos-btn" data-bs-toggle="tab" data-bs-target="#tab-requisitos" type="button" role="tab" aria-controls="tab-requisitos" aria-selected="false">
-                                <i class="ri-folder-upload-line me-1"></i>Requisitos cargados
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="tab-vacante-btn" data-bs-toggle="tab" data-bs-target="#tab-vacante" type="button" role="tab" aria-controls="tab-vacante" aria-selected="false">
-                                <i class="ri-briefcase-line me-1"></i>Información de la vacante
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-body bg-white p-4">
+                <div class="card-body p-4">
+                    <nav>
+                        <ul class="nav nav-tabs mb-4 flex-wrap" id="interviewTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="tab-gestion-btn" data-bs-toggle="tab" data-bs-target="#tab-gestion" type="button" role="tab" aria-controls="tab-gestion" aria-selected="true">
+                                    <i class="ri-file-edit-line me-1"></i>Entrevista
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-candidato-btn" data-bs-toggle="tab" data-bs-target="#tab-candidato" type="button" role="tab" aria-controls="tab-candidato" aria-selected="false">
+                                    <i class="ri-user-line me-1"></i>Información del candidato
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-requisitos-btn" data-bs-toggle="tab" data-bs-target="#tab-requisitos" type="button" role="tab" aria-controls="tab-requisitos" aria-selected="false">
+                                    <i class="ri-folder-upload-line me-1"></i>Requisitos cargados
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-vacante-btn" data-bs-toggle="tab" data-bs-target="#tab-vacante" type="button" role="tab" aria-controls="tab-vacante" aria-selected="false">
+                                    <i class="ri-briefcase-line me-1"></i>Información de la vacante
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
                     <div class="tab-content" id="interviewTabsContent">
                         {# Pestaña 1: Gestión de la entrevista (formulario o resultado) #}
                         <div class="tab-pane fade show active" id="tab-gestion" role="tabpanel" aria-labelledby="tab-gestion-btn">
@@ -163,9 +186,419 @@ Detalle vacante
                                     <h5 class="fs-16 fw-semibold mb-0 text-primary">Gestión de entrevista</h5>
                                 </div>
                                         <div class="card-body bg-white p-4">
-                            {% if tiene_resultado %}
-                                {# Dashboard de resultados #}
-                                <div>
+                            {% if puede_editar_secciones %}
+                                {# Misma distribución que reporte_final_content: columnas + modales tipo reporte #}
+                                <p class="text-muted small mb-3">Complete cada bloque y pulse <strong>Guardar</strong> en el modal. El reporte inferior se actualiza al guardar.</p>
+                                {% if secciones_total %}
+                                <div class="progress mb-4" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: {% widthratio secciones_ok secciones_total 100 %}%;" aria-valuenow="{{ secciones_ok }}" aria-valuemin="0" aria-valuemax="{{ secciones_total }}"></div>
+                                </div>
+                                {% endif %}
+
+                                <div class="row">
+                                    <div class="col-12 mb-2">
+                                        <h4 class="mb-0" style="color: #B10022;">Resultados</h4>
+                                    </div>
+                                </div>
+                                <div class="row g-3 mb-2">
+                                    {# Columna 1: Habilidades (MATCH 360) #}
+                                    <div class="col-md-3">
+                                        <div class="card bg-white rounded-3 h-100" style="border: 1px solid #ffcccc;">
+                                            <div class="card-header bg-primary bg-opacity-10 align-middle border-0 py-2 text-center">
+                                                <p class="text-primary my-1 fs-6 fw-semibold mb-0"><i class="ri-star-line me-2"></i>Habilidades</p>
+                                            </div>
+                                            <div class="card-body p-3">
+                                                <div class="mb-3 pb-3 border-bottom">
+                                                    {% if promedio_habilidades_ent %}
+                                                        {% if promedio_habilidades_ent >= 8 %}
+                                                            <span class="badge bg-success bg-opacity-10 text-success border border-success w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_habilidades_ent }}/10</span>
+                                                        {% elif promedio_habilidades_ent >= 6 %}
+                                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_habilidades_ent }}/10</span>
+                                                        {% elif promedio_habilidades_ent >= 4 %}
+                                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_habilidades_ent }}/10</span>
+                                                        {% else %}
+                                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_habilidades_ent }}/10</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary w-100 d-block py-3 fw-bold fs-6 text-center">—</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% for row in habilidades_modal_fields %}
+                                                <button type="button" class="btn btn-link text-decoration-none w-100 text-start p-2 mb-2 border rounded d-flex justify-content-between align-items-center interview-hover-bg-light" data-bs-toggle="modal" data-bs-target="#{{ row.modal_id }}">
+                                                    <span class="small fw-medium flex-grow-1 text-body"><i class="ri-star-line me-2 text-primary"></i>{{ row.h.nombre }}</span>
+                                                    {% if row.calif_int %}
+                                                        {% if row.calif_int >= 8 %}<span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>
+                                                        {% elif row.calif_int >= 6 %}<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>
+                                                        {% elif row.calif_int >= 4 %}<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>
+                                                        {% else %}<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>{% endif %}
+                                                    {% else %}
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2 py-1 fw-semibold ms-2 flex-shrink-0">Pendiente</span>
+                                                    {% endif %}
+                                                </button>
+                                                {% empty %}
+                                                <p class="text-muted small mb-0 text-center">Sin ítems en la vacante</p>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {# Columna 2: Fit cultural #}
+                                    <div class="col-md-3">
+                                        <div class="card bg-white rounded-3 h-100" style="border: 1px solid #ffcccc;">
+                                            <div class="card-header bg-primary bg-opacity-10 align-middle border-0 py-2 text-center">
+                                                <p class="text-primary my-1 fs-6 fw-semibold mb-0"><i class="ri-team-line me-2"></i>Fit Cultural</p>
+                                            </div>
+                                            <div class="card-body p-3">
+                                                <div class="mb-3 pb-3 border-bottom">
+                                                    {% if promedio_fit_ent %}
+                                                        {% if promedio_fit_ent >= 8 %}
+                                                            <span class="badge bg-success bg-opacity-10 text-success border border-success w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_fit_ent }}/10</span>
+                                                        {% elif promedio_fit_ent >= 6 %}
+                                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_fit_ent }}/10</span>
+                                                        {% elif promedio_fit_ent >= 4 %}
+                                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_fit_ent }}/10</span>
+                                                        {% else %}
+                                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_fit_ent }}/10</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary w-100 d-block py-3 fw-bold fs-6 text-center">—</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% for row in fit_modal_fields %}
+                                                <button type="button" class="btn btn-link text-decoration-none w-100 text-start p-2 mb-2 border rounded d-flex justify-content-between align-items-center interview-hover-bg-light" data-bs-toggle="modal" data-bs-target="#{{ row.modal_id }}">
+                                                    <span class="small fw-medium flex-grow-1 text-body"><i class="ri-team-line me-2 text-primary"></i>{{ row.fc.nombre }}</span>
+                                                    {% if row.calif_int %}
+                                                        {% if row.calif_int >= 8 %}<span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>
+                                                        {% elif row.calif_int >= 6 %}<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>
+                                                        {% elif row.calif_int >= 4 %}<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>
+                                                        {% else %}<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>{% endif %}
+                                                    {% else %}
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2 py-1 fw-semibold ms-2 flex-shrink-0">Pendiente</span>
+                                                    {% endif %}
+                                                </button>
+                                                {% empty %}
+                                                <p class="text-muted small mb-0 text-center">Sin ítems en la vacante</p>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {# Columna 3: Motivadores #}
+                                    <div class="col-md-3">
+                                        <div class="card bg-white rounded-3 h-100" style="border: 1px solid #ffcccc;">
+                                            <div class="card-header bg-primary bg-opacity-10 align-middle border-0 py-2 text-center">
+                                                <p class="text-primary my-1 fs-6 fw-semibold mb-0"><i class="ri-lightbulb-line me-2"></i>Motivadores</p>
+                                            </div>
+                                            <div class="card-body p-3">
+                                                <div class="mb-3 pb-3 border-bottom">
+                                                    {% if promedio_motivadores_ent %}
+                                                        {% if promedio_motivadores_ent >= 8 %}
+                                                            <span class="badge bg-success bg-opacity-10 text-success border border-success w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_motivadores_ent }}/10</span>
+                                                        {% elif promedio_motivadores_ent >= 6 %}
+                                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_motivadores_ent }}/10</span>
+                                                        {% elif promedio_motivadores_ent >= 4 %}
+                                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_motivadores_ent }}/10</span>
+                                                        {% else %}
+                                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary w-100 d-block py-3 fw-bold fs-2 text-center">{{ promedio_motivadores_ent }}/10</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary w-100 d-block py-3 fw-bold fs-6 text-center">—</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% for row in motivadores_modal_fields %}
+                                                <button type="button" class="btn btn-link text-decoration-none w-100 text-start p-2 mb-2 border rounded d-flex justify-content-between align-items-center interview-hover-bg-light" data-bs-toggle="modal" data-bs-target="#{{ row.modal_id }}">
+                                                    <span class="small fw-medium flex-grow-1 text-body"><i class="ri-lightbulb-line me-2 text-primary"></i>{{ row.m.nombre }}</span>
+                                                    {% if row.calif_int %}
+                                                        {% if row.calif_int >= 8 %}<span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>
+                                                        {% elif row.calif_int >= 6 %}<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>
+                                                        {% elif row.calif_int >= 4 %}<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>
+                                                        {% else %}<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ row.calif_int }}/10</span>{% endif %}
+                                                    {% else %}
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2 py-1 fw-semibold ms-2 flex-shrink-0">Pendiente</span>
+                                                    {% endif %}
+                                                </button>
+                                                {% empty %}
+                                                <p class="text-muted small mb-0 text-center">Sin ítems en la vacante</p>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {# Columna 4: Avance (equivalente a cuarto panel del reporte) #}
+                                    <div class="col-md-3">
+                                        <div class="card bg-white rounded-3 h-100" style="border: 1px solid #ffcccc;">
+                                            <div class="card-header bg-primary bg-opacity-10 align-middle border-0 py-2 text-center">
+                                                <p class="text-primary my-1 fs-6 fw-semibold mb-0"><i class="ri-pie-chart-line me-2"></i>Avance</p>
+                                            </div>
+                                            <div class="card-body p-3 d-flex flex-column justify-content-center">
+                                                <div class="text-center mb-2"><small class="text-muted d-block mb-1">Secciones completadas</small></div>
+                                                {% if secciones_total %}
+                                                    {% widthratio secciones_ok secciones_total 100 as pct_avance %}
+                                                    {% if pct_avance >= 100 %}
+                                                        <span class="badge bg-success bg-opacity-10 text-success border border-success w-100 d-block py-3 fw-bold fs-2 text-center">{{ secciones_ok }}/{{ secciones_total }}</span>
+                                                    {% elif pct_avance >= 50 %}
+                                                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-3 fw-bold fs-2 text-center">{{ secciones_ok }}/{{ secciones_total }}</span>
+                                                    {% else %}
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger w-100 d-block py-3 fw-bold fs-2 text-center">{{ secciones_ok }}/{{ secciones_total }}</span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary w-100 d-block py-3 fw-bold fs-6 text-center">—</span>
+                                                {% endif %}
+                                                <p class="text-muted small text-center mt-3 mb-0">Pulse cada ítem para calificar y guardar.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mt-2">
+                                    <div class="col-md-6">
+                                        <div class="card bg-white rounded-3 h-100" style="border: 1px solid #ffcccc;">
+                                            <div class="card-header bg-primary bg-opacity-10 align-middle border-0 py-2 text-center">
+                                                <p class="text-primary my-1 fs-6 fw-semibold mb-0"><i class="ri-file-paper-line me-2"></i>Pruebas</p>
+                                            </div>
+                                            <div class="card-body p-3">
+                                                <button type="button" class="btn btn-link text-decoration-none w-100 text-start p-2 mb-0 border rounded d-flex justify-content-between align-items-center interview-hover-bg-light" data-bs-toggle="modal" data-bs-target="#modalPruebasEntrevista">
+                                                    <span class="small fw-medium flex-grow-1 text-body"><i class="ri-file-paper-line me-2 text-primary"></i>Resultados y análisis psicotécnicos</span>
+                                                    {% if prueba_calif_ent %}
+                                                        {% if prueba_calif_ent >= 8 %}<span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ prueba_calif_ent }}/10</span>
+                                                        {% elif prueba_calif_ent >= 6 %}<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ prueba_calif_ent }}/10</span>
+                                                        {% elif prueba_calif_ent >= 4 %}<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ prueba_calif_ent }}/10</span>
+                                                        {% else %}<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ prueba_calif_ent }}/10</span>{% endif %}
+                                                    {% else %}
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2 py-1 fw-semibold ms-2 flex-shrink-0">Pendiente</span>
+                                                    {% endif %}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card bg-white rounded-3 h-100" style="border: 1px solid #ffcccc;">
+                                            <div class="card-header bg-primary bg-opacity-10 align-middle border-0 py-2 text-center">
+                                                <p class="text-primary my-1 fs-6 fw-semibold mb-0"><i class="ri-shield-check-line me-2"></i>Índice y Confiabilidad del Riesgo</p>
+                                            </div>
+                                            <div class="card-body p-3">
+                                                <button type="button" class="btn btn-link text-decoration-none w-100 text-start p-2 mb-0 border rounded d-flex justify-content-between align-items-center interview-hover-bg-light" data-bs-toggle="modal" data-bs-target="#modalConfiabilidadEntrevista">
+                                                    <span class="small fw-medium flex-grow-1 text-body"><i class="ri-shield-check-line me-2 text-primary"></i>Evaluación de riesgo</span>
+                                                    {% if conf_calif_ent %}
+                                                        {% if conf_calif_ent >= 8 %}<span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ conf_calif_ent }}/10</span>
+                                                        {% elif conf_calif_ent >= 6 %}<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ conf_calif_ent }}/10</span>
+                                                        {% elif conf_calif_ent >= 4 %}<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ conf_calif_ent }}/10</span>
+                                                        {% else %}<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 fw-semibold ms-2 flex-shrink-0">{{ conf_calif_ent }}/10</span>{% endif %}
+                                                    {% else %}
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2 py-1 fw-semibold ms-2 flex-shrink-0">Pendiente</span>
+                                                    {% endif %}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% for row in habilidades_modal_fields %}
+                                <div class="modal fade" id="{{ row.modal_id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <form class="form-ajax-seccion" enctype="multipart/form-data" data-url="{% url 'entrevistas:entrevistar_guardar_seccion_cliente' entrevista.id %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="section" value="habilidad">
+                                                <input type="hidden" name="item_id" value="{{ row.h.id }}">
+                                                <div class="modal-header border-0 pb-0">
+                                                    <h5 class="modal-title fw-semibold text-primary"><i class="ri-star-line me-2"></i>Detalle de Habilidad — {{ row.h.nombre }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {% if row.cal.errors %}<div class="alert alert-danger py-2">{{ row.cal.errors }}</div>{% endif %}
+                                                    <div class="p-3 border rounded bg-primary bg-opacity-10">
+                                                        <p class="text-muted small mb-3 mb-md-2"><span class="asteriskField">*</span> Campos obligatorios.</p>
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="{{ row.cal.id_for_label }}">{{ row.cal.label }} <span class="asteriskField">*</span></label>
+                                                            <div class="input-group">
+                                                                {{ row.cal }}
+                                                                <span class="input-group-text text-muted small">1–10</span>
+                                                            </div>
+                                                            {% if row.cal.help_text %}<div class="form-text">{{ row.cal.help_text }}</div>{% endif %}
+                                                        </div>
+                                                        <div class="mb-0">
+                                                            <label class="form-label" for="{{ row.obs.id_for_label }}">{{ row.obs.label }} <span class="asteriskField">*</span></label>
+                                                            {{ row.obs }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer border-0">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                {% for row in fit_modal_fields %}
+                                <div class="modal fade" id="{{ row.modal_id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <form class="form-ajax-seccion" enctype="multipart/form-data" data-url="{% url 'entrevistas:entrevistar_guardar_seccion_cliente' entrevista.id %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="section" value="fit_cultural">
+                                                <input type="hidden" name="item_id" value="{{ row.fc.id }}">
+                                                <div class="modal-header border-0 pb-0">
+                                                    <h5 class="modal-title fw-semibold text-primary"><i class="ri-team-line me-2"></i>Detalle de Fit Cultural — {{ row.fc.nombre }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {% if row.cal.errors %}<div class="alert alert-danger py-2">{{ row.cal.errors }}</div>{% endif %}
+                                                    <div class="p-3 border rounded bg-primary bg-opacity-10">
+                                                        <p class="text-muted small mb-3 mb-md-2"><span class="asteriskField">*</span> Campos obligatorios.</p>
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="{{ row.cal.id_for_label }}">{{ row.cal.label }} <span class="asteriskField">*</span></label>
+                                                            <div class="input-group">
+                                                                {{ row.cal }}
+                                                                <span class="input-group-text text-muted small">1–10</span>
+                                                            </div>
+                                                            {% if row.cal.help_text %}<div class="form-text">{{ row.cal.help_text }}</div>{% endif %}
+                                                        </div>
+                                                        <div class="mb-0">
+                                                            <label class="form-label" for="{{ row.obs.id_for_label }}">{{ row.obs.label }} <span class="asteriskField">*</span></label>
+                                                            {{ row.obs }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer border-0">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                {% for row in motivadores_modal_fields %}
+                                <div class="modal fade" id="{{ row.modal_id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <form class="form-ajax-seccion" enctype="multipart/form-data" data-url="{% url 'entrevistas:entrevistar_guardar_seccion_cliente' entrevista.id %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="section" value="motivador">
+                                                <input type="hidden" name="item_id" value="{{ row.m.id }}">
+                                                <div class="modal-header border-0 pb-0">
+                                                    <h5 class="modal-title fw-semibold text-primary"><i class="ri-lightbulb-line me-2"></i>Detalle de Motivador — {{ row.m.nombre }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {% if row.cal.errors %}<div class="alert alert-danger py-2">{{ row.cal.errors }}</div>{% endif %}
+                                                    <div class="p-3 border rounded bg-primary bg-opacity-10">
+                                                        <p class="text-muted small mb-3 mb-md-2"><span class="asteriskField">*</span> Campos obligatorios.</p>
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="{{ row.cal.id_for_label }}">{{ row.cal.label }} <span class="asteriskField">*</span></label>
+                                                            <div class="input-group">
+                                                                {{ row.cal }}
+                                                                <span class="input-group-text text-muted small">1–10</span>
+                                                            </div>
+                                                            {% if row.cal.help_text %}<div class="form-text">{{ row.cal.help_text }}</div>{% endif %}
+                                                        </div>
+                                                        <div class="mb-0">
+                                                            <label class="form-label" for="{{ row.obs.id_for_label }}">{{ row.obs.label }} <span class="asteriskField">*</span></label>
+                                                            {{ row.obs }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer border-0">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                <div class="modal fade" id="modalPruebasEntrevista" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <form class="form-ajax-seccion" enctype="multipart/form-data" data-url="{% url 'entrevistas:entrevistar_guardar_seccion_cliente' entrevista.id %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="section" value="pruebas">
+                                                <div class="modal-header border-0 pb-0">
+                                                    <h5 class="modal-title fw-semibold text-primary"><i class="ri-file-paper-line me-2"></i>Pruebas — resultados y análisis psicotécnicos</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {% if form.prueba_calificacion.errors %}<div class="alert alert-danger py-2">{{ form.prueba_calificacion.errors }}</div>{% endif %}
+                                                    <div class="p-3 border rounded bg-primary bg-opacity-10">
+                                                        <p class="text-muted small mb-3 mb-md-2"><span class="asteriskField">*</span> Campos obligatorios.</p>
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="{{ form.prueba_calificacion.id_for_label }}">{{ form.prueba_calificacion.label }} <span class="asteriskField">*</span></label>
+                                                            <div class="input-group">
+                                                                {{ form.prueba_calificacion }}
+                                                                <span class="input-group-text text-muted small">1–10</span>
+                                                            </div>
+                                                            {% if form.prueba_calificacion.help_text %}<div class="form-text">{{ form.prueba_calificacion.help_text }}</div>{% endif %}
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="{{ form.prueba_observaciones.id_for_label }}">{{ form.prueba_observaciones.label }} <span class="asteriskField">*</span></label>
+                                                            {{ form.prueba_observaciones }}
+                                                        </div>
+                                                        <div class="mb-0">
+                                                            {{ form.prueba_cargada.label_tag }}
+                                                            {{ form.prueba_cargada }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer border-0">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="modalConfiabilidadEntrevista" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <form class="form-ajax-seccion" enctype="multipart/form-data" data-url="{% url 'entrevistas:entrevistar_guardar_seccion_cliente' entrevista.id %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="section" value="confiabilidad">
+                                                <div class="modal-header border-0 pb-0">
+                                                    <h5 class="modal-title fw-semibold text-primary"><i class="ri-shield-check-line me-2"></i>Índice y confiabilidad del riesgo</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {% if form.confiabilidad_riesgo_calificacion.errors %}<div class="alert alert-danger py-2">{{ form.confiabilidad_riesgo_calificacion.errors }}</div>{% endif %}
+                                                    <div class="p-3 border rounded bg-primary bg-opacity-10">
+                                                        <p class="text-muted small mb-3 mb-md-2"><span class="asteriskField">*</span> Campos obligatorios.</p>
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="{{ form.confiabilidad_riesgo_calificacion.id_for_label }}">{{ form.confiabilidad_riesgo_calificacion.label }} <span class="asteriskField">*</span></label>
+                                                            <div class="input-group">
+                                                                {{ form.confiabilidad_riesgo_calificacion }}
+                                                                <span class="input-group-text text-muted small">1–10</span>
+                                                            </div>
+                                                            {% if form.confiabilidad_riesgo_calificacion.help_text %}<div class="form-text">{{ form.confiabilidad_riesgo_calificacion.help_text }}</div>{% endif %}
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="{{ form.confiabilidad_riesgo_observaciones.id_for_label }}">{{ form.confiabilidad_riesgo_observaciones.label }} <span class="asteriskField">*</span></label>
+                                                            {{ form.confiabilidad_riesgo_observaciones }}
+                                                        </div>
+                                                        <div class="mb-0">
+                                                            {{ form.confiabilidad_riesgo_cargado.label_tag }}
+                                                            {{ form.confiabilidad_riesgo_cargado }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer border-0">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card border-0 mb-4">
+                                    <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
+                                        <h5 class="card-title mb-0 text-primary"><i class="ri-file-list-3-line me-2"></i>Reporte de evaluación (vista cliente)</h5>
+                                    </div>
+                                    <div class="card-body bg-white">
+                                        {% if tiene_resultado %}
+                                        <div>
                                     {# Información del Candidato #}
                                     <div class="card border-0 mb-4">
                                         <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
@@ -222,230 +655,146 @@ Detalle vacante
                                         </div>
                                     </div>
 
-                                    {# Resultados de Evaluación (estilo tipo requisitos: fila con nombre izquierda, calificación derecha) #}
+                                    {% include "admin/interview/client_user/_interview_resultado_evaluacion_readonly.html" %}
+                                </div>
+                                        {% else %}
+                                        <p class="text-muted small mb-0">Aún no hay datos en el reporte. Guarde cada sección para verla aquí.</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="mt-3 mb-2">
+                                    <button type="button" class="btn btn-primary w-100 py-3" data-bs-toggle="modal" data-bs-target="#modalFinalizarEntrevista" {% if secciones_total and secciones_ok < secciones_total %}disabled{% endif %}>Finalizar evaluación (Apto / No Apto)</button>
+                                </div>
+
+                                <div class="modal fade" id="modalFinalizarEntrevista" tabindex="-1" aria-labelledby="modalFinalizarEntrevistaLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content border-0 shadow">
+                                            <form method="post" action="">
+                                                {% csrf_token %}
+                                                <div class="modal-header border-0 pb-2 align-items-start">
+                                                    <div class="d-flex gap-3 pe-2">
+                                                        <div class="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0" style="width:3rem;height:3rem;">
+                                                            <i class="ri-flag-2-line fs-2 text-primary"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h5 class="modal-title fw-semibold text-primary mb-1" id="modalFinalizarEntrevistaLabel">Finalizar evaluación</h5>
+                                                            <p class="text-muted small mb-0 lh-base">Registre el <strong>resultado final</strong> y las observaciones que quedarán en el expediente de la entrevista.</p>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body pt-0">
+                                                    {% if secciones_total and secciones_ok >= secciones_total %}
+                                                    <div class="alert alert-success d-flex align-items-start gap-2 py-2 px-3 mb-4 border-0" role="status">
+                                                        <i class="ri-checkbox-circle-line fs-4 flex-shrink-0"></i>
+                                                        <div class="small"><strong>Evaluación completa.</strong> Todas las secciones obligatorias están guardadas; puede enviar la decisión.</div>
+                                                    </div>
+                                                    {% endif %}
+                                                    {% if form_final.non_field_errors %}
+                                                    <div class="alert alert-danger py-2">{{ form_final.non_field_errors }}</div>
+                                                    {% endif %}
+
+                                                    <div class="p-4 border rounded bg-primary bg-opacity-10 mb-3">
+                                                        <p class="text-muted small mb-3"><span class="asteriskField">*</span> Campos obligatorios.</p>
+                                                        <label class="form-label fw-semibold mb-1 d-flex align-items-center gap-2 flex-wrap" for="{{ form_final.estado_asignacion.id_for_label }}">
+                                                            <span class="rounded-circle bg-white d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width:1.75rem;height:1.75rem;"><i class="ri-scales-3-line text-primary"></i></span>
+                                                            <span>Resultado de la evaluación <span class="asteriskField">*</span></span>
+                                                        </label>
+                                                        <p class="text-muted small mb-3">Indique si el candidato es <span class="text-success fw-semibold">Apto</span> o <span class="text-danger fw-semibold">No Apto</span> según el análisis realizado.</p>
+                                                        <div class="w-100">
+                                                            {{ form_final.estado_asignacion }}
+                                                        </div>
+                                                        {% if form_final.estado_asignacion.errors %}<div class="text-danger small mt-2 mb-0">{{ form_final.estado_asignacion.errors }}</div>{% endif %}
+                                                    </div>
+
+                                                    <div class="p-4 border rounded bg-primary bg-opacity-10">
+                                                        <label class="form-label fw-semibold mb-1 d-flex align-items-center gap-2 flex-wrap" for="{{ form_final.observacion.id_for_label }}">
+                                                            <span class="rounded-circle bg-white d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width:1.75rem;height:1.75rem;"><i class="ri-file-text-line text-primary"></i></span>
+                                                            <span>Observaciones finales <span class="asteriskField">*</span></span>
+                                                        </label>
+                                                        <p class="text-muted small mb-3">Resuma el criterio aplicado y cualquier comentario relevante para el historial.</p>
+                                                        <div class="w-100">
+                                                            {{ form_final.observacion }}
+                                                        </div>
+                                                        {% if form_final.observacion.errors %}<div class="text-danger small mt-2 mb-0">{{ form_final.observacion.errors }}</div>{% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer border-0 pt-0">
+                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-primary px-4">
+                                                        <i class="ri-check-double-line me-1"></i>Confirmar y enviar
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% else %}
+                                {# Solo lectura: entrevista ya gestionada (no Pendiente) #}
+                                {% if tiene_resultado %}
+                                <div>
+                                    {# Información del Candidato #}
                                     <div class="card border-0 mb-4">
                                         <div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 d-flex align-items-center">
                                             <h5 class="card-title mb-0 text-primary">
-                                                <i class="ri-file-list-3-line me-2"></i>Resultados de Evaluación
+                                                <i class="ri-user-line me-2"></i>Información del Candidato
                                             </h5>
                                         </div>
                                         <div class="card-body bg-white">
-                                            {# 1. MATCH 360 PREDICTIVO DEL TALENTO (HABILIDADES) #}
-                                            {% if resultado_data.habilidades %}
-                                            <div class="mb-4 pb-4 border-bottom">
-                                                <h6 class="fw-bold mb-3 text-primary">1. MATCH 360 PREDICTIVO DEL TALENTO (CONCEPTO DE LAS HABILIDADES)</h6>
-                                                <ul class="ps-0 mb-0 list-unstyled">
-                                                    {% for skill_id, data in resultado_data.habilidades.items %}
-                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
-                                                        <div class="d-flex align-items-start flex-grow-1">
-                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">psychology</span>
-                                                            <div>
-                                                                <span class="fw-medium text-uppercase">{{ data.nombre|default:"Habilidad" }}</span>
-                                                                {% if data.observacion %}
-                                                                <p class="text-muted small mb-0 mt-1">{{ data.observacion }}</p>
-                                                                {% endif %}
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ data.calificacion|default:"-" }}/10</span>
-                                                        </div>
-                                                    </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
-                                            {% endif %}
-
-                                            {# 2. FIT CULTURAL #}
-                                            {% if resultado_data.fit_cultural %}
-                                            <div class="mb-4 pb-4 border-bottom">
-                                                <h6 class="fw-bold mb-3 text-primary">2. FIT CULTURAL</h6>
-                                                <ul class="ps-0 mb-0 list-unstyled">
-                                                    {% for fc_id, data in resultado_data.fit_cultural.items %}
-                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
-                                                        <div class="d-flex align-items-start flex-grow-1">
-                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">groups</span>
-                                                            <div>
-                                                                <span class="fw-medium text-uppercase">{{ data.nombre|default:"Fit cultural" }}</span>
-                                                                {% if data.observacion %}
-                                                                <p class="text-muted small mb-0 mt-1">{{ data.observacion }}</p>
-                                                                {% endif %}
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ data.calificacion|default:"-" }}/10</span>
-                                                        </div>
-                                                    </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
-                                            {% endif %}
-
-                                            {# 3. MOTIVADORES #}
-                                            {% if resultado_data.motivadores %}
-                                            <div class="mb-4 pb-4 border-bottom">
-                                                <h6 class="fw-bold mb-3 text-primary">3. MOTIVADORES</h6>
-                                                <ul class="ps-0 mb-0 list-unstyled">
-                                                    {% for m_id, data in resultado_data.motivadores.items %}
-                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
-                                                        <div class="d-flex align-items-start flex-grow-1">
-                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">emoji_events</span>
-                                                            <div>
-                                                                <span class="fw-medium text-uppercase">{{ data.nombre|default:"Motivador" }}</span>
-                                                                {% if data.observacion %}
-                                                                <p class="text-muted small mb-0 mt-1">{{ data.observacion }}</p>
-                                                                {% endif %}
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ data.calificacion|default:"-" }}/10</span>
-                                                        </div>
-                                                    </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
-                                            {% endif %}
-
-                                            {# 4. PRUEBAS (Resultados y análisis psicotécnicos) #}
-                                            {% if resultado_data.pruebas %}
-                                            <div class="mb-4 pb-4 border-bottom">
-                                                <h6 class="fw-bold mb-3 text-primary">4. PRUEBAS (Resultados y análisis psicotécnicos)</h6>
-                                                <ul class="ps-0 mb-0 list-unstyled">
-                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
-                                                        <div class="d-flex align-items-start flex-grow-1">
-                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">quiz</span>
-                                                            <div>
-                                                                <span class="fw-medium">Pruebas y análisis psicotécnicos</span>
-                                                                {% if resultado_data.pruebas.observacion %}
-                                                                <p class="text-muted small mb-0 mt-1">{{ resultado_data.pruebas.observacion }}</p>
-                                                                {% endif %}
-                                                                {% if resultado_data.prueba_cargada_obj and resultado_data.prueba_cargada_obj.prueba_cargada %}
-                                                                <div class="mt-2">
-                                                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalPruebaCargada">
-                                                                        <i class="material-symbols-outlined fs-14 me-1">visibility</i>Ver documento
-                                                                    </button>
-                                                                </div>
-                                                                {% endif %}
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ resultado_data.pruebas.calificacion|default:"-" }}/10</span>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            {% endif %}
-
-                                            {# 5. INDICE Y CONFIABILIDAD DEL RIESGO #}
-                                            {% if resultado_data.confiabilidad %}
-                                            <div class="mb-0">
-                                                <h6 class="fw-bold mb-3 text-primary">5. ÍNDICE Y CONFIABILIDAD DEL RIESGO</h6>
-                                                <ul class="ps-0 mb-0 list-unstyled">
-                                                    <li class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 p-3 border rounded gap-2">
-                                                        <div class="d-flex align-items-start flex-grow-1">
-                                                            <span class="material-symbols-outlined me-2 text-primary flex-shrink-0" style="margin-top: 2px;">verified_user</span>
-                                                            <div>
-                                                                <span class="fw-medium">Índice y confiabilidad del riesgo</span>
-                                                                {% if resultado_data.confiabilidad.observacion %}
-                                                                <p class="text-muted small mb-0 mt-1">{{ resultado_data.confiabilidad.observacion }}</p>
-                                                                {% endif %}
-                                                                {% if resultado_data.confiabilidad_cargada_obj and resultado_data.confiabilidad_cargada_obj.documento_cargado %}
-                                                                <div class="mt-2">
-                                                                    <button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalConfiabilidadCargada">
-                                                                        <i class="material-symbols-outlined fs-14 me-1">visibility</i>Ver documento
-                                                                    </button>
-                                                                </div>
-                                                                {% endif %}
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <span class="rounded px-3 py-2 fw-medium bg-primary bg-opacity-10 text-primary">{{ resultado_data.confiabilidad.calificacion|default:"-" }}/10</span>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {# Modal: Prueba cargada (sección 4) #}
-                                {% if resultado_data.prueba_cargada_obj and resultado_data.prueba_cargada_obj.prueba_cargada %}
-                                {% with archivo_url=resultado_data.prueba_cargada_obj.prueba_cargada.url %}
-                                <div class="modal fade" id="modalPruebaCargada" tabindex="-1" aria-labelledby="modalPruebaCargadaLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                            <div class="modal-header border-0 pb-0">
-                                                <h5 class="modal-title fw-semibold text-primary" id="modalPruebaCargadaLabel">Prueba cargada</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                            </div>
-                                            <div class="modal-body p-0" style="min-height: 70vh;">
-                                                <div class="d-flex align-items-center justify-content-center p-2 p-md-3" style="min-height: 70vh; overflow: auto;">
-                                                    {% if archivo_url|slice:"-4:" == ".pdf" or archivo_url|slice:"-4:" == ".PDF" %}
-                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Prueba cargada"></iframe>
-                                                    {% elif archivo_url|slice:"-4:" == ".jpg" or archivo_url|slice:"-4:" == ".JPG" or archivo_url|slice:"-4:" == ".png" or archivo_url|slice:"-4:" == ".PNG" %}
-                                                        <img src="{{ archivo_url }}" alt="Prueba cargada" class="img-fluid w-100" style="max-width: 100%; height: auto; max-height: 70vh; object-fit: contain; display: block;">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-3 text-center mb-3 mb-md-0">
+                                                    {% if candidato.imagen_perfil %}
+                                                        <img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-3 wh-100" alt="{{ candidato.nombre_completo }}">
                                                     {% else %}
-                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Prueba cargada"></iframe>
+                                                        <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-3 wh-100" alt="user">
                                                     {% endif %}
                                                 </div>
-                                            </div>
-                                            <div class="modal-footer border-0">
-                                                <a href="{{ archivo_url }}" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100"><i class="material-symbols-outlined fs-14 me-1">visibility</i>Abrir en nueva pestaña</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endwith %}
-                                {% endif %}
-
-                                {# Modal: Documento confiabilidad del riesgo (sección 5) #}
-                                {% if resultado_data.confiabilidad_cargada_obj and resultado_data.confiabilidad_cargada_obj.documento_cargado %}
-                                {% with archivo_url=resultado_data.confiabilidad_cargada_obj.documento_cargado.url %}
-                                <div class="modal fade" id="modalConfiabilidadCargada" tabindex="-1" aria-labelledby="modalConfiabilidadCargadaLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                            <div class="modal-header border-0 pb-0">
-                                                <h5 class="modal-title fw-semibold text-primary" id="modalConfiabilidadCargadaLabel">Documento índice y confiabilidad del riesgo</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                            </div>
-                                            <div class="modal-body p-0" style="min-height: 70vh;">
-                                                <div class="d-flex align-items-center justify-content-center p-2 p-md-3" style="min-height: 70vh; overflow: auto;">
-                                                    {% if archivo_url|slice:"-4:" == ".pdf" or archivo_url|slice:"-4:" == ".PDF" %}
-                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Documento confiabilidad"></iframe>
-                                                    {% elif archivo_url|slice:"-4:" == ".jpg" or archivo_url|slice:"-4:" == ".JPG" or archivo_url|slice:"-4:" == ".png" or archivo_url|slice:"-4:" == ".PNG" %}
-                                                        <img src="{{ archivo_url }}" alt="Documento confiabilidad" class="img-fluid w-100" style="max-width: 100%; height: auto; max-height: 70vh; object-fit: contain; display: block;">
-                                                    {% else %}
-                                                        <iframe src="{{ archivo_url }}" class="w-100 border-0 flex-grow-1" style="min-height: 70vh;" title="Documento confiabilidad"></iframe>
-                                                    {% endif %}
+                                                <div class="col-md-9">
+                                                    <h4 class="mb-2 fw-bold">{{ candidato.nombre_completo }}</h4>
+                                                    <div class="row g-3">
+                                                        <div class="col-md-6">
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="ri-calendar-line text-primary me-2 fs-18"></i>
+                                                                <div>
+                                                                    <small class="text-muted d-block">Fecha de Entrevista</small>
+                                                                    <strong>{{ resultado_data.fecha_entrevista|default:"No especificada" }}</strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="ri-checkbox-circle-line text-success me-2 fs-18"></i>
+                                                                <div>
+                                                                    <small class="text-muted d-block">Estado</small>
+                                                                    <span class="badge bg-opacity-10 bg-{{ entrevista.obtener_nombre_estado_color.color }} py-2 px-3 text-{{ entrevista.obtener_nombre_estado_color.color }} rounded-1 fw-medium">
+                                                                        {{ entrevista.obtener_nombre_estado_color.estado }}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% if entrevista.observacion %}
+                                                        <div class="col-12">
+                                                            <div class="d-flex align-items-start">
+                                                                <i class="ri-file-text-line text-info me-2 fs-18 mt-1"></i>
+                                                                <div class="flex-grow-1">
+                                                                    <small class="text-muted d-block">Observación General</small>
+                                                                    <p class="mb-0 mt-1">{{ entrevista.observacion }}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="modal-footer border-0">
-                                                <a href="{{ archivo_url }}" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100"><i class="material-symbols-outlined fs-14 me-1">visibility</i>Abrir en nueva pestaña</a>
-                                            </div>
                                         </div>
                                     </div>
+                                    {% include "admin/interview/client_user/_interview_resultado_evaluacion_readonly.html" %}
                                 </div>
-                                {% endwith %}
+                                {% else %}
+                                <p class="text-muted mb-0">No hay resultado registrado para esta entrevista.</p>
                                 {% endif %}
-                            {% else %}
-                                {# Formulario de gestión #}
-                                <div class="row">
-                                    <div class="col-md-1 col-12">
-                                    </div>    
-                                    <div class="col-md-10 col-12">
-                                        <form method="post" id="form_gestion_entrevista" enctype="multipart/form-data">
-                                            <div class="modal-body">
-                                                {% csrf_token %}
-                                                {% crispy form %}
-                                            </div>
-                                            <button type="submit" form="form_gestion_entrevista" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
-                                                <i class="material-symbols-outlined fs-14 me-1">visibility</i>Gestionar
-                                            </button>
-                                        </form>
-                                    </div>    
-                                    <div class="col-md-1 col-12">
-                                    </div>    
-                                </div>
                             {% endif %}
                                 </div>
                             </div>
@@ -703,48 +1052,65 @@ Detalle vacante
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 <script>
-    // Initialize select2 for specific fields
-    initializeSelect2('#id_estado_asignacion');
-    
-    // Initialize select2 for calification fields
-    initializeSelect2('#id_prueba_calificacion');
-    initializeSelect2('#id_confiabilidad_riesgo_calificacion');
-
-    // Select2 para calificación de cada habilidad
-    {% if habilidades_vacante %}
-    {% for h in habilidades_vacante %}
-    initializeSelect2('#id_habilidad_{{ h.id }}');
-    {% endfor %}
-    {% endif %}
-
-    // Select2 para calificación de cada ítem fit cultural
-    {% if fit_cultural_vacante %}
-    {% for fc in fit_cultural_vacante %}
-    initializeSelect2('#id_fit_cultural_{{ fc.id }}');
-    {% endfor %}
-    {% endif %}
-    // Select2 en todos los select de fit cultural (por selector, por si el formulario se re-renderiza)
-    if (typeof $ !== 'undefined' && $.fn.select2) {
-        $('select[id^="id_fit_cultural_"]').each(function() {
-            if (!$(this).hasClass('select2-hidden-accessible')) {
-                $(this).select2({ width: '100%', placeholder: 'Seleccione una opción', allowClear: true });
-            }
+    {% if puede_editar_secciones %}
+    document.querySelectorAll('form.form-ajax-seccion').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var url = form.getAttribute('data-url');
+            if (!url) return;
+            var fd = new FormData(form);
+            var csrf = fd.get('csrfmiddlewaretoken');
+            fetch(url, { method: 'POST', body: fd, headers: { 'X-CSRFToken': csrf }, credentials: 'same-origin' })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.ok) {
+                        var okText = data.message || 'Datos guardados correctamente.';
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Guardado',
+                                text: okText,
+                                confirmButtonText: 'Aceptar',
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                buttonsStyling: false
+                            }).then(function() { window.location.reload(); });
+                        } else {
+                            window.alert(okText);
+                            window.location.reload();
+                        }
+                    } else {
+                        var err = data.error || 'No se pudo guardar.';
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'No se pudo guardar',
+                                text: err,
+                                confirmButtonText: 'Aceptar',
+                                customClass: { confirmButton: 'btn btn-primary' },
+                                buttonsStyling: false
+                            });
+                        } else {
+                            window.alert(err);
+                        }
+                    }
+                })
+                .catch(function() {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error de red',
+                            text: 'Compruebe su conexión e intente de nuevo.',
+                            confirmButtonText: 'Aceptar',
+                            customClass: { confirmButton: 'btn btn-primary' },
+                            buttonsStyling: false
+                        });
+                    } else {
+                        window.alert('Error de red');
+                    }
+                });
         });
-    }
-
-    // Select2 para calificación de cada motivador
-    {% if motivadores_vacante %}
-    {% for m in motivadores_vacante %}
-    initializeSelect2('#id_motivador_{{ m.id }}');
-    {% endfor %}
+    });
     {% endif %}
-    if (typeof $ !== 'undefined' && $.fn.select2) {
-        $('select[id^="id_motivador_"]').each(function() {
-            if (!$(this).hasClass('select2-hidden-accessible')) {
-                $(this).select2({ width: '100%', placeholder: 'Seleccione una opción', allowClear: true });
-            }
-        });
-    }
 
     // DataTable: Requisitos cargados (inicializar cuando se muestre la pestaña)
     var dataTableConfigRequisitos = {
@@ -800,6 +1166,7 @@ Detalle vacante
     });
 </script>
 <style>
+    .interview-hover-bg-light:hover { background-color: #f8f9fa !important; }
     /* Ajustar alineación de la X en select2 para todos los campos */
     .select2-container .select2-selection--single .select2-selection__clear {
         position: absolute !important;

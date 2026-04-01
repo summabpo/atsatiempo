@@ -6,6 +6,7 @@ url_principal = 'entrevista/'
 urlpatterns = [
     #client_user
     path( url_principal+'gestionar/<int:pk>/', client_views.management_interview, name='entrevistar_gestionar_cliente'),
+    path( url_principal+'gestionar/<int:pk>/guardar-seccion/', client_views.save_interview_section, name='entrevistar_guardar_seccion_cliente'),
     path( url_principal+'listado/cliente/', client_views.interview_list, name='entrevistas_listado_cliente'),
 
     #client_analyst_user

@@ -17,6 +17,20 @@ def _fecha_actual_bogota():
     return timezone.now().astimezone(_BOGOTA_TZ).date()
 
 
+def _widget_calificacion_numerica():
+    return forms.NumberInput(
+        attrs={
+            'class': 'form-control form-control-solid',
+            'min': 1,
+            'max': 10,
+            'step': 1,
+            'inputmode': 'numeric',
+            'autocomplete': 'off',
+            'title': 'Calificación de 1 a 10',
+        }
+    )
+
+
 class EntrevistaCrearForm(forms.Form):
     # Campos del usuario
     fecha_entrevista = forms.DateField(
@@ -215,19 +229,18 @@ class EntrevistaGestionForm(forms.Form):
     )
 
     # 4. PRUEBAS (Resultados y análisis psicotécnicos)
-    prueba_calificacion = forms.ChoiceField(
-        choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+    prueba_calificacion = forms.IntegerField(
         label='Calificar',
         required=True,
-        help_text='Escala del 1 al 10',
-        widget=forms.Select(attrs={
-            'class': 'form-select form-select-solid',
-            'data-control': 'select2',
-        })
+        min_value=1,
+        max_value=10,
+        help_text='Ingrese un número del 1 al 10.',
+        widget=_widget_calificacion_numerica(),
     )
     prueba_observaciones = forms.CharField(
         label='Observaciones',
-        required=False,
+        required=True,
+        min_length=1,
         widget=forms.Textarea(attrs={
             'placeholder': 'Observaciones sobre resultados y análisis psicotécnicos...',
             'rows': 3,
@@ -242,19 +255,18 @@ class EntrevistaGestionForm(forms.Form):
     )
 
     # 5. INDICE Y CONFIABILIDAD DEL RIESGO
-    confiabilidad_riesgo_calificacion = forms.ChoiceField(
-        choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+    confiabilidad_riesgo_calificacion = forms.IntegerField(
         label='Calificar',
         required=True,
-        help_text='Escala del 1 al 10',
-        widget=forms.Select(attrs={
-            'class': 'form-select form-select-solid',
-            'data-control': 'select2',
-        })
+        min_value=1,
+        max_value=10,
+        help_text='Ingrese un número del 1 al 10.',
+        widget=_widget_calificacion_numerica(),
     )
     confiabilidad_riesgo_observaciones = forms.CharField(
         label='Observaciones',
-        required=False,
+        required=True,
+        min_length=1,
         widget=forms.Textarea(attrs={
             'placeholder': 'Observaciones sobre índice y confiabilidad del riesgo...',
             'rows': 3,
@@ -274,14 +286,15 @@ class EntrevistaGestionForm(forms.Form):
         motivadores = kwargs.pop('motivadores', None) or []
         super().__init__(*args, **kwargs)
 
-        # Campos dinámicos: observaciones + calificación (Select2) por cada habilidad de la vacante
+        # Campos dinámicos: observaciones + calificación numérica (1–10) por cada habilidad de la vacante
         self.habilidades_list = list(habilidades)
         for h in self.habilidades_list:
             obs_name = f'habilidad_{h.id}_observacion'
             cal_name = f'habilidad_{h.id}'
             self.fields[obs_name] = forms.CharField(
                 label='Observaciones',
-                required=False,
+                required=True,
+                min_length=1,
                 widget=forms.Textarea(attrs={
                     'placeholder': f'Observaciones sobre {h.nombre}...',
                     'rows': 3,
@@ -289,15 +302,13 @@ class EntrevistaGestionForm(forms.Form):
                     'class': 'form-control form-control-solid',
                 }),
             )
-            self.fields[cal_name] = forms.ChoiceField(
-                choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+            self.fields[cal_name] = forms.IntegerField(
                 label='Calificar',
                 required=True,
-                help_text='Escala del 1 al 10',
-                widget=forms.Select(attrs={
-                    'class': 'form-select form-select-solid',
-                    'data-control': 'select2',
-                }),
+                min_value=1,
+                max_value=10,
+                help_text='Ingrese un número del 1 al 10.',
+                widget=_widget_calificacion_numerica(),
             )
 
         # Campos dinámicos: calificación + observaciones por cada ítem de fit cultural de la vacante
@@ -307,7 +318,8 @@ class EntrevistaGestionForm(forms.Form):
             cal_name = f'fit_cultural_{fc.id}'
             self.fields[obs_name] = forms.CharField(
                 label='Observaciones',
-                required=False,
+                required=True,
+                min_length=1,
                 widget=forms.Textarea(attrs={
                     'placeholder': f'Observaciones sobre {fc.nombre}...',
                     'rows': 3,
@@ -315,15 +327,13 @@ class EntrevistaGestionForm(forms.Form):
                     'class': 'form-control form-control-solid',
                 }),
             )
-            self.fields[cal_name] = forms.ChoiceField(
-                choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+            self.fields[cal_name] = forms.IntegerField(
                 label='Calificar',
                 required=True,
-                help_text='Escala del 1 al 10',
-                widget=forms.Select(attrs={
-                    'class': 'form-select form-select-solid',
-                    'data-control': 'select2',
-                }),
+                min_value=1,
+                max_value=10,
+                help_text='Ingrese un número del 1 al 10.',
+                widget=_widget_calificacion_numerica(),
             )
 
         # Campos dinámicos: calificación + observaciones por cada motivador de la vacante
@@ -333,7 +343,8 @@ class EntrevistaGestionForm(forms.Form):
             cal_name = f'motivador_{m.id}'
             self.fields[obs_name] = forms.CharField(
                 label='Observaciones',
-                required=False,
+                required=True,
+                min_length=1,
                 widget=forms.Textarea(attrs={
                     'placeholder': f'Observaciones sobre {m.nombre}...',
                     'rows': 3,
@@ -341,15 +352,13 @@ class EntrevistaGestionForm(forms.Form):
                     'class': 'form-control form-control-solid',
                 }),
             )
-            self.fields[cal_name] = forms.ChoiceField(
-                choices=[('', 'Seleccione...')] + [(i, str(i)) for i in range(1, 11)],
+            self.fields[cal_name] = forms.IntegerField(
                 label='Calificar',
                 required=True,
-                help_text='Escala del 1 al 10',
-                widget=forms.Select(attrs={
-                    'class': 'form-select form-select-solid',
-                    'data-control': 'select2',
-                }),
+                min_value=1,
+                max_value=10,
+                help_text='Ingrese un número del 1 al 10.',
+                widget=_widget_calificacion_numerica(),
             )
 
         # Configuración de Crispy Forms
@@ -364,7 +373,7 @@ class EntrevistaGestionForm(forms.Form):
         if self.habilidades_list:
             habilidades_layout = [
                 HTML("<h4 class='mb-3 text-primary'>1. MATCH 360 PREDICTIVCO DEL TALENTO (CONCEPTO DE LAS HABILIDADES)</h4>"),
-                HTML("<p class='text-muted small mb-3'>Califique cada habilidad de 1 a 10 y agregue observaciones según lo observado en la entrevista.</p>"),
+                HTML("<p class='text-muted small mb-3'>Califique cada habilidad de 1 a 10 y agregue <strong>observaciones obligatorias</strong> según lo observado en la entrevista.</p>"),
             ]
             for i, h in enumerate(self.habilidades_list):
                 if i > 0:
@@ -383,7 +392,7 @@ class EntrevistaGestionForm(forms.Form):
         if self.fit_cultural_list:
             fit_layout = [
                 HTML("<h4 class='mb-3 text-primary'>2. FIT CULTURAL</h4>"),
-                HTML("<p class='text-muted small mb-3'>Califique cada ítem de fit cultural de 1 a 10 y agregue observaciones según lo observado en la entrevista.</p>"),
+                HTML("<p class='text-muted small mb-3'>Califique cada ítem de fit cultural de 1 a 10 y agregue <strong>observaciones obligatorias</strong> según lo observado en la entrevista.</p>"),
             ]
             for i, fc in enumerate(self.fit_cultural_list):
                 if i > 0:
@@ -402,7 +411,7 @@ class EntrevistaGestionForm(forms.Form):
         if self.motivadores_list:
             motivadores_layout = [
                 HTML("<h4 class='mb-3 text-primary'>3. MOTIVADORES</h4>"),
-                HTML("<p class='text-muted small mb-3'>Califique cada motivador de 1 a 10 y agregue observaciones según lo observado en la entrevista.</p>"),
+                HTML("<p class='text-muted small mb-3'>Califique cada motivador de 1 a 10 y agregue <strong>observaciones obligatorias</strong> según lo observado en la entrevista.</p>"),
             ]
             for i, m in enumerate(self.motivadores_list):
                 if i > 0:
@@ -434,7 +443,7 @@ class EntrevistaGestionForm(forms.Form):
             Div(
                 Div(
                     HTML("<h4 class='mb-3 text-primary'>5. INDICE Y CONFIABILIDAD DEL RIESGO</h4>"),
-                    HTML("<p class='text-muted small mb-3'>Califique de 1 a 10, agregue observaciones y opcionalmente cargue el documento de índice y confiabilidad del riesgo.</p>"),
+                    HTML("<p class='text-muted small mb-3'>Califique de 1 a 10, <strong>observaciones obligatorias</strong>; opcionalmente cargue el documento de índice y confiabilidad del riesgo.</p>"),
                     Div('confiabilidad_riesgo_calificacion', css_class='col-12 mb-2'),
                     Div('confiabilidad_riesgo_observaciones', css_class='col-12 mb-2'),
                     Div('confiabilidad_riesgo_cargado', css_class='col-12 mb-4'),
@@ -473,4 +482,46 @@ class EntrevistaGestionForm(forms.Form):
         if estado_asignacion == '':
             self.add_error('estado_asignacion', 'Debe seleccionar un estado.')
 
+        return cleaned_data
+
+
+class EntrevistaFinalizarForm(forms.Form):
+    """Solo observación y decisión (Apto / No Apto). El JSON de evaluación se guarda por secciones."""
+    ESTADO_ASIGNACION = [
+        (2, 'Apto'),
+        (3, 'No Apto'),
+    ]
+
+    observacion = forms.CharField(
+        label='Observaciones',
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Escriba aquí el resumen del criterio y los comentarios finales para el expediente…',
+                'rows': 6,
+                'class': 'form-control form-control-solid w-100',
+                'style': 'min-height: 10rem; resize: vertical;',
+            }
+        ),
+    )
+
+    estado_asignacion = forms.ChoiceField(
+        choices=[('', 'Seleccione...')] + list(ESTADO_ASIGNACION),
+        label='Calificar',
+        required=True,
+        widget=forms.Select(
+            attrs={
+                'class': 'form-select form-select-solid form-select-lg',
+            }
+        ),
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        observacion = cleaned_data.get('observacion')
+        estado_asignacion = cleaned_data.get('estado_asignacion')
+        if not observacion:
+            self.add_error('observacion', 'La observación no puede estar vacía.')
+        if estado_asignacion == '' or estado_asignacion is None:
+            self.add_error('estado_asignacion', 'Debe seleccionar un estado.')
         return cleaned_data
