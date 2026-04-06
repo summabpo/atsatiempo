@@ -1,7 +1,6 @@
-{% extends 'admin/layout/dashboard_base.html' %} 
-
+{% extends 'admin/layout/dashboard_base.html' %}
 {% load static %}
-{% load crispy_forms_tags %}
+{% load custom_tags %}
 
 {% block title %}
 Detalle vacante
@@ -10,53 +9,250 @@ Detalle vacante
 {% block content %}
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-		<h3 class="mb-0" style="color: #B10022;">DETALLE VACANTE: </h3>
+		<h3 class="mb-0" style="color: #B10022;">DETALLE VACANTE</h3>
 		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
 			<ol class="breadcrumb align-items-center mb-0 lh-1">
 				<li class="breadcrumb-item">
-					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+					<a href="{% if request.session.grupo_id == 7 %}{% url 'accesses:inicio_reclutador' %}{% else %}{% url 'accesses:inicio' %}{% endif %}" class="d-flex align-items-center text-decoration-none">
 						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
-						<span class="text-secondary fw-medium hover" >Inicio</span>
+						<span class="text-secondary fw-medium hover">Inicio</span>
 					</a>
 				</li>
 				{% if request.session.grupo_id == 1 %}
-                <li class="breadcrumb-item active" aria-current="page">
+				<li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
-						<span class="text-secondary fw-medium hover" >Listado de Vacantes</span>
+						<span class="text-secondary fw-medium hover">Listado de Vacantes</span>
+					</a>
+				</li>
+				{% endif %}
+				{% if request.session.grupo_id == 3 %}
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover">Listado de Vacantes</span>
 					</a>
 				</li>
 				{% endif %}
 				{% if request.session.grupo_id == 5 %}
 				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_asignadas' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover">Vacantes asignadas</span>
+					</a>
+				</li>
+				{% endif %}
+				{% if request.session.grupo_id == 6 %}
+				<li class="breadcrumb-item active" aria-current="page">
 					<a href="{% url 'vacantes:vacantes_asignadas_analista_interno' %}" class="d-flex align-items-center text-decoration-none">
-						<span class="text-secondary fw-medium hover">Vacantes Asignadas</span>
+						<span class="text-secondary fw-medium hover">Vacantes asignadas</span>
 					</a>
 				</li>
 				{% endif %}
 				<li class="breadcrumb-item active" aria-current="page">
-					<span class="fw-medium">Detalle Vacante</span>
+					<span class="fw-medium">Detalle vacante</span>
 				</li>
 			</ol>
 		</nav>
 	</div>
-    <div class="row">
-		<div class="col-3">
-            {% include "admin/vacancy/common_template/info_vacancy.html" %}
-        </div>
-		<div class="col-9">
-            {% include "admin/vacancy/common_template/metrics_menu_vacancy.html" %}
-            <!-- Inicio de Contenido -->
-            <div class="card border-0 rounded-2 p-4 bg-white mb-4">
-                <div class="card-body p-4">
-					{% include 'admin/vacancy/partials/form_vacancy.html' %}
+
+	{# Panel resumen — alineado al estilo de listados / gestión de vacantes #}
+	<div class="card border-0 rounded-2 bg-white mb-4 shadow-sm overflow-hidden">
+		<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+			<h2 class="fs-16 fw-semibold mb-0 text-primary">Resumen de la vacante</h2>
+		</div>
+		<div class="card-body p-4">
+			<div class="d-flex flex-column flex-xl-row align-items-stretch align-items-xl-center justify-content-between gap-3 gap-xl-4">
+				<div class="d-flex align-items-start gap-3 flex-grow-1 min-w-0">
+					{% if vacante.asignacion_cliente_id_064 and vacante.asignacion_cliente_id_064.id_cliente_asignado.logo %}
+						<img src="{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.logo.url }}" alt="" class="flex-shrink-0 rounded-2 border" style="width: 56px; height: 56px; object-fit: cover;">
+					{% else %}
+						<img src="{% static 'admin/images/default_company_logo.png' %}" alt="" class="flex-shrink-0 rounded-2 border bg-light p-1" style="width: 56px; height: 56px; object-fit: contain;">
+					{% endif %}
+					<div class="min-w-0 flex-grow-1">
+						<h4 class="fs-18 fw-semibold mb-2 text-dark text-truncate" title="{{ vacante.titulo }}">{{ vacante.titulo }}</h4>
+						<div class="d-flex flex-wrap align-items-center column-gap-3 row-gap-2">
+							{% if vacante.cargo %}
+								<span class="fs-14 text-secondary fw-medium text-truncate" style="max-width: 100%;">{{ vacante.cargo.nombre_cargo }}</span>
+							{% endif %}
+							<span class="d-inline-flex align-items-center gap-1 flex-wrap">
+								<span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size: 22px;">location_on</span>
+								<span class="fs-11 text-secondary text-uppercase">Ciudad</span>
+								<span class="fs-14 fw-semibold text-dark">
+									{% if vacante.perfil_vacante and vacante.perfil_vacante.lugar_trabajo %}
+										{{ vacante.perfil_vacante.lugar_trabajo.nombre }}
+									{% else %}
+										—
+									{% endif %}
+								</span>
+							</span>
+							<span class="d-inline-flex align-items-center gap-1 flex-wrap">
+								<span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size: 22px;">payments</span>
+								<span class="fs-11 text-secondary text-uppercase">Salario</span>
+								<span class="fs-14 fw-semibold text-dark">
+									{% if vacante.perfil_vacante and vacante.perfil_vacante.salario %}
+										${{ vacante.perfil_vacante.salario|format_number }}
+										<span class="fw-normal text-secondary fs-13">· {{ vacante.perfil_vacante.get_tipo_salario_display }}</span>
+									{% else %}
+										—
+									{% endif %}
+								</span>
+							</span>
+						</div>
+						<div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+							<span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border fs-12 fw-medium">ID {{ vacante.id }}</span>
+							<span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border fs-12 fw-medium">{{ vacante.get_estado_vacante_display }}</span>
+						</div>
+					</div>
+				</div>
+				<div class="d-flex align-items-center justify-content-end justify-content-xl-center flex-shrink-0 ms-xl-auto">
+					<button type="button"
+						class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3 border-0 d-inline-flex align-items-center gap-1 rounded-2"
+						data-bs-toggle="modal"
+						data-bs-target="#modalVacancyFullDetail"
+						title="Ver detalle completo">
+						<span class="material-symbols-outlined fs-18">open_in_new</span>
+						<span>Ver detalle completo</span>
+					</button>
 				</div>
 			</div>
-			<!-- Fin de Contenido -->
-        </div>
-    </div>
+		</div>
+	</div>
+
+	<div class="row g-4 mb-4">
+		<div class="col-xxl-5 col-lg-6">
+			<div class="card border-0 rounded-2 bg-white shadow-sm overflow-hidden h-100">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+					<h2 class="fs-16 fw-semibold mb-0 text-primary">Responsables del proceso</h2>
+				</div>
+				<div class="card-body p-0">
+					<div class="default-table-area style-two top-instructors">
+						<div class="table-responsive">
+							<table class="table align-middle text-center border-0 mb-0">
+								<tbody>
+									<tr>
+										<td class="text-center">
+											<div class="d-flex flex-column align-items-center gap-2 mx-auto" style="max-width: 16rem;">
+												<div class="flex-shrink-0">
+													<img src="{% static 'admin/images/blank.png' %}" class="wh-44 rounded-circle object-fit-cover" alt="">
+												</div>
+												<div class="text-center min-w-0 w-100">
+													{% if data.cliente %}
+														<h6 class="mb-0 fs-14 fw-medium text-break">{{ data.cliente.contacto }}</h6>
+														<span class="fs-12 text-body d-block mt-1">Responsable del proceso</span>
+													{% else %}
+														<h6 class="mb-0 fs-14 fw-medium text-secondary">Sin asignar</h6>
+														<span class="fs-12 text-body d-block mt-1">Responsable del proceso</span>
+													{% endif %}
+												</div>
+											</div>
+										</td>
+										<td class="fs-13 text-secondary text-center">
+											{% if data.cliente and data.cliente.contacto_cargo %}{{ data.cliente.contacto_cargo }}{% else %}—{% endif %}
+										</td>
+										<td class="fs-13 text-center">
+											{% if data.cliente and data.cliente.email %}
+												<a href="mailto:{{ data.cliente.email }}" class="text-decoration-none text-break link-secondary d-inline-block">{{ data.cliente.email }}</a>
+											{% else %}
+												<span class="text-secondary">—</span>
+											{% endif %}
+										</td>
+									</tr>
+									<tr>
+										<td class="text-center">
+											<div class="d-flex flex-column align-items-center gap-2 mx-auto" style="max-width: 16rem;">
+												<div class="flex-shrink-0">
+													{% if vacante.usuario_asignado and vacante.usuario_asignado.imagen_perfil and vacante.usuario_asignado.imagen_perfil.name %}
+														<img src="{{ vacante.usuario_asignado.imagen_perfil.url }}" class="wh-44 rounded-circle object-fit-cover" alt="">
+													{% else %}
+														<img src="{% static 'admin/images/blank.png' %}" class="wh-44 rounded-circle object-fit-cover" alt="">
+													{% endif %}
+												</div>
+												<div class="text-center min-w-0 w-100">
+													{% if vacante.usuario_asignado %}
+														<h6 class="mb-0 fs-14 fw-medium text-break">{{ vacante.usuario_asignado.primer_nombre }} {{ vacante.usuario_asignado.segundo_nombre }} {{ vacante.usuario_asignado.primer_apellido }} {{ vacante.usuario_asignado.segundo_apellido }}</h6>
+														<span class="fs-12 text-body d-block mt-1">Analista de selección</span>
+													{% else %}
+														<h6 class="mb-0 fs-14 fw-medium text-secondary">Sin asignar</h6>
+														<span class="fs-12 text-body d-block mt-1">Analista de selección</span>
+													{% endif %}
+												</div>
+											</div>
+										</td>
+										<td class="fs-13 text-secondary text-center">
+											{% if vacante.usuario_asignado and vacante.usuario_asignado.group %}{{ vacante.usuario_asignado.group.name }}{% else %}—{% endif %}
+										</td>
+										<td class="fs-13 text-center">
+											{% if vacante.usuario_asignado and vacante.usuario_asignado.email %}
+												<a href="mailto:{{ vacante.usuario_asignado.email }}" class="text-decoration-none text-break link-secondary d-inline-block">{{ vacante.usuario_asignado.email }}</a>
+											{% else %}
+												<span class="text-secondary">—</span>
+											{% endif %}
+										</td>
+									</tr>
+									<tr>
+										<td class="text-center">
+											<div class="d-flex flex-column align-items-center gap-2 mx-auto" style="max-width: 16rem;">
+												<div class="flex-shrink-0">
+													{% if vacante.asignacion_reclutador and vacante.asignacion_reclutador.imagen_perfil and vacante.asignacion_reclutador.imagen_perfil.name %}
+														<img src="{{ vacante.asignacion_reclutador.imagen_perfil.url }}" class="wh-44 rounded-circle object-fit-cover" alt="">
+													{% else %}
+														<img src="{% static 'admin/images/blank.png' %}" class="wh-44 rounded-circle object-fit-cover" alt="">
+													{% endif %}
+												</div>
+												<div class="text-center min-w-0 w-100">
+													{% if vacante.asignacion_reclutador %}
+														<h6 class="mb-0 fs-14 fw-medium text-break">{{ vacante.asignacion_reclutador.primer_nombre }} {{ vacante.asignacion_reclutador.segundo_nombre }} {{ vacante.asignacion_reclutador.primer_apellido }} {{ vacante.asignacion_reclutador.segundo_apellido }}</h6>
+														<span class="fs-12 text-body d-block mt-1">Reclutador</span>
+													{% else %}
+														<h6 class="mb-0 fs-14 fw-medium text-secondary">Sin asignar</h6>
+														<span class="fs-12 text-body d-block mt-1">Reclutador</span>
+													{% endif %}
+												</div>
+											</div>
+										</td>
+										<td class="fs-13 text-secondary text-center">
+											{% if vacante.asignacion_reclutador and vacante.asignacion_reclutador.group %}{{ vacante.asignacion_reclutador.group.name }}{% else %}—{% endif %}
+										</td>
+										<td class="fs-13 text-center">
+											{% if vacante.asignacion_reclutador and vacante.asignacion_reclutador.email %}
+												<a href="mailto:{{ vacante.asignacion_reclutador.email }}" class="text-decoration-none text-break link-secondary d-inline-block">{{ vacante.asignacion_reclutador.email }}</a>
+											{% else %}
+												<span class="text-secondary">—</span>
+											{% endif %}
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{# Modal: presentation_vacancy (mismo lenguaje visual que pestaña Información analista ATS) #}
+	<div class="modal fade" id="modalVacancyFullDetail" tabindex="-1" aria-labelledby="modalVacancyFullDetailLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+			<div class="modal-content border-0 rounded-2 shadow-sm bg-white overflow-hidden">
+				<div class="modal-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-0">
+					<h2 class="modal-title fs-16 fw-semibold text-primary mb-0" id="modalVacancyFullDetailLabel">
+						Detalle de la vacante · {{ vacante.titulo|truncatechars:60 }}
+					</h2>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+				</div>
+				<div class="modal-body p-3 p-md-4 bg-white">
+					{% include 'admin/vacancy/partials/presentation_vacancy.html' %}
+				</div>
+				<div class="modal-footer border-0 border-top py-3 px-4 bg-white">
+					<button type="button"
+						class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 border-0 rounded-2"
+						data-bs-dismiss="modal">
+						Cerrar
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}
 
-{% block js %} 
-{% include 'admin/vacancy/partials/js_form_vacancy.html' %} 
-{% endblock js %}
+{% block js %}
+{% endblock %}

@@ -23,7 +23,12 @@ from django.db.models.functions import Concat
 from applications.vacante.forms.VacanteForms import VacancyAssignRecruiterForm, VacancyAssingForm, VacancyFormAllV2, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll
 
 #views
-from applications.services.service_vacanty import get_vacanty_questions, query_vacanty_all
+from applications.services.service_vacanty import (
+    get_vacanty_questions,
+    query_vacanty_all,
+    reclutados_primeros_cinco_por_vacante,
+    seleccionados_preview_por_vacante,
+)
 
 #query
 from applications.services.service_client import query_client_detail
@@ -88,10 +93,23 @@ def create_vacanty(request):
 @validar_permisos('acceso_admin')
 def list_vacanty_all(request):
 
-    vacantes = query_vacanty_all()
+    vacantes = list(query_vacanty_all().order_by('-fecha_creacion', '-id'))
+    vacante_ids = [v.id for v in vacantes]
+    primeros_reclutados = reclutados_primeros_cinco_por_vacante(vacante_ids)
+    prev_ats, prev_cli = seleccionados_preview_por_vacante(vacante_ids)
+    for v in vacantes:
+        v.reclutados_preview = primeros_reclutados.get(v.id, [])
+        total = getattr(v, 'personas_reclutadas', 0) or 0
+        v.reclutados_restantes = max(0, total - 5)
+        v.seleccionados_preview_ats = prev_ats.get(v.id, [])
+        v.seleccionados_preview_cliente = prev_cli.get(v.id, [])
+        n_ats = getattr(v, 'candidatos_seleccionados', 0) or 0
+        n_cli = getattr(v, 'seleccionados', 0) or 0
+        v.seleccionados_restantes_ats = max(0, n_ats - 5)
+        v.seleccionados_restantes_cliente = max(0, n_cli - 5)
 
     context = {
-        'vacantes': vacantes
+        'vacantes': vacantes,
     }
 
     return render(request, 'admin/vacancy/admin_user/vacancy_all.html', context)

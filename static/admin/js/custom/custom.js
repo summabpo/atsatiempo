@@ -1,6 +1,72 @@
 (function () {
 	"use strict";
 
+	var SIDEBAR_THEME_STORAGE_KEY = "ats_admin_sidebar_data_theme";
+	var SIDEBAR_THEME_COOKIE = "ats_sb_sidebar_dt";
+
+	function setSidebarDataThemeOnDom(theme) {
+		if (theme !== "sidebar-hide" && theme !== "sidebar-show") {
+			return;
+		}
+		document.documentElement.setAttribute("sidebar-data-theme", theme);
+		document.body.setAttribute("sidebar-data-theme", theme);
+	}
+
+	function readSidebarThemeCookie() {
+		try {
+			var m = document.cookie.match(
+				new RegExp("(?:^|;\\s*)" + SIDEBAR_THEME_COOKIE + "=([^;]+)")
+			);
+			return m ? decodeURIComponent(m[1].trim()) : null;
+		} catch (e) {
+			return null;
+		}
+	}
+
+	function writeSidebarThemeCookie(theme) {
+		try {
+			document.cookie =
+				SIDEBAR_THEME_COOKIE +
+				"=" +
+				encodeURIComponent(theme) +
+				";path=/;max-age=31536000;SameSite=Lax";
+		} catch (e) {}
+	}
+
+	function persistSidebarDataTheme(theme) {
+		if (theme !== "sidebar-hide" && theme !== "sidebar-show") {
+			return;
+		}
+		setSidebarDataThemeOnDom(theme);
+		try {
+			localStorage.setItem(SIDEBAR_THEME_STORAGE_KEY, theme);
+			sessionStorage.setItem(SIDEBAR_THEME_STORAGE_KEY, theme);
+		} catch (e) {}
+		writeSidebarThemeCookie(theme);
+	}
+
+	function applySidebarThemeFromStorage() {
+		var v = "";
+		try {
+			v =
+				localStorage.getItem(SIDEBAR_THEME_STORAGE_KEY) ||
+				sessionStorage.getItem(SIDEBAR_THEME_STORAGE_KEY) ||
+				readSidebarThemeCookie() ||
+				"";
+		} catch (e) {
+			v = readSidebarThemeCookie() || "";
+		}
+		v = String(v).trim();
+		if (v !== "sidebar-hide" && v !== "sidebar-show") {
+			v = "sidebar-show";
+		}
+		setSidebarDataThemeOnDom(v);
+	}
+
+	applySidebarThemeFromStorage();
+	document.addEventListener("DOMContentLoaded", applySidebarThemeFromStorage);
+	window.addEventListener("load", applySidebarThemeFromStorage);
+
 	window.onload = function () {
 
 		// Preloader JS
@@ -44,22 +110,23 @@
 	let menu, animate;
 
 	(function () {
-		// Initialize menu
-		let layoutMenuEl = document.querySelectorAll('#layout-menu');
-		layoutMenuEl.forEach(function (element) {
-			menu = new Menu(element, {
-				orientation: 'vertical',
-				closeChildren: false
+		try {
+			let layoutMenuEl = document.querySelectorAll("#layout-menu");
+			layoutMenuEl.forEach(function (element) {
+				menu = new Menu(element, {
+					orientation: "vertical",
+					closeChildren: false
+				});
+				window.Helpers.scrollToActive((animate = false));
+				window.Helpers.mainMenu = menu;
 			});
-			// Change parameter to true if you want scroll animation
-			window.Helpers.scrollToActive((animate = false));
-			window.Helpers.mainMenu = menu;
-		});
-
+		} catch (e) {}
 	})();
 
 	// Feather Icons
-	feather.replace();
+	try {
+		feather.replace();
+	} catch (e) {}
 
 	// Header Burger Button
 	const getHeaderBurgerMenuId = document.getElementById('header-burger-menu');
@@ -67,9 +134,9 @@
 		const switchtoggle = document.querySelector(".header-burger-menu");
 		switchtoggle.addEventListener("click", function () {
 			if (document.body.getAttribute("sidebar-data-theme") === "sidebar-hide") {
-				document.body.setAttribute("sidebar-data-theme", "sidebar-show");
+				persistSidebarDataTheme("sidebar-show");
 			} else {
-				document.body.setAttribute("sidebar-data-theme", "sidebar-hide");
+				persistSidebarDataTheme("sidebar-hide");
 			}
 		});
 	}
@@ -80,9 +147,9 @@
 		const switchtoggle = document.querySelector(".sidebar-burger-menu");
 		switchtoggle.addEventListener("click", function () {
 			if (document.body.getAttribute("sidebar-data-theme") === "sidebar-hide") {
-				document.body.setAttribute("sidebar-data-theme", "sidebar-show");
+				persistSidebarDataTheme("sidebar-show");
 			} else {
-				document.body.setAttribute("sidebar-data-theme", "sidebar-hide");
+				persistSidebarDataTheme("sidebar-hide");
 			}
 		});
 	}

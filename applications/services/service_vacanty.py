@@ -1,10 +1,62 @@
+from collections import defaultdict
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q, Value, Case, When, CharField
 from django.db.models.functions import Concat
 
+from applications.reclutado.models import Cli056AplicacionVacante
 
-#consulta vacantes
+# consulta vacantes
 from applications.vacante.models import Cli052Vacante
+
+
+def reclutados_primeros_cinco_por_vacante(vacante_ids):
+    """
+    Por cada vacante, hasta 5 aplicaciones en estado reclutado (8 o 13),
+    en orden cronológico por fecha de aplicación (los primeros reclutados).
+    """
+    if not vacante_ids:
+        return {}
+    buckets = defaultdict(list)
+    qs = (
+        Cli056AplicacionVacante.objects.filter(
+            vacante_id_052_id__in=vacante_ids,
+            estado_aplicacion__in=[8, 13],
+        )
+        .select_related('candidato_101')
+        .order_by('vacante_id_052', 'fecha_aplicacion')
+    )
+    for app in qs.iterator(chunk_size=2000):
+        bid = app.vacante_id_052_id
+        if len(buckets[bid]) < 5:
+            buckets[bid].append(app)
+    return dict(buckets)
+
+
+def seleccionados_preview_por_vacante(vacante_ids, max_por_estado=5):
+    """
+    Por vacante y por estado: hasta 5 aplicaciones con estado 8 (Seleccionado)
+    y hasta 5 con estado 13 (Seleccionado por cliente), orden cronológico.
+    Retorna (dict_ats, dict_cliente).
+    """
+    if not vacante_ids:
+        return {}, {}
+    buckets_8 = defaultdict(list)
+    buckets_13 = defaultdict(list)
+    for estado, buckets in ((8, buckets_8), (13, buckets_13)):
+        qs = (
+            Cli056AplicacionVacante.objects.filter(
+                vacante_id_052_id__in=vacante_ids,
+                estado_aplicacion=estado,
+            )
+            .select_related('candidato_101')
+            .order_by('vacante_id_052', 'fecha_aplicacion')
+        )
+        for app in qs.iterator(chunk_size=2000):
+            bid = app.vacante_id_052_id
+            if len(buckets[bid]) < max_por_estado:
+                buckets[bid].append(app)
+    return dict(buckets_8), dict(buckets_13)
 
 
 def query_vacanty_all():
@@ -13,7 +65,8 @@ def query_vacanty_all():
         'cargo',
         'asignacion_cliente_id_064__id_cliente_asignado',
         'asignacion_cliente_id_064__id_cliente_maestro',
-        'usuario_asignado'
+        'usuario_asignado',
+        'asignacion_reclutador',
     ).annotate(
         nombre_completo=Concat(
             F('usuario_asignado__primer_nombre'), Value(' '),
@@ -36,6 +89,14 @@ def query_vacanty_all():
         desistidos=Count('aplicaciones', filter=Q(aplicaciones__estado_aplicacion=11)),
         no_aptas=Count('aplicaciones', filter=Q(aplicaciones__estado_aplicacion=12)),
         seleccionados=Count('aplicaciones', filter=Q(aplicaciones__estado_aplicacion=13)),
+        candidatos_seleccionados=Count(
+            'aplicaciones',
+            filter=Q(aplicaciones__estado_aplicacion=8),
+        ),
+        personas_reclutadas=Count(
+            'aplicaciones',
+            filter=Q(aplicaciones__estado_aplicacion__in=[8, 13]),
+        ),
     )
 
 def query_vacanty_detail():

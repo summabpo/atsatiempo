@@ -7,6 +7,97 @@ Todas las Vacantes
 {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<style>
+    .dataTables_wrapper .dataTables_length select {
+        height: 38px !important;
+        padding: 0.375rem 2.25rem 0.375rem 0.75rem !important;
+        font-size: 0.875rem !important;
+        line-height: 1.5 !important;
+        border-radius: 0.375rem !important;
+    }
+    .dataTables_wrapper .dataTables_length {
+        display: flex;
+        align-items: center;
+    }
+    .dataTables_wrapper .dataTables_length label {
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .equipo-avatars-cell {
+        overflow: visible;
+    }
+    .equipo-avatars-cell ul {
+        overflow: visible;
+    }
+    .vacancy-team-avatar-link {
+        display: inline-block;
+        position: relative;
+        z-index: 1;
+        transition: transform 0.2s ease;
+        line-height: 0;
+    }
+    .vacancy-team-avatar-link:hover {
+        transform: scale(1.14);
+        z-index: 10;
+    }
+    .vacancy-team-avatar-link:focus-visible {
+        outline: 2px solid var(--bs-primary);
+        outline-offset: 2px;
+    }
+    .reclutados-cell {
+        font-variant-numeric: tabular-nums;
+        min-width: 8rem;
+    }
+    .reclutados-avatars-cell {
+        overflow: visible;
+    }
+    .reclutados-avatars-cell ul {
+        overflow: visible;
+    }
+    .seleccionados-avatars-cell {
+        overflow: visible;
+        min-width: 10rem;
+    }
+    .seleccionados-avatars-cell ul {
+        overflow: visible;
+    }
+    .vacancy-recruit-more {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .vacancy-recruit-more:hover {
+        transform: scale(1.08);
+        z-index: 10;
+    }
+    /* Misma línea visual que client_list / listados admin: celdas centradas y contenido largo controlado */
+    .table-vacancy-admin-list thead th {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .table-vacancy-admin-list tbody td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .table-vacancy-admin-list .vacancy-cell-text {
+        max-width: 14rem;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        word-break: break-word;
+    }
+    .vacancy-cliente-logo-row {
+        max-width: 18rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .vacancy-cliente-logo-row .vacancy-cell-text {
+        text-align: start;
+        max-width: 12rem;
+        margin-left: 0;
+    }
+</style>
 <div class="main-content-container overflow-hidden">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
         <h3 class="mb-0" style="color: #B10022;">LISTADO DE VACANTES</h3>
@@ -36,63 +127,167 @@ Todas las Vacantes
                 </a>
             </div>
 
-            <div class="default-table-area all-projects">
-                <div class="table-responsive">
-                    <table class="table align-middle" id="myTable">
+            <div class="row">
+                <div class="col-12">
+                    <div class="default-table-area all-projects">
+                        <div class="table-responsive">
+                            {# id distinto de "myTable": custom.js inicializa RdataTB solo en #myTable #}
+                            <table class="table align-middle text-center table-vacancy-admin-list" id="tableVacantesAdminList" width="100%">
                         <thead>
                             <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Cliente Maestro</th>
-                                <th scope="col">Cliente Asignado</th>
-                                <th scope="col">Cargo</th>
-                                <th scope="col">Fecha Creación</th>
-                                <th scope="col">Cant. Puestos</th>
-                                <th scope="col">Estado</th>
-                                <th scope="col">Acciones</th>
+                                <th scope="col" class="text-center text-nowrap">ID</th>
+                                <th scope="col" class="text-center">Cliente Maestro</th>
+                                <th scope="col" class="text-center">Cliente Asignado</th>
+                                <th scope="col" class="text-center">Cargo</th>
+                                <th scope="col" class="text-center text-nowrap">Fecha Creación</th>
+                                <th scope="col" class="text-center text-nowrap">Cant. Puestos</th>
+                                <th scope="col" class="text-center text-nowrap">Reclutados</th>
+                                <th scope="col" class="text-center text-nowrap">Seleccionados</th>
+                                <th scope="col" class="text-center">Estado</th>
+                                <th scope="col" class="text-center text-nowrap">Equipo</th>
+                                <th scope="col" class="text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for e in vacantes %}
                             <tr>
-                                <td class="text-body">{{ e.id }}</td>
-                                <td class="text-secondary">
+                                <td class="text-body text-center">{{ e.id }}</td>
+                                <td class="text-secondary text-center">
                                     {% if e.asignacion_cliente_id_064 and e.asignacion_cliente_id_064.id_cliente_maestro %}
-                                        {{ e.asignacion_cliente_id_064.id_cliente_maestro.razon_social }}
+                                    {% with m=e.asignacion_cliente_id_064.id_cliente_maestro %}
+                                    <div class="d-flex align-items-center justify-content-center gap-2 vacancy-cliente-logo-row">
+                                        {% if m.logo and m.logo.name %}
+                                        <img src="{{ m.logo.url }}" class="flex-shrink-0 rounded-3 object-fit-cover border border-1 border-light" width="40" height="40" alt="{{ m.razon_social }}">
+                                        {% else %}
+                                        <img src="{% static 'admin/images/blank.png' %}" class="flex-shrink-0 rounded-3 object-fit-cover border border-1 border-light" width="40" height="40" alt="">
+                                        {% endif %}
+                                        <div class="vacancy-cell-text mb-0">
+                                            <span class="fs-14 fw-medium text-body">{{ m.razon_social }}</span>
+                                        </div>
+                                    </div>
+                                    {% endwith %}
                                     {% else %}
-                                        —
+                                    <span class="text-secondary fs-12">—</span>
                                     {% endif %}
                                 </td>
-                                <td class="text-secondary">
+                                <td class="text-secondary text-center">
                                     {% if e.asignacion_cliente_id_064 and e.asignacion_cliente_id_064.id_cliente_asignado %}
-                                        {{ e.asignacion_cliente_id_064.id_cliente_asignado.razon_social }}
+                                    {% with c=e.asignacion_cliente_id_064.id_cliente_asignado %}
+                                    <div class="d-flex align-items-center justify-content-center gap-2 vacancy-cliente-logo-row">
+                                        {% if c.logo and c.logo.name %}
+                                        <img src="{{ c.logo.url }}" class="flex-shrink-0 rounded-3 object-fit-cover border border-1 border-light" width="40" height="40" alt="{{ c.razon_social }}">
+                                        {% else %}
+                                        <img src="{% static 'admin/images/blank.png' %}" class="flex-shrink-0 rounded-3 object-fit-cover border border-1 border-light" width="40" height="40" alt="">
+                                        {% endif %}
+                                        <div class="vacancy-cell-text mb-0">
+                                            <span class="fs-14 fw-medium text-body">{{ c.razon_social }}</span>
+                                        </div>
+                                    </div>
+                                    {% endwith %}
                                     {% else %}
-                                        —
+                                    <span class="text-secondary fs-12">—</span>
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td class="text-center">
+                                    <div class="vacancy-cell-text">
                                     {% if e.cargo %}
                                         <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id %}" class="fw-medium text-primary text-decoration-none">{{ e.cargo.nombre_cargo }}</a>
                                     {% else %}
                                         <span class="text-muted">—</span>
                                     {% endif %}
+                                    </div>
                                 </td>
-                                <td class="text-secondary">{{ e.fecha_creacion|date:"d/m/Y" }}</td>
-                                <td class="text-secondary">{{ e.numero_posiciones }}</td>
-                                <td>
+                                <td class="text-secondary text-center text-nowrap">{{ e.fecha_creacion|date:"d/m/Y" }}</td>
+                                <td class="text-secondary text-center">{{ e.numero_posiciones|default:"—" }}</td>
+                                <td class="reclutados-cell reclutados-avatars-cell align-middle text-center">
+                                    {% if e.personas_reclutadas == 0 %}
+                                        <span class="text-secondary fs-12">—</span>
+                                    {% else %}
+                                        <ul class="ps-0 mb-0 list-unstyled d-flex align-items-center justify-content-center">
+                                            {% for app in e.reclutados_preview %}
+                                            <li{% if not forloop.first %} class="ms-m-15"{% endif %}>
+                                                <a href="javascript:void(0)" class="vacancy-team-avatar-link text-decoration-none" title="{{ app.candidato_101.nombre_completo }} — Reclutado">
+                                                    <img src="{% if app.candidato_101.imagen_perfil and app.candidato_101.imagen_perfil.name %}{{ app.candidato_101.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}" class="wh-34 lh-34 rounded-circle border border-1 border-color-white object-fit-cover" alt="{{ app.candidato_101.nombre_completo }} — Reclutado" title="{{ app.candidato_101.nombre_completo }} — Reclutado">
+                                                </a>
+                                            </li>
+                                            {% endfor %}
+                                            {% if e.personas_reclutadas > 5 %}
+                                            <li class="ms-m-15">
+                                                <a href="javascript:void(0)" class="vacancy-recruit-more wh-34 lh-34 rounded-circle bg-primary d-inline-flex align-items-center justify-content-center text-decoration-none text-white fs-12 fw-medium border border-1 border-color-white" title="{% if e.reclutados_restantes == 1 %}1 reclutado más{% else %}{{ e.reclutados_restantes }} reclutados más{% endif %}">+{{ e.reclutados_restantes }}</a>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center seleccionados-avatars-cell align-middle" data-order="{{ e.personas_reclutadas }}">
+                                    {% if e.candidatos_seleccionados or e.seleccionados %}
+                                    <div class="d-flex flex-column align-items-center gap-2 py-1">
+                                        {% if e.candidatos_seleccionados %}
+                                        <ul class="ps-0 mb-0 list-unstyled d-flex align-items-center justify-content-center">
+                                            {% for app in e.seleccionados_preview_ats %}
+                                            <li{% if not forloop.first %} class="ms-m-15"{% endif %}>
+                                                <a href="javascript:void(0)" class="vacancy-team-avatar-link text-decoration-none" title="{{ app.candidato_101.nombre_completo }}">
+                                                    <img src="{% if app.candidato_101.imagen_perfil and app.candidato_101.imagen_perfil.name %}{{ app.candidato_101.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}" class="wh-34 lh-34 rounded-circle border border-1 border-color-white object-fit-cover" alt="{{ app.candidato_101.nombre_completo }}" title="{{ app.candidato_101.nombre_completo }}">
+                                                </a>
+                                            </li>
+                                            {% endfor %}
+                                            {% if e.candidatos_seleccionados > 5 %}
+                                            <li class="ms-m-15">
+                                                <a href="javascript:void(0)" class="vacancy-recruit-more wh-34 lh-34 rounded-circle bg-success d-inline-flex align-items-center justify-content-center text-decoration-none text-white fs-12 fw-medium border border-1 border-color-white" title="{% if e.seleccionados_restantes_ats == 1 %}1 más{% else %}{{ e.seleccionados_restantes_ats }} más{% endif %}">+{{ e.seleccionados_restantes_ats }}</a>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                        {% endif %}
+                                        {% if e.seleccionados %}
+                                        <ul class="ps-0 mb-0 list-unstyled d-flex align-items-center justify-content-center">
+                                            {% for app in e.seleccionados_preview_cliente %}
+                                            <li{% if not forloop.first %} class="ms-m-15"{% endif %}>
+                                                <a href="javascript:void(0)" class="vacancy-team-avatar-link text-decoration-none" title="{{ app.candidato_101.nombre_completo }}">
+                                                    <img src="{% if app.candidato_101.imagen_perfil and app.candidato_101.imagen_perfil.name %}{{ app.candidato_101.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}" class="wh-34 lh-34 rounded-circle border border-1 border-color-white object-fit-cover" alt="{{ app.candidato_101.nombre_completo }}" title="{{ app.candidato_101.nombre_completo }}">
+                                                </a>
+                                            </li>
+                                            {% endfor %}
+                                            {% if e.seleccionados > 5 %}
+                                            <li class="ms-m-15">
+                                                <a href="javascript:void(0)" class="vacancy-recruit-more wh-34 lh-34 rounded-circle bg-info d-inline-flex align-items-center justify-content-center text-decoration-none text-white fs-12 fw-medium border border-1 border-color-white" title="{% if e.seleccionados_restantes_cliente == 1 %}1 más{% else %}{{ e.seleccionados_restantes_cliente }} más{% endif %}">+{{ e.seleccionados_restantes_cliente }}</a>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                        {% endif %}
+                                    </div>
+                                    {% else %}
+                                    <span class="text-secondary fs-12">—</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
                                     {% if e.vacante_estado %}
                                         <span class="badge bg-primary bg-opacity-10 text-primary p-2 fs-12 fw-normal">{{ e.vacante_estado }}</span>
                                     {% else %}
                                         <span class="badge bg-secondary bg-opacity-10 text-secondary p-2 fs-12 fw-normal">—</span>
                                     {% endif %}
                                 </td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-1">
-                                        <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id %}" class="ps-0 border-0 bg-transparent lh-1 text-primary" title="Ver">
-                                            <i class="material-symbols-outlined fs-16">visibility</i>
+                                <td class="equipo-avatars-cell text-center">
+                                    <ul class="ps-0 mb-0 list-unstyled d-flex align-items-center justify-content-center">
+                                        <li>
+                                            <a href="javascript:void(0)" class="vacancy-team-avatar-link text-decoration-none" title="{% if e.usuario_asignado %}{{ e.usuario_asignado.primer_nombre }} {{ e.usuario_asignado.primer_apellido }} — Analista{% else %}Sin usuario asignado — Analista{% endif %}">
+                                                <img src="{% if e.usuario_asignado and e.usuario_asignado.imagen_perfil and e.usuario_asignado.imagen_perfil.name %}{{ e.usuario_asignado.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}" class="wh-34 lh-34 rounded-circle border border-1 border-color-white object-fit-cover" alt="{% if e.usuario_asignado %}{{ e.usuario_asignado.primer_nombre }} {{ e.usuario_asignado.primer_apellido }} — Analista{% else %}Sin usuario asignado — Analista{% endif %}" title="{% if e.usuario_asignado %}{{ e.usuario_asignado.primer_nombre }} {{ e.usuario_asignado.primer_apellido }} — Analista{% else %}Sin usuario asignado — Analista{% endif %}">
+                                            </a>
+                                        </li>
+                                        <li class="ms-m-15">
+                                            <a href="javascript:void(0)" class="vacancy-team-avatar-link text-decoration-none" title="{% if e.asignacion_reclutador %}{{ e.asignacion_reclutador.primer_nombre }} {{ e.asignacion_reclutador.primer_apellido }} — Reclutador{% else %}Sin usuario asignado — Reclutador{% endif %}">
+                                                <img src="{% if e.asignacion_reclutador and e.asignacion_reclutador.imagen_perfil and e.asignacion_reclutador.imagen_perfil.name %}{{ e.asignacion_reclutador.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}" class="wh-34 lh-34 rounded-circle border border-1 border-color-white object-fit-cover" alt="{% if e.asignacion_reclutador %}{{ e.asignacion_reclutador.primer_nombre }} {{ e.asignacion_reclutador.primer_apellido }} — Reclutador{% else %}Sin usuario asignado — Reclutador{% endif %}" title="{% if e.asignacion_reclutador %}{{ e.asignacion_reclutador.primer_nombre }} {{ e.asignacion_reclutador.primer_apellido }} — Reclutador{% else %}Sin usuario asignado — Reclutador{% endif %}">
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center justify-content-center gap-1 flex-wrap">
+                                        <a href="{% url 'vacantes:vacantes_detalle_cliente' e.id %}" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-1 px-2 border-0" title="Ver">
+                                            <i class="material-symbols-outlined fs-16 align-middle">visibility</i>
                                         </a>
                                         {% if e.asignacion_cliente_id_064 and e.asignacion_cliente_id_064.id_cliente_asignado %}
-                                        <a href="{% url 'vacantes:vacantes_gestion_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="ps-0 border-0 bg-transparent lh-1 text-body" title="Gestionar">
-                                            <i class="material-symbols-outlined fs-16">edit</i>
+                                        <a href="{% url 'vacantes:vacantes_gestion_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-1 px-2 border-0" title="Gestionar">
+                                            <i class="material-symbols-outlined fs-16 align-middle">edit</i>
                                         </a>
                                         {% endif %}
                                     </div>
@@ -100,7 +295,9 @@ Todas las Vacantes
                             </tr>
                             {% endfor %}
                         </tbody>
-                    </table>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -108,8 +305,55 @@ Todas las Vacantes
 </div>
 {% endblock %}
 
-{% block js %} 
+{% block js %}
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 <script>
-    
-</script>  
+$(document).ready(function () {
+    if (typeof $.fn.DataTable === 'undefined') {
+        return;
+    }
+    var $table = $('#tableVacantesAdminList');
+    if (!$table.length) {
+        return;
+    }
+    if ($.fn.DataTable.isDataTable($table)) {
+        $table.DataTable().destroy();
+    }
+    $table.DataTable({
+        dom: '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        language: {
+            lengthMenu: 'Mostrar _MENU_ registros por página',
+            zeroRecords: 'No se encontraron vacantes',
+            info: 'Mostrando _START_ a _END_ de _TOTAL_ vacantes',
+            infoEmpty: 'No hay vacantes disponibles',
+            infoFiltered: '(filtrado de _MAX_ vacantes totales)',
+            search: 'Buscar:',
+            searchPlaceholder: 'Buscar...',
+            paginate: {
+                first: 'Primero',
+                last: 'Último',
+                next: 'Siguiente',
+                previous: 'Anterior'
+            },
+            emptyTable: 'No hay datos disponibles en la tabla',
+            loadingRecords: 'Cargando...',
+            processing: 'Procesando...',
+            infoThousands: ','
+        },
+        responsive: true,
+        autoWidth: false,
+        pageLength: 20,
+        lengthMenu: [[10, 20, 25, 50, 100, -1], [10, 20, 25, 50, 100, 'Todos']],
+        order: [[0, 'desc']],
+        columnDefs: [
+            { orderable: false, targets: [6, 7, 9, 10] }
+        ],
+        searching: true,
+        ordering: true,
+        info: true,
+        paging: true
+    });
+});
+</script>
 {% endblock js %}

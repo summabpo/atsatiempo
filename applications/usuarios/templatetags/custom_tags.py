@@ -44,10 +44,9 @@ URLS_VACANTES_CLIENTE  = [
     'vacantes_reclutados_cliente',
     'vacantes_entrevista_cliente',
     'vacantes_asignar_analista_cliente',
-    'vacantes_reclutados_cliente',
+    'vacantes_gestion_propias_cliente',
     'reclutados_detalle_cliente',
     'entrevistar_gestionar_cliente',
-    
 ]
 
 @register.filter(name='is_active_url_cliente_vacante')
@@ -59,6 +58,9 @@ def is_active_url_cliente_vacante(url_name):
 URLS_VACANTES_ANALISTA  = [
     'vacantes_gestion_analista_interno',
     'vacantes_asignadas_analista_interno',
+    'vacantes_detalle_cliente',
+    'vacantes_entrevista_cliente',
+    'vacantes_asignar_analista_cliente',
     'entrevistar_gestionar_analista_interno',
     'reclutados_analista_interno',
     'reclutados_detalle_analista_interno',

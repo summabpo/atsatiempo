@@ -11,6 +11,47 @@
 		{% include 'admin/layout/partials/asset_files.html' %}
 	</head>
 	<body class="boxed-size">
+		<script>
+			(function () {
+				var k = "ats_admin_sidebar_data_theme";
+				var ck = "ats_sb_sidebar_dt";
+				function readCookie() {
+					try {
+						var m = document.cookie.match(
+							new RegExp("(?:^|;\\s*)" + ck + "=([^;]+)")
+						);
+						return m ? decodeURIComponent(m[1].trim()) : null;
+					} catch (err) {
+						return null;
+					}
+				}
+				function apply(theme) {
+					document.documentElement.setAttribute("sidebar-data-theme", theme);
+					document.body.setAttribute("sidebar-data-theme", theme);
+				}
+				try {
+					var v = (function () {
+						try {
+							return (
+								localStorage.getItem(k) ||
+								sessionStorage.getItem(k) ||
+								readCookie() ||
+								""
+							);
+						} catch (err) {
+							return readCookie() || "";
+						}
+					})();
+					v = String(v).trim();
+					if (v !== "sidebar-hide" && v !== "sidebar-show") {
+						v = "sidebar-show";
+					}
+					apply(v);
+				} catch (e) {
+					apply("sidebar-show");
+				}
+			})();
+		</script>
 		{% include 'admin/layout/partials/preloader.html' %}
 		{% include 'admin/layout/partials/dashboard_sidebar.html' %}
 		<!-- Start Main Content Area -->

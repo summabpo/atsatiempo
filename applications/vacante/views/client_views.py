@@ -571,7 +571,26 @@ def vacancy_management_from_client(request, pk, vacante_id):
 def detail_vacancy(request, pk):
     # Verificar si el cliente_id está en la sesión
     # cliente_id = request.session.get('cliente_id')
-    vacante = Cli052Vacante.objects.get(id=pk)
+    vacante = get_object_or_404(
+        Cli052Vacante.objects.select_related(
+            "cargo",
+            "perfil_vacante",
+            "perfil_vacante__lugar_trabajo",
+            "perfil_vacante__profesion_estudio",
+            "perfil_vacante__grupo_profesion",
+            "asignacion_cliente_id_064__id_cliente_asignado",
+            "asignacion_cliente_id_064__id_cliente_asignado__ciudad_id_004",
+            "usuario_asignado",
+            "usuario_asignado__group",
+            "asignacion_reclutador",
+            "asignacion_reclutador__group",
+        ).prefetch_related(
+            "habilidades",
+            "motivadores",
+            "fit_cultural",
+        ),
+        id=pk,
+    )
     cliente_id = vacante.asignacion_cliente_id_064.id_cliente_asignado.id
     print(f'cliente_id: {cliente_id}')
     print(f'pk: {pk}')
@@ -885,12 +904,18 @@ def detail_vacancy(request, pk):
     else:
         form = VacancyFormAllV2(initial=initial, cliente_id=cliente_id, es_edicion=True)
 
-    context ={
-        'vacante': vacante,
-        'form': form,
+    cliente_asignado = None
+    if vacante.asignacion_cliente_id_064:
+        cliente_asignado = vacante.asignacion_cliente_id_064.id_cliente_asignado
+
+    context = {
+        "vacante": vacante,
+        "form": form,
+        "data": {"cliente": cliente_asignado},
+        "is_candidato": False,
     }
 
-    return render(request, 'admin/vacancy/client_user/vacancy_detail.html', context)
+    return render(request, "admin/vacancy/client_user/vacancy_detail.html", context)
 
 #detalle de la vacante
 @login_required
