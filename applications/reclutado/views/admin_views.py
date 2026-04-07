@@ -1015,6 +1015,243 @@ def reporte_final_reclutado(request, aplicacion_id):
 
     return render(request, 'admin/recruited/admin_user/report_final.html', context)
 
+
+def estructurar_resultado_entrevista_json(resultado_entrevista, json_match_inicial=None):
+    """
+    A partir del JSON resultado_entrevista y opcionalmente json_match_inicial,
+    devuelve la misma estructura de paneles que usa el reporte final (habilidades,
+    fit, motivadores, hard skills, pruebas, confiabilidad, promedios y promedio total).
+    """
+    if json_match_inicial is None:
+        json_match_inicial = {}
+    elif isinstance(json_match_inicial, str):
+        try:
+            json_match_inicial = json.loads(json_match_inicial)
+        except (json.JSONDecodeError, TypeError):
+            json_match_inicial = {}
+    if not isinstance(json_match_inicial, dict):
+        json_match_inicial = {}
+
+    resultados = {
+        'habilidades': [],
+        'fit_cultural': [],
+        'motivadores': [],
+    }
+    pruebas_list = []
+    confiabilidad_riesgo_data = None
+
+    if resultado_entrevista and isinstance(resultado_entrevista, dict):
+        for item_nombre, item_data in resultado_entrevista.items():
+            if item_nombre in ('id_usuario', 'fecha_entrevista'):
+                continue
+
+            if 'HABILIDAD' in item_nombre.upper() or 'MATCH 360' in item_nombre.upper() or 'TALENTO' in item_nombre.upper():
+                if isinstance(item_data, dict):
+                    for skill_id, skill_data in item_data.items():
+                        if isinstance(skill_data, dict) and skill_data.get('calificacion'):
+                            resultados['habilidades'].append({
+                                'id': skill_id,
+                                'nombre': skill_data.get('nombre', 'Habilidad'),
+                                'calificacion': skill_data.get('calificacion', 0),
+                                'observacion': skill_data.get('observacion', ''),
+                            })
+
+            elif 'FIT CULTURAL' in item_nombre.upper():
+                if isinstance(item_data, dict):
+                    for fc_id, fc_data in item_data.items():
+                        if isinstance(fc_data, dict) and fc_data.get('calificacion'):
+                            resultados['fit_cultural'].append({
+                                'id': fc_id,
+                                'nombre': fc_data.get('nombre', 'Fit Cultural'),
+                                'calificacion': fc_data.get('calificacion', 0),
+                                'observacion': fc_data.get('observacion', ''),
+                            })
+
+            elif 'MOTIVADOR' in item_nombre.upper():
+                if isinstance(item_data, dict):
+                    for m_id, m_data in item_data.items():
+                        if isinstance(m_data, dict) and m_data.get('calificacion'):
+                            resultados['motivadores'].append({
+                                'id': m_id,
+                                'nombre': m_data.get('nombre', 'Motivador'),
+                                'calificacion': m_data.get('calificacion', 0),
+                                'observacion': m_data.get('observacion', ''),
+                            })
+
+        for item_nombre, item_data in resultado_entrevista.items():
+            if item_nombre in ('id_usuario', 'fecha_entrevista'):
+                continue
+
+            item_nombre_upper = item_nombre.upper()
+
+            if 'PRUEBAS' in item_nombre_upper or 'PSICOTECNICOS' in item_nombre_upper:
+                if isinstance(item_data, dict):
+                    calificacion_raw = item_data.get('calificacion')
+                    calificacion = 0
+                    if calificacion_raw is not None:
+                        try:
+                            calificacion = int(calificacion_raw)
+                        except (ValueError, TypeError):
+                            try:
+                                calificacion = int(float(calificacion_raw))
+                            except (ValueError, TypeError):
+                                calificacion = 0
+
+                    observacion = item_data.get('observacion', '') or ''
+                    prueba_cargada_id = item_data.get('prueba_cargada_id')
+
+                    archivo = None
+                    if prueba_cargada_id:
+                        try:
+                            prueba_cargada = Cli082PruebaCargada.objects.get(id=prueba_cargada_id)
+                            archivo = prueba_cargada.prueba_cargada.url if prueba_cargada.prueba_cargada else None
+                        except Cli082PruebaCargada.DoesNotExist:
+                            pass
+
+                    ponderacion = item_data.get('ponderacion', 25.0)
+
+                    if not any(p.get('id') == 'pruebas' for p in pruebas_list):
+                        pruebas_list.append({
+                            'id': 'pruebas',
+                            'nombre': 'Pruebas',
+                            'calificacion': calificacion,
+                            'observacion': observacion,
+                            'archivo': archivo,
+                            'icono': 'ri-file-paper-line',
+                            'ponderacion': ponderacion,
+                        })
+
+            if 'INDICE' in item_nombre_upper and 'CONFIABILIDAD' in item_nombre_upper and 'RIESGO' in item_nombre_upper:
+                if isinstance(item_data, dict):
+                    calificacion_raw = item_data.get('calificacion', 0)
+                    try:
+                        calificacion = int(calificacion_raw) if calificacion_raw else 0
+                    except (ValueError, TypeError):
+                        calificacion = 0
+
+                    observacion = item_data.get('observacion', '') or ''
+                    confiabilidad_cargada_id = item_data.get('confiabilidad_cargada_id')
+
+                    archivo = None
+                    if confiabilidad_cargada_id:
+                        try:
+                            confiabilidad_cargada = Cli083ConfiabilidadRiesgoCargado.objects.get(id=confiabilidad_cargada_id)
+                            archivo = confiabilidad_cargada.documento_cargado.url if confiabilidad_cargada.documento_cargado else None
+                        except Cli083ConfiabilidadRiesgoCargado.DoesNotExist:
+                            pass
+
+                    ponderacion = item_data.get('ponderacion', 25.0)
+
+                    confiabilidad_riesgo_data = {
+                        'id': 'confiabilidad_riesgo',
+                        'nombre': 'Índice y Confiabilidad del Riesgo',
+                        'calificacion': calificacion,
+                        'observacion': observacion,
+                        'archivo': archivo,
+                        'icono': 'ri-shield-check-line',
+                        'ponderacion': ponderacion,
+                    }
+
+    promedio_habilidades = 0
+    promedio_fit_cultural = 0
+    promedio_motivadores = 0
+
+    if resultados['habilidades']:
+        suma_habilidades = sum(item['calificacion'] for item in resultados['habilidades'])
+        promedio_habilidades = round(suma_habilidades / len(resultados['habilidades']), 2)
+
+    if resultados['fit_cultural']:
+        suma_fit_cultural = sum(item['calificacion'] for item in resultados['fit_cultural'])
+        promedio_fit_cultural = round(suma_fit_cultural / len(resultados['fit_cultural']), 2)
+
+    if resultados['motivadores']:
+        suma_motivadores = sum(item['calificacion'] for item in resultados['motivadores'])
+        promedio_motivadores = round(suma_motivadores / len(resultados['motivadores']), 2)
+
+    hard_skills_list = []
+    promedio_hard_skills = 0
+
+    if json_match_inicial:
+        if 'educacion' in json_match_inicial and isinstance(json_match_inicial['educacion'], dict):
+            educacion_data = json_match_inicial['educacion']
+            porcentaje = educacion_data.get('match_academico', {}).get('porcentaje_match', 0) if isinstance(educacion_data.get('match_academico'), dict) else 0
+            calificacion = round((porcentaje / 100) * 10, 1)
+            hard_skills_list.append({
+                'id': 'formacion_academica',
+                'nombre': 'Formación Académica',
+                'calificacion': calificacion,
+                'porcentaje': porcentaje,
+                'ponderacion': educacion_data.get('ponderacion', 0),
+                'icono': 'ri-graduation-cap-line',
+            })
+
+        if 'laboral' in json_match_inicial and isinstance(json_match_inicial['laboral'], dict):
+            laboral_data = json_match_inicial['laboral']
+            porcentaje = laboral_data.get('match_laboral', {}).get('porcentaje_match', 0) if isinstance(laboral_data.get('match_laboral'), dict) else 0
+            calificacion = round((porcentaje / 100) * 10, 1)
+            hard_skills_list.append({
+                'id': 'experiencia',
+                'nombre': 'Experiencia',
+                'calificacion': calificacion,
+                'porcentaje': porcentaje,
+                'ponderacion': laboral_data.get('ponderacion', 0),
+                'icono': 'ri-briefcase-line',
+            })
+
+        if 'idioma' in json_match_inicial and isinstance(json_match_inicial['idioma'], dict):
+            idioma_data = json_match_inicial['idioma']
+            porcentaje = idioma_data.get('match_idioma', {}).get('porcentaje_match', 0) if isinstance(idioma_data.get('match_idioma'), dict) else 0
+            calificacion = round((porcentaje / 100) * 10, 1)
+            hard_skills_list.append({
+                'id': 'idiomas',
+                'nombre': 'Idiomas',
+                'calificacion': calificacion,
+                'porcentaje': porcentaje,
+                'ponderacion': idioma_data.get('ponderacion', 0),
+                'icono': 'ri-global-line',
+            })
+
+    if hard_skills_list:
+        suma_hard_skills = sum(item['calificacion'] for item in hard_skills_list)
+        promedio_hard_skills = round(suma_hard_skills / len(hard_skills_list), 2)
+
+    promedios = {
+        'habilidades': promedio_habilidades,
+        'fit_cultural': promedio_fit_cultural,
+        'motivadores': promedio_motivadores,
+        'hard_skills': promedio_hard_skills,
+    }
+
+    calificaciones_resultado_final = []
+    if promedios['hard_skills'] > 0:
+        calificaciones_resultado_final.append(promedios['hard_skills'])
+    if promedios['habilidades'] > 0:
+        calificaciones_resultado_final.append(promedios['habilidades'])
+    if promedios['fit_cultural'] > 0:
+        calificaciones_resultado_final.append(promedios['fit_cultural'])
+    if promedios['motivadores'] > 0:
+        calificaciones_resultado_final.append(promedios['motivadores'])
+    if pruebas_list:
+        for prueba in pruebas_list:
+            if prueba.get('calificacion', 0) > 0:
+                calificaciones_resultado_final.append(prueba['calificacion'])
+    if confiabilidad_riesgo_data and confiabilidad_riesgo_data.get('calificacion', 0) > 0:
+        calificaciones_resultado_final.append(confiabilidad_riesgo_data['calificacion'])
+
+    promedio_total = 0
+    if calificaciones_resultado_final:
+        promedio_total = round(sum(calificaciones_resultado_final) / len(calificaciones_resultado_final), 2)
+
+    return {
+        'resultados': resultados,
+        'promedios': promedios,
+        'hard_skills': hard_skills_list,
+        'pruebas': pruebas_list,
+        'confiabilidad_riesgo': confiabilidad_riesgo_data,
+        'promedio_total': promedio_total,
+    }
+
+
 def _procesar_datos_reporte_final(request, aplicacion_id):
     """
     Función auxiliar para procesar y estructurar los datos del reporte final de un reclutado.
@@ -1097,254 +1334,18 @@ def _procesar_datos_reporte_final(request, aplicacion_id):
             'motivadores': []
         }
     }
-    
-    # Procesar resultados de la entrevista
-    if entrevista and entrevista.resultado_entrevista:
-        resultado_entrevista = entrevista.resultado_entrevista
-        
-        # Procesar cada sección del resultado
-        for item_nombre, item_data in resultado_entrevista.items():
-            if item_nombre in ['id_usuario', 'fecha_entrevista']:
-                continue
-                
-            # Buscar sección de Habilidades
-            if 'HABILIDAD' in item_nombre.upper() or 'MATCH 360' in item_nombre.upper() or 'TALENTO' in item_nombre.upper():
-                if isinstance(item_data, dict):
-                    for skill_id, skill_data in item_data.items():
-                        if isinstance(skill_data, dict) and skill_data.get('calificacion'):
-                            datos_procesados['resultados']['habilidades'].append({
-                                'id': skill_id,
-                                'nombre': skill_data.get('nombre', 'Habilidad'),
-                                'calificacion': skill_data.get('calificacion', 0),
-                                'observacion': skill_data.get('observacion', '')
-                            })
-            
-            # Buscar sección de Fit Cultural
-            elif 'FIT CULTURAL' in item_nombre.upper():
-                if isinstance(item_data, dict):
-                    for fc_id, fc_data in item_data.items():
-                        if isinstance(fc_data, dict) and fc_data.get('calificacion'):
-                            datos_procesados['resultados']['fit_cultural'].append({
-                                'id': fc_id,
-                                'nombre': fc_data.get('nombre', 'Fit Cultural'),
-                                'calificacion': fc_data.get('calificacion', 0),
-                                'observacion': fc_data.get('observacion', '')
-                            })
-            
-            # Buscar sección de Motivadores
-            elif 'MOTIVADOR' in item_nombre.upper():
-                if isinstance(item_data, dict):
-                    for m_id, m_data in item_data.items():
-                        if isinstance(m_data, dict) and m_data.get('calificacion'):
-                            datos_procesados['resultados']['motivadores'].append({
-                                'id': m_id,
-                                'nombre': m_data.get('nombre', 'Motivador'),
-                                'calificacion': m_data.get('calificacion', 0),
-                                'observacion': m_data.get('observacion', '')
-                            })
-    
-    # Procesar Pruebas e Índice y Confiabilidad del Riesgo desde resultado_entrevista (en un loop separado)
-    pruebas_list = []
-    confiabilidad_riesgo_data = None
-    
-    if entrevista and entrevista.resultado_entrevista:
-        resultado_entrevista = entrevista.resultado_entrevista
-        
-        # Buscar sección de Pruebas
-        for item_nombre, item_data in resultado_entrevista.items():
-            if item_nombre in ['id_usuario', 'fecha_entrevista']:
-                continue
-            
-            # Buscar sección de Pruebas - verificar si contiene PRUEBAS o PSICOTECNICOS
-            item_nombre_upper = item_nombre.upper()
-            
-            if 'PRUEBAS' in item_nombre_upper or 'PSICOTECNICOS' in item_nombre_upper:
-                if isinstance(item_data, dict):
-                    # Obtener calificación (puede ser int, string o None)
-                    calificacion_raw = item_data.get('calificacion')
-                    calificacion = 0
-                    if calificacion_raw is not None:
-                        try:
-                            calificacion = int(calificacion_raw)
-                        except (ValueError, TypeError):
-                            try:
-                                calificacion = int(float(calificacion_raw))
-                            except (ValueError, TypeError):
-                                calificacion = 0
-                    # Si calificacion_raw es None o 0, mantener calificacion = 0 pero agregar igual
-                    
-                    observacion = item_data.get('observacion', '') or ''
-                    prueba_cargada_id = item_data.get('prueba_cargada_id')
-                    
-                    # Obtener el archivo de la prueba cargada
-                    archivo = None
-                    if prueba_cargada_id:
-                        try:
-                            prueba_cargada = Cli082PruebaCargada.objects.get(id=prueba_cargada_id)
-                            archivo = prueba_cargada.prueba_cargada.url if prueba_cargada.prueba_cargada else None
-                        except Cli082PruebaCargada.DoesNotExist:
-                            pass
-                    
-                    # Obtener ponderación de pruebas (buscar en el resultado_entrevista o usar default)
-                    ponderacion = item_data.get('ponderacion', 25.0)  # Default 25% si no existe
-                    
-                    # Agregar a la lista siempre (incluso si calificacion es 0, para que se muestre)
-                    # Solo agregar si no existe ya en la lista
-                    if not any(p.get('id') == 'pruebas' for p in pruebas_list):
-                        pruebas_list.append({
-                            'id': 'pruebas',
-                            'nombre': 'Pruebas',
-                            'calificacion': calificacion,
-                            'observacion': observacion,
-                            'archivo': archivo,
-                            'icono': 'ri-file-paper-line',
-                            'ponderacion': ponderacion
-                        })
-            
-            # Buscar sección de Índice y Confiabilidad del Riesgo
-            if 'INDICE' in item_nombre_upper and 'CONFIABILIDAD' in item_nombre_upper and 'RIESGO' in item_nombre_upper:
-                if isinstance(item_data, dict):
-                    # Obtener calificación (puede ser int o string)
-                    calificacion_raw = item_data.get('calificacion', 0)
-                    try:
-                        calificacion = int(calificacion_raw) if calificacion_raw else 0
-                    except (ValueError, TypeError):
-                        calificacion = 0
-                    
-                    observacion = item_data.get('observacion', '') or ''
-                    confiabilidad_cargada_id = item_data.get('confiabilidad_cargada_id')
-                    
-                    # Obtener el archivo del documento de confiabilidad
-                    archivo = None
-                    if confiabilidad_cargada_id:
-                        try:
-                            confiabilidad_cargada = Cli083ConfiabilidadRiesgoCargado.objects.get(id=confiabilidad_cargada_id)
-                            archivo = confiabilidad_cargada.documento_cargado.url if confiabilidad_cargada.documento_cargado else None
-                        except Cli083ConfiabilidadRiesgoCargado.DoesNotExist:
-                            pass
-                    
-                    # Obtener ponderación de confiabilidad del riesgo (buscar en el resultado_entrevista o usar default)
-                    ponderacion = item_data.get('ponderacion', 25.0)  # Default 25% si no existe
-                    
-                    confiabilidad_riesgo_data = {
-                        'id': 'confiabilidad_riesgo',
-                        'nombre': 'Índice y Confiabilidad del Riesgo',
-                        'calificacion': calificacion,
-                        'observacion': observacion,
-                        'archivo': archivo,
-                        'icono': 'ri-shield-check-line',
-                        'ponderacion': ponderacion
-                    }
-    
-    # Calcular promedios de cada sección
-    promedio_habilidades = 0
-    promedio_fit_cultural = 0
-    promedio_motivadores = 0
-    
-    if datos_procesados['resultados']['habilidades']:
-        suma_habilidades = sum(item['calificacion'] for item in datos_procesados['resultados']['habilidades'])
-        promedio_habilidades = round(suma_habilidades / len(datos_procesados['resultados']['habilidades']), 2)
-    
-    if datos_procesados['resultados']['fit_cultural']:
-        suma_fit_cultural = sum(item['calificacion'] for item in datos_procesados['resultados']['fit_cultural'])
-        promedio_fit_cultural = round(suma_fit_cultural / len(datos_procesados['resultados']['fit_cultural']), 2)
-    
-    if datos_procesados['resultados']['motivadores']:
-        suma_motivadores = sum(item['calificacion'] for item in datos_procesados['resultados']['motivadores'])
-        promedio_motivadores = round(suma_motivadores / len(datos_procesados['resultados']['motivadores']), 2)
-    
-    # Procesar datos del match inicial para Hard Skills
-    hard_skills_list = []
-    promedio_hard_skills = 0
-    
-    if json_match_inicial:
-        # Formación Académica (educacion)
-        if 'educacion' in json_match_inicial and isinstance(json_match_inicial['educacion'], dict):
-            educacion_data = json_match_inicial['educacion']
-            porcentaje = educacion_data.get('match_academico', {}).get('porcentaje_match', 0) if isinstance(educacion_data.get('match_academico'), dict) else 0
-            # Convertir porcentaje (0-100) a escala 0-10
-            calificacion = round((porcentaje / 100) * 10, 1)
-            hard_skills_list.append({
-                'id': 'formacion_academica',
-                'nombre': 'Formación Académica',
-                'calificacion': calificacion,
-                'porcentaje': porcentaje,
-                'ponderacion': educacion_data.get('ponderacion', 0),
-                'icono': 'ri-graduation-cap-line'
-            })
-        
-        # Experiencia (laboral)
-        if 'laboral' in json_match_inicial and isinstance(json_match_inicial['laboral'], dict):
-            laboral_data = json_match_inicial['laboral']
-            porcentaje = laboral_data.get('match_laboral', {}).get('porcentaje_match', 0) if isinstance(laboral_data.get('match_laboral'), dict) else 0
-            # Convertir porcentaje (0-100) a escala 0-10
-            calificacion = round((porcentaje / 100) * 10, 1)
-            hard_skills_list.append({
-                'id': 'experiencia',
-                'nombre': 'Experiencia',
-                'calificacion': calificacion,
-                'porcentaje': porcentaje,
-                'ponderacion': laboral_data.get('ponderacion', 0),
-                'icono': 'ri-briefcase-line'
-            })
-        
-        # Idiomas
-        if 'idioma' in json_match_inicial and isinstance(json_match_inicial['idioma'], dict):
-            idioma_data = json_match_inicial['idioma']
-            porcentaje = idioma_data.get('match_idioma', {}).get('porcentaje_match', 0) if isinstance(idioma_data.get('match_idioma'), dict) else 0
-            # Convertir porcentaje (0-100) a escala 0-10
-            calificacion = round((porcentaje / 100) * 10, 1)
-            hard_skills_list.append({
-                'id': 'idiomas',
-                'nombre': 'Idiomas',
-                'calificacion': calificacion,
-                'porcentaje': porcentaje,
-                'ponderacion': idioma_data.get('ponderacion', 0),
-                'icono': 'ri-global-line'
-            })
-    
-    # Calcular promedio de hard skills
-    if hard_skills_list:
-        suma_hard_skills = sum(item['calificacion'] for item in hard_skills_list)
-        promedio_hard_skills = round(suma_hard_skills / len(hard_skills_list), 2)
-    
-    datos_procesados['hard_skills'] = hard_skills_list
-    
-    # Agregar promedios a datos_procesados (incluyendo hard_skills)
-    datos_procesados['promedios'] = {
-        'habilidades': promedio_habilidades,
-        'fit_cultural': promedio_fit_cultural,
-        'motivadores': promedio_motivadores,
-        'hard_skills': promedio_hard_skills
-    }
-    
-    # Agregar pruebas y confiabilidad_riesgo a datos_procesados
-    datos_procesados['pruebas'] = pruebas_list
-    datos_procesados['confiabilidad_riesgo'] = confiabilidad_riesgo_data
-    
-    # Calcular promedio total del resultado final
-    calificaciones_resultado_final = []
-    if datos_procesados['promedios']['hard_skills'] > 0:
-        calificaciones_resultado_final.append(datos_procesados['promedios']['hard_skills'])
-    if datos_procesados['promedios']['habilidades'] > 0:
-        calificaciones_resultado_final.append(datos_procesados['promedios']['habilidades'])
-    if datos_procesados['promedios']['fit_cultural'] > 0:
-        calificaciones_resultado_final.append(datos_procesados['promedios']['fit_cultural'])
-    if datos_procesados['promedios']['motivadores'] > 0:
-        calificaciones_resultado_final.append(datos_procesados['promedios']['motivadores'])
-    if pruebas_list:
-        for prueba in pruebas_list:
-            if prueba.get('calificacion', 0) > 0:
-                calificaciones_resultado_final.append(prueba['calificacion'])
-    if confiabilidad_riesgo_data and confiabilidad_riesgo_data.get('calificacion', 0) > 0:
-        calificaciones_resultado_final.append(confiabilidad_riesgo_data['calificacion'])
-    
-    promedio_total = 0
-    if calificaciones_resultado_final:
-        promedio_total = round(sum(calificaciones_resultado_final) / len(calificaciones_resultado_final), 2)
-    
-    datos_procesados['promedio_total'] = promedio_total
-    
+
+    resultado_part = estructurar_resultado_entrevista_json(
+        entrevista.resultado_entrevista if entrevista else None,
+        json_match_inicial,
+    )
+    datos_procesados['resultados'] = resultado_part['resultados']
+    datos_procesados['hard_skills'] = resultado_part['hard_skills']
+    datos_procesados['promedios'] = resultado_part['promedios']
+    datos_procesados['pruebas'] = resultado_part['pruebas']
+    datos_procesados['confiabilidad_riesgo'] = resultado_part['confiabilidad_riesgo']
+    datos_procesados['promedio_total'] = resultado_part['promedio_total']
+
     # Obtener información de la recomendación final (estado_asignacion y observación de la entrevista)
     recomendacion_final = {
         'estado': None,

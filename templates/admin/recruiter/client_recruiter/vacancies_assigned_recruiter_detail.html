@@ -295,6 +295,7 @@ Gestión de Vacante - Reclutador
                                                         <th scope="col" class="text-center">Edad</th>
                                                         <th scope="col" class="text-center">Nivel de Estudio</th>
                                                         <th scope="col" class="text-center">Match Perfil</th>
+                                                        <th scope="col" class="text-center">Última entrevista</th>
                                                         <th scope="col" class="text-center">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -352,6 +353,9 @@ Gestión de Vacante - Reclutador
                                                                     <span class="text-muted">-</span>
                                                                 {% endif %}
                                                             {% endwith %}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            {% include 'admin/vacancy/partials/celda_ultima_entrevista.html' %}
                                                         </td>
                                                         <td class="text-center">
                                                             <a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100">
@@ -637,11 +641,11 @@ $(document).ready(function() {
                 // Configuración específica según la tabla
                 var config = $.extend({}, dataTableConfig);
                 
-                // tablefinalista: checkbox + 7 columnas (8 en total)
+                // tablefinalista: checkbox + 8 columnas de datos (9 en total; incl. última entrevista)
                 if (tableId === 'tablefinalista') {
                     config.columnDefs = [
                         {
-                            "targets": [0, 1, 7], // Checkbox (0), Imagen (1) y Acciones (7)
+                            "targets": [0, 1, 8], // Checkbox (0), Imagen (1) y Acciones (8)
                             "orderable": false,
                             "searchable": false
                         }

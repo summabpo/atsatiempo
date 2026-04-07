@@ -53,175 +53,428 @@ Detalle vacante
 		</nav>
 	</div>
 
-	{# Panel resumen — alineado al estilo de listados / gestión de vacantes #}
-	<div class="card border-0 rounded-2 bg-white mb-4 shadow-sm overflow-hidden">
-		<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
-			<h2 class="fs-16 fw-semibold mb-0 text-primary">Resumen de la vacante</h2>
-		</div>
-		<div class="card-body p-4">
-			<div class="d-flex flex-column flex-xl-row align-items-stretch align-items-xl-center justify-content-between gap-3 gap-xl-4">
-				<div class="d-flex align-items-start gap-3 flex-grow-1 min-w-0">
-					{% if vacante.asignacion_cliente_id_064 and vacante.asignacion_cliente_id_064.id_cliente_asignado.logo %}
-						<img src="{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.logo.url }}" alt="" class="flex-shrink-0 rounded-2 border" style="width: 56px; height: 56px; object-fit: cover;">
-					{% else %}
-						<img src="{% static 'admin/images/default_company_logo.png' %}" alt="" class="flex-shrink-0 rounded-2 border bg-light p-1" style="width: 56px; height: 56px; object-fit: contain;">
-					{% endif %}
-					<div class="min-w-0 flex-grow-1">
-						<h4 class="fs-18 fw-semibold mb-2 text-dark text-truncate" title="{{ vacante.titulo }}">{{ vacante.titulo }}</h4>
-						<div class="d-flex flex-wrap align-items-center column-gap-3 row-gap-2">
-							{% if vacante.cargo %}
-								<span class="fs-14 text-secondary fw-medium text-truncate" style="max-width: 100%;">{{ vacante.cargo.nombre_cargo }}</span>
+	{# Panel resumen (col-7) + fechas e indicador (col-5) #}
+	<div class="row g-3 mb-4">
+		<div class="col-12 col-lg-7">
+			<div class="card border-0 rounded-2 bg-white shadow-sm overflow-hidden h-100">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+					<h2 class="fs-16 fw-semibold mb-0 text-primary">Resumen de la vacante</h2>
+				</div>
+				<div class="card-body p-4">
+					<div class="d-flex flex-column flex-xl-row align-items-stretch align-items-xl-center justify-content-between gap-3 gap-xl-4">
+						<div class="d-flex align-items-start gap-3 flex-grow-1 min-w-0">
+							{% if vacante.asignacion_cliente_id_064 and vacante.asignacion_cliente_id_064.id_cliente_asignado.logo %}
+								<img src="{{ vacante.asignacion_cliente_id_064.id_cliente_asignado.logo.url }}" alt="" class="flex-shrink-0 rounded-2 border" style="width: 56px; height: 56px; object-fit: cover;">
+							{% else %}
+								<img src="{% static 'admin/images/default_company_logo.png' %}" alt="" class="flex-shrink-0 rounded-2 border bg-light p-1" style="width: 56px; height: 56px; object-fit: contain;">
 							{% endif %}
-							<span class="d-inline-flex align-items-center gap-1 flex-wrap">
-								<span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size: 22px;">location_on</span>
-								<span class="fs-11 text-secondary text-uppercase">Ciudad</span>
-								<span class="fs-14 fw-semibold text-dark">
-									{% if vacante.perfil_vacante and vacante.perfil_vacante.lugar_trabajo %}
-										{{ vacante.perfil_vacante.lugar_trabajo.nombre }}
-									{% else %}
-										—
+							<div class="min-w-0 flex-grow-1">
+								<h4 class="fs-18 fw-semibold mb-2 text-dark text-truncate" title="{{ vacante.titulo }}">{{ vacante.titulo }}</h4>
+								<div class="d-flex flex-wrap align-items-center column-gap-3 row-gap-2">
+									{% if vacante.cargo %}
+										<span class="fs-14 text-secondary fw-medium text-truncate" style="max-width: 100%;">{{ vacante.cargo.nombre_cargo }}</span>
 									{% endif %}
-								</span>
-							</span>
-							<span class="d-inline-flex align-items-center gap-1 flex-wrap">
-								<span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size: 22px;">payments</span>
-								<span class="fs-11 text-secondary text-uppercase">Salario</span>
-								<span class="fs-14 fw-semibold text-dark">
-									{% if vacante.perfil_vacante and vacante.perfil_vacante.salario %}
-										${{ vacante.perfil_vacante.salario|format_number }}
-										<span class="fw-normal text-secondary fs-13">· {{ vacante.perfil_vacante.get_tipo_salario_display }}</span>
-									{% else %}
-										—
-									{% endif %}
-								</span>
-							</span>
+									<span class="d-inline-flex align-items-center gap-1 flex-wrap">
+										<span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size: 22px;">location_on</span>
+										<span class="fs-11 text-secondary text-uppercase">Ciudad</span>
+										<span class="fs-14 fw-semibold text-dark">
+											{% if vacante.perfil_vacante and vacante.perfil_vacante.lugar_trabajo %}
+												{{ vacante.perfil_vacante.lugar_trabajo.nombre }}
+											{% else %}
+												—
+											{% endif %}
+										</span>
+									</span>
+									<span class="d-inline-flex align-items-center gap-1 flex-wrap">
+										<span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size: 22px;">payments</span>
+										<span class="fs-11 text-secondary text-uppercase">Salario</span>
+										<span class="fs-14 fw-semibold text-dark">
+											{% if vacante.perfil_vacante and vacante.perfil_vacante.salario %}
+												${{ vacante.perfil_vacante.salario|format_number }}
+												<span class="fw-normal text-secondary fs-13">· {{ vacante.perfil_vacante.get_tipo_salario_display }}</span>
+											{% else %}
+												—
+											{% endif %}
+										</span>
+									</span>
+								</div>
+								<div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+									<span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border fs-12 fw-medium">ID {{ vacante.id }}</span>
+									<span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border fs-12 fw-medium">{{ vacante.get_estado_vacante_display }}</span>
+								</div>
+							</div>
 						</div>
-						<div class="d-flex flex-wrap align-items-center gap-2 mt-2">
-							<span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border fs-12 fw-medium">ID {{ vacante.id }}</span>
-							<span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border fs-12 fw-medium">{{ vacante.get_estado_vacante_display }}</span>
+						<div class="d-flex align-items-center justify-content-end justify-content-xl-center flex-shrink-0 ms-xl-auto">
+							<button type="button"
+								class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3 border-0 d-inline-flex align-items-center gap-1 rounded-2"
+								data-bs-toggle="modal"
+								data-bs-target="#modalVacancyFullDetail"
+								title="Ver detalle completo">
+								<span class="material-symbols-outlined fs-18">open_in_new</span>
+								<span>Ver detalle completo</span>
+							</button>
 						</div>
 					</div>
 				</div>
-				<div class="d-flex align-items-center justify-content-end justify-content-xl-center flex-shrink-0 ms-xl-auto">
-					<button type="button"
-						class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3 border-0 d-inline-flex align-items-center gap-1 rounded-2"
-						data-bs-toggle="modal"
-						data-bs-target="#modalVacancyFullDetail"
-						title="Ver detalle completo">
-						<span class="material-symbols-outlined fs-18">open_in_new</span>
-						<span>Ver detalle completo</span>
-					</button>
+			</div>
+		</div>
+		<div class="col-12 col-lg-5">
+			<div class="card border-0 rounded-2 bg-white shadow-sm overflow-hidden h-100">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-2 px-3">
+					<h2 class="fs-14 fw-semibold mb-0 text-primary">Fechas e indicador</h2>
+				</div>
+				<div class="card-body p-3 d-flex flex-column gap-2">
+					<div class="rounded-2 border border-light bg-light bg-opacity-50 p-2">
+						<div class="d-flex flex-wrap align-items-center gap-2 lh-sm">
+							<span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size: 18px;">calendar_month</span>
+							<span class="fs-11 text-secondary text-uppercase flex-shrink-0">Presentación</span>
+							<span class="fs-13 fw-semibold text-dark">
+								{% if vacante.fecha_presentacion %}
+									{{ vacante.fecha_presentacion|date:"d/m/Y" }} · {{ vacante.fecha_presentacion|date:"H:i" }}
+								{% else %}
+									<span class="text-secondary">—</span>
+								{% endif %}
+							</span>
+							<span class="text-secondary flex-shrink-0" aria-hidden="true">·</span>
+							<span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size: 18px;">send</span>
+							<span class="fs-11 text-secondary text-uppercase flex-shrink-0">Envío</span>
+							<span class="fs-13 fw-semibold text-dark" title="{% if fecha_ultimo_candidato_enviado %}{{ fecha_ultimo_candidato_enviado|date:'d/m/Y H:i' }}{% endif %}">
+								{% if fecha_ultimo_candidato_enviado %}
+									{{ fecha_ultimo_candidato_enviado|date:"d/m/Y" }} · {{ fecha_ultimo_candidato_enviado|date:"H:i" }}
+								{% else %}
+									<span class="text-secondary">—</span>
+								{% endif %}
+							</span>
+							<span class="text-secondary flex-shrink-0" aria-hidden="true">·</span>
+							<span class="fs-11 text-secondary text-uppercase flex-shrink-0">Δ</span>
+							<span class="fs-13 fw-bold text-primary">
+								{% if diferencia_fechas_presentacion_envio %}
+									{{ diferencia_fechas_presentacion_envio.texto }}
+								{% else %}
+									<span class="fw-normal text-secondary">—</span>
+								{% endif %}
+							</span>
+						</div>
+					</div>
+					<div class="pt-2 border-top border-light">
+						<div class="d-flex flex-wrap align-items-baseline gap-2">
+							<span class="fs-11 text-secondary text-uppercase">Relación</span>
+							<span class="fs-16 fw-bold text-primary">{{ vacante_metric_presentados_apto_entrevista }}</span><span class="fs-14 text-secondary">/</span><span class="fs-16 fw-semibold text-dark">{% if vacante.cantidad_presentar is not None %}{{ vacante.cantidad_presentar }}{% else %}—{% endif %}</span>
+							<span class="fs-11 text-secondary text-uppercase">a presentar</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
+	{# Responsables: tres paneles en col-4 #}
 	<div class="row g-4 mb-4">
-		<div class="col-xxl-5 col-lg-6">
+		<div class="col-12">
+			<h2 class="fs-16 fw-semibold mb-0 text-primary">Responsables del proceso</h2>
+		</div>
+		<div class="col-12 col-md-4">
 			<div class="card border-0 rounded-2 bg-white shadow-sm overflow-hidden h-100">
 				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
-					<h2 class="fs-16 fw-semibold mb-0 text-primary">Responsables del proceso</h2>
+					<h3 class="fs-14 fw-semibold mb-0 text-primary">Responsable del proceso</h3>
 				</div>
-				<div class="card-body p-0">
-					<div class="default-table-area style-two top-instructors">
+				<div class="card-body p-4">
+					<div class="d-flex align-items-center gap-3">
+						<div class="flex-shrink-0">
+							{% if data.cliente and data.cliente.logo and data.cliente.logo.name %}
+								<img src="{{ data.cliente.logo.url }}" class="rounded-3 object-fit-cover border border-1 border-light" width="48" height="48" alt="">
+							{% else %}
+								<img src="{% static 'admin/images/blank.png' %}" class="wh-44 rounded-circle object-fit-cover" alt="">
+							{% endif %}
+						</div>
+						<div class="min-w-0">
+							{% if data.cliente %}
+								<h6 class="mb-0 fs-14 fw-medium text-truncate" title="{{ data.cliente.contacto }}">{{ data.cliente.contacto }}</h6>
+								<span class="fs-12 text-secondary">Contacto cliente</span>
+							{% else %}
+								<h6 class="mb-0 fs-14 fw-medium text-secondary">Sin asignar</h6>
+								<span class="fs-12 text-secondary">Contacto cliente</span>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-md-4">
+			<div class="card border-0 rounded-2 bg-white shadow-sm overflow-hidden h-100">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+					<h3 class="fs-14 fw-semibold mb-0 text-primary">Analista de selección</h3>
+				</div>
+				<div class="card-body p-4">
+					<div class="d-flex align-items-center gap-3">
+						<div class="flex-shrink-0">
+							{% if vacante.usuario_asignado and vacante.usuario_asignado.imagen_perfil and vacante.usuario_asignado.imagen_perfil.name %}
+								<img src="{{ vacante.usuario_asignado.imagen_perfil.url }}" class="wh-44 rounded-circle object-fit-cover" alt="">
+							{% else %}
+								<img src="{% static 'admin/images/blank.png' %}" class="wh-44 rounded-circle object-fit-cover" alt="">
+							{% endif %}
+						</div>
+						<div class="min-w-0">
+							{% if vacante.usuario_asignado %}
+								<h6 class="mb-0 fs-14 fw-medium text-truncate">{{ vacante.usuario_asignado.primer_nombre }} {{ vacante.usuario_asignado.segundo_nombre }} {{ vacante.usuario_asignado.primer_apellido }} {{ vacante.usuario_asignado.segundo_apellido }}</h6>
+								<span class="fs-12 text-secondary">Analista ATS</span>
+							{% else %}
+								<h6 class="mb-0 fs-14 fw-medium text-secondary">Sin asignar</h6>
+								<span class="fs-12 text-secondary">Analista ATS</span>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-md-4">
+			<div class="card border-0 rounded-2 bg-white shadow-sm overflow-hidden h-100">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+					<h3 class="fs-14 fw-semibold mb-0 text-primary">Reclutador</h3>
+				</div>
+				<div class="card-body p-4">
+					<div class="d-flex align-items-center gap-3">
+						<div class="flex-shrink-0">
+							{% if vacante.asignacion_reclutador and vacante.asignacion_reclutador.imagen_perfil and vacante.asignacion_reclutador.imagen_perfil.name %}
+								<img src="{{ vacante.asignacion_reclutador.imagen_perfil.url }}" class="wh-44 rounded-circle object-fit-cover" alt="">
+							{% else %}
+								<img src="{% static 'admin/images/blank.png' %}" class="wh-44 rounded-circle object-fit-cover" alt="">
+							{% endif %}
+						</div>
+						<div class="min-w-0">
+							{% if vacante.asignacion_reclutador %}
+								<h6 class="mb-0 fs-14 fw-medium text-truncate">{{ vacante.asignacion_reclutador.primer_nombre }} {{ vacante.asignacion_reclutador.segundo_nombre }} {{ vacante.asignacion_reclutador.primer_apellido }} {{ vacante.asignacion_reclutador.segundo_apellido }}</h6>
+								<span class="fs-12 text-secondary">Reclutador asignado</span>
+							{% else %}
+								<h6 class="mb-0 fs-14 fw-medium text-secondary">Sin asignar</h6>
+								<span class="fs-12 text-secondary">Reclutador asignado</span>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{# Métricas Trezo real-estate: misma envoltura HTML + radialBar que properties_for_sale (apexcharts.js) #}
+	<div class="row g-4 mb-4 vacancy-metric-radials">
+		<div class="col-xl-3 col-lg-6 col-md-6">
+			<div class="card bg-white border-0 rounded-3 shadow-sm mb-0 h-100">
+				<div class="card-body p-4">
+					<div class="d-flex justify-content-between align-items-center mb-4">
+						<span class="d-inline-block border-warning border bg-warning bg-opacity-10 text-warning rounded-pill fs-12 fw-medium px-2">+ {{ vacante_metric_pct_aplicados|default:0 }}%</span>
+						<span class="fs-12 text-secondary">Del total</span>
+					</div>
+					<div class="row align-items-end">
+						<div class="col-sm-6">
+							<span class="d-block mb-2 text-secondary fs-13">Aplicados</span>
+							<h3 class="mb-0 fs-20 mb-0 text-dark">{{ vacante_metric_aplicados|default:0 }}</h3>
+						</div>
+						<div class="col-sm-6">
+							<div style="margin: -36px 0 -36px 0;">
+								<div id="vacancy_metric_radial_aplicados" class="mt-4 mt-sm-0"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-3 col-lg-6 col-md-6">
+			<div class="card bg-white border-0 rounded-3 shadow-sm mb-0 h-100">
+				<div class="card-body p-4">
+					<div class="d-flex justify-content-between align-items-center mb-4">
+						<span class="d-inline-block border-info border bg-info bg-opacity-10 text-info rounded-pill fs-12 fw-medium px-2">+ {{ vacante_metric_pct_entrevista|default:0 }}%</span>
+						<span class="fs-12 text-secondary">Del total</span>
+					</div>
+					<div class="row align-items-end">
+						<div class="col-sm-6">
+							<span class="d-block mb-2 text-secondary fs-13">En proceso (entrevista / pruebas)</span>
+							<h3 class="mb-0 fs-20 mb-0 text-dark">{{ vacante_metric_entrevista|default:0 }}</h3>
+						</div>
+						<div class="col-sm-6">
+							<div style="margin: -36px 0 -36px 0;">
+								<div id="vacancy_metric_radial_entrevista" class="mt-4 mt-sm-0"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-3 col-lg-6 col-md-6">
+			<div class="card bg-white border-0 rounded-3 shadow-sm mb-0 h-100">
+				<div class="card-body p-4">
+					<div class="d-flex justify-content-between align-items-center mb-4">
+						<span class="d-inline-block border-danger border bg-danger bg-opacity-10 text-danger rounded-pill fs-12 fw-medium px-2">+ {{ vacante_metric_pct_no_aprobados|default:0 }}%</span>
+						<span class="fs-12 text-secondary">Del total</span>
+					</div>
+					<div class="row align-items-end">
+						<div class="col-sm-6">
+							<span class="d-block mb-2 text-secondary fs-13">No aprobados</span>
+							<h3 class="mb-0 fs-20 mb-0 text-dark">{{ vacante_metric_no_aprobados|default:0 }}</h3>
+						</div>
+						<div class="col-sm-6">
+							<div style="margin: -36px 0 -36px 0;">
+								<div id="vacancy_metric_radial_no_aprobados" class="mt-4 mt-sm-0"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-3 col-lg-6 col-md-6">
+			<div class="card bg-white border-0 rounded-3 shadow-sm mb-0 h-100">
+				<div class="card-body p-4">
+					<div class="d-flex justify-content-between align-items-center mb-4">
+						<span class="d-inline-block border-success border bg-success bg-opacity-10 text-success rounded-pill fs-12 fw-medium px-2">+ {{ vacante_metric_pct_seleccionados|default:0 }}%</span>
+						<span class="fs-12 text-secondary">Del total</span>
+					</div>
+					<div class="row align-items-end">
+						<div class="col-sm-6">
+							<span class="d-block mb-2 text-secondary fs-13">Seleccionados / por cliente</span>
+							<h3 class="mb-0 fs-20 mb-0 text-dark">{{ vacante_metric_seleccionados|default:0 }}</h3>
+						</div>
+						<div class="col-sm-6">
+							<div style="margin: -36px 0 -36px 0;">
+								<div id="vacancy_metric_radial_seleccionados" class="mt-4 mt-sm-0"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{# Candidatos (col-lg-8) + listado seleccionados por el cliente (col-lg-4) #}
+	<div class="row mb-4 g-4">
+		<div class="col-12 col-lg-8">
+			<div class="card border-0 rounded-2 bg-white shadow-sm overflow-hidden h-100">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+					<div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+						<h2 class="fs-16 fw-semibold mb-0 text-primary">Candidatos en la vacante</h2>
+						<span class="fs-12 text-secondary">Total aplicaciones: {{ aplicaciones_total|default:0 }}</span>
+					</div>
+				</div>
+				<div class="card-body p-4">
+			<style>
+				#vacancyCandidatosTabs .nav-link {
+					color: var(--bs-secondary);
+				}
+				#vacancyCandidatosTabs .nav-link.active {
+					color: #B10022 !important;
+					font-weight: 600;
+				}
+				.candidate-cv-table thead th {
+					text-align: center !important;
+					vertical-align: middle;
+					background-color: #f1f3f5 !important;
+					color: #495057 !important;
+					font-weight: 600;
+					font-size: 0.75rem;
+					letter-spacing: 0.02em;
+					text-transform: none;
+					padding: 0.65rem 0.75rem !important;
+					border-bottom: 1px solid #dee2e6;
+				}
+			</style>
+
+			<ul class="nav nav-tabs bg-transparent border-bottom gap-2 gap-sm-4 pb-3 flex-wrap" id="vacancyCandidatosTabs" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button class="nav-link p-0 bg-transparent border-0 fs-12 fw-medium active" id="vacancy-cand-tab-all" data-bs-toggle="tab" data-bs-target="#vacancy-cand-pane-all" type="button" role="tab" aria-controls="vacancy-cand-pane-all" aria-selected="true">
+						Todos ({% with t=aplicaciones_total|default:0 %}{{ t|stringformat:"02d" }}{% endwith %})
+					</button>
+				</li>
+				{% for sec in reclutamiento_secciones %}
+				{% with nsec=sec.items|length %}
+				<li class="nav-item" role="presentation">
+					<button class="nav-link p-0 bg-transparent border-0 fs-12 fw-medium text-body" id="vacancy-cand-tab-{{ sec.code }}" data-bs-toggle="tab" data-bs-target="#vacancy-cand-pane-{{ sec.code }}" type="button" role="tab" aria-controls="vacancy-cand-pane-{{ sec.code }}" aria-selected="false">
+						<span class="text-{{ sec.color }}">{{ sec.title }}</span> ({{ nsec|stringformat:"02d" }})
+					</button>
+				</li>
+				{% endwith %}
+				{% endfor %}
+			</ul>
+
+			<div class="tab-content pt-3" id="vacancyCandidatosTabContent">
+				<div class="tab-pane fade show active" id="vacancy-cand-pane-all" role="tabpanel" aria-labelledby="vacancy-cand-tab-all" tabindex="0">
+					<div class="default-table-area style-two campaigns-table latest-transactions-table">
 						<div class="table-responsive">
-							<table class="table align-middle text-center border-0 mb-0">
+							<table class="table align-middle border-0 mb-0 candidate-cv-table">
+								<thead>
+									<tr>
+										<th class="border-0">Candidato</th>
+										<th class="border-0 text-nowrap">Match % (perfil)</th>
+										<th class="border-0">Estado aplicación</th>
+									</tr>
+								</thead>
 								<tbody>
-									<tr>
-										<td class="text-center">
-											<div class="d-flex flex-column align-items-center gap-2 mx-auto" style="max-width: 16rem;">
-												<div class="flex-shrink-0">
-													<img src="{% static 'admin/images/blank.png' %}" class="wh-44 rounded-circle object-fit-cover" alt="">
-												</div>
-												<div class="text-center min-w-0 w-100">
-													{% if data.cliente %}
-														<h6 class="mb-0 fs-14 fw-medium text-break">{{ data.cliente.contacto }}</h6>
-														<span class="fs-12 text-body d-block mt-1">Responsable del proceso</span>
-													{% else %}
-														<h6 class="mb-0 fs-14 fw-medium text-secondary">Sin asignar</h6>
-														<span class="fs-12 text-body d-block mt-1">Responsable del proceso</span>
-													{% endif %}
-												</div>
-											</div>
-										</td>
-										<td class="fs-13 text-secondary text-center">
-											{% if data.cliente and data.cliente.contacto_cargo %}{{ data.cliente.contacto_cargo }}{% else %}—{% endif %}
-										</td>
-										<td class="fs-13 text-center">
-											{% if data.cliente and data.cliente.email %}
-												<a href="mailto:{{ data.cliente.email }}" class="text-decoration-none text-break link-secondary d-inline-block">{{ data.cliente.email }}</a>
-											{% else %}
-												<span class="text-secondary">—</span>
-											{% endif %}
-										</td>
-									</tr>
-									<tr>
-										<td class="text-center">
-											<div class="d-flex flex-column align-items-center gap-2 mx-auto" style="max-width: 16rem;">
-												<div class="flex-shrink-0">
-													{% if vacante.usuario_asignado and vacante.usuario_asignado.imagen_perfil and vacante.usuario_asignado.imagen_perfil.name %}
-														<img src="{{ vacante.usuario_asignado.imagen_perfil.url }}" class="wh-44 rounded-circle object-fit-cover" alt="">
-													{% else %}
-														<img src="{% static 'admin/images/blank.png' %}" class="wh-44 rounded-circle object-fit-cover" alt="">
-													{% endif %}
-												</div>
-												<div class="text-center min-w-0 w-100">
-													{% if vacante.usuario_asignado %}
-														<h6 class="mb-0 fs-14 fw-medium text-break">{{ vacante.usuario_asignado.primer_nombre }} {{ vacante.usuario_asignado.segundo_nombre }} {{ vacante.usuario_asignado.primer_apellido }} {{ vacante.usuario_asignado.segundo_apellido }}</h6>
-														<span class="fs-12 text-body d-block mt-1">Analista de selección</span>
-													{% else %}
-														<h6 class="mb-0 fs-14 fw-medium text-secondary">Sin asignar</h6>
-														<span class="fs-12 text-body d-block mt-1">Analista de selección</span>
-													{% endif %}
-												</div>
-											</div>
-										</td>
-										<td class="fs-13 text-secondary text-center">
-											{% if vacante.usuario_asignado and vacante.usuario_asignado.group %}{{ vacante.usuario_asignado.group.name }}{% else %}—{% endif %}
-										</td>
-										<td class="fs-13 text-center">
-											{% if vacante.usuario_asignado and vacante.usuario_asignado.email %}
-												<a href="mailto:{{ vacante.usuario_asignado.email }}" class="text-decoration-none text-break link-secondary d-inline-block">{{ vacante.usuario_asignado.email }}</a>
-											{% else %}
-												<span class="text-secondary">—</span>
-											{% endif %}
-										</td>
-									</tr>
-									<tr>
-										<td class="text-center">
-											<div class="d-flex flex-column align-items-center gap-2 mx-auto" style="max-width: 16rem;">
-												<div class="flex-shrink-0">
-													{% if vacante.asignacion_reclutador and vacante.asignacion_reclutador.imagen_perfil and vacante.asignacion_reclutador.imagen_perfil.name %}
-														<img src="{{ vacante.asignacion_reclutador.imagen_perfil.url }}" class="wh-44 rounded-circle object-fit-cover" alt="">
-													{% else %}
-														<img src="{% static 'admin/images/blank.png' %}" class="wh-44 rounded-circle object-fit-cover" alt="">
-													{% endif %}
-												</div>
-												<div class="text-center min-w-0 w-100">
-													{% if vacante.asignacion_reclutador %}
-														<h6 class="mb-0 fs-14 fw-medium text-break">{{ vacante.asignacion_reclutador.primer_nombre }} {{ vacante.asignacion_reclutador.segundo_nombre }} {{ vacante.asignacion_reclutador.primer_apellido }} {{ vacante.asignacion_reclutador.segundo_apellido }}</h6>
-														<span class="fs-12 text-body d-block mt-1">Reclutador</span>
-													{% else %}
-														<h6 class="mb-0 fs-14 fw-medium text-secondary">Sin asignar</h6>
-														<span class="fs-12 text-body d-block mt-1">Reclutador</span>
-													{% endif %}
-												</div>
-											</div>
-										</td>
-										<td class="fs-13 text-secondary text-center">
-											{% if vacante.asignacion_reclutador and vacante.asignacion_reclutador.group %}{{ vacante.asignacion_reclutador.group.name }}{% else %}—{% endif %}
-										</td>
-										<td class="fs-13 text-center">
-											{% if vacante.asignacion_reclutador and vacante.asignacion_reclutador.email %}
-												<a href="mailto:{{ vacante.asignacion_reclutador.email }}" class="text-decoration-none text-break link-secondary d-inline-block">{{ vacante.asignacion_reclutador.email }}</a>
-											{% else %}
-												<span class="text-secondary">—</span>
-											{% endif %}
-										</td>
-									</tr>
+									{% include 'admin/vacancy/partials/vacancy_detail_candidatos_filas_campaigns.html' with lista_apps=aplicaciones_todas %}
 								</tbody>
 							</table>
 						</div>
+					</div>
+				</div>
+				{% for sec in reclutamiento_secciones %}
+				<div class="tab-pane fade" id="vacancy-cand-pane-{{ sec.code }}" role="tabpanel" aria-labelledby="vacancy-cand-tab-{{ sec.code }}" tabindex="0">
+					<div class="default-table-area style-two campaigns-table latest-transactions-table">
+						<div class="table-responsive">
+							<table class="table align-middle border-0 mb-0 candidate-cv-table">
+								<thead>
+									<tr>
+										<th class="border-0">Candidato</th>
+										<th class="border-0 text-nowrap">Match % (perfil)</th>
+										<th class="border-0">Estado aplicación</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% include 'admin/vacancy/partials/vacancy_detail_candidatos_filas_campaigns.html' with lista_apps=sec.items %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+				</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-12 col-lg-4">
+			<div class="card border-0 rounded-2 bg-white shadow-sm overflow-hidden h-100">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4">
+					<div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+						<h2 class="fs-16 fw-semibold mb-0 text-primary">Selección / apto por el cliente</h2>
+						<span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border fs-12 fw-medium">{{ aplicaciones_seleccion_cliente|length }}</span>
+					</div>
+				</div>
+				<div class="card-body p-0">
+					<div class="vacancy-seleccion-cliente-list" style="max-height: min(520px, 70vh); overflow-y: auto;">
+						{% for app in aplicaciones_seleccion_cliente %}
+						<div
+							class="candidate-cv-row d-flex align-items-center gap-3 px-3 py-3 border-bottom border-light cursor-pointer"
+							role="button"
+							tabindex="0"
+							data-aplicacion-id="{{ app.id }}"
+							data-vacante-id="{{ vacante.id }}"
+							data-candidate-name="{{ app.candidato_101.nombre_completo|default:''|escape }}"
+						>
+							<div class="flex-shrink-0">
+								<img src="{% if app.candidato_101.imagen_perfil and app.candidato_101.imagen_perfil.name %}{{ app.candidato_101.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}" class="rounded-circle border border-light object-fit-cover" width="40" height="40" alt="">
+							</div>
+							<div class="min-w-0 flex-grow-1">
+								<span class="d-block fs-14 fw-medium text-dark text-truncate" title="{{ app.candidato_101.nombre_completo|default:'' }}">{{ app.candidato_101.nombre_completo|default:"—" }}</span>
+								<div class="d-flex flex-wrap align-items-center gap-2 mt-1">
+									{% with ea=app.obtener_estado_con_color %}
+									<span class="d-inline-block py-0 px-2 rounded-2 fs-11 fw-medium {% if ea.color == 'gris' %}bg-secondary bg-opacity-10 text-secondary{% else %}bg-opacity-10 bg-{{ ea.color }} text-{{ ea.color }}{% endif %}">{{ ea.estado }}</span>
+									{% endwith %}
+									<span class="fs-12 text-secondary">· {{ app.fecha_actualizacion|date:"d/m/Y H:i"|default:"—" }}</span>
+								</div>
+							</div>
+						</div>
+						{% empty %}
+						<div class="px-4 py-5 text-center text-secondary fs-12">
+							No hay candidatos en estado «Seleccionado» o «Seleccionado por cliente» en esta vacante.
+						</div>
+						{% endfor %}
 					</div>
 				</div>
 			</div>
@@ -251,8 +504,178 @@ Detalle vacante
 			</div>
 		</div>
 	</div>
+
+	{# Modal: perfil candidato / entrevistas / historial (contenido por AJAX) #}
+	<div class="modal fade" id="modalCandidateCv" tabindex="-1" aria-labelledby="modalCandidateCvLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+			<div class="modal-content border-0 rounded-2 shadow-sm bg-white overflow-hidden">
+				<div class="modal-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-0">
+					<h2 class="modal-title fs-16 fw-semibold text-primary mb-0 flex-grow-1" id="modalCandidateCvLabel">
+						<span id="candidateCvTitle">Candidato</span>
+					</h2>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+				</div>
+				<div class="modal-body p-3 p-md-4 bg-white" id="modalCandidateCvBody">
+					<div class="text-center py-5" id="modalCandidateCvLoading">
+						<div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+						<p class="mt-3 fs-12 text-secondary mb-0">Cargando información…</p>
+					</div>
+				</div>
+				<div class="modal-footer border-0 border-top py-3 px-4 bg-white justify-content-center">
+					<button type="button"
+						class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 border-0 rounded-2"
+						data-bs-dismiss="modal">
+						Cerrar
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 </div>
 {% endblock %}
 
 {% block js %}
+<script>
+(function () {
+	var modalCuerpoUrlTpl = "{% url 'vacantes:vacancy_aplicacion_modal_cuerpo' vacante.id 999999 %}";
+	var loadingHtml = document.getElementById('modalCandidateCvLoading')
+		? document.getElementById('modalCandidateCvLoading').outerHTML
+		: '<div class="text-center py-5" id="modalCandidateCvLoading"><div class="spinner-border text-primary" role="status"></div><p class="mt-3 fs-12 text-secondary mb-0">Cargando información…</p></div>';
+
+	function buildModalUrl(aplicacionId) {
+		return modalCuerpoUrlTpl.replace('999999', String(aplicacionId));
+	}
+
+	function openCandidateModal(tr) {
+		var aid = tr.dataset.aplicacionId;
+		var modalEl = document.getElementById('modalCandidateCv');
+		var bodyEl = document.getElementById('modalCandidateCvBody');
+		var titleEl = document.getElementById('candidateCvTitle');
+		if (!modalEl || !bodyEl || !aid) return;
+
+		if (titleEl) {
+			titleEl.textContent = tr.dataset.candidateName || 'Candidato';
+		}
+		bodyEl.innerHTML = loadingHtml;
+
+		if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+			bootstrap.Modal.getOrCreateInstance(modalEl).show();
+		}
+
+		fetch(buildModalUrl(aid), {
+			method: 'GET',
+			headers: { 'X-Requested-With': 'XMLHttpRequest' },
+			credentials: 'same-origin',
+		})
+			.then(function (r) {
+				if (!r.ok) throw new Error('HTTP ' + r.status);
+				return r.text();
+			})
+			.then(function (html) {
+				bodyEl.innerHTML = html;
+			})
+			.catch(function () {
+				bodyEl.innerHTML = '<div class="alert alert-danger mb-0 rounded-2">No se pudo cargar la información del candidato. Intente de nuevo.</div>';
+			});
+	}
+
+	var modalEl = document.getElementById('modalCandidateCv');
+	if (modalEl) {
+		modalEl.addEventListener('hidden.bs.modal', function () {
+			var bodyEl = document.getElementById('modalCandidateCvBody');
+			if (bodyEl) {
+				bodyEl.innerHTML = loadingHtml;
+			}
+		});
+	}
+
+	document.addEventListener('click', function (e) {
+		var row = e.target.closest('.candidate-cv-row');
+		if (!row || !row.dataset.aplicacionId) return;
+		e.preventDefault();
+		openCandidateModal(row);
+	});
+	document.addEventListener('keydown', function (e) {
+		if (e.key !== 'Enter' && e.key !== ' ') return;
+		var row = e.target.closest('.candidate-cv-row');
+		if (!row || !row.dataset.aplicacionId || row !== document.activeElement) return;
+		e.preventDefault();
+		openCandidateModal(row);
+	});
+})();
+
+(function () {
+	/**
+	 * Misma configuración radial que Trezo «properties_for_sale» en static/admin/js/custom/apexcharts.js
+	 * (hollow 35%, track #F5F7F8, chart 170×170, stroke lineCap "0", etiqueta valor Trezo).
+	 */
+	function renderVacancyRadialCharts() {
+		if (typeof ApexCharts === 'undefined') {
+			return;
+		}
+		var charts = [
+			{ sel: '#vacancy_metric_radial_aplicados', pct: {{ vacante_metric_pct_aplicados|default:0 }}, color: '#ffc107' },
+			{ sel: '#vacancy_metric_radial_entrevista', pct: {{ vacante_metric_pct_entrevista|default:0 }}, color: '#0dcaf0' },
+			{ sel: '#vacancy_metric_radial_no_aprobados', pct: {{ vacante_metric_pct_no_aprobados|default:0 }}, color: '#dc3545' },
+			{ sel: '#vacancy_metric_radial_seleccionados', pct: {{ vacante_metric_pct_seleccionados|default:0 }}, color: '#37D80A' }
+		];
+		charts.forEach(function (item) {
+			var el = document.querySelector(item.sel);
+			if (!el) {
+				return;
+			}
+			var p = Math.min(100, Math.max(0, parseFloat(item.pct) || 0));
+			var options = {
+				chart: {
+					height: 170,
+					width: 170,
+					type: 'radialBar',
+					toolbar: { show: false }
+				},
+				series: [p],
+				colors: [item.color],
+				plotOptions: {
+					radialBar: {
+						hollow: {
+							margin: 10,
+							size: '35%',
+							background: '#F5F7F8'
+						},
+						track: {
+							background: '#F5F7F8'
+						},
+						dataLabels: {
+							name: {
+								offsetY: -10,
+								color: '#4b9bfa',
+								fontSize: '.625rem',
+								show: false
+							},
+							value: {
+								show: true,
+								offsetY: 5,
+								color: '#3A4252',
+								fontSize: '14px',
+								fontWeight: 700,
+								fontFamily: 'Inter, system-ui, sans-serif',
+								formatter: function () {
+									return Math.round(p) + '%';
+								}
+							}
+						}
+					}
+				},
+				stroke: {
+					lineCap: '0'
+				},
+				labels: ['Status']
+			};
+			el.innerHTML = '';
+			new ApexCharts(el, options).render();
+		});
+	}
+	setTimeout(renderVacancyRadialCharts, 100);
+})();
+</script>
 {% endblock %}

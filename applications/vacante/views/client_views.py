@@ -1,9 +1,10 @@
+from collections import defaultdict
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import F, Count, Q, Value, Case, When, CharField 
+from django.db.models import F, Count, Q, Value, Case, When, CharField, Max
 from django.db import transaction, IntegrityError
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli078MotivadoresCandidato
 
-from applications.services.service_interview import query_interview_all
+from applications.services.service_interview import query_interview_all, attach_ultima_entrevista_a_reclutados
 from applications.services.service_recruited import query_recruited_vacancy_id
 from applications.reclutado.forms.FormRecruited import ReclutadoCrearForm
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones, Cli075GrupoProfesion
@@ -18,6 +19,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 from django.db.models.functions import Concat
+from django.utils import timezone
 
 #forms
 from applications.vacante.forms.VacanteForms import VacancyAssingForm, VacancyFormAllV2, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll, VacancyAssignRecruiterForm
@@ -27,6 +29,10 @@ from applications.services.service_vacanty import query_vacanty_all, query_vacan
 
 #query
 from applications.services.service_client import query_client_detail
+from applications.services.service_recruited import consultar_historial_aplicacion_vacante_candidate
+from applications.services.service_candidate import buscar_candidato
+from applications.usuarios.templatetags.custom_tags import get_match_inicial_porcentaje
+from applications.reclutado.views.admin_views import estructurar_resultado_entrevista_json
 
 
 #crear todas las vacantes
@@ -531,7 +537,8 @@ def vacancy_management_from_client(request, pk, vacante_id):
     # Ordenar por fecha de aplicación ascendente
     from django.utils import timezone
     reclutados_finalizalista = sorted(list(reclutados), key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
-    
+    attach_ultima_entrevista_a_reclutados(reclutados_finalizalista)
+
     # Mantener las otras listas vacías para compatibilidad con el template
     reclutados_recibido = []
     reclutados_seleccionado = []
@@ -592,9 +599,6 @@ def detail_vacancy(request, pk):
         id=pk,
     )
     cliente_id = vacante.asignacion_cliente_id_064.id_cliente_asignado.id
-    print(f'cliente_id: {cliente_id}')
-    print(f'pk: {pk}')
-    print(vacante)
     habilidades_guardadas = vacante.habilidades.all() 
     perfil_vacante = vacante.perfil_vacante
 
@@ -908,14 +912,240 @@ def detail_vacancy(request, pk):
     if vacante.asignacion_cliente_id_064:
         cliente_asignado = vacante.asignacion_cliente_id_064.id_cliente_asignado
 
+    # Listado de candidatos (tabla en vacancy_detail.html) + secciones por estado de reclutamiento
+    aplicaciones_tabla = (
+        Cli056AplicacionVacante.objects.select_related(
+            "candidato_101",
+            "candidato_101__ciudad_id_004",
+        )
+        .filter(vacante_id_052=vacante)
+        .order_by("estado_reclutamiento", "-fecha_actualizacion", "-id")
+    )
+
+    from applications.services.choices import ESTADO_RECLUTADO_CHOICES_STATIC, ESTADO_RECLUTADO_COLOR_STATIC
+
+    apps_list = list(aplicaciones_tabla)
+    attach_ultima_entrevista_a_reclutados(apps_list)
+    by_estado_reclutamiento = defaultdict(list)
+    for app in apps_list:
+        by_estado_reclutamiento[app.estado_reclutamiento].append(app)
+
+    choices_reclutamiento = {k: v for k, v in ESTADO_RECLUTADO_CHOICES_STATIC if k != ""}
+    reclutamiento_secciones = []
+    for code in (1, 2, 3, 4):
+        label = choices_reclutamiento.get(code, "Desconocido")
+        _nombre, color_key = ESTADO_RECLUTADO_COLOR_STATIC.get(code, (label, "secondary"))
+        reclutamiento_secciones.append(
+            {
+                "code": code,
+                "title": label,
+                "color": color_key,
+                "items": by_estado_reclutamiento.get(code, []),
+            }
+        )
+
+    aplicaciones_todas = sorted(
+        apps_list,
+        key=lambda a: (a.fecha_aplicacion or timezone.now(), a.id),
+        reverse=True,
+    )
+
+    # Panel lateral: Seleccionado (8) o Seleccionado por Cliente (13)
+    aplicaciones_seleccion_cliente = sorted(
+        [a for a in apps_list if a.estado_aplicacion in (8, 13)],
+        key=lambda a: (a.fecha_actualizacion or a.fecha_aplicacion or timezone.now(), a.id),
+        reverse=True,
+    )
+
+    # Métricas por estado de aplicación (misma lógica que listado de vacantes: en_proceso = 2,3,5,6)
+    qs_metric = Cli056AplicacionVacante.objects.filter(vacante_id_052=vacante)
+    vacante_metric_aplicados = qs_metric.filter(estado_aplicacion=1).count()
+    vacante_metric_entrevista = qs_metric.filter(estado_aplicacion__in=[2, 3, 5, 6]).count()
+    vacante_metric_no_aprobados = qs_metric.filter(estado_aplicacion__in=[4, 7, 12]).count()
+    vacante_metric_seleccionados = qs_metric.filter(estado_aplicacion__in=[8, 13]).count()
+    _tot_m = len(apps_list)
+
+    def _pct_vac(n):
+        return round(100.0 * n / _tot_m) if _tot_m else 0
+
+    # Fecha del candidato N (N = cantidad_presentar): orden cronológico por fecha_actualizacion
+    # entre aplicaciones en decisión del cliente (8, 12, 13). Si hay menos de N, se usa el último disponible.
+    _qs_cliente = qs_metric.filter(estado_aplicacion__in=[8, 12, 13]).order_by(
+        "fecha_actualizacion", "id"
+    )
+    _lista_cliente = list(_qs_cliente)
+    _limite_presentar = vacante.cantidad_presentar
+    if _limite_presentar is not None and _limite_presentar > 0 and _lista_cliente:
+        _hasta = min(int(_limite_presentar), len(_lista_cliente))
+        fecha_ultimo_candidato_enviado = _lista_cliente[_hasta - 1].fecha_actualizacion
+    elif _lista_cliente:
+        fecha_ultimo_candidato_enviado = _lista_cliente[-1].fecha_actualizacion
+    else:
+        fecha_ultimo_candidato_enviado = None
+
+    # Candidatos con al menos una entrevista calificada (resultado registrado) y estado «Apto» (2)
+    filtro_apto_entrevista_completa = (
+        Q(asignaciones_entrevista__resultado_entrevista__isnull=False)
+        & ~Q(asignaciones_entrevista__resultado_entrevista={})
+        & Q(asignaciones_entrevista__estado_asignacion=2)
+    )
+    vacante_metric_aptos_entrevista_completa = (
+        qs_metric.filter(filtro_apto_entrevista_completa).distinct().count()
+    )
+    # Presentados al cliente (8, 12, 13) con entrevista calificada y estado «Apto»
+    vacante_metric_presentados_apto_entrevista = (
+        qs_metric.filter(estado_aplicacion__in=[8, 12, 13])
+        .filter(filtro_apto_entrevista_completa)
+        .distinct()
+        .count()
+    )
+
+    def _normalizar_dt_para_diff(dt):
+        if dt is None:
+            return None
+        if timezone.is_naive(dt):
+            return timezone.make_aware(dt, timezone.get_current_timezone())
+        return dt
+
+    diferencia_fechas_presentacion_envio = None
+    fp = _normalizar_dt_para_diff(vacante.fecha_presentacion)
+    ul = _normalizar_dt_para_diff(fecha_ultimo_candidato_enviado)
+    if fp and ul:
+        delta = ul - fp
+        total_seconds = abs(int(delta.total_seconds()))
+        dias = total_seconds // 86400
+        horas = (total_seconds % 86400) // 3600
+        minutos = (total_seconds % 3600) // 60
+        partes = []
+        if dias:
+            partes.append(f"{dias} día{'s' if dias != 1 else ''}")
+        if horas:
+            partes.append(f"{horas} h")
+        if not partes and minutos:
+            partes.append(f"{minutos} min")
+        if not partes:
+            partes.append("0 min")
+        texto_diff = " · ".join(partes)
+        if delta.total_seconds() == 0:
+            nota = "Ambas fechas coinciden."
+        elif delta.total_seconds() > 0:
+            nota = "El último envío al cliente es posterior a la fecha de presentación."
+        else:
+            nota = "El último envío al cliente es anterior a la fecha de presentación."
+        diferencia_fechas_presentacion_envio = {"texto": texto_diff, "nota": nota}
+
     context = {
         "vacante": vacante,
         "form": form,
         "data": {"cliente": cliente_asignado},
         "is_candidato": False,
+        "aplicaciones_tabla": aplicaciones_tabla,
+        "aplicaciones_total": len(apps_list),
+        "aplicaciones_todas": aplicaciones_todas,
+        "aplicaciones_seleccion_cliente": aplicaciones_seleccion_cliente,
+        "reclutamiento_secciones": reclutamiento_secciones,
+        "vacante_metric_aplicados": vacante_metric_aplicados,
+        "vacante_metric_entrevista": vacante_metric_entrevista,
+        "vacante_metric_no_aprobados": vacante_metric_no_aprobados,
+        "vacante_metric_seleccionados": vacante_metric_seleccionados,
+        "vacante_metric_pct_aplicados": _pct_vac(vacante_metric_aplicados),
+        "vacante_metric_pct_entrevista": _pct_vac(vacante_metric_entrevista),
+        "vacante_metric_pct_no_aprobados": _pct_vac(vacante_metric_no_aprobados),
+        "vacante_metric_pct_seleccionados": _pct_vac(vacante_metric_seleccionados),
+        "fecha_ultimo_candidato_enviado": fecha_ultimo_candidato_enviado,
+        "vacante_metric_aptos_entrevista_completa": vacante_metric_aptos_entrevista_completa,
+        "vacante_metric_presentados_apto_entrevista": vacante_metric_presentados_apto_entrevista,
+        "diferencia_fechas_presentacion_envio": diferencia_fechas_presentacion_envio,
     }
 
     return render(request, "admin/vacancy/client_user/vacancy_detail.html", context)
+
+
+@login_required
+@validar_permisos(
+    "acceso_admin",
+    "acceso_cliente",
+    "acceso_analista_seleccion_ats",
+    "acceso_analista_seleccion",
+)
+def vacancy_aplicacion_modal_cuerpo(request, vacante_pk, aplicacion_pk):
+    """
+    Fragmento HTML para el modal de candidato en detalle de vacante (pestañas:
+    entrevista/resultado, perfil, historial de aplicación, respuesta del cliente).
+    """
+    aplicacion = get_object_or_404(
+        Cli056AplicacionVacante.objects.select_related(
+            "candidato_101",
+            "candidato_101__ciudad_id_004",
+            "vacante_id_052",
+        ),
+        pk=aplicacion_pk,
+        vacante_id_052_id=vacante_pk,
+    )
+    entrevistas = (
+        Cli057AsignacionEntrevista.objects.filter(asignacion_vacante=aplicacion)
+        .select_related("usuario_asignado", "usuario_asigno")
+        .order_by("-fecha_entrevista", "-hora_entrevista", "-id")
+    )
+    historial = consultar_historial_aplicacion_vacante_candidate(aplicacion.id)
+    info_detalle_candidato = buscar_candidato(aplicacion.candidato_101_id)
+    match_inicial_pct = get_match_inicial_porcentaje(aplicacion.json_match_inicial)
+    if match_inicial_pct is None:
+        match_inicial_display = "—"
+    else:
+        match_inicial_display = f"{match_inicial_pct}%"
+
+    json_match_inicial = {}
+    raw_jm = aplicacion.json_match_inicial
+    if raw_jm:
+        try:
+            if isinstance(raw_jm, str):
+                json_match_inicial = json.loads(raw_jm)
+            else:
+                json_match_inicial = raw_jm
+        except (json.JSONDecodeError, TypeError):
+            json_match_inicial = {}
+
+    entrevistas_modal = []
+    for e in entrevistas:
+        entrevistas_modal.append(
+            {
+                "entrevista": e,
+                "datos_reporte_final": estructurar_resultado_entrevista_json(
+                    e.resultado_entrevista, json_match_inicial
+                ),
+            }
+        )
+
+    _rr = aplicacion.registro_reclutamiento
+    if isinstance(_rr, dict):
+        _txt_cliente = (_rr.get("descripcion_respuesta_cliente") or "").strip()
+    else:
+        _txt_cliente = ""
+    estado_respuesta_cliente_relevante = aplicacion.estado_aplicacion in (8, 12, 13)
+    es_respuesta_cliente_apto = aplicacion.estado_aplicacion in (8, 13)
+
+    context = {
+        "aplicacion": aplicacion,
+        "reclutado": aplicacion,
+        "candidato": aplicacion.candidato_101,
+        "vacante": aplicacion.vacante_id_052,
+        "entrevistas": entrevistas,
+        "entrevistas_modal": entrevistas_modal,
+        "historial": historial,
+        "info_detalle_candidato": info_detalle_candidato,
+        "match_inicial_pct": match_inicial_pct,
+        "match_inicial_display": match_inicial_display,
+        "respuesta_cliente_texto": _txt_cliente,
+        "estado_respuesta_cliente_relevante": estado_respuesta_cliente_relevante,
+        "es_respuesta_cliente_apto": es_respuesta_cliente_apto,
+    }
+    return render(
+        request,
+        "admin/vacancy/partials/modal_candidato_aplicacion_tabs.html",
+        context,
+    )
+
 
 #detalle de la vacante
 @login_required

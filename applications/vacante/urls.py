@@ -26,6 +26,11 @@ urlpatterns = [
     path( url_principal+'crear_vacante/', client_views.create_vacanty_v2, name='vacantes_crear_cliente'),
     path( url_principal+'listado/', client_views.list_vacanty_all, name='vacantes_listado_cliente'),
     path( url_principal+'detalle/<int:pk>/', client_views.detail_vacancy, name='vacantes_detalle_cliente'),
+    path(
+        url_principal + 'detalle/<int:vacante_pk>/aplicacion/<int:aplicacion_pk>/modal-cuerpo/',
+        client_views.vacancy_aplicacion_modal_cuerpo,
+        name='vacancy_aplicacion_modal_cuerpo',
+    ),
     path( url_principal+'detalle/entrevistas/<int:pk>/', client_views.detail_vacancy_interview, name='vacantes_entrevista_cliente'),
     path( url_principal+'asignar_analista/<int:pk>/', client_views.detail_vacancy_assign, name='vacantes_asignar_analista_cliente'),
     path( url_principal+'gestionar/<int:pk>/<int:vacante_id>/', client_views.vacancy_management_from_client, name='vacantes_gestion_propias_cliente'),

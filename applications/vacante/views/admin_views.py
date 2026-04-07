@@ -4,7 +4,7 @@ from django.db.models import F, Count, Q, Value, Case, When, CharField
 from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli078MotivadoresCandidato
 
 from applications.reclutado.forms.FormRecruited import ReclutadoCrearForm
-from applications.services.service_interview import query_interview_all
+from applications.services.service_interview import query_interview_all, attach_ultima_entrevista_a_reclutados
 from applications.services.service_recruited import query_recruited_vacancy_id
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones, Cli075GrupoProfesion
 from applications.reclutado.models import Cli056AplicacionVacante
@@ -835,7 +835,7 @@ def vacanty_management_from_client(request, pk, vacante_id):
     reclutados_seleccionado = sorted([r for r in reclutados if r.estado_reclutamiento == 2], key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
     reclutados_finalizalista = sorted([r for r in reclutados if r.estado_reclutamiento == 3], key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
     reclutados_descartado = sorted([r for r in reclutados if r.estado_reclutamiento == 4], key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
-    
+    attach_ultima_entrevista_a_reclutados(reclutados_finalizalista)
 
     # Formularios para reclutar candidato y asignar analista a la vacante
     form_reclutados = ReclutadoCrearForm()

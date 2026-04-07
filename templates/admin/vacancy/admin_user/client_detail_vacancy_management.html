@@ -383,6 +383,7 @@ Vacantes Propias
                                                         <th scope="col" class="text-center">Nivel de Estudio</th>
                                                         {% comment %} <th scope="col" class="text-center">Puntaje Match</th> {% endcomment %}
                                                         <th scope="col" class="text-center">Match Perfil</th>
+                                                        <th scope="col" class="text-center">Última entrevista</th>
                                                         <th scope="col" class="text-center">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -460,6 +461,9 @@ Vacantes Propias
                                                             {% endwith %}
                                                         </td>
                                                         <td class="text-center">
+                                                            {% include 'admin/vacancy/partials/celda_ultima_entrevista.html' %}
+                                                        </td>
+                                                        <td class="text-center">
                                                             <div class="d-flex gap-2 justify-content-center flex-wrap">
                                                                 {% if request.session.grupo_id == 5 %}
                                                                     <a href="{% url 'reclutados:reclutados_detalle_cliente' e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3">
@@ -483,7 +487,7 @@ Vacantes Propias
                                                     </tr>
                                                     {% empty %}
                                                     <tr>
-                                                        <td colspan="7" class="text-center text-muted">No hay candidatos en este estado</td>
+                                                        <td colspan="8" class="text-center text-muted">No hay candidatos en este estado</td>
                                                     </tr>
                                                     {% endfor %}
                                                 </tbody>
@@ -1011,6 +1015,18 @@ $(document).ready(function() {
         "retrieve": true
     };
 
+    // Misma base que dataTableConfig, pero 8 columnas (última entrevista antes de acciones)
+    var dataTableConfigFinalista = $.extend({}, dataTableConfig, {
+        "columnDefs": [
+            {
+                "targets": [0, 7],
+                "orderable": false,
+                "searchable": false
+            }
+        ],
+        "order": [[2, "asc"]]
+    });
+
     // Configuración para tabla de entrevistas (sin columnDefs específicos)
     var dataTableConfigEntrevistas = {
         "dom": '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
@@ -1122,7 +1138,7 @@ $(document).ready(function() {
     $('#nav-finalizalista-tab').on('shown.bs.tab', function (e) {
         setTimeout(function() {
             if (!tableFinalista) {
-                tableFinalista = initDataTable('tableFinalista');
+                tableFinalista = initDataTable('tableFinalista', dataTableConfigFinalista);
             } else {
                 tableFinalista.columns.adjust().draw();
             }
