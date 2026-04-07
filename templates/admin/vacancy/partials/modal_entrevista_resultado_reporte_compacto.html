@@ -1,0 +1,287 @@
+{% comment %}
+Misma lógica visual que reporte_final_content (badges por rango), compacto para modal.
+Requiere: datos_reporte_final (salida de estructurar_resultado_entrevista_json).
+{% endcomment %}
+<div class="modal-resultado-entrevista-compacto">
+	{% if datos_reporte_final.promedio_total and datos_reporte_final.promedio_total > 0 %}
+	<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-3 border-bottom border-light">
+		<span class="fs-12 text-secondary text-uppercase fw-semibold" style="letter-spacing: 0.06em;">Promedio total (como reporte final)</span>
+		{% with pt=datos_reporte_final.promedio_total %}
+			{% if pt >= 8 %}
+				<span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 fw-bold fs-5">{{ pt|floatformat:1 }}/10</span>
+			{% elif pt >= 6 %}
+				<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 fw-bold fs-5">{{ pt|floatformat:1 }}/10</span>
+			{% elif pt >= 4 %}
+				<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 fw-bold fs-5">{{ pt|floatformat:1 }}/10</span>
+			{% else %}
+				<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 fw-bold fs-5">{{ pt|floatformat:1 }}/10</span>
+			{% endif %}
+		{% endwith %}
+	</div>
+	{% endif %}
+
+	<div class="row g-2 g-lg-3">
+		<!-- Hard Skills -->
+		<div class="col-12 col-md-6 col-xl-3">
+			<div class="card bg-white rounded-3 h-100 border" style="border-color: #ffcccc !important;">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-2 text-center">
+					<p class="text-primary my-0 fs-12 fw-semibold mb-0"><i class="ri-tools-line me-1"></i>Hard Skills</p>
+				</div>
+				<div class="card-body p-2 p-md-3">
+					<div class="mb-2 pb-2 border-bottom">
+						{% with promedio=datos_reporte_final.promedios.hard_skills %}
+							{% if promedio >= 8 %}
+								<span class="badge bg-success bg-opacity-10 text-success border border-success w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio >= 6 %}
+								<span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio >= 4 %}
+								<span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio > 0 %}
+								<span class="badge bg-primary bg-opacity-10 text-primary border border-primary w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% else %}
+								<span class="text-muted small d-block text-center py-1">—</span>
+							{% endif %}
+						{% endwith %}
+					</div>
+					{% if datos_reporte_final.hard_skills %}
+						{% for hard_skill in datos_reporte_final.hard_skills %}
+							<details class="border rounded mb-2 small">
+								<summary class="px-2 py-2 d-flex justify-content-between align-items-center cursor-pointer list-unstyled" style="cursor: pointer;">
+									<span class="text-truncate me-1"><i class="{{ hard_skill.icono }} me-1 text-primary"></i>{{ hard_skill.nombre }}</span>
+									{% if hard_skill.calificacion >= 8 %}
+										<span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1 flex-shrink-0">{{ hard_skill.calificacion }}/10</span>
+									{% elif hard_skill.calificacion >= 6 %}
+										<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 flex-shrink-0">{{ hard_skill.calificacion }}/10</span>
+									{% elif hard_skill.calificacion >= 4 %}
+										<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 flex-shrink-0">{{ hard_skill.calificacion }}/10</span>
+									{% else %}
+										<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 flex-shrink-0">{{ hard_skill.calificacion }}/10</span>
+									{% endif %}
+								</summary>
+								<div class="px-2 pb-2 fs-11 text-secondary border-top bg-light bg-opacity-25">
+									<p class="mb-1"><span class="text-muted">Match:</span> {{ hard_skill.porcentaje|floatformat:1 }}%</p>
+									{% if hard_skill.ponderacion %}<p class="mb-0"><span class="text-muted">Ponderación:</span> {{ hard_skill.ponderacion|floatformat:1 }}%</p>{% endif %}
+								</div>
+							</details>
+						{% endfor %}
+					{% else %}
+						<p class="text-muted small mb-0 text-center">Sin calificación</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<!-- Habilidades vacante -->
+		<div class="col-12 col-md-6 col-xl-3">
+			<div class="card bg-white rounded-3 h-100 border" style="border-color: #ffcccc !important;">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-2 text-center">
+					<p class="text-primary my-0 fs-12 fw-semibold mb-0"><i class="ri-star-line me-1"></i>Habilidades</p>
+				</div>
+				<div class="card-body p-2 p-md-3">
+					<div class="mb-2 pb-2 border-bottom">
+						{% with promedio=datos_reporte_final.promedios.habilidades %}
+							{% if promedio >= 8 %}
+								<span class="badge bg-success bg-opacity-10 text-success border border-success w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio >= 6 %}
+								<span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio >= 4 %}
+								<span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio > 0 %}
+								<span class="badge bg-primary bg-opacity-10 text-primary border border-primary w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% else %}
+								<span class="text-muted small d-block text-center py-1">—</span>
+							{% endif %}
+						{% endwith %}
+					</div>
+					{% if datos_reporte_final.resultados.habilidades %}
+						{% for habilidad in datos_reporte_final.resultados.habilidades %}
+							<details class="border rounded mb-2 small">
+								<summary class="px-2 py-2 d-flex justify-content-between align-items-center" style="cursor: pointer;">
+									<span class="text-truncate me-1"><i class="ri-star-line me-1 text-primary"></i>{{ habilidad.nombre }}</span>
+									{% if habilidad.calificacion >= 8 %}
+										<span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1 flex-shrink-0">{{ habilidad.calificacion }}/10</span>
+									{% elif habilidad.calificacion >= 6 %}
+										<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 flex-shrink-0">{{ habilidad.calificacion }}/10</span>
+									{% elif habilidad.calificacion >= 4 %}
+										<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 flex-shrink-0">{{ habilidad.calificacion }}/10</span>
+									{% else %}
+										<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 flex-shrink-0">{{ habilidad.calificacion }}/10</span>
+									{% endif %}
+								</summary>
+								{% if habilidad.observacion %}
+									<div class="px-2 pb-2 fs-11 text-body border-top pt-2"><span class="text-muted">Obs.:</span> {{ habilidad.observacion }}</div>
+								{% endif %}
+							</details>
+						{% endfor %}
+					{% else %}
+						<p class="text-muted small mb-0 text-center">Sin calificación</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<!-- Fit cultural -->
+		<div class="col-12 col-md-6 col-xl-3">
+			<div class="card bg-white rounded-3 h-100 border" style="border-color: #ffcccc !important;">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-2 text-center">
+					<p class="text-primary my-0 fs-12 fw-semibold mb-0"><i class="ri-team-line me-1"></i>Fit cultural</p>
+				</div>
+				<div class="card-body p-2 p-md-3">
+					<div class="mb-2 pb-2 border-bottom">
+						{% with promedio=datos_reporte_final.promedios.fit_cultural %}
+							{% if promedio >= 8 %}
+								<span class="badge bg-success bg-opacity-10 text-success border border-success w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio >= 6 %}
+								<span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio >= 4 %}
+								<span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio > 0 %}
+								<span class="badge bg-primary bg-opacity-10 text-primary border border-primary w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% else %}
+								<span class="text-muted small d-block text-center py-1">—</span>
+							{% endif %}
+						{% endwith %}
+					</div>
+					{% if datos_reporte_final.resultados.fit_cultural %}
+						{% for fit_cultural in datos_reporte_final.resultados.fit_cultural %}
+							<details class="border rounded mb-2 small">
+								<summary class="px-2 py-2 d-flex justify-content-between align-items-center" style="cursor: pointer;">
+									<span class="text-truncate me-1"><i class="ri-team-line me-1 text-primary"></i>{{ fit_cultural.nombre }}</span>
+									{% if fit_cultural.calificacion >= 8 %}
+										<span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1 flex-shrink-0">{{ fit_cultural.calificacion }}/10</span>
+									{% elif fit_cultural.calificacion >= 6 %}
+										<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 flex-shrink-0">{{ fit_cultural.calificacion }}/10</span>
+									{% elif fit_cultural.calificacion >= 4 %}
+										<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 flex-shrink-0">{{ fit_cultural.calificacion }}/10</span>
+									{% else %}
+										<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 flex-shrink-0">{{ fit_cultural.calificacion }}/10</span>
+									{% endif %}
+								</summary>
+								{% if fit_cultural.observacion %}
+									<div class="px-2 pb-2 fs-11 text-body border-top pt-2"><span class="text-muted">Obs.:</span> {{ fit_cultural.observacion }}</div>
+								{% endif %}
+							</details>
+						{% endfor %}
+					{% else %}
+						<p class="text-muted small mb-0 text-center">Sin calificación</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<!-- Motivadores -->
+		<div class="col-12 col-md-6 col-xl-3">
+			<div class="card bg-white rounded-3 h-100 border" style="border-color: #ffcccc !important;">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-2 text-center">
+					<p class="text-primary my-0 fs-12 fw-semibold mb-0"><i class="ri-lightbulb-line me-1"></i>Motivadores</p>
+				</div>
+				<div class="card-body p-2 p-md-3">
+					<div class="mb-2 pb-2 border-bottom">
+						{% with promedio=datos_reporte_final.promedios.motivadores %}
+							{% if promedio >= 8 %}
+								<span class="badge bg-success bg-opacity-10 text-success border border-success w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio >= 6 %}
+								<span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio >= 4 %}
+								<span class="badge bg-warning bg-opacity-10 text-warning border border-warning w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% elif promedio > 0 %}
+								<span class="badge bg-primary bg-opacity-10 text-primary border border-primary w-100 d-block py-2 fw-bold fs-6 text-center">{{ promedio }}/10</span>
+							{% else %}
+								<span class="text-muted small d-block text-center py-1">—</span>
+							{% endif %}
+						{% endwith %}
+					</div>
+					{% if datos_reporte_final.resultados.motivadores %}
+						{% for motivador in datos_reporte_final.resultados.motivadores %}
+							<details class="border rounded mb-2 small">
+								<summary class="px-2 py-2 d-flex justify-content-between align-items-center" style="cursor: pointer;">
+									<span class="text-truncate me-1"><i class="ri-lightbulb-line me-1 text-primary"></i>{{ motivador.nombre }}</span>
+									{% if motivador.calificacion >= 8 %}
+										<span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1 flex-shrink-0">{{ motivador.calificacion }}/10</span>
+									{% elif motivador.calificacion >= 6 %}
+										<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 flex-shrink-0">{{ motivador.calificacion }}/10</span>
+									{% elif motivador.calificacion >= 4 %}
+										<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 flex-shrink-0">{{ motivador.calificacion }}/10</span>
+									{% else %}
+										<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 flex-shrink-0">{{ motivador.calificacion }}/10</span>
+									{% endif %}
+								</summary>
+								{% if motivador.observacion %}
+									<div class="px-2 pb-2 fs-11 text-body border-top pt-2"><span class="text-muted">Obs.:</span> {{ motivador.observacion }}</div>
+								{% endif %}
+							</details>
+						{% endfor %}
+					{% else %}
+						<p class="text-muted small mb-0 text-center">Sin calificación</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Pruebas y confiabilidad -->
+	<div class="row g-2 g-lg-3 mt-1">
+		{% if datos_reporte_final.pruebas %}
+		<div class="col-12 col-md-6">
+			<div class="card bg-white rounded-3 border h-100" style="border-color: #ffcccc !important;">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-2 text-center">
+					<p class="text-primary my-0 fs-12 fw-semibold mb-0"><i class="ri-file-paper-line me-1"></i>Pruebas</p>
+				</div>
+				<div class="card-body p-2 p-md-3">
+					{% for prueba in datos_reporte_final.pruebas %}
+						<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 p-2 border rounded">
+							<span class="small fw-medium"><i class="{{ prueba.icono }} me-1 text-primary"></i>{{ prueba.nombre }}</span>
+							{% if prueba.calificacion >= 8 %}
+								<span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1">{{ prueba.calificacion }}/10</span>
+							{% elif prueba.calificacion >= 6 %}
+								<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1">{{ prueba.calificacion }}/10</span>
+							{% elif prueba.calificacion >= 4 %}
+								<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1">{{ prueba.calificacion }}/10</span>
+							{% else %}
+								<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1">{{ prueba.calificacion }}/10</span>
+							{% endif %}
+						</div>
+						{% if prueba.observacion %}
+							<p class="fs-11 text-secondary mb-2 px-1"><span class="text-muted">Obs.:</span> {{ prueba.observacion }}</p>
+						{% endif %}
+						{% if prueba.archivo %}
+							<a href="{{ prueba.archivo }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0 mb-2">Ver archivo</a>
+						{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+		{% endif %}
+		{% if datos_reporte_final.confiabilidad_riesgo %}
+		<div class="col-12 col-md-6">
+			<div class="card bg-white rounded-3 border h-100" style="border-color: #ffcccc !important;">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-2 text-center">
+					<p class="text-primary my-0 fs-12 fw-semibold mb-0"><i class="ri-shield-check-line me-1"></i>Confiabilidad / riesgo</p>
+				</div>
+				<div class="card-body p-2 p-md-3">
+					{% with cr=datos_reporte_final.confiabilidad_riesgo %}
+					<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+						<span class="small fw-medium">{{ cr.nombre }}</span>
+						{% if cr.calificacion >= 8 %}
+							<span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1">{{ cr.calificacion }}/10</span>
+						{% elif cr.calificacion >= 6 %}
+							<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1">{{ cr.calificacion }}/10</span>
+						{% elif cr.calificacion >= 4 %}
+							<span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1">{{ cr.calificacion }}/10</span>
+						{% else %}
+							<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1">{{ cr.calificacion }}/10</span>
+						{% endif %}
+					</div>
+					{% if cr.observacion %}
+						<p class="fs-11 text-secondary mb-2"><span class="text-muted">Obs.:</span> {{ cr.observacion }}</p>
+					{% endif %}
+					{% if cr.archivo %}
+						<a href="{{ cr.archivo }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0">Ver documento</a>
+					{% endif %}
+					{% endwith %}
+				</div>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</div>

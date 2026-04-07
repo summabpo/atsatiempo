@@ -71,11 +71,13 @@ class Cli057AsignacionEntrevista(models.Model):
 
     def obtener_nombre_estado_color(self):
         estados = {
-            1: ('Pendiente', 'warning'),  # Naranja
-            2: ('Apto', 'success'),       # Verde
-            3: ('No Apto', 'danger'),    # Verde
-            4: ('Seleccionado', 'success'),  # Verde
-            5: ('Cancelado', 'secondary'),  # Rojo
+            1: ('Pendiente', 'warning'),
+            2: ('Apto', 'success'),
+            3: ('No Apto', 'danger'),
+            4: ('Seleccionado', 'success'),
+            5: ('Cancelado', 'secondary'),
+            6: ('Rechazado', 'danger'),
+            7: ('No Asistió', 'secondary'),
         }
         estado_nombre, color = estados.get(self.estado_asignacion, ('Desconocido', 'gris'))
         return {'estado': estado_nombre, 'color': color}

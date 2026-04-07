@@ -20,7 +20,7 @@ from applications.candidato.models import Can101Candidato
 from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import UsuarioBase
 from applications.services.service_vacanty import query_vacanty_all, get_vacanty_questions
-from applications.services.service_interview import query_interview_all
+from applications.services.service_interview import query_interview_all, attach_ultima_entrevista_a_reclutados
 from applications.services.service_recruited import query_recruited_vacancy_id
 from applications.services.service_client import query_client_detail
 from applications.services.service_candidate import buscar_candidato
@@ -117,7 +117,8 @@ def vacancies_assigned_recruiter_detail(request, pk, vacante_id):
     reclutados_seleccionado = sorted([r for r in reclutados if r.estado_reclutamiento == 2], key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
     reclutados_finalizalista = sorted([r for r in reclutados if r.estado_reclutamiento == 3], key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
     reclutados_descartado = sorted([r for r in reclutados if r.estado_reclutamiento == 4], key=lambda x: (x.fecha_aplicacion or timezone.now(), x.id))
-    
+    attach_ultima_entrevista_a_reclutados(reclutados_finalizalista)
+
     # Procesar formulario de búsqueda para Recibidos
     form_busqueda = BusquedaRecibidosForm(request.GET)
     if form_busqueda.is_valid():

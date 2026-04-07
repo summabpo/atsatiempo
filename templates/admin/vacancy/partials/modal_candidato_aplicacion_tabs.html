@@ -1,0 +1,264 @@
+{% load static %}
+{% load custom_tags %}
+{# Fragmento cargado por AJAX en el modal de detalle de vacante (candidato / aplicación) #}
+<style>
+	.vacancy-candidato-modal-tabs .nav-link { color: var(--bs-secondary); font-size: 0.9rem; }
+	.vacancy-candidato-modal-tabs .nav-link:hover:not(.active) { color: #B10022; }
+	.vacancy-candidato-modal-tabs .nav-link.active {
+		color: #B10022 !important;
+		font-weight: 700;
+		border-bottom: 2px solid #B10022 !important;
+	}
+</style>
+<div class="vacancy-candidato-modal-tabs">
+	<ul class="nav nav-tabs mb-3 flex-wrap gap-1 border-0" role="tablist">
+		<li class="nav-item" role="presentation">
+			<button class="nav-link active fw-semibold" id="cand-tab-entrevista" data-bs-toggle="tab" data-bs-target="#cand-pane-entrevista" type="button" role="tab" aria-controls="cand-pane-entrevista" aria-selected="true">
+				Entrevista y resultado
+			</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link fw-semibold" id="cand-tab-perfil" data-bs-toggle="tab" data-bs-target="#cand-pane-perfil" type="button" role="tab" aria-controls="cand-pane-perfil" aria-selected="false">
+				Perfil candidato
+			</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link fw-semibold" id="cand-tab-historial" data-bs-toggle="tab" data-bs-target="#cand-pane-historial" type="button" role="tab" aria-controls="cand-pane-historial" aria-selected="false">
+				Histórico aplicación
+			</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link fw-semibold" id="cand-tab-respuesta-cliente" data-bs-toggle="tab" data-bs-target="#cand-pane-respuesta-cliente" type="button" role="tab" aria-controls="cand-pane-respuesta-cliente" aria-selected="false">
+				Respuesta del cliente
+			</button>
+		</li>
+	</ul>
+	<div class="tab-content text-start">
+		<div class="tab-pane fade show active" id="cand-pane-entrevista" role="tabpanel" aria-labelledby="cand-tab-entrevista" tabindex="0">
+			<p class="fs-12 text-secondary mb-3">Entrevistas de esta aplicación. Los resultados se muestran con el mismo criterio visual que el reporte final (promedios y badges por rango).</p>
+			{% for row in entrevistas_modal %}
+				{% with e=row.entrevista datos_reporte_final=row.datos_reporte_final %}
+				<div class="card border-0 shadow-sm rounded-3 mb-3 overflow-hidden">
+					<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-3">
+						<div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+							<div class="min-w-0">
+								<h3 class="fs-14 fw-semibold text-primary mb-2">
+									<span class="material-symbols-outlined fs-18 align-middle me-1">event</span>
+									Entrevista
+									{% if e.fecha_entrevista %}
+										<span class="text-body fw-medium">· {{ e.fecha_entrevista|default:"" }}{% if e.hora_entrevista %} · {{ e.hora_entrevista|default:"" }}{% endif %}</span>
+									{% endif %}
+								</h3>
+								<div class="d-flex flex-wrap gap-3 fs-12 text-secondary">
+									<span><span class="text-uppercase fw-semibold" style="letter-spacing: 0.04em;">Tipo</span> {{ e.obtener_tipo_entrevista }}</span>
+									<span class="text-truncate" style="max-width: 100%;" title="{{ e.lugar_enlace }}"><span class="text-uppercase fw-semibold" style="letter-spacing: 0.04em;">Lugar / enlace</span> {{ e.lugar_enlace|default:"—" }}</span>
+									<span>
+										<span class="text-uppercase fw-semibold" style="letter-spacing: 0.04em;">Analista</span>
+										{% if e.usuario_asignado %}
+											{{ e.usuario_asignado.primer_nombre }} {{ e.usuario_asignado.primer_apellido }}
+										{% else %}
+											—
+										{% endif %}
+									</span>
+								</div>
+							</div>
+							<div class="flex-shrink-0">
+								{% with st=e.obtener_nombre_estado_color %}
+									<span class="badge bg-opacity-10 py-2 px-3 rounded-2 fw-medium fs-12 {% if st.color == 'gris' %}bg-secondary text-secondary{% else %}bg-{{ st.color }} text-{{ st.color }}{% endif %}">{{ st.estado }}</span>
+								{% endwith %}
+							</div>
+						</div>
+					</div>
+					<div class="card-body p-3 bg-white">
+						{% if e.resultado_entrevista is not None %}
+							{% include 'admin/vacancy/partials/modal_entrevista_resultado_reporte_compacto.html' %}
+						{% elif e.observacion %}
+							<p class="fs-12 text-secondary mb-0"><span class="fw-semibold text-body">Observación de gestión:</span> {{ e.observacion }}</p>
+						{% else %}
+							<p class="fs-12 text-secondary mb-0">Sin resultado de evaluación registrado para esta entrevista.</p>
+						{% endif %}
+						{% if e.resultado_entrevista is not None and e.observacion %}
+							<div class="mt-3 pt-3 border-top border-light">
+								<p class="fs-12 text-secondary mb-0"><span class="fw-semibold text-body">Observación de gestión:</span> {{ e.observacion }}</p>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+				{% endwith %}
+			{% empty %}
+				<p class="text-center text-secondary fs-12 py-4 mb-0">No hay entrevistas registradas para este candidato en esta vacante.</p>
+			{% endfor %}
+		</div>
+
+		<div class="tab-pane fade" id="cand-pane-perfil" role="tabpanel" aria-labelledby="cand-tab-perfil" tabindex="0">
+			<div class="card border border-primary border-opacity-25 rounded-3 mb-3 bg-white">
+				<div class="card-body p-3">
+					<div class="row g-3 align-items-start">
+						<div class="col-md-4">
+							<div class="d-flex align-items-center gap-3">
+								<div class="flex-shrink-0">
+									{% if candidato.imagen_perfil %}
+										<img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border wh-75" style="width: 64px; height: 64px; object-fit: cover;" alt="">
+									{% else %}
+										<img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border" style="width: 64px; height: 64px; object-fit: cover;" alt="">
+									{% endif %}
+								</div>
+								<div class="min-w-0">
+									<h4 class="fs-16 fw-semibold mb-1 text-truncate">{{ candidato.nombre_completo }}</h4>
+									<span class="fs-12 text-secondary">Candidato</span>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-8">
+							<div class="row g-2">
+								<div class="col-sm-6">
+									<p class="fs-11 text-secondary text-uppercase mb-0">Fecha aplicó</p>
+									<p class="fs-13 fw-medium mb-0">{{ aplicacion.fecha_aplicacion|date:"d/m/Y H:i"|default:"—" }}</p>
+								</div>
+								<div class="col-sm-6">
+									<p class="fs-11 text-secondary text-uppercase mb-0">Última actualización</p>
+									<p class="fs-13 fw-medium mb-0">{{ aplicacion.fecha_actualizacion|date:"d/m/Y H:i"|default:"—" }}</p>
+								</div>
+								<div class="col-sm-6">
+									<p class="fs-11 text-secondary text-uppercase mb-0">Estado aplicación</p>
+									{% with ea=aplicacion.obtener_estado_con_color %}
+										<span class="badge bg-opacity-10 bg-{{ ea.color }} py-1 px-2 text-{{ ea.color }} rounded-1 fw-medium fs-12">{{ ea.estado }}</span>
+									{% endwith %}
+								</div>
+								<div class="col-sm-6">
+									<p class="fs-11 text-secondary text-uppercase mb-0">Estado reclutamiento</p>
+									<span class="fs-13 fw-medium">{{ aplicacion.get_estado_reclutamiento_display }}</span>
+								</div>
+								<div class="col-12">
+									<p class="fs-11 text-secondary text-uppercase mb-0">Match perfil (inicial)</p>
+									<p class="fs-16 fw-semibold text-primary mb-0">{{ match_inicial_display }}</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="d-flex flex-wrap gap-2 mb-3">
+				<a href="{% url 'reclutados:reclutados_hoja_vida_pdf' aplicacion.id %}" target="_blank" rel="noopener noreferrer" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0 fw-medium">
+					<span class="material-symbols-outlined fs-16 align-middle me-1">open_in_new</span>
+					Ver hoja de vida (PDF)
+				</a>
+			</div>
+
+			<div class="row g-3">
+				<div class="col-lg-5">
+					<div class="border rounded-3 p-3 h-100 bg-white">
+						<h5 class="fs-14 fw-semibold mb-3">Información de contacto</h5>
+						<p class="fs-12 mb-2"><span class="text-secondary">Documento:</span> <span class="fw-medium">{{ info_detalle_candidato.numero_documento|default:"—" }}</span></p>
+						<p class="fs-12 mb-2"><span class="text-secondary">Email:</span> <span class="fw-medium">{{ info_detalle_candidato.email|default:"—" }}</span></p>
+						<p class="fs-12 mb-2"><span class="text-secondary">Teléfono:</span> <span class="fw-medium">{{ info_detalle_candidato.telefono|default:"—" }}</span></p>
+						<p class="fs-12 mb-2"><span class="text-secondary">Género:</span> <span class="fw-medium">{{ info_detalle_candidato.sexo|default:"—" }}</span></p>
+						<p class="fs-12 mb-2"><span class="text-secondary">Fecha nacimiento:</span> <span class="fw-medium">{{ info_detalle_candidato.fecha_nacimiento|default:"—" }}</span></p>
+						<p class="fs-12 mb-2"><span class="text-secondary">Perfil completado:</span> <span class="fw-medium">{{ info_detalle_candidato.porcentaje }}%</span></p>
+						<p class="fs-12 mb-0"><span class="text-secondary">Ubicación:</span> <span class="fw-medium">{{ info_detalle_candidato.ciudad|default:"—" }}</span></p>
+					</div>
+				</div>
+				<div class="col-lg-7">
+					<div class="border rounded-3 p-3 mb-3 bg-white">
+						<h5 class="fs-14 fw-semibold mb-2 d-flex align-items-center gap-2">
+							<span class="material-symbols-outlined text-primary fs-20">school</span>
+							Formación académica
+						</h5>
+						{% if info_detalle_candidato.educacion %}
+							<ul class="list-unstyled mb-0">
+								{% for edu in info_detalle_candidato.educacion %}
+									<li class="mb-3 pb-3 {% if not forloop.last %}border-bottom border-light{% endif %}">
+										<p class="fw-semibold fs-13 mb-1">{{ edu.institucion }}</p>
+										<p class="fs-12 text-secondary mb-0">{{ edu.tipo_estudio }}{% if edu.carrera or edu.titulo %} · {% firstof edu.carrera edu.titulo "" %}{% endif %}</p>
+									</li>
+								{% endfor %}
+							</ul>
+						{% else %}
+							<p class="fs-12 text-secondary mb-0">Sin registros de formación.</p>
+						{% endif %}
+					</div>
+					<div class="border rounded-3 p-3 mb-3 bg-white">
+						<h5 class="fs-14 fw-semibold mb-2 d-flex align-items-center gap-2">
+							<span class="material-symbols-outlined text-primary fs-20">work</span>
+							Experiencia
+						</h5>
+						{% if info_detalle_candidato.experiencia %}
+							<ul class="list-unstyled mb-0">
+								{% for ex in info_detalle_candidato.experiencia %}
+									<li class="mb-3 pb-3 {% if not forloop.last %}border-bottom border-light{% endif %}">
+										<p class="fw-semibold fs-13 mb-1">{{ ex.cargo }} — {{ ex.entidad }}</p>
+										<p class="fs-12 text-secondary mb-0">{{ ex.fecha_inicial|default:"" }} — {{ ex.fecha_final|default:"Actual" }}</p>
+									</li>
+								{% endfor %}
+							</ul>
+						{% else %}
+							<p class="fs-12 text-secondary mb-0">Sin experiencia registrada.</p>
+						{% endif %}
+					</div>
+					{% if info_detalle_candidato.skills %}
+						<div class="border rounded-3 p-3 bg-white">
+							<h5 class="fs-14 fw-semibold mb-2">Habilidades</h5>
+							<div class="d-flex flex-wrap gap-1">
+								{% for sk in info_detalle_candidato.skills %}
+									<span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border fs-11">{{ sk.nombre }} · {{ sk.nivel }}</span>
+								{% endfor %}
+							</div>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+			{% if candidato.perfil %}
+				<div class="border rounded-3 p-3 mt-3 bg-light bg-opacity-50">
+					<h5 class="fs-14 fw-semibold mb-2">Perfil profesional</h5>
+					<div class="fs-13 text-body" style="white-space: pre-wrap;">{{ candidato.perfil }}</div>
+				</div>
+			{% endif %}
+		</div>
+
+		<div class="tab-pane fade" id="cand-pane-historial" role="tabpanel" aria-labelledby="cand-tab-historial" tabindex="0">
+			<p class="fs-12 text-secondary mb-3">Movimientos registrados en la aplicación a esta vacante.</p>
+			{% if historial %}
+				<ul class="list-unstyled mb-0">
+					{% for h in historial %}
+						<li class="mb-3 pb-3 border-bottom border-light">
+							<div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+								<span class="fs-12 text-secondary">{{ h.fecha|date:"d/m/Y H:i" }}</span>
+								<span class="badge bg-opacity-10 py-1 px-2 rounded-1 fw-medium fs-11 {% if h.color == 'gris' %}bg-secondary text-secondary{% else %}bg-{{ h.color }} text-{{ h.color }}{% endif %}">{{ h.estado }}</span>
+							</div>
+							<p class="fs-13 mb-1">{{ h.descripcion }}</p>
+							<p class="fs-11 text-secondary mb-0">Usuario: {{ h.usuario }}</p>
+						</li>
+					{% endfor %}
+				</ul>
+			{% else %}
+				<p class="text-secondary fs-12 mb-0">No hay historial registrado.</p>
+			{% endif %}
+		</div>
+
+		<div class="tab-pane fade" id="cand-pane-respuesta-cliente" role="tabpanel" aria-labelledby="cand-tab-respuesta-cliente" tabindex="0">
+			<p class="fs-12 text-secondary mb-3">Comentario u observación registrada por el cliente sobre esta aplicación (cuando el proceso lo permite).</p>
+			{% if estado_respuesta_cliente_relevante %}
+				{% if respuesta_cliente_texto %}
+					<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+						<span class="fs-11 text-secondary text-uppercase fw-semibold" style="letter-spacing: 0.04em;">Decisión registrada</span>
+						{% if es_respuesta_cliente_apto %}
+							<span class="badge bg-success bg-opacity-10 text-success border rounded-2 fs-12 fw-medium">Seleccionado / apto</span>
+						{% else %}
+							<span class="badge bg-danger bg-opacity-10 text-danger border rounded-2 fs-12 fw-medium">No apto</span>
+						{% endif %}
+					</div>
+					<div class="border rounded-3 p-3 bg-white">
+						<p class="fs-13 text-body mb-0" style="white-space: pre-wrap;">{{ respuesta_cliente_texto }}</p>
+					</div>
+				{% else %}
+					<div class="alert alert-light border text-secondary fs-12 mb-0 rounded-3" role="status">
+						Aún no hay texto de respuesta del cliente guardado para esta aplicación.
+					</div>
+				{% endif %}
+			{% else %}
+				<p class="text-secondary fs-12 mb-0">La respuesta del cliente aplica cuando la aplicación está en estado «Seleccionado», «Seleccionado por cliente» o «No apto» (según el flujo del cliente).</p>
+			{% endif %}
+		</div>
+	</div>
+</div>

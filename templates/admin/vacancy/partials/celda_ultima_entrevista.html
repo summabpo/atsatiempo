@@ -1,0 +1,12 @@
+{# Requiere `e` con `ultima_entrevista` (Cli057). Opcional: compact=True para listados compactos. #}
+{% if e.ultima_entrevista %}
+	{% with st=e.ultima_entrevista.obtener_nombre_estado_color %}
+		{% if compact %}
+		<span class="badge bg-opacity-10 py-0 px-1 rounded-1 fw-medium fs-11 text-nowrap {% if st.color == 'gris' %}bg-secondary text-secondary{% else %}bg-{{ st.color }} text-{{ st.color }}{% endif %}">{{ st.estado }}</span>
+		{% else %}
+		<span class="badge bg-opacity-10 py-1 px-2 rounded-1 fw-medium fs-12 text-nowrap {% if st.color == 'gris' %}bg-secondary text-secondary{% else %}bg-{{ st.color }} text-{{ st.color }}{% endif %}">{{ st.estado }}</span>
+		{% endif %}
+	{% endwith %}
+{% else %}
+	<span class="text-muted {% if compact %}fs-11{% else %}fs-12{% endif %}">—</span>
+{% endif %}

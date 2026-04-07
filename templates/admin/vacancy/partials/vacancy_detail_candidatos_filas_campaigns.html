@@ -1,0 +1,45 @@
+{% load static %}
+{% load custom_tags %}
+{% for app in lista_apps %}
+	{% with pct=app.json_match_inicial|get_match_inicial_porcentaje %}
+	{% with er=app.estado_reclutamiento %}
+	<tr
+		class="candidate-cv-row"
+		style="cursor: pointer;"
+		role="button"
+		tabindex="0"
+		data-aplicacion-id="{{ app.id }}"
+		data-vacante-id="{{ vacante.id }}"
+		data-candidate-name="{{ app.candidato_101.nombre_completo|default:''|escape }}"
+	>
+		<td class="py-2">
+			<div class="d-flex align-items-center gap-3">
+				<div class="flex-shrink-0">
+					<img src="{% if app.candidato_101.imagen_perfil and app.candidato_101.imagen_perfil.name %}{{ app.candidato_101.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}" class="wh-34 lh-34 rounded-circle border border-1 border-light object-fit-cover" alt="">
+				</div>
+				<div class="border-start border-2 ps-3 py-1 min-w-0 flex-grow-1 {% if er == 1 %}border-warning{% elif er == 2 %}border-success{% elif er == 3 %}border-primary{% else %}border-danger{% endif %}">
+					<h4 class="fs-14 fw-semibold mb-1 text-dark text-start text-truncate" title="{{ app.candidato_101.nombre_completo|default:'' }}">{{ app.candidato_101.nombre_completo|default:"—" }}</h4>
+					<span class="fs-12 text-secondary">Aplicó {{ app.fecha_aplicacion|date:"d/m/Y H:i"|default:"—" }}</span>
+				</div>
+			</div>
+		</td>
+		<td class="text-center py-2">
+			{% if pct == None %}
+				<span class="fs-12 text-secondary">—</span>
+			{% else %}
+				<span class="d-inline-block py-1 px-2 bg-primary bg-opacity-10 rounded-2 text-primary fs-12 fw-semibold">{{ pct }}%</span>
+			{% endif %}
+		</td>
+		<td class="text-center py-2">
+			{% with ea=app.obtener_estado_con_color %}
+				<span class="d-inline-block py-1 px-2 rounded-2 fs-11 fw-medium {% if ea.color == 'gris' %}bg-secondary bg-opacity-10 text-secondary{% else %}bg-opacity-10 bg-{{ ea.color }} text-{{ ea.color }}{% endif %}">{{ ea.estado }}</span>
+			{% endwith %}
+		</td>
+	</tr>
+	{% endwith %}
+	{% endwith %}
+{% empty %}
+	<tr>
+		<td colspan="3" class="text-center text-secondary fs-12 py-5">No hay candidatos en esta vista.</td>
+	</tr>
+{% endfor %}

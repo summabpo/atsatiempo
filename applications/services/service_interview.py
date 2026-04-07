@@ -39,3 +39,23 @@ def query_interview_all():
         cargo_vacante=F('asignacion_vacante__vacante_id_052__cargo__nombre_cargo'),
         reclutado_id=F('asignacion_vacante__id'),
     )
+
+
+def attach_ultima_entrevista_a_reclutados(reclutados_list):
+    """
+    Para cada aplicación (Cli056) en la lista, adjunta el atributo `ultima_entrevista`
+    (Cli057 o None): la asignación más reciente por fecha, hora e id.
+    """
+    if not reclutados_list:
+        return
+    aplicacion_ids = [r.id for r in reclutados_list]
+    latest_by_app = {}
+    qs = Cli057AsignacionEntrevista.objects.filter(
+        asignacion_vacante_id__in=aplicacion_ids
+    ).order_by('asignacion_vacante_id', '-fecha_entrevista', '-hora_entrevista', '-id')
+    for ent in qs:
+        aid = ent.asignacion_vacante_id
+        if aid not in latest_by_app:
+            latest_by_app[aid] = ent
+    for r in reclutados_list:
+        setattr(r, 'ultima_entrevista', latest_by_app.get(r.id))

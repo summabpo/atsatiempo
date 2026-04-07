@@ -12,8 +12,9 @@ from applications.vacante.models import Cli052Vacante
 
 def reclutados_primeros_cinco_por_vacante(vacante_ids):
     """
-    Por cada vacante, hasta 5 aplicaciones en estado reclutado (8 o 13),
-    en orden cronológico por fecha de aplicación (los primeros reclutados).
+    Por cada vacante, hasta 5 aplicaciones en el embudo de reclutamiento
+    (estado_reclutamiento 1–4, mismo criterio que el detalle Kanban),
+    en orden cronológico por fecha de aplicación.
     """
     if not vacante_ids:
         return {}
@@ -21,7 +22,7 @@ def reclutados_primeros_cinco_por_vacante(vacante_ids):
     qs = (
         Cli056AplicacionVacante.objects.filter(
             vacante_id_052_id__in=vacante_ids,
-            estado_aplicacion__in=[8, 13],
+            estado_reclutamiento__in=[1, 2, 3, 4],
         )
         .select_related('candidato_101')
         .order_by('vacante_id_052', 'fecha_aplicacion')
@@ -93,9 +94,10 @@ def query_vacanty_all():
             'aplicaciones',
             filter=Q(aplicaciones__estado_aplicacion=8),
         ),
+        # Candidatos en gestión de reclutamiento (mismo embudo que el detalle por columnas)
         personas_reclutadas=Count(
             'aplicaciones',
-            filter=Q(aplicaciones__estado_aplicacion__in=[8, 13]),
+            filter=Q(aplicaciones__estado_reclutamiento__in=[1, 2, 3, 4]),
         ),
     )
 

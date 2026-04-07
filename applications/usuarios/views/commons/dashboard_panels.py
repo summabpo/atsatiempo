@@ -156,6 +156,7 @@ def get_panel_tipo_estudio():
         'nivel_estudio_data': nivel_estudio_data,
         'nivel_estudio_labels_zip': nivel_estudio_labels_zip,
         'nivel_estudio_items': nivel_estudio_items,
+        'nivel_estudio_colors': nivel_colors,
     }
 
 
