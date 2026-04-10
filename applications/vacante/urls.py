@@ -4,10 +4,6 @@ from components.apis.api_vacancy import profesiones_whitelist
 from .views import VacanteViews, EntrevistaView, admin_views, client_views, client_analyst_views, client_analyst_internal_views, candidate_views, common_view
 
 
-
-
-
-
 url_principal = 'vacante/'
 
 urlpatterns = [

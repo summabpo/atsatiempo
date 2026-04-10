@@ -39,6 +39,7 @@ class Cli051Cliente(models.Model):
     cantidad_colaboradores = models.IntegerField(blank=True, null=True)
     contacto_cargo = models.CharField(max_length=100, blank=True, null=True)
     direccion_cargo = models.CharField(max_length=100, blank=True, null=True)
+    cantidad_dias_envio_candidatos = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.razon_social + ' - ' + str(self.nit)
@@ -212,6 +213,7 @@ class Cli068Cargo(models.Model):
     fecha_creado = models.DateField(auto_now_add=True)
     cliente = models.ForeignKey(Cli051Cliente, on_delete=models.CASCADE)
     referencias_laborales = models.IntegerField(blank=True, null=True)
+    cantidad_dias_envio_candidatos = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.nombre_cargo
@@ -304,3 +306,39 @@ class Cli078MotivadoresCandidato(models.Model):
         db_table = 'cli_078_motivadores_candidato'
         verbose_name = 'MOTIVADOR CANDIDATO'
         verbose_name_plural = 'MOTIVADORES CANDIDATO'
+
+
+class Cli085AccionesDecisivas(models.Model):
+    nombre = models.CharField(max_length=200)
+    fecha_cargue = models.DateTimeField(auto_now_add=True)
+    descripcion = models.TextField(blank=True, null=True)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.CASCADE, default=1)
+    cantidad_dias_gestion = models.IntegerField(blank=True, null=True)
+    json_data = models.JSONField(null=True, blank=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        db_table = 'cli_085_acciones_decisivas'
+        verbose_name = 'ACCION DECISIVA'
+        verbose_name_plural = 'ACCIONES DECISIVAS'
+
+
+class Cli086AsignacionCargoAccionesDecisivas(models.Model):
+    """Relación cargo ↔ acción decisiva (no por cliente directo)."""
+    cargo = models.ForeignKey(Cli068Cargo, on_delete=models.CASCADE)
+    accion_decisiva = models.ForeignKey(Cli085AccionesDecisivas, on_delete=models.CASCADE)
+    fecha_asignacion = models.DateField(auto_now_add=True)
+    estado = models.ForeignKey(Cat001Estado, on_delete=models.SET_DEFAULT, default=1)
+
+    class Meta:
+        db_table = 'cli_086_asignacion_cargo_acciones_decisivas'
+        verbose_name = 'ASIGNACION CARGO ACCION DECISIVA'
+        verbose_name_plural = 'ASIGNACIONES CARGO ACCIONES DECISIVAS'
+        unique_together = (('cargo', 'accion_decisiva'),)
+
+    def __str__(self):
+        return f"{self.cargo.nombre_cargo} - {self.accion_decisiva.nombre}"
+
+

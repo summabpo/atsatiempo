@@ -49,6 +49,7 @@ def client_detail_info(request):
         'periodicidad_pago': cliente.periodicidad_pago,
         # 'referencias_laborales': cliente.referencias_laborales,
         'cantidad_colaboradores': cliente.cantidad_colaboradores,
+        'cantidad_dias_envio_candidatos': cliente.cantidad_dias_envio_candidatos,
         'contacto_cargo': cliente.contacto_cargo,
         'direccion_cargo': cliente.direccion_cargo,
     }
@@ -71,6 +72,7 @@ def client_detail_info(request):
             cliente.periodicidad_pago = form_cliente.cleaned_data['periodicidad_pago']
             # cliente.referencias_laborales = form_cliente.cleaned_data['referencias_laborales']
             cliente.cantidad_colaboradores = form_cliente.cleaned_data['cantidad_colaboradores']
+            cliente.cantidad_dias_envio_candidatos = form_cliente.cleaned_data.get('cantidad_dias_envio_candidatos')
             cliente.contacto_cargo = form_cliente.cleaned_data['contacto_cargo']
             cliente.direccion_cargo = form_cliente.cleaned_data['direccion_cargo']
 
@@ -114,11 +116,13 @@ def client_position(request):
             try:
                 cargo = form.cleaned_data['cargo'].upper()
                 referencias_laborales = form.cleaned_data['referencias_laborales']
-                
+                dias_envio = form.cleaned_data.get('cantidad_dias_envio_candidatos')
+
                 cargo_cliente = Cli068Cargo.objects.create(
                     cliente=Cli051Cliente.objects.get(id=cliente_id),
                     nombre_cargo=cargo,
                     referencias_laborales=referencias_laborales,
+                    cantidad_dias_envio_candidatos=dias_envio,
                     estado=Cat001Estado.objects.get(id=1)
                 )
 
@@ -376,6 +380,7 @@ def client_headhunter_assigned(request):
                     periodicidad_pago=form.cleaned_data['periodicidad_pago'],
                     # referencias_laborales=form.cleaned_data['referencias_laborales'],
                     cantidad_colaboradores=form.cleaned_data['cantidad_colaboradores'],
+                    cantidad_dias_envio_candidatos=form.cleaned_data.get('cantidad_dias_envio_candidatos'),
                     contacto_cargo=form.cleaned_data['contacto_cargo'],
                     direccion_cargo=form.cleaned_data['direccion_cargo'],
                     estado_id_001=Cat001Estado.objects.get(id=1),

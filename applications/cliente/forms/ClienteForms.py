@@ -76,6 +76,16 @@ class ClienteForm(forms.Form):
                 'placeholder': 'Cantidad de Colaboradores'
             }
         ))
+
+    cantidad_dias_envio_candidatos = forms.IntegerField(
+        label='DÍAS PARA PRESENTAR CANDIDATOS',
+        required=False,
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Opcional'
+            }
+        ))
     
     contacto_cargo = forms.CharField(
         label='CARGO DEL CONTACTO',
@@ -98,6 +108,8 @@ class ClienteForm(forms.Form):
             }
         )
     )
+
+
 
     
 
@@ -207,6 +219,7 @@ class ClienteForm(forms.Form):
                         Div('periodicidad_pago', css_class='col'),
                         # Div('referencias_laborales', css_class='col'),
                         Div('cantidad_colaboradores', css_class='col'),
+                        Div('cantidad_dias_envio_candidatos', css_class='col'),
                         css_class='row'
                     ),
                     css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  #  Opcional: Agregar estilo de borde y fondo
@@ -228,6 +241,7 @@ class ClienteForm(forms.Form):
         periodicidad_pago = cleaned_data.get('periodicidad_pago')
         # referencias_laborales = cleaned_data.get('referencias_laborales')
         cantidad_colaboradores = cleaned_data.get('cantidad_colaboradores')
+        cantidad_dias_envio_candidatos = cleaned_data.get('cantidad_dias_envio_candidatos')
         contacto_cargo = cleaned_data.get('contacto_cargo')
         direccion_cargo = cleaned_data.get('direccion_cargo')
 
@@ -240,6 +254,9 @@ class ClienteForm(forms.Form):
             self.add_error('direccion_cargo', 'La Dirección del Contacto no puede estar vacía.')
         else:
             self.cleaned_data['direccion_cargo'] = direccion_cargo.upper()
+
+        if cantidad_dias_envio_candidatos is not None and cantidad_dias_envio_candidatos < 1:
+            self.add_error('cantidad_dias_envio_candidatos', 'Debe ser un número mayor a cero.')
 
         if not tipo_cliente:
             self.errors['tipo_cliente'] = self.error_class(['Debe seleccionar un tipo de cliente.'])
@@ -325,6 +342,7 @@ class ClienteForm(forms.Form):
         periodicidad_pago = self.cleaned_data['periodicidad_pago']
         # referencias_laborales = self.cleaned_data['referencias_laborales']
         cantidad_colaboradores = self.cleaned_data['cantidad_colaboradores']
+        cantidad_dias_envio_candidatos = self.cleaned_data.get('cantidad_dias_envio_candidatos')
         contacto_cargo = self.cleaned_data['contacto_cargo']
         direccion_cargo = self.cleaned_data['direccion_cargo']
         
@@ -345,6 +363,7 @@ class ClienteForm(forms.Form):
             periodicidad_pago=periodicidad_pago,
             # referencias_laborales=referencias_laborales,
             cantidad_colaboradores=cantidad_colaboradores,
+            cantidad_dias_envio_candidatos=cantidad_dias_envio_candidatos,
             contacto_cargo=contacto_cargo,
             direccion_cargo=direccion_cargo
         )
@@ -427,6 +446,16 @@ class ClienteFormEdit(forms.Form):
             attrs={
                 'class': 'form-control form-control-solid mb-3 mb-lg-0',
                 'placeholder': 'Cantidad de Colaboradores'
+            }
+        ))
+
+    cantidad_dias_envio_candidatos = forms.IntegerField(
+        label='DÍAS PARA PRESENTAR CANDIDATOS',
+        required=False,
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Opcional'
             }
         ))
 
@@ -556,6 +585,7 @@ class ClienteFormEdit(forms.Form):
                         Div('periodicidad_pago', css_class='col-md-4'),
                         # Div('referencias_laborales', css_class='col-md-4'),
                         Div('cantidad_colaboradores', css_class='col-md-4'),
+                        Div('cantidad_dias_envio_candidatos', css_class='col-md-4'),
                         css_class='row'
                     ),
                     css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  
@@ -577,6 +607,7 @@ class ClienteFormEdit(forms.Form):
         periodicidad_pago = cleaned_data.get('periodicidad_pago')
         # referencias_laborales = cleaned_data.get('referencias_laborales')
         cantidad_colaboradores = cleaned_data.get('cantidad_colaboradores')
+        cantidad_dias_envio_candidatos = cleaned_data.get('cantidad_dias_envio_candidatos')
         contacto_cargo = cleaned_data.get('contacto_cargo')
         direccion_cargo = cleaned_data.get('direccion_cargo')
 
@@ -589,6 +620,9 @@ class ClienteFormEdit(forms.Form):
             self.add_error('direccion_cargo', 'La Dirección del Contacto no puede estar vacía.')
         else:
             self.cleaned_data['direccion_cargo'] = direccion_cargo.upper()
+
+        if cantidad_dias_envio_candidatos is not None and cantidad_dias_envio_candidatos < 1:
+            self.add_error('cantidad_dias_envio_candidatos', 'Debe ser un número mayor a cero.')
 
         # if not tipo_cliente:
         #     self.errors['tipo_cliente'] = self.error_class(['Debe seleccionar un tipo de cliente.'])
@@ -665,6 +699,7 @@ class ClienteFormEdit(forms.Form):
         cliente.periodicidad_pago = self.cleaned_data['periodicidad_pago']
         # cliente.referencias_laborales = self.cleaned_data['referencias_laborales']
         cliente.cantidad_colaboradores = self.cleaned_data['cantidad_colaboradores']
+        cliente.cantidad_dias_envio_candidatos = self.cleaned_data.get('cantidad_dias_envio_candidatos')
         cliente.contacto_cargo = self.cleaned_data['contacto_cargo']
         cliente.direccion_cargo = self.cleaned_data['direccion_cargo']
         cliente.save()
@@ -805,12 +840,28 @@ class ClienteFormCargos(forms.Form):
             )
         )
 
+        self.fields['cantidad_dias_envio_candidatos'] = forms.IntegerField(
+            label='DÍAS PARA ENVÍO DE CANDIDATOS',
+            required=False,
+            min_value=0,
+            widget=forms.NumberInput(
+                attrs={
+                    'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                    'placeholder': 'Opcional',
+                    'min': '0',
+                }
+            )
+        )
+
         # Si es edición, cargar datos existentes
         if cargo_id:
             try:
                 cargo_obj = Cli068Cargo.objects.get(id=cargo_id)
                 self.fields['cargo'].initial = cargo_obj.nombre_cargo
                 self.fields['referencias_laborales'].initial = cargo_obj.referencias_laborales
+                self.fields['cantidad_dias_envio_candidatos'].initial = (
+                    cargo_obj.cantidad_dias_envio_candidatos
+                )
             except Cli068Cargo.DoesNotExist:
                 pass
 
@@ -819,8 +870,12 @@ class ClienteFormCargos(forms.Form):
                 Div(
                     HTML("<h4 class='mb-3 text-primary'>Cargos</h4>"),
                     Div('cargo', css_class='col-12'),
-                    Div('referencias_laborales', css_class='col-12'),
-                    css_class='row'
+                    Div(
+                        Div('referencias_laborales', css_class='col-12 col-md-6'),
+                        Div('cantidad_dias_envio_candidatos', css_class='col-12 col-md-6'),
+                        css_class='row g-3 align-items-end',
+                    ),
+                    css_class='row',
                 ),
                 css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"
             )
@@ -830,7 +885,11 @@ class ClienteFormCargos(forms.Form):
         cleaned_data = super().clean()
         cargo = cleaned_data.get('cargo')
         referencias_laborales = cleaned_data.get('referencias_laborales')
-        
+        dias_envio = cleaned_data.get('cantidad_dias_envio_candidatos')
+
+        if dias_envio is not None and dias_envio < 0:
+            self.add_error('cantidad_dias_envio_candidatos', 'El valor no puede ser negativo.')
+
         if not cargo:
             self.add_error('cargo', 'Debe ingresar un cargo.')
         else:
@@ -1083,6 +1142,16 @@ class ClienteFormAsignacionCliente(forms.Form):
                 'placeholder': 'Cantidad de Colaboradores'
             }
         ))
+
+    cantidad_dias_envio_candidatos = forms.IntegerField(
+        label='DÍAS PARA PRESENTAR CANDIDATOS',
+        required=False,
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control form-control-solid mb-3 mb-lg-0',
+                'placeholder': 'Opcional'
+            }
+        ))
     
     contacto_cargo = forms.CharField(
         label='CARGO DEL CONTACTO',
@@ -1220,7 +1289,8 @@ class ClienteFormAsignacionCliente(forms.Form):
                         HTML("<h4 class='mb-3 text-primary'>Información Adicional</h4>"),  #  Agregar título con color y margen
                         Div('periodicidad_pago', css_class='col-md-4'),
                         # Div('referencias_laborales', css_class='col-md-4'),
-                        Div('cantidad_colaboradores', css_class='col-md-4'),    
+                        Div('cantidad_colaboradores', css_class='col-md-4'),
+                        Div('cantidad_dias_envio_candidatos', css_class='col-md-4'),
                         css_class='row'
                     ),
                     css_class="mb-4 p-3 border rounded bg-primary bg-opacity-10"  #  Opcional: Agregar estilo de borde y fondo
@@ -1242,6 +1312,7 @@ class ClienteFormAsignacionCliente(forms.Form):
         periodicidad_pago = cleaned_data.get('periodicidad_pago')
         # referencias_laborales = cleaned_data.get('referencias_laborales')
         cantidad_colaboradores = cleaned_data.get('cantidad_colaboradores')
+        cantidad_dias_envio_candidatos = cleaned_data.get('cantidad_dias_envio_candidatos')
         contacto_cargo = cleaned_data.get('contacto_cargo')
         direccion_cargo = cleaned_data.get('direccion_cargo')
 
@@ -1254,6 +1325,9 @@ class ClienteFormAsignacionCliente(forms.Form):
             self.add_error('direccion_cargo', 'La Dirección del Contacto no puede estar vacía.')
         else:
             self.cleaned_data['direccion_cargo'] = direccion_cargo.upper()
+
+        if cantidad_dias_envio_candidatos is not None and cantidad_dias_envio_candidatos < 1:
+            self.add_error('cantidad_dias_envio_candidatos', 'Debe ser un número mayor a cero.')
 
         
 
@@ -1361,6 +1435,7 @@ class ClienteFormAsignacionCliente(forms.Form):
             periodicidad_pago=periodicidad_pago,
             # referencias_laborales=referencias_laborales,
             cantidad_colaboradores=cantidad_colaboradores,
+            cantidad_dias_envio_candidatos=self.cleaned_data.get('cantidad_dias_envio_candidatos'),
             contacto_cargo=contacto_cargo,
             direccion_cargo=direccion_cargo
         )

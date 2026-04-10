@@ -58,11 +58,10 @@ Cliente
     
 	<div class="row">
 		<div class="col-12">
-            <!-- Formulario de Edición de Cargo -->
             <div class="row">
                 <div class="col-12">
                     <div class="card bg-white border-0 rounded-3 mb-4">
-                        <div class="card-header">
+                        <div class="card-header border-0 pb-0">
                             <h5 class="card-title mb-0">Editar Información del Cargo</h5>
                         </div>
                         <div class="card-body p-4">
@@ -78,108 +77,125 @@ Cliente
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-6">
-                    <div class="card bg-white border-0 rounded-3 mb-4">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Requisitos</h5>
+
+            <div class="card bg-white border-0 rounded-3 mb-4">
+                <div class="card-header border-0">
+                    <h5 class="card-title mb-0">Configuración del cargo</h5>
+                    <p class="text-secondary small mb-0 mt-1">Use las pestañas para asignar decisiones definitivas, requisitos y pruebas.</p>
+                </div>
+                <div class="card-body p-4">
+                    <nav>
+                        <div class="nav nav-tabs mb-4" id="nav-tab-cargo-config" role="tablist">
+                            <button class="nav-link active" id="nav-cargo-decisiones-tab" data-bs-toggle="tab" data-bs-target="#nav-cargo-decisiones" type="button" role="tab" aria-controls="nav-cargo-decisiones" aria-selected="true">Decisiones definitivas</button>
+                            <button class="nav-link" id="nav-cargo-requisitos-tab" data-bs-toggle="tab" data-bs-target="#nav-cargo-requisitos" type="button" role="tab" aria-controls="nav-cargo-requisitos" aria-selected="false">Asignación de requisitos</button>
+                            <button class="nav-link" id="nav-cargo-pruebas-tab" data-bs-toggle="tab" data-bs-target="#nav-cargo-pruebas" type="button" role="tab" aria-controls="nav-cargo-pruebas" aria-selected="false">Asignación de pruebas</button>
                         </div>
-                        <div class="card-body p-4">
+                    </nav>
+                    <div class="tab-content" id="nav-tabCargoConfigContent">
+                        <div class="tab-pane fade show active" id="nav-cargo-decisiones" role="tabpanel" aria-labelledby="nav-cargo-decisiones-tab" tabindex="0">
+                            <h6 class="fs-16 fw-semibold text-primary mb-2">Decisiones definitivas</h6>
+                            <p class="text-secondary small mb-3">Solo se muestran acciones <strong>activas</strong> del catálogo. Guarde para vincularlas a este cargo.</p>
+                            <form method="post" id="form_save_acciones_cargo">
+                                {% csrf_token %}
+                                <input type="hidden" name="save_acciones_cargo" value="1">
+                                {% for row in acciones_cargo_rows %}
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="accion_{{ row.accion.id }}" id="accion_{{ row.accion.id }}" value="1" {% if row.checked %}checked{% endif %}>
+                                    <label class="form-check-label" for="accion_{{ row.accion.id }}">{{ row.accion.nombre }}</label>
+                                </div>
+                                {% empty %}
+                                <p class="text-muted small mb-0">No hay decisiones definitivas activas. Configúrelas en <em>Configuraciones → Decisiones definitivas</em>.</p>
+                                {% endfor %}
+                                {% if acciones_cargo_rows %}
+                                <div class="d-flex justify-content-end mt-4">
+                                    <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" form="form_save_acciones_cargo">Guardar decisiones</button>
+                                </div>
+                                {% endif %}
+                            </form>
+                        </div>
+
+                        <div class="tab-pane fade" id="nav-cargo-requisitos" role="tabpanel" aria-labelledby="nav-cargo-requisitos-tab" tabindex="0">
+                            <h6 class="fs-16 fw-semibold text-primary mb-2">Asignación de requisitos</h6>
+                            <p class="text-secondary small mb-3">Asocie requisitos del cliente a este cargo.</p>
                             <form method="post" id="form_assign_requisito">
                                 {% csrf_token %}
                                 <input type="hidden" name="assign_requisito" value="1">
                                 {% crispy form_requisitos %}
-                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_assign_requisito">Asignar Requisito</button>
+                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_assign_requisito">Asignar requisito</button>
                             </form>
-                            <hr>
+                            <hr class="my-4">
                             <div class="default-table-area all-products">
-                                <div class="table-responsive" style="min-height: 300px;">
-                                    <div class="d-flex justify-content-center align-items-center h-100" style="min-height: 300px;">
-                                        <div class="w-100">
-                                            <table class="table align-middle m-0 mx-auto" id="requisitos" style="width: auto;">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col" class="text-center align-middle">Id</th>
-                                                        <th scope="col" class="text-center align-middle">Fecha</th>
-                                                        <th scope="col" class="text-center align-middle">Cargo</th>
-                                                        <th scope="col" class="text-center align-middle">Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for e in asignaciones_requisitos %}
-                                                    <tr class="text-center align-middle">
-                                                        <td class="text-body text-center align-middle">{{ e.id }}</td>
-                                                        <td class="text-body text-center align-middle">{{ e.fecha_asignacion|date:"Y-m-d" }}</td>
-                                                        <td class="text-body text-center align-middle">{{ e.requisito }}</td>
-                                                        <td class="text-center align-middle">
-                                                            <a href="{% url 'clientes:cliente_cargos_requisito_eliminar' e.id e.cargo.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
-                                                                <i class="material-symbols-outlined fs-16">delete</i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                <div class="table-responsive">
+                                    <table class="table align-middle m-0 mx-auto" id="requisitos" style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="text-center align-middle">Id</th>
+                                                <th scope="col" class="text-center align-middle">Fecha</th>
+                                                <th scope="col" class="text-center align-middle">Requisito</th>
+                                                <th scope="col" class="text-center align-middle">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for e in asignaciones_requisitos %}
+                                            <tr class="text-center align-middle">
+                                                <td class="text-body">{{ e.id }}</td>
+                                                <td class="text-body">{{ e.fecha_asignacion|date:"Y-m-d" }}</td>
+                                                <td class="text-body">{{ e.requisito }}</td>
+                                                <td>
+                                                    <a href="{% url 'clientes:cliente_cargos_requisito_eliminar' e.id e.cargo.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                        <i class="material-symbols-outlined fs-16">delete</i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="card bg-white border-0 rounded-3 mb-4">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Pruebas</h5>
-                        </div>
-                        <div class="card-body p-4">
+
+                        <div class="tab-pane fade" id="nav-cargo-pruebas" role="tabpanel" aria-labelledby="nav-cargo-pruebas-tab" tabindex="0">
+                            <h6 class="fs-16 fw-semibold text-primary mb-2">Asignación de pruebas</h6>
+                            <p class="text-secondary small mb-3">Asocie pruebas psicológicas asignadas al cliente a este cargo.</p>
                             <form method="post" id="form_assign_prueba">
                                 {% csrf_token %}
                                 <input type="hidden" name="assign_prueba" value="1">
                                 {% crispy form_pruebas %}
-                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_assign_prueba">Asignar Prueba</button>
+                                <button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 w-100" form="form_assign_prueba">Asignar prueba</button>
                             </form>
-                            <hr>
+                            <hr class="my-4">
                             <div class="default-table-area all-products">
                                 <div class="table-responsive">
-                                    <div class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
-                                        <div class="w-100">
-                                            <table class="table align-middle m-0" id="pruebas" style="width: auto; margin: 0 auto;">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">Id</th>
-                                                        <th scope="col">Fecha</th>
-                                                        <th scope="col">Prueba</th>
-                                                        <th scope="col">Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for e in asignaciones_pruebas %}
-                                                    <tr>
-                                                        <td class="text-body text-center align-middle">{{ e.id }}</td>
-                                                        <td class="text-body text-center align-middle">{{ e.fecha_asignacion|date:"Y-m-d" }}</td>
-                                                        <td class="text-body text-center align-middle">{{ e.cliente_prueba.prueba_psicologica.nombre }}</td>
-                                                        <td class="text-center align-middle">
-                                                            <a href="{% url 'clientes:cliente_cargos_prueba_eliminar' e.id e.cargo.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
-                                                                <i class="material-symbols-outlined fs-16">delete</i>
-                                                            </a>
-                                                        </td> 
-                                                    </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                    <table class="table align-middle m-0" id="pruebas" style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="text-center">Id</th>
+                                                <th scope="col" class="text-center">Fecha</th>
+                                                <th scope="col" class="text-center">Prueba</th>
+                                                <th scope="col" class="text-center">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for e in asignaciones_pruebas %}
+                                            <tr>
+                                                <td class="text-body text-center align-middle">{{ e.id }}</td>
+                                                <td class="text-body text-center align-middle">{{ e.fecha_asignacion|date:"Y-m-d" }}</td>
+                                                <td class="text-body text-center align-middle">{{ e.cliente_prueba.prueba_psicologica.nombre }}</td>
+                                                <td class="text-center align-middle">
+                                                    <a href="{% url 'clientes:cliente_cargos_prueba_eliminar' e.id e.cargo.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4">
+                                                        <i class="material-symbols-outlined fs-16">delete</i>
+                                                    </a>
+                                                </td> 
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            
-            
-            
 		</div>
 	</div>
 
@@ -188,20 +204,26 @@ Cliente
 
 {% block js %} 
 <script>
-    const pruebas = document.getElementById('pruebas');
-	if (pruebas) {
-		let x = new RdataTB('pruebas');
+(function () {
+	var pruebas = document.getElementById('pruebas');
+	if (pruebas && typeof RdataTB !== 'undefined') {
+		new RdataTB('pruebas');
 	}
-
-    const requisitos = document.getElementById('requisitos');
-	if (requisitos) {
-		let x = new RdataTB('requisitos');
+	var requisitos = document.getElementById('requisitos');
+	if (requisitos && typeof RdataTB !== 'undefined') {
+		new RdataTB('requisitos');
 	}
-
-    // Initialize select2 for specific fields
-    initializeSelect2('#id_requisito');
-
-    // Initialize select2 for specific fields
-    initializeSelect2('#id_prueba');
+	if (typeof initializeSelect2 === 'function') {
+		initializeSelect2('#id_requisito');
+		initializeSelect2('#id_prueba');
+	}
+	/* Reinicializar tablas al mostrar pestaña (por si DataTables calculó ancho en panel oculto) */
+	var tabTriggerList = [].slice.call(document.querySelectorAll('#nav-tab-cargo-config button[data-bs-toggle="tab"]'));
+	tabTriggerList.forEach(function (tabEl) {
+		tabEl.addEventListener('shown.bs.tab', function () {
+			window.dispatchEvent(new Event('resize'));
+		});
+	});
+})();
 </script>  
 {% endblock js %}

@@ -191,15 +191,16 @@ ESTADO_APLICACION_CHOICES_STATIC = [
     (2, 'Entrevista Programada'),
     (3, 'Entrevista Aprobada'),
     (4, 'Entrevista No Aprobada'),
-    (5, 'Prueba Programada'),
-    (6, 'Prueba Superada'),
-    (7, 'Prueba No Superada'),
-    (8, 'Seleccionado'),
+    (5, 'Decisiones Desicivas Programadas'),
+    (6, 'Decisiones Desicivas Aprobadas'),
+    (7, 'Decisiones Desicivas No Aprobadas'),
+    (8, 'Seleccionado por Analista'),
     (9, 'Finalizada'),
     (10, 'Cancelada'),
     (11, 'Desiste'),
     (12, 'No Apto'),
     (13, 'Seleccionado por Cliente'),
+
 ]
 
 ESTADO_APLICACION_COLOR_STATIC = {
@@ -220,7 +221,7 @@ ESTADO_APLICACION_COLOR_STATIC = {
 
 ESTADO_RECLUTADO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [
     (1, 'Aspirantes'),
-    (2, 'Precalificados por CV'),
+    (2, 'Precalficados por CV'),
     (3, 'Aprobados para Entrevista'),
     (4, 'No aprobados por CV'),
 ]

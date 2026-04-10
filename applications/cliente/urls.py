@@ -1,6 +1,6 @@
 from django.urls import path
 from applications.cliente.views import  ClienteView, CreacionUsuariosView
-from applications.cliente.views import admin_views, client_views, common_views
+from applications.cliente.views import admin_views, client_views, common_views, config_catalog_views
 from applications.cliente.views.preguntasView import PreguntasView
 from applications.cliente.views import api_views
 
@@ -11,6 +11,16 @@ url_principal = 'cliente/'
 
 urlpatterns = [
     #new
+    #admin_user — catálogos globales (configuraciones)
+    path( url_principal+'config/decisiones/', config_catalog_views.config_decisiones, name='config_decisiones'),
+    path( url_principal+'config/decisiones/api/guardar/', config_catalog_views.api_decisiones_guardar, name='api_decisiones_guardar'),
+    path( url_principal+'config/decisiones/api/<int:pk>/', config_catalog_views.api_decisiones_detail, name='api_decisiones_detail'),
+    path( url_principal+'config/politicas/', config_catalog_views.config_politicas, name='config_politicas'),
+    path( url_principal+'config/politicas/api/guardar/', config_catalog_views.api_politicas_guardar, name='api_politicas_guardar'),
+    path( url_principal+'config/politicas/api/<int:pk>/', config_catalog_views.api_politicas_detail, name='api_politicas_detail'),
+    path( url_principal+'config/pruebas/', config_catalog_views.config_pruebas, name='config_pruebas'),
+    path( url_principal+'config/pruebas/api/guardar/', config_catalog_views.api_pruebas_guardar, name='api_pruebas_guardar'),
+    path( url_principal+'config/pruebas/api/<int:pk>/', config_catalog_views.api_pruebas_detail, name='api_pruebas_detail'),
     #admin_user
     path( url_principal+'crear/', admin_views.crear_cliente, name='cliente_crear'),
     path( url_principal+'listar/', admin_views.ver_cliente, name='cliente_ver'),
@@ -25,6 +35,7 @@ urlpatterns = [
     path( url_principal+'detalle/cargos/configuracion/prueba/eliminar/<int:pk>/<int:cargo_id>/', admin_views.client_detail_position_test_delete, name='cliente_cargos_prueba_eliminar'),
     path( url_principal+'detalle/grupo_trabajo/<int:pk>/', admin_views.client_detail_group_work, name='client_detail_group_work'),
     path( url_principal+'detalle/asignados/<int:pk>/', admin_views.client_detail_assigned, name='client_detail_assigned'),
+    
 
     #client_headhunter_user
     path( url_principal+'asignados/', client_views.client_headhunter_assigned, name='client_headhunter_asignados'),

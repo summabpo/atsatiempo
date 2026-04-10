@@ -20,6 +20,11 @@ from ..forms.ClienteForms import ClienteForm, ClienteFormAsignacionCliente, Clie
 
 #query
 from applications.services.service_client import query_client_all, query_client_detail
+from applications.cliente.acciones_cargo_utils import (
+    acciones_cargo_ui_rows,
+    parse_acciones_seleccion_post,
+    sync_cli086_solo_relacion,
+)
 
 
 #views
@@ -121,6 +126,7 @@ def client_detail_assigned(request, pk):
                     'periodicidad_pago': form.cleaned_data['periodicidad_pago'],
                     # 'referencias_laborales': form.cleaned_data['referencias_laborales'],
                     'cantidad_colaboradores': form.cleaned_data['cantidad_colaboradores'],
+                    'cantidad_dias_envio_candidatos': form.cleaned_data.get('cantidad_dias_envio_candidatos'),
                     'contacto_cargo': form.cleaned_data['contacto_cargo'],
                     'direccion_cargo': form.cleaned_data['direccion_cargo'],
                     'estado_id_001': Cat001Estado.objects.get(id=1),
@@ -179,6 +185,7 @@ def client_detail_info(request, pk):
         'periodicidad_pago': cliente.periodicidad_pago,
         # 'referencias_laborales': cliente.referencias_laborales,
         'cantidad_colaboradores': cliente.cantidad_colaboradores,
+        'cantidad_dias_envio_candidatos': cliente.cantidad_dias_envio_candidatos,
         'contacto_cargo': cliente.contacto_cargo,
         'direccion_cargo': cliente.direccion_cargo,
     }
@@ -201,6 +208,7 @@ def client_detail_info(request, pk):
             cliente.periodicidad_pago = form_cliente.cleaned_data['periodicidad_pago']
             # cliente.referencias_laborales = form_cliente.cleaned_data['referencias_laborales']
             cliente.cantidad_colaboradores = form_cliente.cleaned_data['cantidad_colaboradores']
+            cliente.cantidad_dias_envio_candidatos = form_cliente.cleaned_data.get('cantidad_dias_envio_candidatos')
             cliente.contacto_cargo = form_cliente.cleaned_data['contacto_cargo']
             cliente.direccion_cargo = form_cliente.cleaned_data['direccion_cargo']
 
@@ -320,11 +328,13 @@ def client_detail_position(request, pk):
             try:
                 cargo = form.cleaned_data['cargo'].upper()
                 referencias_laborales = form.cleaned_data['referencias_laborales']
-                
+                dias_envio = form.cleaned_data.get('cantidad_dias_envio_candidatos')
+
                 cargo_cliente = Cli068Cargo.objects.create(
                     cliente=Cli051Cliente.objects.get(id=pk),
                     nombre_cargo=cargo,
                     referencias_laborales=referencias_laborales,
+                    cantidad_dias_envio_candidatos=dias_envio,
                     estado=Cat001Estado.objects.get(id=1)
                 )
 
@@ -379,11 +389,13 @@ def client_detail_position_config(request, pk, cargo_id):
                 try:
                     cargo = form_cargo.cleaned_data['cargo'].upper()
                     referencias_laborales = form_cargo.cleaned_data['referencias_laborales']
-                    
+                    dias_envio = form_cargo.cleaned_data.get('cantidad_dias_envio_candidatos')
+
                     # Actualizar cargo existente
                     cargo_obj = Cli068Cargo.objects.get(id=cargo_id)
                     cargo_obj.nombre_cargo = cargo
                     cargo_obj.referencias_laborales = referencias_laborales
+                    cargo_obj.cantidad_dias_envio_candidatos = dias_envio
                     cargo_obj.save()
                     
                     messages.success(request, 'El cargo ha sido actualizado con éxito.')
@@ -396,7 +408,16 @@ def client_detail_position_config(request, pk, cargo_id):
                     for error in errors:
                         messages.error(request, f'{field}: {error}')
                 print("Errores en el formulario de cargo:", form_cargo.errors)
-        
+
+        elif request.POST.get('save_acciones_cargo'):
+            try:
+                selected = parse_acciones_seleccion_post(request.POST)
+                sync_cli086_solo_relacion(cargo_cliente, selected)
+                messages.success(request, 'Decisiones definitivas del cargo actualizadas.')
+                return redirect('clientes:cliente_cargos_configuracion', pk=pk, cargo_id=cargo_id)
+            except Exception as e:
+                messages.error(request, f'Error al guardar decisiones definitivas: {str(e)}')
+
         elif 'assign_requisito' in request.POST:
             form_requisitos = ClienteFormAsignacionRequisito(request.POST, cliente_id=pk, cargo_id=cargo_id)
             if form_requisitos.is_valid():
@@ -434,6 +455,7 @@ def client_detail_position_config(request, pk, cargo_id):
         'form_cargo': form_cargo,
         'form_requisitos': form_requisitos,
         'form_pruebas': form_pruebas,
+        'acciones_cargo_rows': acciones_cargo_ui_rows(cargo_cliente),
     }
 
     return render(request, 'admin/client/admin_user/client_detail_position_config.html', contexto)

@@ -36,6 +36,7 @@ def query_client_detail(id):
             "direccion": cliente.direccion_cargo,
             # "referencias_laborales": cliente.referencias_laborales,
             "cantidad_colaboradores": cliente.cantidad_colaboradores,
+            "cantidad_dias_envio_candidatos": cliente.cantidad_dias_envio_candidatos,
         },
         "asignaciones": [
             {
