@@ -1,0 +1,31 @@
+{% comment %}Solo administrador ATS: inmediatamente encima de Logout{% endcomment %}
+<li class="menu-title small text-uppercase">
+    <span class="menu-title-text">CONFIGURACIONES</span>
+</li>
+<li class="menu-item
+    {% if request.resolver_match.url_name == 'config_decisiones' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'config_politicas' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'config_pruebas' %}open{% endif %}
+    ">
+    <a href="javascript:void(0);" class="menu-link menu-toggle active">
+        <span class="material-symbols-outlined menu-icon">tune</span>
+        <span class="title">Configuraciones</span>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+            <a href="{% url 'clientes:config_decisiones' %}" class="menu-link {% if request.resolver_match.url_name == 'config_decisiones' %}active{% endif %}">
+                Decisiones definitivas
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{% url 'clientes:config_politicas' %}" class="menu-link {% if request.resolver_match.url_name == 'config_politicas' %}active{% endif %}">
+                Políticas
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{% url 'clientes:config_pruebas' %}" class="menu-link {% if request.resolver_match.url_name == 'config_pruebas' %}active{% endif %}">
+                Pruebas
+            </a>
+        </li>
+    </ul>
+</li>

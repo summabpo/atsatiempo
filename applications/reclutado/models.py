@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import Count
 from django.utils import timezone
 from applications.common.models import Cat001Estado, Cat004Ciudad, Cat005AsignacionQr
-from applications.cliente.models import Cli051Cliente, Cli069Requisito, Cli070AsignacionRequisito
+from applications.cliente.models import Cli051Cliente, Cli069Requisito, Cli070AsignacionRequisito, Cli085AccionesDecisivas
 from applications.candidato.models import Can101Candidato
 from applications.services.choices import ESTADO_APLICACION_CHOICES_STATIC, ESTADO_APLICACION_COLOR_STATIC, ESTADO_RECLUTADO_CHOICES_STATIC
 from applications.usuarios.models import UsuarioBase
@@ -217,3 +217,50 @@ class Cli084AsignacionRegistroReclutado(models.Model):
         db_table = 'cli_084_asignacion_registro_reclutado'
         verbose_name = 'ASIGNACIÓN REGISTRO RECLUTADO'
         verbose_name_plural = 'ASIGNACIONES REGISTRO RECLUTADO'
+
+
+class Cli087ReporteAccionDecisivaReclutado(models.Model):
+    """Modelo para reporte de acción decisiva reclutado."""
+    aplicacion_vacante_056 = models.ForeignKey(
+        Cli056AplicacionVacante, 
+        on_delete=models.CASCADE, 
+        related_name='reportes_accion_decisiva'
+    )
+    accion_decisiva = models.ForeignKey(
+        Cli085AccionesDecisivas,
+        on_delete=models.CASCADE,
+        related_name='reportes_accion_decisiva'
+    )
+    archivo_reporte = models.FileField(
+        upload_to='media_uploads/reporte_accion_decisiva/', 
+        blank=True, 
+        null=True, 
+        verbose_name="Reporte Acción Decisiva"
+    )
+    fecha_cargado = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name="Fecha de cargado"
+    )
+    usuario_cargado = models.ForeignKey(
+        UsuarioBase, 
+        on_delete=models.CASCADE, 
+        related_name='reportes_accion_decisiva_cargados'
+    )
+    estado = models.ForeignKey(
+        Cat001Estado, 
+        on_delete=models.CASCADE, 
+        related_name='reportes_accion_decisiva'
+    )
+    json_data = models.JSONField(
+        blank=True, 
+        null=True, 
+        verbose_name="Datos del reporte"
+    )
+
+    def __str__(self):
+        return f"Reporte Acción Decisiva para la aplicación {self.aplicacion_vacante_056.id}"
+
+    class Meta:
+        db_table = 'cli_087_reporte_accion_decisiva_reclutado'
+        verbose_name = 'REPORTE ACCIÓN DECISIVA RECLUTADO'
+        verbose_name_plural = 'REPORTES ACCIÓN DECISIVA RECLUTADO'

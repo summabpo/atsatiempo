@@ -1,0 +1,291 @@
+{% extends 'admin/layout/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Políticas internas{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<style>
+	.dataTables_wrapper .dataTables_length select {
+		height: 38px !important;
+		padding: 0.375rem 2.25rem 0.375rem 0.75rem !important;
+		font-size: 0.875rem !important;
+		line-height: 1.5 !important;
+		border-radius: 0.375rem !important;
+	}
+	.dataTables_wrapper .dataTables_length {
+		display: flex;
+		align-items: center;
+	}
+	.dataTables_wrapper .dataTables_length label {
+		margin-bottom: 0;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	{% include 'admin/config/partials/catalog_modal_form_css.html' %}
+</style>
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">POLÍTICAS INTERNAS</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover">Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Políticas</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<div class="card bg-white border-0 rounded-3 mb-4">
+		<div class="card-body p-3">
+			<div class="row">
+				<div class="col-12">
+					<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+						<p class="text-secondary mb-0">Catálogo global de políticas internas. Las respuestas opcionales se guardan en formato JSON.</p>
+						<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" id="btnNuevoPolitica">
+							<i class="ri-add-line"></i> Nuevo
+						</button>
+					</div>
+					<div class="default-table-area">
+						<div class="table-responsive">
+							<table class="table align-middle text-center" id="tablePoliticas" style="width:100%">
+								<thead>
+									<tr>
+										<th scope="col" class="text-center">ID</th>
+										<th scope="col">Nombre</th>
+										<th scope="col" class="text-center">Descripción</th>
+										<th scope="col">Estado</th>
+										<th scope="col" style="text-align: center">Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for it in items %}
+									<tr data-id="{{ it.id }}">
+										<td class="text-secondary text-center">{{ it.id }}</td>
+										<td class="text-body">{{ it.nombre }}</td>
+										<td class="text-body text-center">{{ it.descripcion|truncatechars:80 }}</td>
+										<td class="text-body text-center">{{ it.estado.nombre }}</td>
+										<td class="text-center">
+											<div class="d-flex justify-content-center align-items-center gap-1">
+												<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 btn-editar-politica" data-id="{{ it.id }}" title="Editar">
+													<i class="material-symbols-outlined fs-16">edit</i>
+												</button>
+											</div>
+										</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% csrf_token %}
+
+<div class="modal fade" id="modalPolitica" tabindex="-1" aria-labelledby="modalPoliticaLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable catalog-modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalPoliticaLabel">Política interna</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body">
+				<div class="catalog-form-section p-3 border mb-0">
+				<input type="hidden" id="politica_id" value="">
+				<div class="mb-3">
+					<label class="form-label fw-medium" for="politica_nombre">Nombre <span class="text-danger">*</span></label>
+					<input type="text" class="form-control" id="politica_nombre" maxlength="100" required>
+				</div>
+				<div class="mb-3">
+					<label class="form-label fw-medium" for="politica_descripcion">Descripción <span class="text-danger">*</span></label>
+					<textarea class="form-control" id="politica_descripcion" rows="4" required></textarea>
+				</div>
+				<div class="mb-3">
+					<label class="form-label fw-medium" for="politica_respuestas_json">Respuestas (JSON opcional)</label>
+					<textarea class="form-control font-monospace small" id="politica_respuestas_json" rows="6" placeholder='Ej: [] o {"opciones":[]} '></textarea>
+				</div>
+				<div class="mb-0">
+					<label class="form-label fw-medium" for="politica_estado">Estado <span class="text-danger">*</span></label>
+					<select class="form-select form-control select2" id="politica_estado" name="estado" data-control="select2" required aria-label="Estado">
+						{% for e in estados %}
+						<option value="{{ e.id }}">{{ e.nombre }}</option>
+						{% endfor %}
+					</select>
+					<div class="form-text">Solo activo o inactivo.</div>
+				</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-primary" id="btnGuardarPolitica">Guardar</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script>
+(function () {
+	var URL_GUARDAR = "{% url 'clientes:api_politicas_guardar' %}";
+	var URL_DETAIL_TMPL = "{% url 'clientes:api_politicas_detail' pk=888888888 %}";
+
+	function detailUrl(pk) {
+		return URL_DETAIL_TMPL.replace('888888888', String(pk));
+	}
+
+	function getCsrf() {
+		var el = document.querySelector('[name=csrfmiddlewaretoken]');
+		return el ? el.value : '';
+	}
+
+	var dataTableConfig = {
+		dom: '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+		language: {
+			lengthMenu: "Mostrar _MENU_ registros por página",
+			zeroRecords: "No se encontraron registros",
+			info: "Mostrando página _PAGE_ de _PAGES_",
+			infoEmpty: "No hay registros disponibles",
+			infoFiltered: "(filtrado de _MAX_ registros totales)",
+			search: "Buscar:",
+			searchPlaceholder: "Buscar...",
+			paginate: { first: "Primero", last: "Último", next: "Siguiente", previous: "Anterior" },
+			emptyTable: "No hay datos disponibles en la tabla",
+			loadingRecords: "Cargando...",
+			processing: "Procesando...",
+			infoThousands: ","
+		},
+		responsive: false,
+		autoWidth: false,
+		pageLength: 50,
+		lengthMenu: [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "Todos"]],
+		searching: true,
+		ordering: true,
+		info: true,
+		paging: true
+	};
+
+	function initTable() {
+		if (typeof $.fn.DataTable === 'undefined') return;
+		if ($.fn.DataTable.isDataTable('#tablePoliticas')) return;
+		$('#tablePoliticas').DataTable($.extend({}, dataTableConfig, {
+			columnDefs: [
+				{ targets: [4], orderable: false, searchable: false }
+			],
+			order: [[0, 'desc']]
+		}));
+	}
+
+	function openModalNuevo() {
+		document.getElementById('modalPoliticaLabel').textContent = 'Nueva política';
+		document.getElementById('politica_id').value = '';
+		document.getElementById('politica_nombre').value = '';
+		document.getElementById('politica_descripcion').value = '';
+		document.getElementById('politica_respuestas_json').value = '';
+		var $est = $('#politica_estado');
+		if ($est.find('option').length) {
+			$est.prop('selectedIndex', 0);
+			$est.trigger('change');
+		}
+		new bootstrap.Modal(document.getElementById('modalPolitica')).show();
+	}
+
+	function openModalEditar(pk) {
+		fetch(detailUrl(pk), { headers: { 'Accept': 'application/json' } })
+			.then(function (r) { return r.json(); })
+			.then(function (data) {
+				if (!data.success || !data.item) throw new Error('Respuesta inválida');
+				var it = data.item;
+				document.getElementById('modalPoliticaLabel').textContent = 'Editar política';
+				document.getElementById('politica_id').value = it.id;
+				document.getElementById('politica_nombre').value = it.nombre || '';
+				document.getElementById('politica_descripcion').value = it.descripcion || '';
+				document.getElementById('politica_respuestas_json').value = it.respuestas_politica || '';
+				$('#politica_estado').val(String(it.estado_id)).trigger('change');
+				new bootstrap.Modal(document.getElementById('modalPolitica')).show();
+			})
+			.catch(function () {
+				Swal.fire({ icon: 'error', text: 'No se pudo cargar el registro.' });
+			});
+	}
+
+	function guardar() {
+		var idVal = document.getElementById('politica_id').value;
+		var payload = {
+			id: idVal ? parseInt(idVal, 10) : null,
+			nombre: document.getElementById('politica_nombre').value.trim(),
+			descripcion: document.getElementById('politica_descripcion').value.trim(),
+			respuestas_politica: document.getElementById('politica_respuestas_json').value,
+			estado_id: parseInt($('#politica_estado').val(), 10)
+		};
+		fetch(URL_GUARDAR, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': getCsrf()
+			},
+			body: JSON.stringify(payload)
+		})
+			.then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+			.then(function (res) {
+				if (res.ok && res.j.success) {
+					Swal.fire({ icon: 'success', text: res.j.message || 'Guardado.' }).then(function () {
+						window.location.reload();
+					});
+				} else {
+					Swal.fire({ icon: 'error', text: (res.j && res.j.message) || 'Error al guardar.' });
+				}
+			})
+			.catch(function () {
+				Swal.fire({ icon: 'error', text: 'Error de red.' });
+			});
+	}
+
+	document.getElementById('btnNuevoPolitica').addEventListener('click', openModalNuevo);
+	document.getElementById('btnGuardarPolitica').addEventListener('click', guardar);
+	document.querySelectorAll('.btn-editar-politica').forEach(function (btn) {
+		btn.addEventListener('click', function () {
+			openModalEditar(this.getAttribute('data-id'));
+		});
+	});
+	function initSelect2Estado() {
+		if (typeof $.fn.select2 === 'undefined') return;
+		var $sel = $('#politica_estado');
+		var $modal = $('#modalPolitica');
+		if (!$sel.length) return;
+		if ($sel.hasClass('select2-hidden-accessible')) {
+			$sel.select2('destroy');
+		}
+		$sel.select2({
+			theme: 'bootstrap-5',
+			width: '100%',
+			placeholder: 'Activo o inactivo',
+			allowClear: false,
+			dropdownParent: $modal,
+			language: {
+				noResults: function () { return 'No se encontraron resultados'; },
+				searching: function () { return 'Buscando...'; }
+			}
+		});
+	}
+
+	$(document).ready(function () {
+		initTable();
+		initSelect2Estado();
+	});
+})();
+</script>
+{% endblock %}

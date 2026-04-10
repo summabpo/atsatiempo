@@ -102,6 +102,11 @@
             {% include "admin/layout/partials/menu_sidebar/dashboard_sidebar_client_recruiter.html" %}
         {% endif %}
 
+        <!-- CONFIGURACIONES (admin: encima de logout) -->
+        {% if request.session.grupo_id == 1 %}
+            {% include "admin/layout/partials/menu_sidebar/dashboard_sidebar_configuraciones.html" %}
+        {% endif %}
+
         <!-- LOGOUT -->
         <li class="menu-item">
             <a href="{% url 'accesses:logout' %}" class="menu-link">
