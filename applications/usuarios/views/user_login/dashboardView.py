@@ -17,6 +17,7 @@ from applications.usuarios.views.commons.dashboard_panels import (
 # consultas
 from applications.services.service_candidate import personal_information_calculation
 from applications.services.service_vacanty import query_vacanty_with_skills_and_details
+from applications.vacante.models import Cli052Vacante
 
 #pantalla inicio
 @login_required
@@ -69,7 +70,19 @@ def dashboard_candidato(request):
 @validar_permisos('acceso_cliente')
 def dashboard_cliente(request):
     """ Vista que carga la página de inicio y muestra variables de sesión """
-    context = {}
+    vacantes_activas_count = 0
+    cliente_id = request.session.get('cliente_id')
+    if cliente_id:
+        # Mismo criterio que el listado cliente: vacante ligada por asignación (Cli064) al cliente asignado
+        vacantes_activas_count = Cli052Vacante.objects.filter(
+            asignacion_cliente_id_064__id_cliente_asignado=cliente_id,
+            asignacion_cliente_id_064__tipo_asignacion="1",
+            estado_id_001_id=1,
+            estado_vacante__in=(1, 2),
+        ).count()
+    context = {
+        'vacantes_activas_count': vacantes_activas_count,
+    }
     return render(request, 'admin/dashboard/dashboard_client.html', context)
 
 

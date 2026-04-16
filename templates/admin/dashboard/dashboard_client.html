@@ -29,6 +29,11 @@ Inicio | Dashboard Cliente
         .info-panel-card .card-body h3 { font-size: 1.1rem !important; }
         .info-panel-card .card-footer .btn { padding: 0.25rem 0.5rem !important; font-size: 0.7rem !important; }
     }
+    /* Contenedores ApexCharts (store-analytics): altura mínima para que el layout calcule bien */
+    #gross_revenue2 { min-height: 339px; }
+    #sales_by_gender { min-height: 110px; }
+    #sales_this_month { min-height: 170px; }
+    #sales_by_category { min-height: 399px; }
 </style>
 {% endblock %}
 
@@ -150,7 +155,565 @@ Inicio | Dashboard Cliente
 		</div>
 	</div>
 </div>
+
+	<!-- Dashboard completo (replicado de store-analytics.html) -->
+	<div class="row">
+		<div class="col-lg-9">
+			<div class="card border-1 border-primary rounded-3 p-4" style="background: linear-gradient(104deg, #B10022 2.4%, #FF5A6E 112.33%);">
+				<div class="d-flex justify-content-between flex-wrap gap-3">
+					<div class="mt-sm-4 ms-sm-4">
+						<span class="fw-medium d-block mb-2" style="color: #C2CDFF;">
+							Hola {{ request.session.user_login.primer_nombre }} ✋
+						</span>
+						<h3 class="fs-28 text-white fw-900 mb-0">
+							<span class="fw-normal">Bienvenido a</span> Talent Tray
+						</h3>
+					</div>
+					<div class="py-sm-1">
+						<img src="{% static 'admin/images/store.png' %}" alt="store">
+					</div>
+				</div>
+			</div>
+
+			<div class="px-sm-4 px-xxl-5" style="margin-top: -48px;">
+				<div class="row justify-content-center">
+					<div class="col-md-4 col-sm-6">
+						<div class="card border-5 border-primary rounded-3 bg-white p-4 mb-4 shadow-sm">
+							<div class="d-flex">
+								<div class="flex-grow-1 me-1">
+									<span class="d-block mb-2">Vacantes activas</span>
+									<h2 class="mb-2 fs-28">{{ vacantes_activas_count }}</h2>
+									<small class="text-muted">Activa o en proceso (no finalizadas)</small>
+								</div>
+								<div class="flex-shrink-0">
+									<div class="bg-primary bg-opacity-25 text-primary text-center rounded-circle" style="width: 48px; height: 48px; line-height: 48px;">
+										<i class="ri-briefcase-2-line fs-24"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-6">
+						<div class="card border-0 rounded-3 bg-white p-4 mb-4 shadow-sm">
+							<div class="d-flex">
+								<div class="flex-grow-1 me-1">
+									<span class="d-block mb-2">Candidatos en proceso</span>
+									<h2 class="mb-2 fs-28">—</h2>
+									<span class="d-inline-block bg-danger bg-opacity-10 border-danger border px-2 rounded-pill text-danger fs-12 fw-medium">0%</span>
+								</div>
+								<div class="flex-shrink-0">
+									<div class="bg-success bg-opacity-25 text-success text-center rounded-circle" style="width: 48px; height: 48px; line-height: 48px;">
+										<i class="ri-user-search-line fs-24"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-6">
+						<div class="card border-0 rounded-3 bg-white p-4 mb-4 shadow-sm">
+							<div class="d-flex">
+								<div class="flex-grow-1 me-1">
+									<span class="d-block mb-2">Entrevistas</span>
+									<h2 class="mb-2 fs-28">—</h2>
+									<span class="d-inline-block bg-success bg-opacity-10 border-success border px-2 rounded-pill text-success fs-12 fw-medium">+0%</span>
+								</div>
+								<div class="flex-shrink-0">
+									<div class="bg-primary-div bg-opacity-25 text-primary-div text-center rounded-circle" style="width: 48px; height: 48px; line-height: 48px;">
+										<i class="ri-calendar-event-line fs-24"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-3">
+			<div class="card border-0 rounded-3 bg-white p-4 mb-4 shadow-sm">
+				<h3 class="mb-4">Actividad de usuarios</h3>
+				<div class="position-relative z-1">
+					<div class="row">
+						<div class="col pe-0">
+							<div class="text-center wh-25 lh-25 rounded-circle mb-2" style="background-color: #F6F7F9;">
+								<i class="ri-user-3-fill"></i>
+							</div>
+							<span class="d-inline-block mb-2" style="max-width: 65px;">Nuevos</span>
+							<h3 class="fs-28 mb-2">—</h3>
+							<span class="d-inline-block bg-success bg-opacity-10 border-success border px-2 rounded-pill text-success fs-12 fw-medium">+0%</span>
+						</div>
+						<div class="col ps-0 text-end border-start">
+							<div class="text-center wh-25 lh-25 rounded-circle mb-2 ms-auto" style="background-color: #F6F7F9;">
+								<i class="ri-user-received-2-fill"></i>
+							</div>
+							<span class="d-inline-block mb-2" style="max-width: 65px;">Recurrentes</span>
+							<h3 class="fs-28 mb-2">—</h3>
+							<span class="d-inline-block bg-danger bg-opacity-10 border-danger border px-2 rounded-pill text-danger fs-12 fw-medium">0%</span>
+						</div>
+					</div>
+					<div class="bg-primary bg-opacity-10 text-primary text-center rounded-circle position-absolute top-50 start-50 translate-middle" style="width: 33px; height: 33px; line-height: 45px;">
+						<span class="material-symbols-outlined">bolt</span>
+					</div>
+				</div>
+
+				<div class="mt-4">
+					<div class="progress bg-success rounded-pill" role="progressbar" aria-label="Basic example" aria-valuenow="32" aria-valuemin="0" aria-valuemax="100" style="height: 8px;">
+						<div class="progress-bar bg-primary rounded-pill" style="width: 32%; height: 8px;"></div>
+					</div>
+					<div class="d-flex justify-content-between mt-1">
+						<span class="fs-12">32%</span>
+						<span class="fs-12">64%</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-4">
+			<div class="card border-0 rounded-3 bg-white p-4 mb-4 shadow-sm">
+				<h3 class="mb-4">Top elementos</h3>
+
+				<div class="last-child-none">
+					<div class="d-flex gap-1 justify-content-between align-items-center child mb-3 pb-3 border-bottom">
+						<div class="d-flex align-items-center">
+							<div class="flex-shrink-0">
+								<img src="{% static 'admin/images/product-18.png' %}" class="rounded-2" alt="product">
+							</div>
+							<div class="flex-grow-1 ms-2">
+								<h4 class="fs-14 fw-semibold mb-0">Elemento 1</h4>
+								<span class="fs-12"><span class="fw-bold">—</span> resultados</span>
+							</div>
+						</div>
+
+						<div class="d-flex align-items-center gap-1">
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-fill text-warning"></i>
+							<span class="fs-12 position-relative top-1">5.0</span>
+						</div>
+					</div>
+					<div class="d-flex gap-1 justify-content-between align-items-center child mb-3 pb-3 border-bottom">
+						<div class="d-flex align-items-center">
+							<div class="flex-shrink-0">
+								<img src="{% static 'admin/images/product-19.png' %}" class="rounded-2" alt="product">
+							</div>
+							<div class="flex-grow-1 ms-2">
+								<h4 class="fs-14 fw-semibold mb-0">Elemento 2</h4>
+								<span class="fs-12"><span class="fw-bold">—</span> resultados</span>
+							</div>
+						</div>
+
+						<div class="d-flex align-items-center gap-1">
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-half-line text-warning"></i>
+							<span class="fs-12 position-relative top-1">4.9</span>
+						</div>
+					</div>
+					<div class="d-flex gap-1 justify-content-between align-items-center child mb-3 pb-3 border-bottom">
+						<div class="d-flex align-items-center">
+							<div class="flex-shrink-0">
+								<img src="{% static 'admin/images/product-20.png' %}" class="rounded-2" alt="product">
+							</div>
+							<div class="flex-grow-1 ms-2">
+								<h4 class="fs-14 fw-semibold mb-0">Elemento 3</h4>
+								<span class="fs-12"><span class="fw-bold">—</span> resultados</span>
+							</div>
+						</div>
+
+						<div class="d-flex align-items-center gap-1">
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-fill text-warning"></i>
+							<i class="ri-star-half-line text-warning"></i>
+							<span class="fs-12 position-relative top-1">4.8</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-8">
+			<div class="card bg-white border-0 p-4 mb-4 rounded-10 shadow-sm">
+				<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-1">
+					<span class="d-block mb-1">Indicador (chart)</span>
+					<div class="dropdown select-dropdown">
+						<button class="dropdown-toggle bg-border-color border text-body rounded-2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							Mensual
+						</button>
+						<ul class="dropdown-menu dropdown-menu-end bg-white border-0 box-shadow py-3">
+							<li><button class="dropdown-item text-secondary py-2 px-3">Mensual</button></li>
+							<li><button class="dropdown-item text-secondary py-2 px-3">Semanal</button></li>
+							<li><button class="dropdown-item text-secondary py-2 px-3">Anual</button></li>
+						</ul>
+					</div>
+				</div>
+				<div class="d-flex align-items-center mb-2">
+					<h3 class="fs-32 fw-bold text-secondary mb-0">—</h3>
+					<span class="fw-medium fs-12 text-success bg-success bg-opacity-10 border border-success px-2 rounded-pill ms-2">
+						+0% <i class="ri-arrow-up-line"></i>
+					</span>
+				</div>
+				<span class="fs-12 d-block mb-4">vs periodo anterior</span>
+
+				<div style="margin: -24px -11px -21px -16px;">
+					<div id="gross_revenue2"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-9">
+			<div class="card bg-white border-0 rounded-3 mb-4 shadow-sm">
+				<div class="card-body p-4">
+					<div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+						<h3 class="mb-0">Actividad reciente</h3>
+						<div class="dropdown select-dropdown">
+							<button class="dropdown-toggle bg-border-color border text-body rounded-2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								Este mes
+							</button>
+							<ul class="dropdown-menu dropdown-menu-end bg-white border-0 box-shadow py-3">
+								<li><button class="dropdown-item text-secondary py-2 px-3">Hoy</button></li>
+								<li><button class="dropdown-item text-secondary py-2 px-3">Esta semana</button></li>
+								<li><button class="dropdown-item text-secondary py-2 px-3">Este mes</button></li>
+								<li><button class="dropdown-item text-secondary py-2 px-3">Este año</button></li>
+							</ul>
+						</div>
+					</div>
+					<div class="default-table-area style-two campaigns-table">
+						<div class="table-responsive">
+							<table class="table align-middle border-0">
+								<thead>
+									<tr class="border-bottom">
+										<th scope="col" class="bg-transparent text-body fw-medium">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">REF</span>
+										</th>
+										<th scope="col" class="bg-transparent text-body fw-medium">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">USUARIO</span>
+										</th>
+										<th scope="col" class="bg-transparent text-body fw-medium">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">TOTAL</span>
+										</th>
+										<th scope="col" class="bg-transparent text-body fw-medium">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">ESTADO</span>
+										</th>
+										<th scope="col" class="bg-transparent text-body fw-medium">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">MÉTODO</span>
+										</th>
+										<th scope="col" class="text-end bg-transparent text-body fw-medium">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">STATUS</span>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="fs-12 fw-semibold text-body-color-50">#001</td>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="flex-shrink-0">
+													<img src="{% static 'admin/images/user-81.png' %}" class="rounded-circle" style="width: 40px; height: 40px;" alt="user">
+												</div>
+												<div class="flex-grow-1 ms-2">
+													<h4 class="fs-14 fw-semibold mb-0 text-secondary-50">Usuario Demo</h4>
+												</div>
+											</div>
+										</td>
+										<td class="fs-12 fw-semibold text-body-color-50">—</td>
+										<td class="fs-12 fw-semibold text-body-color-50">OK</td>
+										<td>
+											<div class="d-flex align-items-center gap-1">
+												<img src="{% static 'admin/images/paypal.png' %}" alt="paypal">
+												<span class="ms-2 text-body-color-50 fs-12 fw-semibold">Paypal</span>
+											</div>
+										</td>
+										<td class="text-end">
+											<span class="d-inline-block px-2 bg-success bg-opacity-10 text-success border border-success rounded-pill fs-12 fw-medium">Completed</span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<div class="d-flex justify-content-center justify-content-sm-between align-items-center text-center flex-wrap gap-2 showing-wrap mt-4">
+							<span class="fs-12 fw-medium">Mostrando 1 de 1</span>
+							<nav aria-label="Page navigation example">
+								<ul class="pagination mb-0 justify-content-center">
+									<li class="page-item">
+										<button class="page-link icon hover-bg" aria-label="Previous">
+											<i class="material-symbols-outlined">keyboard_arrow_left</i>
+										</button>
+									</li>
+									<li class="page-item">
+										<button class="page-link active">1</button>
+									</li>
+									<li class="page-item">
+										<button class="page-link icon hover-bg" aria-label="Next">
+											<i class="material-symbols-outlined">keyboard_arrow_right</i>
+										</button>
+									</li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-3">
+			<div class="card border-0 rounded-3 bg-white p-4 mb-4 shadow-sm">
+				<h3 class="mb-4">Distribución (chart)</h3>
+				<div style="margin: 0;">
+					<div id="sales_by_gender"></div>
+				</div>
+			</div>
+			<div class="card border-0 rounded-3 bg-white p-4 mb-4 shadow-sm">
+				<div class="mb-3">
+					<span class="d-block mb-1">Indicador del mes</span>
+					<h3 class="fs-28 fw-bold text-secondary mb-1">—</h3>
+					<span class="fw-medium fs-12 text-danger bg-danger bg-opacity-10 border border-danger px-2 rounded-pill d-inline-block">
+						0%
+					</span>
+				</div>
+				<div style="margin: -29px -11px -29px -11px;">
+					<div id="sales_this_month"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-4">
+			<div class="card border-0 rounded-3 bg-white p-4 mb-4 shadow-sm">
+				<h3 class="mb-4">Categorías (chart)</h3>
+				<div style="margin: -43px 0 -25px 0;">
+					<div id="sales_by_category"></div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-8">
+			<div class="card bg-white border-0 rounded-3 mb-4 shadow-sm">
+				<div class="card-body p-4">
+					<h3 class="mb-1">Alertas</h3>
+					<div class="default-table-area style-two campaigns-table">
+						<div class="table-responsive">
+							<table class="table align-middle border-0">
+								<thead>
+									<tr class="border-bottom">
+										<th scope="col" class="bg-transparent text-body fw-medium">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">CÓDIGO</span>
+										</th>
+										<th scope="col" class="bg-transparent text-body fw-medium">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">ITEM</span>
+										</th>
+										<th scope="col" class="bg-transparent text-body fw-medium text-center">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">UBICACIÓN</span>
+										</th>
+										<th scope="col" class="bg-transparent text-body fw-medium text-center">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">CANT.</span>
+										</th>
+										<th scope="col" class="bg-transparent text-body fw-medium text-center">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">ALERTA</span>
+										</th>
+										<th scope="col" class="text-end bg-transparent text-body fw-medium">
+											<span class="fs-10 text-body-color-60 fw-bold letter-spacing-1">ACCIÓN</span>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="fs-12 fw-semibold text-body-color-50">#0001</td>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="flex-shrink-0">
+													<img src="{% static 'admin/images/product-24.png' %}" class="rounded-1" style="width: 30px; height: 30px;" alt="product">
+												</div>
+												<div class="flex-grow-1 ms-2">
+													<h4 class="fs-14 fw-semibold mb-0 text-secondary-50">Item demo</h4>
+												</div>
+											</div>
+										</td>
+										<td class="fs-12 fw-semibold text-body-color-50 text-center">—</td>
+										<td class="fs-12 fw-semibold text-body-color-50 text-center">—</td>
+										<td class="text-center">
+											<span class="fw-medium fs-12 text-danger bg-danger bg-opacity-10 border border-danger px-2 rounded-pill d-inline-block">—</span>
+										</td>
+										<td class="text-end">
+											<div class="dropdown action-opt">
+												<button class="btn bg-transparent p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+													<i data-feather="more-vertical"></i>
+												</button>
+												<ul class="dropdown-menu dropdown-menu-end bg-white border box-shadow">
+													<li>
+														<a class="dropdown-item" href="javascript:;">
+															<i data-feather="edit"></i>
+															Editar
+														</a>
+													</li>
+													<li>
+														<a class="dropdown-item" href="javascript:;">
+															<i data-feather="eye"></i>
+															Ver
+														</a>
+													</li>
+												</ul>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+
 {% endblock %}
 
 {% block js %}
+<script>
+const getGrossRevenue2Id = document.getElementById('gross_revenue2');
+
+
+	if (getGrossRevenue2Id) {
+		var options = {
+			series: [
+				{
+					name: "Sales Revenue",
+					data: [35, 50, 55, 60, 50, 60, 55, 60, 78, 40]
+				},
+
+				{
+					name: "Sales Volume",
+					data: [80, 60, 50, 50, 72, 65, 90, 50, 70, 63]
+				},
+				{
+					name: "Order Value",
+					data: [70, 50, 40, 40, 95, 52, 80, 40, 60, 53]
+				},
+			],
+			chart: {
+				type: "area",
+				height: 339,
+				zoom: {
+					enabled: false
+				},
+				toolbar: {
+					show: false,
+				}
+			},
+			colors: [
+				"#757DFF", "#E9D5FF", "#37D80A"
+			],
+			dataLabels: {
+				enabled: false
+			},
+			stroke: {
+				curve: "straight",
+				width: [3, 3, 3],
+				dashArray: [0, 6, 6],
+			},
+			grid: {
+				borderColor: "#ECF0FF"
+			},
+			fill: {
+				type: 'gradient',
+				gradient: {
+					stops: [0, 90, 100],
+					shadeIntensity: 1,
+					opacityFrom: 0,
+					opacityTo: 0
+				}
+			},
+			xaxis: {
+				categories: [
+					"Oct 01",
+					"Oct 04",
+					"Oct 08",
+					"Oct 12",
+					"Oct 16",
+					"Oct 20",
+					"Oct 24",
+					"Oct 28",
+					"Nov 02",
+					"Nov 06",
+				],
+				axisTicks: {
+					show: false,
+					color: '#B1BBC8'
+				},
+				axisBorder: {
+					show: false,
+					color: '#B1BBC8'
+				},
+				labels: {
+					style: {
+						colors: "#8695AA",
+						fontSize: "12px",
+						fontFamily: 'Inter',
+					}
+				}
+			},
+			yaxis: {
+				tickAmount: 5,
+				max: 100,
+				min: 0,
+				labels: {
+					formatter: (val) => {
+						return '$' + val / 1 + 'K'
+					},
+					style: {
+						colors: "#8695AA",
+						fontSize: "12px",
+						fontFamily: 'Inter',
+					}
+				}
+			},
+			legend: {
+				show: true,
+				position: 'bottom',
+				fontSize: '12px',
+				horizontalAlign: 'center',
+				fontFamily: "Inter",
+				fontWeight: 400,
+				offsetY: 10,
+				itemMargin: {
+					horizontal: 8,
+					vertical: 10
+				},
+				labels: {
+					colors: '#64748B'
+				},
+				markers: {
+					width: 9,
+					height: 9,
+					offsetX: -2,
+					offsetY: -.5,
+					radius: 2,
+					shape: "diamond",
+				}
+			},
+			tooltip: {
+				y: {
+					formatter: function (val) {
+						return "$" + val + "k";
+					}
+				}
+			}
+		};
+		var chart = new ApexCharts(document.querySelector("#gross_revenue2"), options);
+		chart.render();
+	}
+</script>
 {% endblock %}
