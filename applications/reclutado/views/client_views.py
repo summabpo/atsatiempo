@@ -27,7 +27,7 @@ from applications.vacante.forms.VacanteForms import VacancyFormAll
 from applications.services.service_vacanty import  query_vacanty_detail
 from applications.services.service_client import query_client_detail
 from applications.services.service_recruited import consultar_historial_aplicacion_vacante, query_recruited_vacancy_id
-from components.RegistrarHistorialVacante import crear_historial_aplicacion
+from components.RegistrarHistorialVacante import crear_historial_aplicacion, obtener_nombre_estado_aplicacion
 from applications.reclutado.views.admin_views import _procesar_datos_reporte_final
 from applications.reclutado.views.candidato_hoja_vida_pdf import build_hoja_vida_pdf, safe_filename_part
 
@@ -295,31 +295,35 @@ def detail_recruited(request, pk):
     tiene_respuesta_cliente = False
     respuesta_cliente_data = None
     
-    # Verificar si ya existe una respuesta del cliente
-    if asignacion_vacante.estado_aplicacion in [8, 12, 13] and asignacion_vacante.registro_reclutamiento:
-        if isinstance(asignacion_vacante.registro_reclutamiento, dict):
-            descripcion_respuesta = asignacion_vacante.registro_reclutamiento.get('descripcion_respuesta_cliente', '')
-            if descripcion_respuesta:
-                tiene_respuesta_cliente = True
-                es_apto = asignacion_vacante.estado_aplicacion in (8, 13)
-                respuesta_cliente_data = {
-                    'estado': 'Seleccionado' if es_apto else 'No Apto',
-                    'estado_codigo': asignacion_vacante.estado_aplicacion,
-                    'descripcion': descripcion_respuesta,
-                    'color_badge': 'success' if es_apto else 'danger'
-                }
+    # Respuesta del cliente guardada en registro_reclutamiento (texto)
+    if asignacion_vacante.registro_reclutamiento and isinstance(asignacion_vacante.registro_reclutamiento, dict):
+        descripcion_respuesta = (
+            asignacion_vacante.registro_reclutamiento.get('descripcion_respuesta_cliente') or ''
+        ).strip()
+        if descripcion_respuesta and asignacion_vacante.estado_aplicacion in (5, 8, 12, 13):
+            tiene_respuesta_cliente = True
+            ea = asignacion_vacante.estado_aplicacion
+            if ea in (8, 13):
+                estado_label, color_badge = 'Seleccionado', 'success'
+            elif ea == 12:
+                estado_label, color_badge = 'No Apto', 'danger'
+            elif ea == 5:
+                # Pruebas/decisiones en curso: mostrar respuesta del cliente junto al reporte final
+                estado_label, color_badge = 'Respuesta del cliente', 'info'
+            else:
+                estado_label, color_badge = '—', 'secondary'
+            respuesta_cliente_data = {
+                'estado': estado_label,
+                'estado_codigo': ea,
+                'descripcion': descripcion_respuesta,
+                'color_badge': color_badge,
+            }
     
     if request.method == 'POST' and 'submit' in request.POST and request.POST.get('submit') == 'Guardar Respuesta':
         form_respuesta_cliente = RespuestaClienteForm(request.POST)
         if form_respuesta_cliente.is_valid():
-            estado_form = int(form_respuesta_cliente.cleaned_data['estado_respuesta'])
-            # Seleccionado → siempre estado de aplicación 8 (compat. 13 en datos antiguos)
-            if estado_form in (8, 13):
-                estado_final = 8
-            elif estado_form == 12:
-                estado_final = 12
-            else:
-                estado_final = estado_form
+            estado_final = int(form_respuesta_cliente.cleaned_data['estado_respuesta'])
+            
             descripcion = form_respuesta_cliente.cleaned_data['descripcion']
             
             # Actualizar estado_aplicacion
@@ -336,12 +340,13 @@ def detail_recruited(request, pk):
             # Guardar cambios
             asignacion_vacante.registro_reclutamiento = registro_reclutamiento
             asignacion_vacante.save()
-            
+
+            # Obtener el nombre del estado
+            nombre_estado = obtener_nombre_estado_aplicacion(estado_final)
             # Crear historial (mismo estado persistido en la aplicación)
-            _etiq = 'Seleccionado' if estado_final == 8 else 'No Apto'
             crear_historial_aplicacion(
                 asignacion_vacante, estado_final, request.session.get('_auth_user_id'),
-                f'Respuesta del cliente: {_etiq}'
+                f'Respuesta del cliente: {nombre_estado}'
             )
 
             nombre_candidato_mail = ' '.join(
@@ -451,13 +456,12 @@ def detail_recruited(request, pk):
         if not tiene_respuesta_cliente:
             form_respuesta_cliente = RespuestaClienteForm()
 
-    # Obtener datos del reporte final si el estado_aplicacion es 8 (Seleccionado) o si hay respuesta del cliente
+    # Reporte final: entrevista aprobada (3), decisión/decisiones (5), o si ya hay respuesta cliente guardada
     datos_reporte_final = None
-    if asignacion_vacante.estado_aplicacion == 3 or tiene_respuesta_cliente:
+    if asignacion_vacante.estado_aplicacion in (3, 5) or tiene_respuesta_cliente:
         try:
             datos_reporte_final = _procesar_datos_reporte_final(request, asignacion_vacante.id)
-        except Exception as e:
-            # Si hay error al procesar el reporte, dejar datos_reporte_final como None
+        except Exception:
             datos_reporte_final = None
 
     # Mismo contexto que gestión de vacante (presentation_vacancy.html): data cliente + no vista candidato

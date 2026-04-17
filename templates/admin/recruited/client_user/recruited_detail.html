@@ -565,8 +565,7 @@ Detalle vacante
                                 {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
                                 <div class="tab-pane fade" id="respuesta-cliente-tab-pane" role="tabpanel" aria-labelledby="respuesta-cliente-tab" tabindex="0">
                                     {% if datos_reporte_final %}
-                                        {% if reclutado.estado_aplicacion == 3 or tiene_respuesta_cliente %}
-                                            <!-- Mostrar reporte final cuando estado_aplicacion es 8 o cuando hay respuesta del cliente -->
+                                        {% if reclutado.estado_aplicacion == 3 or reclutado.estado_aplicacion == 5 or tiene_respuesta_cliente %}
                                             {% include "admin/recruited/partials/reporte_final_content.html" %}
                                         {% endif %}
                                     {% endif %}

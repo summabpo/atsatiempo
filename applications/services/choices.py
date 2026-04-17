@@ -194,12 +194,14 @@ ESTADO_APLICACION_CHOICES_STATIC = [
     (5, 'Decisiones Desicivas Programadas'),
     (6, 'Decisiones Desicivas Aprobadas'),
     (7, 'Decisiones Desicivas No Aprobadas'),
-    (8, 'Seleccionado por Analista'),
+    (8, 'Seleccionado'),
     (9, 'Finalizada'),
     (10, 'Cancelada'),
     (11, 'Desiste'),
     (12, 'No Apto'),
-    (13, 'Seleccionado por Cliente'),
+    (13, 'En espera por respuesta de contratación'),
+    (14, 'No contratado'),
+    (15, 'Contratado'),
 
 ]
 
@@ -208,15 +210,17 @@ ESTADO_APLICACION_COLOR_STATIC = {
     2: ('Entrevista Programada', 'info'),
     3: ('Entrevista Aprobada', 'success'),
     4: ('Entrevista No Aprobada', 'danger'),
-    5: ('Prueba Programada', 'info'),
-    6: ('Prueba Superada', 'success'),
-    7: ('Prueba No Superada', 'danger'),
+    5: ('Decisiones Desicivas Programadas', 'info'),
+    6: ('Decisiones Desicivas Aprobadas', 'success'),
+    7: ('Decisiones Desicivas No Aprobadas', 'danger'),
     8: ('Seleccionado', 'success'),
     9: ('Finalizada', 'primary'),
     10: ('Cancelada', 'secondary'),
     11: ('Desiste', 'secondary'),
     12: ('No Apto', 'danger'),
-    13: ('Seleccionado por Cliente', 'success'),
+    13: ('En espera por respuesta de contratación', 'info'),
+    14: ('No contratado', 'danger'),
+    15: ('Contratado', 'success'),
 }
 
 ESTADO_RECLUTADO_CHOICES_STATIC = [('', 'Seleccione una opción...')] + [

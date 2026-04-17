@@ -178,7 +178,7 @@ Inicio | Dashboard Cliente
 			<div class="px-sm-4 px-xxl-5" style="margin-top: -48px;">
 				<div class="row justify-content-center">
 					<div class="col-md-4 col-sm-6">
-						<div class="card border-5 border-primary rounded-3 bg-white p-4 mb-4 shadow-sm">
+						<div class="card border-3 border-primary rounded-3 bg-white p-4 mb-4 shadow-sm">
 							<div class="d-flex">
 								<div class="flex-grow-1 me-1">
 									<span class="d-block mb-2">Vacantes activas</span>
@@ -194,32 +194,32 @@ Inicio | Dashboard Cliente
 						</div>
 					</div>
 					<div class="col-md-4 col-sm-6">
-						<div class="card border-0 rounded-3 bg-white p-4 mb-4 shadow-sm">
+						<div class="card border-3 border-success rounded-3 bg-white p-4 mb-4 shadow-sm">
 							<div class="d-flex">
 								<div class="flex-grow-1 me-1">
-									<span class="d-block mb-2">Candidatos en proceso</span>
-									<h2 class="mb-2 fs-28">—</h2>
-									<span class="d-inline-block bg-danger bg-opacity-10 border-danger border px-2 rounded-pill text-danger fs-12 fw-medium">0%</span>
+									<span class="d-block mb-2">Vacantes Finalizadas (Cerradas)</span>
+									<h2 class="mb-2 fs-28 ">{{ vacantes_finalizadas_count|default:0 }}</h2>
+									<small class="text-muted">Finalizadas (Cerradas)</small>
 								</div>
 								<div class="flex-shrink-0">
 									<div class="bg-success bg-opacity-25 text-success text-center rounded-circle" style="width: 48px; height: 48px; line-height: 48px;">
-										<i class="ri-user-search-line fs-24"></i>
+										<i class="ri-checkbox-circle-line fs-24"></i>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="col-md-4 col-sm-6">
-						<div class="card border-0 rounded-3 bg-white p-4 mb-4 shadow-sm">
+						<div class="card border-3 border-warning rounded-3 bg-white p-4 mb-4 shadow-sm">
 							<div class="d-flex">
 								<div class="flex-grow-1 me-1">
-									<span class="d-block mb-2">Entrevistas</span>
-									<h2 class="mb-2 fs-28">—</h2>
-									<span class="d-inline-block bg-success bg-opacity-10 border-success border px-2 rounded-pill text-success fs-12 fw-medium">+0%</span>
+									<span class="d-block mb-2">Pendiente Feedback</span>
+									<h2 class="mb-2 fs-28">{{ candidatos_entrevista_aprobada_sin_calificar_count|default:0 }}</h2>
+									<small class="text-muted">Entrevista aprobada (pendiente calificar)</small>
 								</div>
 								<div class="flex-shrink-0">
-									<div class="bg-primary-div bg-opacity-25 text-primary-div text-center rounded-circle" style="width: 48px; height: 48px; line-height: 48px;">
-										<i class="ri-calendar-event-line fs-24"></i>
+									<div class="bg-warning bg-opacity-25 text-warning text-center rounded-circle" style="width: 48px; height: 48px; line-height: 48px;">
+										<i class="ri-user-follow-line fs-24"></i>
 									</div>
 								</div>
 							</div>

@@ -1,6 +1,7 @@
 
 from django.shortcuts import render, redirect # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
+from django.db.models import Q
 
 from ...decorators  import validar_permisos
 from applications.usuarios.views.commons.dashboard_panels import (
@@ -18,6 +19,7 @@ from applications.usuarios.views.commons.dashboard_panels import (
 from applications.services.service_candidate import personal_information_calculation
 from applications.services.service_vacanty import query_vacanty_with_skills_and_details
 from applications.vacante.models import Cli052Vacante
+from applications.reclutado.models import Cli056AplicacionVacante
 
 #pantalla inicio
 @login_required
@@ -71,17 +73,41 @@ def dashboard_candidato(request):
 def dashboard_cliente(request):
     """ Vista que carga la página de inicio y muestra variables de sesión """
     vacantes_activas_count = 0
+    vacantes_finalizadas_count = 0
+    candidatos_entrevista_aprobada_sin_calificar_count = 0
     cliente_id = request.session.get('cliente_id')
     if cliente_id:
-        # Mismo criterio que el listado cliente: vacante ligada por asignación (Cli064) al cliente asignado
-        vacantes_activas_count = Cli052Vacante.objects.filter(
-            asignacion_cliente_id_064__id_cliente_asignado=cliente_id,
-            asignacion_cliente_id_064__tipo_asignacion="1",
-            estado_id_001_id=1,
-            estado_vacante__in=(1, 2),
-        ).count()
+        # Criterio por asignación (Cli064):
+        # - cliente asignado (tipo 1) y/o
+        # - cliente maestro/headhunter (tipo 2)
+        # Evita filtrar por tipo_asignacion para no perder visibilidad según rol/relación.
+        base_vacantes = (
+            Cli052Vacante.objects.filter(estado_id_001_id=1)
+            .filter(
+                Q(asignacion_cliente_id_064__id_cliente_asignado_id=cliente_id)
+                | Q(asignacion_cliente_id_064__id_cliente_maestro_id=cliente_id)
+            )
+            .distinct()
+        )
+
+        # Activas: Activa (1) o En proceso (2)
+        vacantes_activas_count = base_vacantes.filter(estado_vacante__in=(1, 2)).count()
+
+        # Finalizadas/cerradas: Finalizada (3)
+        vacantes_finalizadas_count = base_vacantes.filter(estado_vacante=3).count()
+
+        # Candidatos con entrevista aprobada (estado_aplicacion=3) aún sin calificación del cliente.
+        # En este flujo la calificación del cliente ocurre después (p. ej. Seleccionado por Cliente / No Apto),
+        # por eso se cuentan los que siguen en estado 3.
+        candidatos_entrevista_aprobada_sin_calificar_count = (
+            Cli056AplicacionVacante.objects.filter(vacante_id_052__in=base_vacantes)
+            .filter(estado_aplicacion=3)
+            .count()
+        )
     context = {
         'vacantes_activas_count': vacantes_activas_count,
+        'vacantes_finalizadas_count': vacantes_finalizadas_count,
+        'candidatos_entrevista_aprobada_sin_calificar_count': candidatos_entrevista_aprobada_sin_calificar_count,
     }
     return render(request, 'admin/dashboard/dashboard_client.html', context)
 

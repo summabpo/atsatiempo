@@ -257,7 +257,8 @@ class RespuestaClienteForm(forms.Form):
         label="Respuesta",
         choices=[
             ('', 'Seleccione una opción...'),
-            ('8', 'Seleccionado'),
+            ('13', 'Seleccionado para contratar'),
+            ('5', 'Aprobado para filtros finales.'),
             ('12', 'No Apto'),
         ],
         required=True,

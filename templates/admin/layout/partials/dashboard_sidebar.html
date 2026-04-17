@@ -18,6 +18,7 @@
         </li>
         <li class="menu-item 
             {% if request.resolver_match.url_name == 'inicio' %}open{% endif %}
+            {% if request.resolver_match.url_name == 'inicio_cliente' %}open{% endif %}
             {% if request.resolver_match.url_name == 'inicio_candidato' %}open{% endif %}
             {% if request.resolver_match.url_name == 'inicio_administrador' %}open{% endif %}
             {% if request.resolver_match.url_name == 'inicio_analista_internal' %}open{% endif %}
@@ -25,6 +26,7 @@
             ">
             <a href="javascript:void(0);" class="menu-link menu-toggle 
             {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}
+            {% if request.resolver_match.url_name == 'inicio_cliente' %}active{% endif %}
             {% if request.resolver_match.url_name == 'inicio_candidato' %}active{% endif %}
             {% if request.resolver_match.url_name == 'inicio_administrador' %}active{% endif %}
             {% if request.resolver_match.url_name == 'inicio_analista_internal' %}active{% endif %}
@@ -38,6 +40,7 @@
                 <li class="menu-item">
                     <a href="{% if request.session.grupo_id == 5 %}{% url 'accesses:inicio_analista_internal' %}{% elif request.session.grupo_id == 7 %}{% url 'accesses:inicio_reclutador' %}{% else %}{% url 'accesses:inicio' %}{% endif %}" class="menu-link 
                     {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}
+                    {% if request.resolver_match.url_name == 'inicio_cliente' %}active{% endif %}
                     {% if request.resolver_match.url_name == 'inicio_candidato' %}active{% endif %}
                     {% if request.resolver_match.url_name == 'inicio_administrador' %}active{% endif %}
                     {% if request.resolver_match.url_name == 'inicio_analista_internal' %}active{% endif %}
