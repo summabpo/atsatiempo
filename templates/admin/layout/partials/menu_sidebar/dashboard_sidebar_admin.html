@@ -1,7 +1,7 @@
 {% load custom_tags %}
 <!-- CLIENTES -->
 <li class="menu-title small text-uppercase">
-    <span class="menu-title-text">CLIENTES</span>
+    <span class="menu-title-text text-primary">CLIENTES</span>
 </li>
 <li class="menu-item 
     {% if request.resolver_match.url_name|is_active_url_cliente_all %}open{% endif %}
@@ -113,7 +113,7 @@
 
 <!-- USUARIOS -->
 <li class="menu-title small text-uppercase">
-    <span class="menu-title-text">USUARIOS</span>
+    <span class="menu-title-text text-primary">USUARIOS</span>
 </li>
 <li class="menu-item 
     {% if request.resolver_match.url_name|is_active_url_usuarios %}open{% endif %}
@@ -139,7 +139,7 @@
 
 <!-- VACANTES -->
 <li class="menu-title small text-uppercase">
-    <span class="menu-title-text">VACANTES</span>
+    <span class="menu-title-text text-primary">VACANTES</span>
 </li>
 <li class="menu-item
     {% if request.resolver_match.url_name == 'vacantes_crear' %}open{% endif %}

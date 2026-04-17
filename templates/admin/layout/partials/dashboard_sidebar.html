@@ -1,6 +1,6 @@
 {% load custom_tags %}
 {% load static %}
-<div class="sidebar-area " id="sidebar-area">
+<div class="sidebar-area border-end border-primary border-2 rounded-end-3 shadow-lg" id="sidebar-area" style="box-shadow: 4px 0 16px 0 rgba(11, 22, 32, 0.1)!important;">
 	<div class="logo position-relative">
         <a href="{% if request.session.grupo_id == 7 %}{% url 'accesses:inicio_reclutador' %}{% else %}{% url 'accesses:inicio' %}{% endif %}" class="d-block text-decoration-none position-relative">
             <img src="{% static 'admin/images/logo-icon.png' %}" alt="logo-icon" />
@@ -14,7 +14,7 @@
     <ul class="menu-inner">
         <!-- PRINCIPAL -->
         <li class="menu-title small text-uppercase">
-            <span class="menu-title-text">PRINCIPAL</span>
+            <span class="menu-title-text text-primary">PRINCIPAL</span>
         </li>
         <li class="menu-item 
             {% if request.resolver_match.url_name == 'inicio' %}open{% endif %}

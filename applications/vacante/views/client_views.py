@@ -530,8 +530,8 @@ def vacancy_management_from_client(request, pk, vacante_id):
     # Obtener preguntas de la vacante
     preguntas = get_vacanty_questions(vacante.id)
 
-    # Obtener los reclutados asociados a la vacante con estado_aplicacion = 8 (Seleccionado)
-    reclutados = query_recruited_vacancy_id(vacante.id).filter(estado_aplicacion=3)
+    # Obtener los reclutados asociados a la vacante con estado_aplicacion = 3,5
+    reclutados = query_recruited_vacancy_id(vacante.id).filter(estado_aplicacion__in=[3,5])
     
     # Para este template solo mostramos finalistas (estado_aplicacion = 8)
     # Ordenar por fecha de aplicación ascendente
@@ -1223,3 +1223,24 @@ def vacancy_client_assigned(request):
     }
 
     return render(request, 'admin/vacancy/client_user/headhunter/vacancy_client_assigned.html', context)
+
+
+# gestionar la vacante2
+@login_required
+@validar_permisos('acceso_cliente')
+def vacancy_management_from_client_2(request, pk, vacante_id):
+    data = query_client_detail(pk)
+    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), id=vacante_id)
+
+    reclutados = (
+        query_recruited_vacancy_id(vacante.id)
+        .filter(estado_aplicacion__in=[3, 5, 6, 7, 13, 14, 15])
+        .select_related('candidato_101__ciudad_id_004')
+    )
+
+    context = {
+        'data': data,
+        'vacante': vacante,
+        'reclutados': reclutados,
+    }
+    return render(request, 'admin/vacancy/client_user/vacancy_management2.html', context)

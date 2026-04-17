@@ -1,0 +1,253 @@
+{% extends 'admin/layout/dashboard_base.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+
+{% block title %}
+Gestión de Vacante
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">Gestión de Vacante</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="#" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover">Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover">Vacantes Propias</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Gestión de Vacante</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	{% comment %} {% if request.session.grupo_id == 1 %}
+	<div class="row">
+		<div class="col-md-12">
+			{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_vacancy=True %}
+		</div>
+	</div>
+	{% else %}
+		{% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '2' %}
+		<div class="row">
+			<div class="col-md-12">
+				{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_vacancy=True %}
+			</div>
+		</div>
+		{% endif %}
+	{% endif %} {% endcomment %}
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card bg-white border-1 border-primary rounded-3 mb-4">
+				<div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+					<p class="text-primary my-2 fs-5 fw-semibold">VACANTE: {{ vacante.cargo.nombre_cargo }}</p>
+				</div>
+				<div class="card-body p-4">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row g-3 align-items-start">
+		<div class="col-12 col-lg-4">
+			<div class="card bg-white border-1 border-primary rounded-3 mb-4 mb-lg-0">
+				<div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+					<p class="text-primary my-2 fs-5 fw-semibold">Candidatos</p>
+				</div>
+				<div class="card-body p-4">
+					<div class="row g-3">
+						{% for e in reclutados %}
+						{% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}
+						<div class="col-12">
+                            {% with ea=e.estado_aplicacion %}
+                            {% if ea == 3 or ea == 6 or ea == 15 %}
+                            <div class="card border border-warning border-3 shadow-sm w-100 vacancy-m2-candidate-card" role="button" tabindex="0" data-aplicacion-id="{{ e.id }}"
+								data-img="{% if e.candidato_101.imagen_perfil %}{{ e.candidato_101.imagen_perfil.url|escape }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}"
+								data-nombre="{{ e.candidato_nombre|default:''|escape }}"
+								data-ciudad="{% if e.candidato_101.ciudad_id_004 %}{{ e.candidato_101.ciudad_id_004.nombre|escape }}{% else %}—{% endif %}"
+								data-estado="{{ e.get_estado_aplicacion_display|escape }}"
+								data-match="{% if porcentaje_inicial %}{{ porcentaje_inicial|floatformat:1 }}%{% else %}—{% endif %}"
+								data-detalle-url="{% if request.session.grupo_id == 5 %}{% url 'reclutados:reclutados_detalle_analista_interno' e.id %}{% else %}{% url 'reclutados:reclutados_detalle_cliente' e.id %}{% endif %}">
+                            {% elif ea == 5 or ea == 13 %}
+                            <div class="card border border-info border-3 shadow-sm w-100 vacancy-m2-candidate-card" role="button" tabindex="0" data-aplicacion-id="{{ e.id }}"
+								data-img="{% if e.candidato_101.imagen_perfil %}{{ e.candidato_101.imagen_perfil.url|escape }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}"
+								data-nombre="{{ e.candidato_nombre|default:''|escape }}"
+								data-ciudad="{% if e.candidato_101.ciudad_id_004 %}{{ e.candidato_101.ciudad_id_004.nombre|escape }}{% else %}—{% endif %}"
+								data-estado="{{ e.get_estado_aplicacion_display|escape }}"
+								data-match="{% if porcentaje_inicial %}{{ porcentaje_inicial|floatformat:1 }}%{% else %}—{% endif %}"
+								data-detalle-url="{% if request.session.grupo_id == 5 %}{% url 'reclutados:reclutados_detalle_analista_interno' e.id %}{% else %}{% url 'reclutados:reclutados_detalle_cliente' e.id %}{% endif %}">
+                            {% elif ea == 7 or ea == 14 %}
+                            <div class="card border border-danger border-3 shadow-sm w-100 vacancy-m2-candidate-card" role="button" tabindex="0" data-aplicacion-id="{{ e.id }}"
+								data-img="{% if e.candidato_101.imagen_perfil %}{{ e.candidato_101.imagen_perfil.url|escape }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}"
+								data-nombre="{{ e.candidato_nombre|default:''|escape }}"
+								data-ciudad="{% if e.candidato_101.ciudad_id_004 %}{{ e.candidato_101.ciudad_id_004.nombre|escape }}{% else %}—{% endif %}"
+								data-estado="{{ e.get_estado_aplicacion_display|escape }}"
+								data-match="{% if porcentaje_inicial %}{{ porcentaje_inicial|floatformat:1 }}%{% else %}—{% endif %}"
+								data-detalle-url="{% if request.session.grupo_id == 5 %}{% url 'reclutados:reclutados_detalle_analista_interno' e.id %}{% else %}{% url 'reclutados:reclutados_detalle_cliente' e.id %}{% endif %}">
+                            {% else %}
+                            <div class="card border shadow-sm w-100 vacancy-m2-candidate-card" role="button" tabindex="0" data-aplicacion-id="{{ e.id }}"
+								data-img="{% if e.candidato_101.imagen_perfil %}{{ e.candidato_101.imagen_perfil.url|escape }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}"
+								data-nombre="{{ e.candidato_nombre|default:''|escape }}"
+								data-ciudad="{% if e.candidato_101.ciudad_id_004 %}{{ e.candidato_101.ciudad_id_004.nombre|escape }}{% else %}—{% endif %}"
+								data-estado="{{ e.get_estado_aplicacion_display|escape }}"
+								data-match="{% if porcentaje_inicial %}{{ porcentaje_inicial|floatformat:1 }}%{% else %}—{% endif %}"
+								data-detalle-url="{% if request.session.grupo_id == 5 %}{% url 'reclutados:reclutados_detalle_analista_interno' e.id %}{% else %}{% url 'reclutados:reclutados_detalle_cliente' e.id %}{% endif %}">
+                            {% endif %}
+                            {% endwith %}
+								<div class="card-body d-flex flex-column gap-2 py-3 px-3 w-100 min-w-0">
+									<div class="d-flex align-items-start gap-2 w-100 min-w-0">
+										<div class="flex-shrink-0">
+											{% if e.candidato_101.imagen_perfil %}
+											<img src="{{ e.candidato_101.imagen_perfil.url }}" alt="" class="rounded-circle" width="56" height="56" style="object-fit: cover;">
+											{% else %}
+											<img src="{% static 'admin/images/blank.png' %}" alt="" class="rounded-circle" width="56" height="56" style="object-fit: cover;">
+											{% endif %}
+										</div>
+										<div class="flex-grow-1 min-w-0">
+											<p class="fw-semibold text-dark mb-0 text-break" title="{{ e.candidato_nombre }}">{{ e.candidato_nombre }}</p>
+											<p class="text-secondary small mb-0 text-break">
+												<i class="ri-map-pin-line fs-14 align-middle me-1"></i>
+												{% if e.candidato_101.ciudad_id_004 %}{{ e.candidato_101.ciudad_id_004.nombre }}{% else %}—{% endif %}
+											</p>
+										</div>
+									</div>
+									<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 w-100 pt-1 border-top border-light">
+										{% with ea=e.estado_aplicacion %}
+											{# ESTADO_APLICACION_COLOR_STATIC: success→3,6,15 | info→5,13 | danger→7,14 #}
+											{% if ea == 3 or ea == 6 or ea == 15 %}
+											<span class="d-inline-block py-1 px-2 rounded-2 fs-12 fw-medium bg-warning bg-opacity-10 text-warning text-wrap" style="max-width: 100%;">{{ e.get_estado_aplicacion_display }}</span>
+											{% elif ea == 5 or ea == 13 %}
+											<span class="d-inline-block py-1 px-2 rounded-2 fs-12 fw-medium bg-info bg-opacity-10 text-info text-wrap" style="max-width: 100%;">{{ e.get_estado_aplicacion_display }}</span>
+											{% elif ea == 7 or ea == 14 %}
+											<span class="d-inline-block py-1 px-2 rounded-2 fs-12 fw-medium bg-danger bg-opacity-10 text-danger text-wrap" style="max-width: 100%;">{{ e.get_estado_aplicacion_display }}</span>
+											{% endif %}
+										{% endwith %}
+										<div class="flex-shrink-0 text-end ms-auto">
+											<span class="d-block text-secondary fs-12 mb-1">Match inicial</span>
+											{% if porcentaje_inicial %}
+												{% if porcentaje_inicial >= 80 %}
+												<span class="badge bg-success text-white">{{ porcentaje_inicial|floatformat:1 }}%</span>
+												{% elif porcentaje_inicial >= 60 %}
+												<span class="badge bg-warning text-dark">{{ porcentaje_inicial|floatformat:1 }}%</span>
+												{% elif porcentaje_inicial >= 40 %}
+												<span class="badge bg-info text-white">{{ porcentaje_inicial|floatformat:1 }}%</span>
+												{% else %}
+												<span class="badge bg-secondary text-white">{{ porcentaje_inicial|floatformat:1 }}%</span>
+												{% endif %}
+											{% else %}
+												<span class="text-muted">—</span>
+											{% endif %}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endwith %}
+						{% empty %}
+						<div class="col-12">
+							<p class="text-muted mb-0 text-center py-3">No hay candidatos en este estado.</p>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-lg-8">
+			<div class="card bg-white border-1 border-primary rounded-3 vacancy-m2-report-panel">
+				<div class="card-header bg-primary bg-opacity-10 align-middle border-0">
+					<p class="text-primary my-2 fs-5 fw-semibold mb-0">Candidato</p>
+				</div>
+				<div class="card-body p-4 text-center" id="vm2-panel-body">
+					<div class="text-secondary py-5" id="vm2-panel-empty">
+						<i class="ri-user-search-line fs-40 d-block mb-3 opacity-50"></i>
+						<p class="mb-0">Seleccione un candidato en la lista.</p>
+					</div>
+					<div class="d-none py-2" id="vm2-panel-selected">
+						<img src="" alt="" id="vm2-panel-img" class="rounded-circle mx-auto mb-3 border border-light shadow-sm" width="120" height="120" style="object-fit: cover;">
+						<p class="fs-5 fw-semibold text-dark mb-0 text-break px-2" id="vm2-panel-nombre"></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+.vacancy-m2-candidate-card {
+	cursor: pointer;
+	transition: box-shadow 0.2s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+.vacancy-m2-candidate-card:hover {
+	box-shadow: 0 0.5rem 1rem rgba(33, 37, 41, 0.18) !important;
+	transform: translateY(-2px);
+}
+.vacancy-m2-candidate-card:focus-visible {
+	outline: 2px solid var(--bs-primary);
+	outline-offset: 3px;
+}
+.vacancy-m2-candidate-card.is-selected {
+	box-shadow: 0 0.35rem 0.85rem rgba(177, 0, 34, 0.22) !important;
+	transform: translateY(-1px);
+}
+@media (min-width: 992px) {
+	.vacancy-m2-report-panel {
+		position: sticky;
+		top: 1rem;
+	}
+}
+</style>
+{% endblock %}
+
+{% block js %}
+<script>
+(function () {
+	function selectVm2Card(card) {
+		document.querySelectorAll('.vacancy-m2-candidate-card').forEach(function (c) {
+			c.classList.remove('is-selected');
+		});
+		card.classList.add('is-selected');
+		var emptyEl = document.getElementById('vm2-panel-empty');
+		var selEl = document.getElementById('vm2-panel-selected');
+		var imgEl = document.getElementById('vm2-panel-img');
+		var nombreEl = document.getElementById('vm2-panel-nombre');
+		if (!emptyEl || !selEl || !imgEl || !nombreEl) return;
+		emptyEl.classList.add('d-none');
+		selEl.classList.remove('d-none');
+		imgEl.src = card.getAttribute('data-img') || '';
+		imgEl.alt = card.getAttribute('data-nombre') || '';
+		nombreEl.textContent = card.getAttribute('data-nombre') || '—';
+	}
+
+	function init() {
+		document.querySelectorAll('.vacancy-m2-candidate-card').forEach(function (card) {
+			card.addEventListener('click', function () {
+				selectVm2Card(card);
+			});
+			card.addEventListener('keydown', function (e) {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					selectVm2Card(card);
+				}
+			});
+		});
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', init);
+	} else {
+		init();
+	}
+})();
+</script>
+{% endblock %}

@@ -1,7 +1,7 @@
 {% load custom_tags %}
 
 <li class="menu-title small text-uppercase">
-    <span class="menu-title-text">INFORMACIÓN PERSONAL </span>
+    <span class="menu-title-text text-primary">INFORMACIÓN PERSONAL </span>
 </li>
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'candidato_info_personal' %}open{% endif %}
@@ -64,7 +64,7 @@
 
 
 <li class="menu-title small text-uppercase">
-    <span class="menu-title-text">VACANTES </span>
+    <span class="menu-title-text text-primary">VACANTES </span>
 </li>
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'vacante_candidato_aplicadas' %}open{% endif %}
