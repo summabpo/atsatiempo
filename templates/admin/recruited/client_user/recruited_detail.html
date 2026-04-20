@@ -277,7 +277,7 @@ Detalle vacante
                                                             <img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2 wh-75" style="width: 100px; height: 100px; border-radius: 50%; margin-left: auto; margin-right: auto; margin-bottom: 1rem; border: 4px solid #dee2e6; alt="user">
                                                         {% endif %}
                                                         <h2 style="font-size: 1.5rem; font-weight: 600; color: #212529; margin: 0;">{{ candidato.nombre_completo }}</h2>
-                                                        <p style="color: #6c757d; margin: 0.25rem 0 1.5rem 0;">Desarrollador de Software Senior</p>
+                                                        <p style="color: #6c757d; margin: 0.25rem 0 1.5rem 0;"></p>
                                                         <a href="{% url 'reclutados:reclutados_hoja_vida_pdf' pk=reclutado.id %}" target="_blank" rel="noopener noreferrer" class="text-decoration-none" style="background-color: #b10022; color: #ffffff; font-weight: 500; padding: 0.6rem 1.2rem; border-radius: 0.5rem; display: inline-flex; align-items: center; border: none; cursor: pointer; font-size: 0.9rem;">
                                                             <span class="material-symbols-outlined text-white" style="margin-right: 0.75rem;">open_in_new</span>
                                                             Ver hoja de vida (PDF)
@@ -565,8 +565,7 @@ Detalle vacante
                                 {% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '3' %}
                                 <div class="tab-pane fade" id="respuesta-cliente-tab-pane" role="tabpanel" aria-labelledby="respuesta-cliente-tab" tabindex="0">
                                     {% if datos_reporte_final %}
-                                        {% if reclutado.estado_aplicacion == 3 or tiene_respuesta_cliente %}
-                                            <!-- Mostrar reporte final cuando estado_aplicacion es 8 o cuando hay respuesta del cliente -->
+                                        {% if reclutado.estado_aplicacion == 3 or reclutado.estado_aplicacion == 5 or tiene_respuesta_cliente %}
                                             {% include "admin/recruited/partials/reporte_final_content.html" %}
                                         {% endif %}
                                     {% endif %}

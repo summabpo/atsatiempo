@@ -1,0 +1,1549 @@
+{% extends 'admin/layout/dashboard_base.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+
+{% block title %}
+Gestión de Vacante
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<h3 class="mb-0" style="color: #B10022;">Gestión de Vacante</h3>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="#" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover">Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="d-flex align-items-center text-decoration-none">
+						<span class="text-secondary fw-medium hover">Vacantes Propias</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Gestión de Vacante</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	{% comment %} {% if request.session.grupo_id == 1 %}
+	<div class="row">
+		<div class="col-md-12">
+			{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_vacancy=True %}
+		</div>
+	</div>
+	{% else %}
+		{% if request.session.grupo_id == 3 and request.session.user_login.cliente_tipo == '2' %}
+		<div class="row">
+			<div class="col-md-12">
+				{% include 'admin/client/admin_user/common_template/client_menu_horizontal.html' with elements_vacancy=True %}
+			</div>
+		</div>
+		{% endif %}
+	{% endif %} {% endcomment %}
+
+	<div class="row">
+		
+		<div class="col-12 col-lg-3">
+			{% include 'admin/vacancy/partials/vm2_sidebar_candidatos_por_etapa.html' with titulo_card='Feedback' candidatos=vm2_por_feedback subtitulo_card='Entrevista aprobada · pendiente retroalimentación' %}
+			{% include 'admin/vacancy/partials/vm2_sidebar_candidatos_por_etapa.html' with titulo_card='Acciones decisivas' candidatos=vm2_decisiones_decisivas subtitulo_card='Acciones decisivas programadas' %}
+			{% include 'admin/vacancy/partials/vm2_sidebar_candidatos_por_etapa.html' with titulo_card='Aprob. y seguimiento' candidatos=vm2_tras_decision subtitulo_card='Aprobadas (6) · En contratación (13)' %}
+			{% include 'admin/vacancy/partials/vm2_sidebar_candidatos_por_etapa.html' with titulo_card='No aprobados (7, 14)' candidatos=vm2_no_aprobados %}
+			{% include 'admin/vacancy/partials/vm2_sidebar_candidatos_por_etapa.html' with titulo_card='Contratados' candidatos=vm2_contratados subtitulo_card='Estado contratado' %}
+			<hr>
+			<div class="card bg-white rounded-3 mb-4">
+				<div class="card-header bg-primary bg-opacity-10 border-0 py-3">
+					<p class="text-primary fs-5 fw-semibold mb-0">Vacante</p>
+				</div>
+				<div class="card-body">
+					<h4 class="fs-16 fw-bold text-dark mb-2 lh-sm">
+						{% if vacante.cargo %}{{ vacante.cargo.nombre_cargo }}{% else %}{{ vacante.titulo|default:"—" }}{% endif %}
+					</h4>
+					{% if vacante.titulo and vacante.cargo %}
+					<p class="text-secondary fs-13 mb-3 mb-lg-4">{{ vacante.titulo }}</p>
+					{% endif %}
+					<button type="button" class="btn btn-sm w-100 bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3 border-0 rounded-2" data-bs-toggle="modal" data-bs-target="#vm2ModalVacancyFullDetail">
+						<i class="material-symbols-outlined fs-18 align-middle me-1" style="vertical-align: -3px;">visibility</i>
+						Ver información de la vacante
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-lg-9">
+			{{ vm2_candidato_perfil_video|json_script:"vm2-candidatos-perfil-video" }}
+			{{ vm2_acciones_cargo_decisivas|json_script:"vm2-acciones-cargo-decisivas" }}
+			<div class="main-content-container overflow-hidden" style="padding-left: 12px; padding-right: 12px;">
+				<div class="d-flex justify-content-end mb-2 mx-auto w-100 d-none" style="max-width: 1306px;" id="vm2-gestionar-wrap" aria-hidden="true">
+					<button type="button" id="vm2-btn-gestionar" class="btn btn-sm fw-semibold text-white border-0 px-4 py-2 rounded-2 shadow-sm" style="background-color: #B10022;" data-bs-toggle="modal" data-bs-target="#vm2ModalAccionesDecisivas" data-detalle-url="">
+						Gestionar
+					</button>
+				</div>
+				<div class="card border-0 p-4 p-xl-0 rounded-3 position-relative mx-auto" style="background: linear-gradient(272deg, #FF5A6E 31.27%, #B10022 98.4%); max-width: 1306px;">
+					<div class="mx-auto w-100" style="max-width: 1120px;">
+						<div class="d-flex flex-wrap justify-content-between align-items-center align-items-xl-end">
+							<div class="py-xl-5">
+								<span class="fs-18 text-white d-block mb-2">Reporte del candidato</span>
+								<h2 class="fs-28 fw-800 text-white mt-2 mt-sm-2 my-2 text-break" id="vm2-banner-nombre">—</h2>
+								<div class="d-flex align-items-start gap-2 mb-1 mb-sm-2">
+									<i class="ri-graduation-cap-fill fs-18 text-white flex-shrink-0 mt-1" aria-hidden="true"></i>
+									<span class="text-white fs-12 fw-semibold text-break" id="vm2-banner-estudio">—</span>
+								</div>
+								<div class="d-flex align-items-start gap-2 mb-4">
+									<i class="ri-map-pin-2-fill fs-18 text-white flex-shrink-0 mt-1" aria-hidden="true"></i>
+									<span class="text-white fs-14 text-break" id="vm2-banner-ciudad">—</span>
+								</div>
+							</div>
+							<img src="{% static 'admin/images/blank.png' %}" class="rounded-3 mt-3 mt-sm-0 flex-shrink-0" id="vm2-banner-candidato-img" width="210" height="241" style="width: 210px; height: 241px; object-fit: cover;" alt="">
+						</div>
+						<img src="{% static 'admin/images/shape-11.png' %}" class="position-absolute bottom-0 end-0" alt="shape">
+					</div>
+				</div>
+				<div class="mx-auto" style="max-width: 1120px; margin-top: -22px;">
+					<div class="row g-3 mb-4">
+						<div class="col-6 col-md-4 col-xl-2">
+							<div class="card border-0 rounded-3 bg-white mb-1 h-100 shadow-sm text-center">
+								<button type="button" class="btn btn-link p-3 text-decoration-none w-100 h-100 text-body vm2-metrica-open rounded-3" data-cat="hard_skills" data-cat-label="Hard Skills">
+									<span class="d-block fs-12 text-secondary fw-semibold mb-2 lh-sm">Hard Skills</span>
+									<span class="d-inline-block fs-22 fw-bold lh-sm px-3 py-2 rounded-pill border vm2-stat-score text-secondary bg-secondary bg-opacity-10 border-secondary" id="vm2-stat-hard-skills">—</span>
+									<span class="d-block fs-11 text-muted mt-2">/ 10</span>
+								</button>
+							</div>
+						</div>
+						<div class="col-6 col-md-4 col-xl-2">
+							<div class="card border-0 rounded-3 bg-white mb-1 h-100 shadow-sm text-center">
+								<button type="button" class="btn btn-link p-3 text-decoration-none w-100 h-100 text-body vm2-metrica-open rounded-3" data-cat="habilidades" data-cat-label="Habilidades">
+									<span class="d-block fs-12 text-secondary fw-semibold mb-2 lh-sm">Habilidades</span>
+									<span class="d-inline-block fs-22 fw-bold lh-sm px-3 py-2 rounded-pill border vm2-stat-score text-secondary bg-secondary bg-opacity-10 border-secondary" id="vm2-stat-hab">—</span>
+									<span class="d-block fs-11 text-muted mt-2">/ 10</span>
+								</button>
+							</div>
+						</div>
+						<div class="col-6 col-md-4 col-xl-2">
+							<div class="card border-0 rounded-3 bg-white mb-1 h-100 shadow-sm text-center">
+								<button type="button" class="btn btn-link p-3 text-decoration-none w-100 h-100 text-body vm2-metrica-open rounded-3" data-cat="fit_cultural" data-cat-label="Fit cultural">
+									<span class="d-block fs-12 text-secondary fw-semibold mb-2 lh-sm">Fit cultural</span>
+									<span class="d-inline-block fs-22 fw-bold lh-sm px-3 py-2 rounded-pill border vm2-stat-score text-secondary bg-secondary bg-opacity-10 border-secondary" id="vm2-stat-fc">—</span>
+									<span class="d-block fs-11 text-muted mt-2">/ 10</span>
+								</button>
+							</div>
+						</div>
+						<div class="col-6 col-md-4 col-xl-2">
+							<div class="card border-0 rounded-3 bg-white mb-1 h-100 shadow-sm text-center">
+								<button type="button" class="btn btn-link p-3 text-decoration-none w-100 h-100 text-body vm2-metrica-open rounded-3" data-cat="motivadores" data-cat-label="Motivadores">
+									<span class="d-block fs-12 text-secondary fw-semibold mb-2 lh-sm">Motivadores</span>
+									<span class="d-inline-block fs-22 fw-bold lh-sm px-3 py-2 rounded-pill border vm2-stat-score text-secondary bg-secondary bg-opacity-10 border-secondary" id="vm2-stat-mot">—</span>
+									<span class="d-block fs-11 text-muted mt-2">/ 10</span>
+								</button>
+							</div>
+						</div>
+						<div class="col-6 col-md-4 col-xl-2">
+							<div class="card border-0 rounded-3 bg-white mb-1 h-100 shadow-sm text-center">
+								<button type="button" class="btn btn-link p-3 text-decoration-none w-100 h-100 text-body vm2-metrica-open rounded-3" data-cat="pruebas" data-cat-label="Pruebas">
+									<span class="d-block fs-12 text-secondary fw-semibold mb-2 lh-sm">Pruebas</span>
+									<span class="d-inline-block fs-22 fw-bold lh-sm px-3 py-2 rounded-pill border vm2-stat-score text-secondary bg-secondary bg-opacity-10 border-secondary" id="vm2-stat-pru">—</span>
+									<span class="d-block fs-11 text-muted mt-2">/ 10</span>
+								</button>
+							</div>
+						</div>
+						<div class="col-6 col-md-4 col-xl-2">
+							<div class="card border-0 rounded-3 bg-white mb-1 h-100 shadow-sm text-center">
+								<button type="button" class="btn btn-link p-3 text-decoration-none w-100 h-100 text-body vm2-metrica-open rounded-3" data-cat="confiabilidad_riesgo" data-cat-label="Confiabilidad/riesgo">
+									<span class="d-block fs-12 text-secondary fw-semibold mb-2 lh-sm">Confiabilidad / riesgo</span>
+									<span class="d-inline-block fs-22 fw-bold lh-sm px-3 py-2 rounded-pill border vm2-stat-score text-secondary bg-secondary bg-opacity-10 border-secondary" id="vm2-stat-conf">—</span>
+									<span class="d-block fs-11 text-muted mt-2">/ 10</span>
+								</button>
+							</div>
+						</div>
+					</div>
+
+					{# Contenedor oculto: el fetch del reporte inyecta HTML con #vm2-reporte-final-meta y el modal compacto #}
+					<div id="vm2-panel-reporte" class="d-none" aria-hidden="true"></div>
+
+					<div id="vm2-metricas-wrap" class="d-none">
+					<div class="row justify-content-center">
+						<div class="col-12">
+							<div class="row g-3">
+								<div class="col-xl-7 col-md-6">
+									<div class="card bg-white border-0 rounded-3 mb-4 shadow-sm h-100">
+										<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-top-3">
+											<h3 class="text-primary mb-0 fs-5 fw-semibold">Indicadores por categoría</h3>
+										</div>
+										<div class="card-body p-4">
+											<p id="vm2-indicadores-radar-placeholder" class="text-secondary small text-center py-4 mb-0">Seleccione un candidato para ver el gráfico.</p>
+											<div id="vm2-indicadores-radar-inner" class="d-none vm2-indicadores-radar-inner text-center">
+												<div id="vm2_metricas_chart"></div>
+											</div>
+											<table class="d-none" aria-hidden="true"><tbody id="vm2_metricas_table_body"></tbody></table>
+										</div>
+									</div>
+								</div>
+								<div class="col-xl-5 col-md-6">
+									<div class="card bg-white border-0 rounded-3 mb-4 shadow-sm h-100">
+										<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-top-3">
+											<h3 class="text-primary mb-0 fs-5 fw-semibold">Reporte final</h3>
+										</div>
+										<div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-center">
+											<div class="d-none vm2-radial-reporte-final mb-0 w-100" id="vm2-match-chart-wrap">
+												<div id="vm2_match_perfil_chart"></div>
+												<div class="text-center text-secondary small mt-2 d-none" id="vm2-match-fallback">
+													<span class="fw-semibold" id="vm2-match-fallback-pct">—</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-xl-12 col-md-12">
+									<div class="card bg-white border-0 rounded-3 mb-4 shadow-sm">
+										<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-top-3">
+											<h3 class="text-primary mb-0 fs-5 fw-semibold">Resumen</h3>
+										</div>
+										<div class="card-body p-4">
+											<div id="vm2-resumen-presentacion" class="mb-4">
+												<div class="row g-3 g-lg-4 align-items-start">
+													<div class="col-md-5 col-lg-4">
+														<p class="fs-12 fw-semibold text-secondary text-uppercase letter-spacing-1 mb-2">Video de presentación</p>
+														<div id="vm2-resumen-video-wrap" class="rounded-3 overflow-hidden bg-dark border d-none" style="min-height: 180px;">
+															<video id="vm2-resumen-video" class="w-100 d-block" controls playsinline preload="metadata" style="max-height: 280px; background: #111;"></video>
+														</div>
+														<p id="vm2-resumen-sin-video" class="text-muted small mb-0 mt-2 d-none rounded-3 border bg-light py-4 px-3 text-center">Este candidato no tiene video de perfil cargado.</p>
+													</div>
+													<div class="col-md-7 col-lg-8">
+														<p class="fs-12 fw-semibold text-secondary text-uppercase letter-spacing-1 mb-2">Perfil del candidato</p>
+														<div id="vm2-resumen-perfil" class="fs-14 text-body lh-base text-start text-break border rounded-3 p-3 bg-white d-none" style="white-space: pre-wrap; min-height: 120px;"></div>
+														<p id="vm2-resumen-sin-perfil" class="text-muted small mb-0 mt-2">No hay descripción de perfil registrada.</p>
+														<div class="mt-3 pt-3 border-top border-light">
+															<p class="fs-12 fw-semibold text-secondary text-uppercase letter-spacing-1 mb-2">Idiomas registrados</p>
+															<div id="vm2-resumen-idiomas" class="d-flex flex-wrap gap-2"></div>
+															<p id="vm2-resumen-sin-idiomas" class="text-muted small mb-0 d-none">Sin idiomas registrados.</p>
+															<button type="button" class="btn btn-sm w-100 bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3 border-0 rounded-2 mt-3" data-bs-toggle="modal" data-bs-target="#vm2ModalInfoCandidato" id="vm2-btn-info-candidato">
+																<i class="material-symbols-outlined fs-18 align-middle me-1" style="vertical-align: -3px;">person</i>
+																Ver información del candidato
+															</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					</div>
+
+					<div class="row">
+						<div class="col-12">
+							<div class="card bg-white border-0 rounded-3 mb-4">
+								<div class="card-body p-4">
+									<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-0">
+										<h3 class="mb-0 fs-5 fw-semibold text-body text-center w-100">Historial de la aplicación</h3>
+									</div>
+									<p class="text-secondary small mb-4 mb-lg-4 text-center">Seleccione un candidato en el panel lateral para ver el historial de esa postulación.</p>
+									<div class="default-table-area style-two campaigns-table latest-transaction-table">
+										<div class="table-responsive">
+											<table class="table align-middle border-0 mb-0 text-center">
+												<thead>
+													<tr class="border-bottom">
+														<th scope="col" class="bg-transparent text-body fw-medium text-center">
+															<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">FECHA</span>
+														</th>
+														<th scope="col" class="bg-transparent text-body fw-medium text-center">
+															<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">ESTADO</span>
+														</th>
+														<th scope="col" class="bg-transparent text-body fw-medium text-center">
+															<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">DESCRIPCIÓN</span>
+														</th>
+														<th scope="col" class="bg-transparent text-body fw-medium text-center">
+															<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">REGISTRADO POR</span>
+														</th>
+													</tr>
+												</thead>
+												<tbody id="vm2-historial-tbody">
+													<tr>
+														<td colspan="4" class="text-center text-muted py-5 fs-13">Seleccione un candidato para ver el historial de la aplicación.</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+										<div id="vm2-historial-footer" class="d-none d-flex justify-content-center align-items-center flex-wrap gap-2 showing-wrap mt-4 text-center">
+											<span class="fs-12 fw-medium text-body-color-50"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{# Modal: información completa del candidato (mismo ancho visual que vacante: modal-xl) #}
+<div class="modal fade" id="vm2ModalInfoCandidato" tabindex="-1" aria-labelledby="vm2ModalInfoCandidatoLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+		<div class="modal-content border-0 rounded-2 shadow-sm bg-white overflow-hidden">
+			<div class="modal-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-0">
+				<h2 class="modal-title fs-16 fw-semibold text-primary mb-0" id="vm2ModalInfoCandidatoLabel">Información del candidato</h2>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body p-3 p-md-4 bg-white" id="vm2ModalInfoCandidatoBody">
+				<p class="text-muted text-center py-4 mb-0">Seleccione un candidato y pulse el botón para cargar la información.</p>
+			</div>
+			<div class="modal-footer border-0 border-top py-3 px-4 bg-white">
+				<button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 border-0 rounded-2" data-bs-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{# Modal: solo contenido como pestaña «Información Vacante» en reclutado/detalle (match-tab-pane + presentation_vacancy) #}
+<div class="modal fade" id="vm2ModalVacancyFullDetail" tabindex="-1" aria-labelledby="vm2ModalVacancyFullDetailLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+		<div class="modal-content border-0 rounded-3 shadow-sm bg-white overflow-hidden">
+			<div class="modal-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-0">
+				<h2 class="modal-title fs-16 fw-semibold text-primary mb-0" id="vm2ModalVacancyFullDetailLabel">
+					Detalle de la vacante · {% if vacante.titulo %}{{ vacante.titulo|truncatechars:60 }}{% elif vacante.cargo %}{{ vacante.cargo.nombre_cargo|truncatechars:60 }}{% else %}—{% endif %}
+				</h2>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body p-0 bg-white">
+				<div class="card bg-white border-0 rounded-0 mb-0">
+					<div class="card-body p-4">
+						<ul class="nav nav-tabs mb-4" id="vm2ModalVacancyFullDetailTabs" role="tablist">
+							<li class="nav-item" role="presentation">
+								<span class="nav-link active" id="vm2-modal-vacancy-info-tab" aria-current="page">Información Vacante</span>
+							</li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane fade show active" role="tabpanel" aria-labelledby="vm2-modal-vacancy-info-tab">
+								{% include 'admin/vacancy/partials/presentation_vacancy.html' %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer border-0 border-top py-3 px-4 bg-white">
+				<button type="button"
+					class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 border-0 rounded-2"
+					data-bs-dismiss="modal">
+					Cerrar
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal: detalle de categoría (mismo contenedor que Detalle de la vacante) -->
+<div class="modal fade" id="vm2MetricDetailModal" tabindex="-1" aria-labelledby="vm2MetricDetailTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+		<div class="modal-content border-0 rounded-2 shadow-sm bg-white overflow-hidden">
+			<div class="modal-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-0">
+				<h2 class="modal-title fs-16 fw-semibold text-primary mb-0" id="vm2MetricDetailTitle">Detalle</h2>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body p-3 p-md-4 bg-white" id="vm2MetricDetailBody">
+				<div class="text-secondary py-3 text-center">
+					<div class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></div>
+					Cargando…
+				</div>
+			</div>
+			<div class="modal-footer border-0 border-top py-3 px-4 bg-white">
+				<button type="button"
+					class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 border-0 rounded-2"
+					data-bs-dismiss="modal">
+					Cerrar
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{# Modal: vía contratación o decisiones definitivas + cli_087 #}
+<div class="modal fade" id="vm2ModalAccionesDecisivas" tabindex="-1" aria-labelledby="vm2ModalAccionesDecisivasLabel" aria-hidden="true"
+	data-vm2-post-url-template="{% url 'vacantes:vacancy_aplicacion_vm2_gestion_accion' vacante.id 999999999 %}">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+		<div class="modal-content border-0 rounded-2 shadow-sm bg-white overflow-hidden">
+			<div class="modal-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-0">
+				<div>
+					<h2 class="modal-title fs-16 fw-semibold text-primary mb-0" id="vm2ModalAccionesDecisivasLabel">Gestionar candidato</h2>
+					<p class="mb-0 mt-1 fs-13 text-secondary" id="vm2-modal-acciones-candidato">—</p>
+				</div>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body p-3 p-md-4 bg-white">
+				{% csrf_token %}
+				<div class="d-grid gap-2 mb-3">
+					<div class="btn-group w-100" role="group" aria-label="Tipo de gestión">
+						<input type="radio" class="btn-check" name="vm2tipoGestion" id="vm2radioContratacion" value="contratacion" autocomplete="off" checked>
+						<label class="btn btn-outline-primary" for="vm2radioContratacion">Viaje de contratación</label>
+						<input type="radio" class="btn-check" name="vm2tipoGestion" id="vm2radioDecisiones" value="decisiones" autocomplete="off">
+						<label class="btn btn-outline-primary" for="vm2radioDecisiones" id="vm2label-radio-decisiones">Decisiones definitivas</label>
+					</div>
+				</div>
+				<div id="vm2-vm-contratacion-copy">
+					<p class="text-secondary small mb-2">
+						Al confirmar, el candidato pasará a <strong>en espera por respuesta de contratación</strong> y podrá continuar el <strong>proceso de contratación</strong> en el flujo habitual.
+					</p>
+					<div class="alert alert-light border text-secondary small mb-0" role="status">
+						<strong>Sin registro de validación:</strong> en esta opción <strong>no</strong> se realiza el registro de validación de acciones decisivas (no se crean reportes por acción ni formularios asociados). Si necesita dejar constancia de esas validaciones, use <strong>Decisiones definitivas</strong>.
+					</div>
+				</div>
+				<div id="vm2-vm-decisiones-wrapper" class="d-none">
+					<p class="text-secondary small mb-3" id="vm2-modal-bloque-decisiones">
+						Seleccione las acciones a registrar y complete los formularios del catálogo cuando existan. Se creará un registro por acción marcada y la aplicación pasará a <strong>decisiones definitivas programadas</strong>.
+					</p>
+					<div id="vm2-acciones-decisivas-body">
+						<p class="text-muted text-center py-4 mb-0">Seleccione un candidato y abra de nuevo este modal.</p>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer border-0 border-top py-3 px-4 bg-white flex-wrap gap-2">
+				<button type="button" class="btn btn-sm fw-semibold text-white border-0 py-2 px-4 rounded-2 d-none" id="vm2-btn-confirmar-contratacion" style="background-color: #B10022;">Continuar a contratación</button>
+				<button type="button" class="btn btn-sm fw-semibold text-white border-0 py-2 px-4 rounded-2 d-none" id="vm2-btn-registrar-decisiones" style="background-color: #B10022;">Registrar decisiones definitivas</button>
+				<button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 border-0 rounded-2 ms-auto" data-bs-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+.vacancy-m2-candidate-card {
+	cursor: pointer;
+	transition: box-shadow 0.2s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+.vacancy-m2-candidate-card:hover {
+	box-shadow: 0 0.5rem 1rem rgba(33, 37, 41, 0.18) !important;
+	transform: translateY(-2px);
+}
+.vacancy-m2-candidate-card:focus-visible {
+	outline: 2px solid var(--bs-primary);
+	outline-offset: 3px;
+}
+.vacancy-m2-candidate-card.is-selected {
+	box-shadow: 0 0.35rem 0.85rem rgba(177, 0, 34, 0.22) !important;
+	transform: translateY(-1px);
+}
+tbody tr.vacancy-m2-candidate-card:hover {
+	transform: none;
+	box-shadow: none;
+	background-color: rgba(33, 37, 41, 0.04);
+}
+tbody tr.vacancy-m2-candidate-card.is-selected {
+	transform: none;
+	box-shadow: none;
+	background-color: rgba(177, 0, 34, 0.06);
+}
+.p-25 { padding: 25px; }
+.vm2-radial-hero { min-height: 420px; }
+.vm2-radial-reporte-final { min-height: 220px; }
+#vm2_match_perfil_chart { min-height: 260px; max-height: 320px; }
+#vm2_metricas_chart { min-height: 280px; }
+.vm2-indicadores-radar-inner { margin: -28px 0 -18px 0; }
+.vm2-tabla-scroll {
+	max-height: min(55vh, 380px);
+	overflow: auto;
+}
+.vm2-tabla-scroll .default-table-area thead th {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	background-color: var(--bs-body-bg);
+}
+/* Pestañas dentro del contorno de la card */
+.vm2-candidatos-tabs-frame {
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+.vm2-candidatos-tabs-nav {
+	background-color: #fff !important;
+}
+/* Mismo criterio que reclutado/detalle (#myTab) */
+#vm2CandidatosTabs.nav-tabs .nav-link {
+	font-size: 0.95rem;
+	font-weight: 600;
+	padding: 0.6rem 1.1rem;
+	color: var(--bs-secondary);
+	border-radius: 0.375rem 0.375rem 0 0;
+	transition: color 0.15s ease, background-color 0.15s ease;
+}
+#vm2CandidatosTabs.nav-tabs .nav-link:hover:not(.active) {
+	color: #B10022;
+	background-color: rgba(177, 0, 34, 0.06);
+}
+#vm2CandidatosTabs.nav-tabs .nav-link.active {
+	font-size: 1rem;
+	font-weight: 700;
+	color: #B10022 !important;
+	background-color: rgba(177, 0, 34, 0.1) !important;
+	border-color: var(--bs-border-color) var(--bs-border-color) var(--bs-body-bg) !important;
+	box-shadow: inset 0 -3px 0 0 #B10022;
+}
+/* Modal detalle vacante: misma regla que reclutado/detalle (#myTab) */
+#vm2ModalVacancyFullDetailTabs.nav-tabs .nav-link {
+	font-size: 0.95rem;
+	font-weight: 600;
+	padding: 0.6rem 1.1rem;
+	color: var(--bs-secondary);
+	border-radius: 0.375rem 0.375rem 0 0;
+	transition: color 0.15s ease, background-color 0.15s ease;
+	cursor: default;
+	pointer-events: none;
+}
+#vm2ModalVacancyFullDetailTabs.nav-tabs .nav-link.active {
+	font-size: 1rem;
+	font-weight: 700;
+	color: #B10022 !important;
+	background-color: rgba(177, 0, 34, 0.1) !important;
+	border-color: var(--bs-border-color) var(--bs-border-color) var(--bs-body-bg) !important;
+	box-shadow: inset 0 -3px 0 0 #B10022;
+}
+@media (min-width: 992px) {
+	.vacancy-m2-report-panel {
+		position: sticky;
+		top: 1rem;
+	}
+}
+</style>
+{% endblock %}
+
+{% block js %}
+<script>
+(function () {
+	function getPrimaryColor() {
+		var ph = '';
+		if (typeof getComputedStyle !== 'undefined') {
+			ph = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim();
+		}
+		return ph || '#B10022';
+	}
+
+	function vm2BadgeClassForStatScore(val) {
+		if (!val || val <= 0) return 'text-secondary bg-secondary bg-opacity-10 border-secondary';
+		if (val >= 8) return 'text-success bg-success bg-opacity-10 border-success';
+		if (val >= 6) return 'text-warning bg-warning bg-opacity-10 border-warning';
+		if (val >= 4) return 'text-warning bg-warning bg-opacity-10 border-warning';
+		return 'text-danger bg-danger bg-opacity-10 border-danger';
+	}
+
+	function applyVm2StatScoreStyle(el, val) {
+		var base = 'd-inline-block fs-22 fw-bold lh-sm px-3 py-2 rounded-pill border vm2-stat-score ';
+		if (!val || val <= 0) {
+			el.className = base + vm2BadgeClassForStatScore(0);
+			el.textContent = '—';
+			return;
+		}
+		el.className = base + vm2BadgeClassForStatScore(val);
+		el.textContent = val.toFixed(1);
+	}
+
+	function resetVm2StatCards() {
+		var ids = ['vm2-stat-hard-skills', 'vm2-stat-hab', 'vm2-stat-fc', 'vm2-stat-mot', 'vm2-stat-pru', 'vm2-stat-conf'];
+		ids.forEach(function (id) {
+			var el = document.getElementById(id);
+			if (el) applyVm2StatScoreStyle(el, 0);
+		});
+	}
+
+	function updateVm2StatCardsFromValues(values) {
+		var ids = ['vm2-stat-hard-skills', 'vm2-stat-hab', 'vm2-stat-fc', 'vm2-stat-mot', 'vm2-stat-pru', 'vm2-stat-conf'];
+		for (var i = 0; i < ids.length; i++) {
+			var el = document.getElementById(ids[i]);
+			if (!el) continue;
+			applyVm2StatScoreStyle(el, values[i]);
+		}
+	}
+
+	function escapeHtmlVm2(s) {
+		var d = document.createElement('div');
+		d.textContent = s;
+		return d.innerHTML;
+	}
+
+	function getVm2AccionesCargoDecisivas() {
+		var el = document.getElementById('vm2-acciones-cargo-decisivas');
+		if (!el) return [];
+		try {
+			var parsed = JSON.parse(el.textContent);
+			return Array.isArray(parsed) ? parsed : [];
+		} catch (e1) {
+			return [];
+		}
+	}
+
+	function vm2ExtractCamposDesdeJson(jd) {
+		if (jd == null) return [];
+		if (Array.isArray(jd)) return jd;
+		if (typeof jd === 'object') {
+			var arr = jd.campos || jd.fields || jd.Campos || jd.Fields;
+			if (Array.isArray(arr)) return arr;
+		}
+		return [];
+	}
+
+	function vm2SanitizeFieldName(name, idx) {
+		var n = (name != null && String(name).trim() !== '') ? String(name).trim() : 'campo_' + idx;
+		return n.replace(/[^\w\-]/g, '_');
+	}
+
+	function vm2BuildInputHtml(field, idx, accionId, aplicacionId) {
+		var rawName = field.name != null ? field.name : 'campo_' + idx;
+		var fname = vm2SanitizeFieldName(rawName, idx);
+		var uid = 'vm2-ad-' + accionId + '-' + idx + '-' + fname;
+		var label = (field.label != null && String(field.label).trim() !== '') ? String(field.label) : fname;
+		var req = field.required === true || field.required === 'true' || field.required === 1;
+		var ph = field.placeholder != null ? String(field.placeholder) : '';
+		var t = (field.type != null ? String(field.type) : 'text').toLowerCase();
+		var help = field.help != null ? String(field.help) : (field.ayuda != null ? String(field.ayuda) : '');
+
+		var helpHtml = help
+			? '<div class="form-text">' + escapeHtmlVm2(help) + '</div>'
+			: '';
+
+		if (t === 'textarea') {
+			return (
+				'<div class="mb-3">' +
+				'<label class="form-label fw-medium" for="' + uid + '">' + escapeHtmlVm2(label) + (req ? ' <span class="text-danger">*</span>' : '') + '</label>' +
+				'<textarea class="form-control" id="' + uid + '" name="' + escapeHtmlVm2(fname) + '" rows="' + (field.rows ? parseInt(field.rows, 10) || 3 : 3) + '" placeholder="' + escapeHtmlVm2(ph) + '" ' + (req ? 'required' : '') + ' data-vm2-accion="' + accionId + '" data-vm2-aplicacion="' + escapeHtmlVm2(String(aplicacionId)) + '"></textarea>' +
+				helpHtml +
+				'</div>'
+			);
+		}
+		if (t === 'select') {
+			var opts = field.options || field.opciones || [];
+			var optHtml = '<option value="">Seleccione…</option>';
+			for (var oi = 0; oi < opts.length; oi++) {
+				var o = opts[oi];
+				if (o == null) continue;
+				var ov = o.value != null ? String(o.value) : (o.valor != null ? String(o.valor) : '');
+				var ol = o.label != null ? String(o.label) : (o.etiqueta != null ? String(o.etiqueta) : ov);
+				optHtml += '<option value="' + escapeHtmlVm2(ov) + '">' + escapeHtmlVm2(ol) + '</option>';
+			}
+			return (
+				'<div class="mb-3">' +
+				'<label class="form-label fw-medium" for="' + uid + '">' + escapeHtmlVm2(label) + (req ? ' <span class="text-danger">*</span>' : '') + '</label>' +
+				'<select class="form-select" id="' + uid + '" name="' + escapeHtmlVm2(fname) + '" ' + (req ? 'required' : '') + ' data-vm2-accion="' + accionId + '" data-vm2-aplicacion="' + escapeHtmlVm2(String(aplicacionId)) + '">' +
+				optHtml +
+				'</select>' +
+				helpHtml +
+				'</div>'
+			);
+		}
+		if (t === 'checkbox' || t === 'boolean') {
+			return (
+				'<div class="mb-3 form-check">' +
+				'<input type="checkbox" class="form-check-input" id="' + uid + '" name="' + escapeHtmlVm2(fname) + '" value="1" data-vm2-accion="' + accionId + '" data-vm2-aplicacion="' + escapeHtmlVm2(String(aplicacionId)) + '">' +
+				'<label class="form-check-label" for="' + uid + '">' + escapeHtmlVm2(label) + (req ? ' <span class="text-danger">*</span>' : '') + '</label>' +
+				helpHtml +
+				'</div>'
+			);
+		}
+		var inputType = 'text';
+		if (t === 'number' || t === 'date' || t === 'email' || t === 'tel' || t === 'time' || t === 'datetime-local') {
+			inputType = t;
+		}
+		return (
+			'<div class="mb-3">' +
+			'<label class="form-label fw-medium" for="' + uid + '">' + escapeHtmlVm2(label) + (req ? ' <span class="text-danger">*</span>' : '') + '</label>' +
+			'<input type="' + inputType + '" class="form-control" id="' + uid + '" name="' + escapeHtmlVm2(fname) + '" placeholder="' + escapeHtmlVm2(ph) + '" ' + (req ? 'required' : '') + ' data-vm2-accion="' + accionId + '" data-vm2-aplicacion="' + escapeHtmlVm2(String(aplicacionId)) + '">' +
+			helpHtml +
+			'</div>'
+		);
+	}
+
+	function vm2GetCsrfToken() {
+		var modal = document.getElementById('vm2ModalAccionesDecisivas');
+		var inp = modal ? modal.querySelector('input[name="csrfmiddlewaretoken"]') : null;
+		if (inp && inp.value) return inp.value;
+		var m = document.cookie.match(/csrftoken=([^;]+)/);
+		return m ? decodeURIComponent(m[1]) : '';
+	}
+
+	function vm2BuildVm2GestionPostUrl(aplicacionId) {
+		var modal = document.getElementById('vm2ModalAccionesDecisivas');
+		var tpl = (modal && modal.getAttribute('data-vm2-post-url-template')) || '';
+		return tpl.replace('999999999', String(aplicacionId));
+	}
+
+	function vm2SyncGestionModeUI() {
+		var acciones = getVm2AccionesCargoDecisivas();
+		var tieneAcciones = acciones.length > 0;
+		var radC = document.getElementById('vm2radioContratacion');
+		var radD = document.getElementById('vm2radioDecisiones');
+		var lblD = document.getElementById('vm2label-radio-decisiones');
+		var wrapCt = document.getElementById('vm2-vm-contratacion-copy');
+		var wrapDe = document.getElementById('vm2-vm-decisiones-wrapper');
+		var btnCt = document.getElementById('vm2-btn-confirmar-contratacion');
+		var btnDe = document.getElementById('vm2-btn-registrar-decisiones');
+		if (radD && !tieneAcciones) {
+			radD.disabled = true;
+			if (lblD) lblD.classList.add('opacity-50');
+			if (radC) radC.checked = true;
+		} else if (radD) {
+			radD.disabled = false;
+			if (lblD) lblD.classList.remove('opacity-50');
+		}
+		var modo = radC && radC.checked ? 'contratacion' : 'decisiones';
+		if (wrapCt) wrapCt.classList.toggle('d-none', modo !== 'contratacion');
+		if (wrapDe) wrapDe.classList.toggle('d-none', modo !== 'decisiones');
+		if (btnCt) {
+			btnCt.classList.toggle('d-none', modo !== 'contratacion');
+			btnCt.disabled = false;
+		}
+		var nChecks = document.querySelectorAll('#vm2-acciones-decisivas-body .vm2-check-accion-decisiva:checked').length;
+		if (btnDe) {
+			var showReg = modo === 'decisiones' && tieneAcciones;
+			btnDe.classList.toggle('d-none', !showReg);
+			btnDe.disabled = !showReg || (modo === 'decisiones' && nChecks === 0);
+		}
+	}
+
+	function vm2CollectReportesDecisiones() {
+		var bodyEl = document.getElementById('vm2-acciones-decisivas-body');
+		var reportes = [];
+		document.querySelectorAll('#vm2-acciones-decisivas-body .vm2-check-accion-decisiva:checked').forEach(function (cb) {
+			var aid = parseInt(cb.getAttribute('data-accion-id'), 10);
+			if (!aid) return;
+			var resp = {};
+			if (bodyEl) {
+				var form = bodyEl.querySelector('.vm2-accion-decisiva-form[data-accion-id="' + aid + '"]');
+				if (form) {
+					form.querySelectorAll('input, select, textarea').forEach(function (el) {
+						var n = el.name;
+						if (!n) return;
+						if (el.type === 'checkbox') {
+							resp[n] = !!el.checked;
+						} else {
+							resp[n] = el.value;
+						}
+					});
+				}
+			}
+			reportes.push({ accion_decisiva_id: aid, respuestas: resp });
+		});
+		return reportes;
+	}
+
+	function vm2FillModalAccionesDecisivas() {
+		var bodyEl = document.getElementById('vm2-acciones-decisivas-body');
+		var subEl = document.getElementById('vm2-modal-acciones-candidato');
+		var card = document.querySelector('.vacancy-m2-candidate-card.is-selected');
+		if (!bodyEl) return;
+
+		var nombreCand = '—';
+		var aplId = '—';
+		if (card) {
+			nombreCand = card.getAttribute('data-nombre') || '—';
+			aplId = card.getAttribute('data-aplicacion-id') || '—';
+		}
+		if (subEl) {
+			subEl.textContent = nombreCand + ' · Aplicación APL-' + aplId;
+		}
+
+		var acciones = getVm2AccionesCargoDecisivas();
+		if (!acciones.length) {
+			bodyEl.innerHTML =
+				'<div class="alert alert-light border text-secondary small mb-0">' +
+				'No hay acciones decisivas asociadas al cargo. Use <strong>Viaje de contratación</strong> o configure las acciones en la ficha del cargo del cliente.' +
+				'</div>';
+			vm2SyncGestionModeUI();
+			return;
+		}
+
+		var listaChecks =
+			'<p class="text-secondary small fw-semibold mb-2">Incluir en el registro</p>' +
+			'<p class="text-muted small mb-2 mb-md-3">Marque las acciones decisivas que desea registrar. Solo las seleccionadas generan fila en el reporte.</p>' +
+			'<div class="list-group list-group-flush border rounded-2 mb-3 vm2-lista-acciones-check">';
+		for (var li = 0; li < acciones.length; li++) {
+			var a0 = acciones[li];
+			var id0 = a0.id;
+			var nom0 = a0.nombre != null ? String(a0.nombre) : 'Acción';
+			var dias0 = a0.cantidad_dias_gestion;
+			var badge0 =
+				dias0 != null && dias0 !== ''
+					? '<span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 ms-auto">' +
+					  escapeHtmlVm2(String(dias0)) +
+					  ' días</span>'
+					: '';
+			listaChecks +=
+				'<label class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 vm2-accion-list-row" for="vm2-check-ad-' +
+				id0 +
+				'">' +
+				'<input type="checkbox" class="form-check-input flex-shrink-0 mt-0 vm2-check-accion-decisiva" id="vm2-check-ad-' +
+				id0 +
+				'" data-accion-id="' +
+				escapeHtmlVm2(String(id0)) +
+				'" checked>' +
+				'<span class="fw-medium text-body text-start flex-grow-1">' +
+				escapeHtmlVm2(nom0) +
+				'</span>' +
+				badge0 +
+				'</label>';
+		}
+		listaChecks += '</div>';
+		listaChecks +=
+			'<p class="text-secondary small fw-semibold mb-2 mt-3">Formularios por acción</p>';
+
+		var formsHtml = '';
+		for (var i = 0; i < acciones.length; i++) {
+			var acc = acciones[i];
+			var aid = acc.id;
+			var nom = acc.nombre != null ? String(acc.nombre) : 'Acción';
+			var desc = acc.descripcion != null ? String(acc.descripcion).trim() : '';
+			var dias = acc.cantidad_dias_gestion;
+			var metaDias =
+				dias != null && dias !== ''
+					? '<span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 ms-2">' +
+					  escapeHtmlVm2(String(dias)) +
+					  ' días gestión</span>'
+					: '';
+			var campos = vm2ExtractCamposDesdeJson(acc.json_data);
+			var formInner;
+			if (!campos.length) {
+				formInner =
+					'<p class="text-muted small mb-0">No hay campos definidos en <code class="small">json_data</code> para esta acción. Use el formato <code class="small">{"campos":[...]}</code> o <code class="small">{"fields":[...]}</code> en el catálogo.</p>';
+			} else {
+				var inputs = '';
+				for (var ci = 0; ci < campos.length; ci++) {
+					inputs += vm2BuildInputHtml(campos[ci], ci, aid, aplId);
+				}
+				formInner =
+					'<form class="vm2-accion-decisiva-form" onsubmit="return false;" data-accion-id="' +
+					escapeHtmlVm2(String(aid)) +
+					'" data-aplicacion-id="' +
+					escapeHtmlVm2(String(aplId)) +
+					'">' +
+					inputs +
+					'</form>';
+			}
+			var descBlock = desc
+				? '<p class="text-secondary small mb-3">' + escapeHtmlVm2(desc) + '</p>'
+				: '';
+			formsHtml +=
+				'<div class="card border rounded-2 mb-3 vm2-acc-accordion-item" data-vm2-accion-id="' +
+				escapeHtmlVm2(String(aid)) +
+				'">' +
+				'<div class="card-body">' +
+				'<h6 class="fs-14 fw-semibold text-dark mb-2">' +
+				escapeHtmlVm2(nom) +
+				metaDias +
+				'</h6>' +
+				descBlock +
+				formInner +
+				'</div>' +
+				'</div>';
+		}
+		var accHtml = listaChecks + formsHtml;
+		bodyEl.innerHTML = accHtml;
+		vm2SyncGestionModeUI();
+	}
+
+	function resetVm2ReporteResumenTbodies() {
+		var msg = 'Seleccione un candidato para ver el resumen del reporte final.';
+		var ids = ['vm2-reporte-resumen-tbody-dist'];
+		ids.forEach(function (id) {
+			var tbody = document.getElementById(id);
+			if (!tbody) return;
+			tbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted py-4">' + msg + '</td></tr>';
+		});
+	}
+
+	function fillVm2ReporteResumenTbodies(values, labels, keys) {
+		var ids = ['vm2-reporte-resumen-tbody-dist'];
+		ids.forEach(function (tbodyId) {
+			var tbody = document.getElementById(tbodyId);
+			if (!tbody) return;
+			tbody.innerHTML = '';
+			for (var i = 0; i < labels.length; i++) {
+				var val = values[i];
+				var badgeClass = 'text-secondary bg-secondary bg-opacity-10 border border-secondary';
+				if (val >= 8) badgeClass = 'text-success bg-success bg-opacity-10 border border-success';
+				else if (val >= 6) badgeClass = 'text-warning bg-warning bg-opacity-10 border border-warning';
+				else if (val >= 4) badgeClass = 'text-warning bg-warning bg-opacity-10 border border-warning';
+				else if (val > 0) badgeClass = 'text-danger bg-danger bg-opacity-10 border border-danger';
+				var scoreText = (val ? val.toFixed(1) : '—');
+				var badgeText = (val && val > 0) ? scoreText : '—';
+				var safeLabel = escapeHtmlVm2(labels[i]);
+				var tr = document.createElement('tr');
+				tr.innerHTML =
+					'<td><h4 class="fs-14 fw-semibold mb-0" style="color: #23272E;">' + safeLabel + '</h4></td>' +
+					'<td><span class="d-inline-block px-2 rounded-pill fs-12 fw-medium ' + badgeClass + '">' + badgeText + '</span></td>';
+				tbody.appendChild(tr);
+			}
+		});
+	}
+
+	function getVm2CandidatoExtra(aplicacionId) {
+		var el = document.getElementById('vm2-candidatos-perfil-video');
+		if (!el || aplicacionId == null || aplicacionId === '' || aplicacionId === '—') {
+			return { video_url: '', perfil: '', idiomas_display: [] };
+		}
+		try {
+			var map = JSON.parse(el.textContent);
+			return map[String(aplicacionId)] || {};
+		} catch (err) {
+			return { video_url: '', perfil: '', idiomas_display: [] };
+		}
+	}
+
+	function updateVm2ResumenVideoPerfil(aplicacionId) {
+		var vid = document.getElementById('vm2-resumen-video');
+		var wrap = document.getElementById('vm2-resumen-video-wrap');
+		var sinV = document.getElementById('vm2-resumen-sin-video');
+		var perfilEl = document.getElementById('vm2-resumen-perfil');
+		var sinP = document.getElementById('vm2-resumen-sin-perfil');
+		var extra = getVm2CandidatoExtra(aplicacionId);
+		var videoUrl = (extra.video_url || '').trim();
+		var perfil = (extra.perfil || '').trim();
+
+		if (vid && wrap) {
+			try {
+				vid.pause();
+			} catch (e1) {}
+			vid.removeAttribute('src');
+			try {
+				vid.load();
+			} catch (e2) {}
+			if (videoUrl) {
+				vid.src = videoUrl;
+				wrap.classList.remove('d-none');
+				if (sinV) sinV.classList.add('d-none');
+			} else {
+				wrap.classList.add('d-none');
+				if (sinV) sinV.classList.remove('d-none');
+			}
+		}
+		if (perfilEl && sinP) {
+			if (perfil) {
+				perfilEl.textContent = perfil;
+				perfilEl.classList.remove('d-none');
+				sinP.classList.add('d-none');
+			} else {
+				perfilEl.textContent = '';
+				perfilEl.classList.add('d-none');
+				sinP.classList.remove('d-none');
+			}
+		}
+		var idiomas = extra.idiomas_display || [];
+		var idWrap = document.getElementById('vm2-resumen-idiomas');
+		var idSin = document.getElementById('vm2-resumen-sin-idiomas');
+		if (idWrap && idSin) {
+			idWrap.innerHTML = '';
+			if (idiomas.length) {
+				idSin.classList.add('d-none');
+				idiomas.forEach(function (t) {
+					var span = document.createElement('span');
+					span.className = 'badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 fs-12 fw-medium';
+					span.textContent = t;
+					idWrap.appendChild(span);
+				});
+			} else {
+				idSin.classList.remove('d-none');
+			}
+		}
+	}
+
+	function selectVm2Card(card) {
+		document.querySelectorAll('.vacancy-m2-candidate-card').forEach(function (c) {
+			c.classList.remove('is-selected');
+		});
+		card.classList.add('is-selected');
+		var emptyEl = document.getElementById('vm2-panel-empty');
+		var selEl = document.getElementById('vm2-panel-selected');
+		var imgEl = document.getElementById('vm2-panel-img');
+		var nombreEl = document.getElementById('vm2-panel-nombre');
+		var codeEl = document.getElementById('vm2-panel-code');
+		var ciudadEl = document.getElementById('vm2-panel-ciudad');
+		var tituloEl = document.getElementById('vm2-panel-titulo');
+		var estadoEl = document.getElementById('vm2-panel-estado');
+		var infoCiudad = document.getElementById('vm2-info-ciudad');
+		var infoTitulo = document.getElementById('vm2-info-titulo');
+		var infoCode = document.getElementById('vm2-info-code');
+		var infoVacante = document.getElementById('vm2-info-vacante');
+		var reporteEl = document.getElementById('vm2-panel-reporte');
+		if (emptyEl && selEl) {
+			emptyEl.classList.add('d-none');
+			selEl.classList.remove('d-none');
+		}
+		var imgSrc = card.getAttribute('data-img') || '';
+		if (imgEl) {
+			imgEl.src = imgSrc;
+			imgEl.alt = card.getAttribute('data-nombre') || '';
+		}
+		var heroImg = document.getElementById('vm2-hero-img');
+		var blankImg = "{% static 'admin/images/blank.png' %}";
+		if (heroImg) {
+			heroImg.src = imgSrc || blankImg;
+			heroImg.alt = card.getAttribute('data-nombre') || '';
+		}
+		var bannerImg = document.getElementById('vm2-banner-candidato-img');
+		if (bannerImg) {
+			bannerImg.src = imgSrc || blankImg;
+			bannerImg.alt = card.getAttribute('data-nombre') || '';
+		}
+		var heroNombre = document.getElementById('vm2-hero-nombre');
+		var heroCiudad = document.getElementById('vm2-hero-ciudad');
+		var heroTitulo = document.getElementById('vm2-hero-titulo');
+		var dn = card.getAttribute('data-nombre') || '—';
+		var dc = card.getAttribute('data-ciudad') || '—';
+		var dt = card.getAttribute('data-titulo') || '—';
+		if (heroNombre) heroNombre.textContent = dn;
+		var bannerNombre = document.getElementById('vm2-banner-nombre');
+		if (bannerNombre) bannerNombre.textContent = dn;
+		if (heroCiudad) heroCiudad.textContent = dc;
+		var bannerCiudad = document.getElementById('vm2-banner-ciudad');
+		if (bannerCiudad) bannerCiudad.textContent = dc;
+		if (heroTitulo) heroTitulo.textContent = dt;
+		var bannerEstudio = document.getElementById('vm2-banner-estudio');
+		if (bannerEstudio) bannerEstudio.textContent = dt;
+		if (codeEl) codeEl.textContent = 'Code: APL-' + (card.getAttribute('data-aplicacion-id') || '—');
+		if (nombreEl) nombreEl.textContent = dn;
+		if (ciudadEl) ciudadEl.textContent = dc;
+		if (tituloEl) tituloEl.textContent = dt;
+		if (estadoEl) estadoEl.textContent = card.getAttribute('data-estado') || '—';
+		var aplId = card.getAttribute('data-aplicacion-id') || '—';
+		if (infoCiudad) infoCiudad.textContent = dc || '—';
+		if (infoTitulo) infoTitulo.textContent = dt || '—';
+		if (infoCode) infoCode.textContent = 'APL-' + aplId;
+		if (infoVacante) {
+			var vEl = document.getElementById('vm2-panel-vacante');
+			infoVacante.textContent = (vEl && vEl.textContent) ? vEl.textContent.trim() : '—';
+		}
+
+		var gestWrap = document.getElementById('vm2-gestionar-wrap');
+		var gestBtn = document.getElementById('vm2-btn-gestionar');
+		if (gestWrap && gestBtn) {
+			var estAp = card.getAttribute('data-estado-aplicacion');
+			var detalleUrl = card.getAttribute('data-detalle-url') || '';
+			if (estAp === '3' && detalleUrl) {
+				gestWrap.classList.remove('d-none');
+				gestWrap.setAttribute('aria-hidden', 'false');
+				gestBtn.setAttribute('data-detalle-url', detalleUrl);
+			} else {
+				gestWrap.classList.add('d-none');
+				gestWrap.setAttribute('aria-hidden', 'true');
+				gestBtn.setAttribute('data-detalle-url', '');
+			}
+		}
+
+		var metricasWrap = document.getElementById('vm2-metricas-wrap');
+		if (metricasWrap) metricasWrap.classList.remove('d-none');
+		updateVm2ResumenVideoPerfil(aplId);
+		var radarPh = document.getElementById('vm2-indicadores-radar-placeholder');
+		var radarIn = document.getElementById('vm2-indicadores-radar-inner');
+		if (radarPh) radarPh.classList.add('d-none');
+		if (radarIn) radarIn.classList.remove('d-none');
+
+		showMatchPerfilGauge();
+		setGaugeLoading();
+
+		var reporteUrl = card.getAttribute('data-reporte-url') || '';
+		if (reporteEl && reporteUrl) {
+			reporteEl.innerHTML = '<div class="text-secondary py-4 text-center"><div class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></div>Cargando reporte final…</div>';
+			resetVm2StatCards();
+			resetVm2ReporteResumenTbodies();
+			var tbodyLoad = document.getElementById('vm2_metricas_table_body');
+			if (tbodyLoad) tbodyLoad.innerHTML = '';
+			fetch(reporteUrl, { credentials: 'same-origin' })
+				.then(function (r) { return r.text(); })
+				.then(function (html) {
+					reporteEl.innerHTML = html;
+					updateGaugeFromReporteFinal();
+				})
+				.catch(function () {
+					reporteEl.innerHTML = '<div class="text-danger py-3 text-center">No fue posible cargar el reporte final.</div>';
+					updateMatchPerfilGauge(null, getPrimaryColor());
+					resetVm2StatCards();
+					resetVm2ReporteResumenTbodies();
+				});
+		} else {
+			resetVm2StatCards();
+			resetVm2ReporteResumenTbodies();
+			updateMatchPerfilGauge(null, getPrimaryColor());
+		}
+
+		var histUrl = card.getAttribute('data-historial-url') || '';
+		var histTbody = document.getElementById('vm2-historial-tbody');
+		var histFooter = document.getElementById('vm2-historial-footer');
+		var histFooterSpan = histFooter ? histFooter.querySelector('span') : null;
+		if (histTbody) {
+			if (histUrl) {
+				histTbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Cargando historial…</td></tr>';
+				if (histFooter) histFooter.classList.add('d-none');
+				fetch(histUrl, { credentials: 'same-origin' })
+					.then(function (r) { return r.text(); })
+					.then(function (html) {
+						histTbody.innerHTML = html;
+						if (!histFooter || !histFooterSpan) return;
+						histFooter.classList.remove('d-none');
+						var emptyTr = histTbody.querySelector('tr.vm2-historial-empty');
+						var n = histTbody.querySelectorAll('tr.vm2-historial-row').length;
+						if (emptyTr) {
+							histFooterSpan.textContent = 'Sin movimientos registrados en el historial';
+						} else {
+							histFooterSpan.textContent = 'Mostrando ' + n + ' movimiento' + (n !== 1 ? 's' : '') + ' (más recientes primero)';
+						}
+					})
+					.catch(function () {
+						histTbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">No fue posible cargar el historial.</td></tr>';
+						if (histFooter) histFooter.classList.add('d-none');
+					});
+			} else {
+				histTbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-5 fs-13">No hay historial disponible para este candidato.</td></tr>';
+				if (histFooter) histFooter.classList.add('d-none');
+			}
+		}
+	}
+
+	var roomsAvailabilityChart = null;
+	var vm2MetricasChart = null;
+	function showMatchPerfilGauge() {
+		var wrap = document.getElementById('vm2-match-chart-wrap');
+		if (wrap) wrap.classList.remove('d-none');
+	}
+	function initMatchPerfilGauge() {
+		var el = document.getElementById('vm2_match_perfil_chart');
+		if (!el) return;
+
+		var fallbackWrap = document.getElementById('vm2-match-fallback');
+		var fallbackPct = document.getElementById('vm2-match-fallback-pct');
+
+		if (!window.ApexCharts) {
+			if (fallbackWrap) fallbackWrap.classList.remove('d-none');
+			if (fallbackPct) fallbackPct.textContent = '—';
+			return;
+		}
+
+		var primaryHex = getPrimaryColor();
+
+		var options = {
+			series: [0],
+			chart: {
+				height: 300,
+				type: "radialBar"
+			},
+			plotOptions: {
+				radialBar: {
+					startAngle: -135,
+					endAngle: 135,
+					hollow: { size: '58%' },
+					dataLabels: {
+						name: {
+							offsetY: -10,
+							fontSize: "13px",
+							fontFamily: 'Inter',
+							color: primaryHex,
+							fontWeight: "600"
+						},
+						value: {
+							fontSize: "34px",
+							fontFamily: 'Inter',
+							color: primaryHex,
+							fontWeight: "700",
+							formatter: function (val) {
+								return Math.round(val) + "%";
+							}
+						}
+					},
+					track: {
+						background: 'rgba(177, 0, 34, 0.08)'
+					}
+				}
+			},
+			colors: [primaryHex],
+			labels: ["Reporte final"],
+			stroke: { dashArray: 7 }
+		};
+
+		roomsAvailabilityChart = new ApexCharts(el, options);
+		roomsAvailabilityChart.render();
+	}
+
+	function setGaugeLoading() {
+		updateMatchPerfilGauge(0, getPrimaryColor());
+	}
+
+	/** Color del arco del gauge según % del reporte final (mismas bandas que las calificaciones). */
+	function vm2HexForQualificationPct(pctInt) {
+		if (pctInt === null || !Number.isFinite(pctInt)) return getPrimaryColor();
+		if (pctInt >= 80) return '#198754';
+		if (pctInt >= 60) return '#f59e0b';
+		if (pctInt >= 40) return '#0ea5e9';
+		if (pctInt > 0) return '#6c757d';
+		return getPrimaryColor();
+	}
+
+	function vm2RadialTrackBackground(hex) {
+		var m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
+		if (!m) return 'rgba(177, 0, 34, 0.08)';
+		return 'rgba(' + parseInt(m[1], 16) + ',' + parseInt(m[2], 16) + ',' + parseInt(m[3], 16) + ',0.12)';
+	}
+
+	function updateGaugeFromReporteFinal() {
+		var meta = document.getElementById('vm2-reporte-final-meta');
+		var primaryHex = getPrimaryColor();
+		if (!meta) {
+			updateMatchPerfilGauge(null, primaryHex);
+			resetVm2StatCards();
+			resetVm2ReporteResumenTbodies();
+			return;
+		}
+		var pctRaw = meta.getAttribute('data-pct') || '';
+		var pct = parseFloat(pctRaw);
+		var pctInt = Number.isFinite(pct) ? Math.max(0, Math.min(100, Math.round(pct))) : null;
+
+		var gaugeColor = vm2HexForQualificationPct(pctInt);
+		updateMatchPerfilGauge(pctInt, gaugeColor);
+		updateMetricasFromReporteFinal(meta);
+	}
+
+	function updateMetricasFromReporteFinal(meta) {
+		function toNum(attr) {
+			var v = parseFloat(meta.getAttribute(attr) || '0');
+			return Number.isFinite(v) ? v : 0;
+		}
+		var keys = ['hard_skills', 'habilidades', 'fit_cultural', 'motivadores', 'pruebas', 'confiabilidad_riesgo'];
+		var values = [
+			toNum('data-hs'),
+			toNum('data-hab'),
+			toNum('data-fc'),
+			toNum('data-mot'),
+			toNum('data-pru'),
+			toNum('data-conf'),
+		];
+		var labels = ['Hard Skills', 'Habilidades', 'Fit cultural', 'Motivadores', 'Pruebas', 'Confiabilidad/riesgo'];
+
+		updateVm2StatCardsFromValues(values);
+		fillVm2ReporteResumenTbodies(values, labels, keys);
+
+		var wrap = document.getElementById('vm2-metricas-wrap');
+		var chartEl = document.getElementById('vm2_metricas_chart');
+		var tbody = document.getElementById('vm2_metricas_table_body');
+		if (!chartEl || !tbody) return;
+
+		if (wrap) wrap.classList.remove('d-none');
+
+		var pctRawMeta = meta.getAttribute('data-pct') || '';
+		var pctParsed = parseFloat(pctRawMeta);
+		var pctIntReport = Number.isFinite(pctParsed) ? Math.max(0, Math.min(100, Math.round(pctParsed))) : null;
+		var radarColor = vm2HexForQualificationPct(pctIntReport);
+
+		// Tabla
+		tbody.innerHTML = '';
+		for (var i = 0; i < labels.length; i++) {
+			var val = values[i];
+			var badgeClass = 'text-secondary bg-secondary bg-opacity-10 border border-secondary';
+			if (val >= 8) badgeClass = 'text-success bg-success bg-opacity-10 border border-success';
+			else if (val >= 6) badgeClass = 'text-warning bg-warning bg-opacity-10 border border-warning';
+			else if (val >= 4) badgeClass = 'text-warning bg-warning bg-opacity-10 border border-warning';
+			else if (val > 0) badgeClass = 'text-danger bg-danger bg-opacity-10 border border-danger';
+
+			var tr = document.createElement('tr');
+			var scoreText = (val ? val.toFixed(1) : '—');
+			tr.innerHTML =
+				'<td class="fs-12 fw-semibold text-body-color-50">' + labels[i] + '</td>' +
+				'<td class="text-center">' +
+					'<button type="button" class="btn btn-link p-0 text-decoration-none vm2-metrica-open" data-cat="' + keys[i] + '" data-cat-label="' + labels[i] + '">' +
+						'<span class="fw-medium fs-12 ' + badgeClass + ' px-2 rounded-pill d-inline-block">' + scoreText + '</span>' +
+					'</button>' +
+				'</td>';
+			tbody.appendChild(tr);
+		}
+
+		// Radar chart: color alineado con la calificación global del reporte final (%)
+		if (!window.ApexCharts) return;
+		var options = {
+			series: [
+				{ name: 'Resultado', data: values.map(function (v) { return Math.max(0, Math.min(10, v)); }) }
+			],
+			chart: {
+				height: 280,
+				type: 'radar',
+				toolbar: { show: false }
+			},
+			dataLabels: { enabled: true },
+			legend: {
+				position: 'bottom',
+				horizontalAlign: 'center',
+				fontWeight: 400,
+				fontFamily: 'Inter',
+				fontSize: '12',
+				offsetY: 0,
+				labels: { colors: [radarColor] },
+				itemMargin: { horizontal: 10, vertical: 5 },
+				markers: { width: 9, height: 9, offsetX: -2, offsetY: -.5, radius: 2, shape: "diamond" }
+			},
+			plotOptions: {
+				radar: {
+					size: 95,
+					polygons: { strokeColors: '#E9E9E9', fill: { colors: ['#F8F8F8', '#ffffff'] } }
+				}
+			},
+			colors: [radarColor],
+			tooltip: { y: { formatter: function (val) { return val; } } },
+			xaxis: {
+				categories: labels,
+				labels: { style: { colors: "#A8A8A8", fontSize: "11px", fontFamily: 'Inter', fontWeight: 400 } }
+			},
+			yaxis: {
+				tickAmount: 5,
+				max: 10,
+				min: 0,
+				labels: {
+					formatter: function (val, i) {
+						if (i % 2 === 0) return val;
+						return '';
+					}
+				}
+			}
+		};
+
+		if (!vm2MetricasChart) {
+			vm2MetricasChart = new ApexCharts(chartEl, options);
+			vm2MetricasChart.render();
+		} else {
+			vm2MetricasChart.updateOptions(options, false, true);
+			vm2MetricasChart.updateSeries(options.series, true);
+		}
+	}
+
+	function normalizeKey(s) {
+		return (s || '')
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '');
+	}
+
+	function findCategoryCardHTML(categoryKey, categoryLabel) {
+		var reporteRoot = document.getElementById('vm2-panel-reporte');
+		if (!reporteRoot) return null;
+		// Buscamos en los cards del reporte compacto por el texto del header
+		var cards = reporteRoot.querySelectorAll('.modal-resultado-entrevista-compacto .card');
+		var wantByKey = {
+			'hard_skills': 'hardskills',
+			'habilidades': 'habilidades',
+			'fit_cultural': 'fitcultural',
+			'motivadores': 'motivadores',
+			'pruebas': 'pruebas',
+			'confiabilidad_riesgo': 'confiabilidadriesgo',
+		};
+		var want = wantByKey[categoryKey] || normalizeKey(categoryLabel);
+		for (var i = 0; i < cards.length; i++) {
+			var headerP = cards[i].querySelector('.card-header p');
+			if (!headerP) continue;
+			var t = normalizeKey(headerP.textContent || '');
+			// Match tolerante para "Confiabilidad / riesgo" y similares
+			if (t.indexOf(want) !== -1) return cards[i].outerHTML;
+			if (want === 'confiabilidadriesgo' && t.indexOf('confiabilidad') !== -1) return cards[i].outerHTML;
+		}
+		return null;
+	}
+
+	function openMetricDetailModal(categoryKey, categoryLabel) {
+		var titleEl = document.getElementById('vm2MetricDetailTitle');
+		var bodyEl = document.getElementById('vm2MetricDetailBody');
+		var modalEl = document.getElementById('vm2MetricDetailModal');
+		if (!titleEl || !bodyEl || !modalEl) return;
+
+		titleEl.textContent = categoryLabel;
+		var html = findCategoryCardHTML(categoryKey, categoryLabel);
+		if (!html) {
+			bodyEl.innerHTML = '<div class="text-secondary py-4 text-center"><i class="ri-information-line fs-24 d-block mb-2 opacity-50"></i>No hay detalle disponible para esta categoría.</div>';
+		} else {
+			bodyEl.innerHTML = html;
+		}
+
+		if (window.bootstrap && window.bootstrap.Modal) {
+			var m = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+			m.show();
+		}
+	}
+
+	function updateMatchPerfilGauge(pctInt, color) {
+		var fallbackWrap = document.getElementById('vm2-match-fallback');
+		var fallbackPct = document.getElementById('vm2-match-fallback-pct');
+
+		if (!roomsAvailabilityChart) {
+			initMatchPerfilGauge();
+		}
+
+		if (!roomsAvailabilityChart) {
+			if (fallbackWrap) fallbackWrap.classList.remove('d-none');
+			if (fallbackPct) fallbackPct.textContent = (pctInt === null ? '—' : (pctInt + '%'));
+			return;
+		}
+
+		var value = (pctInt === null ? 0 : pctInt);
+		var c = color || getPrimaryColor();
+		var trackBg = vm2RadialTrackBackground(c);
+		roomsAvailabilityChart.updateOptions({
+			colors: [c],
+			plotOptions: {
+				radialBar: {
+					track: { background: trackBg },
+					dataLabels: {
+						name: { color: c },
+						value: { color: c }
+					}
+				}
+			}
+		}, false, true);
+		roomsAvailabilityChart.updateSeries([value], true);
+	}
+
+	function init() {
+		// No inicializar ni mostrar el gauge hasta que el usuario seleccione un candidato.
+		document.addEventListener('click', function (e) {
+			var btn = e.target && e.target.closest ? e.target.closest('.vm2-metrica-open') : null;
+			if (!btn) return;
+			e.preventDefault();
+			openMetricDetailModal(btn.getAttribute('data-cat') || '', btn.getAttribute('data-cat-label') || 'Detalle');
+		});
+		document.querySelectorAll('.vacancy-m2-candidate-card').forEach(function (card) {
+			card.addEventListener('click', function () {
+				selectVm2Card(card);
+			});
+			card.addEventListener('keydown', function (e) {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					selectVm2Card(card);
+				}
+			});
+		});
+		var modalAcciones = document.getElementById('vm2ModalAccionesDecisivas');
+		if (modalAcciones) {
+			modalAcciones.addEventListener('show.bs.modal', function () {
+				vm2FillModalAccionesDecisivas();
+			});
+			modalAcciones.addEventListener('change', function (e) {
+				var t = e.target;
+				if (!t || !t.classList || !t.classList.contains('vm2-check-accion-decisiva')) return;
+				vm2SyncGestionModeUI();
+				var aid = t.getAttribute('data-accion-id');
+				if (!aid) return;
+				var item = document.querySelector(
+					'#vm2-acciones-decisivas-body .vm2-acc-accordion-item[data-vm2-accion-id="' + aid + '"]'
+				);
+				if (item) item.classList.toggle('opacity-50', !t.checked);
+			});
+		}
+
+		document.querySelectorAll('input[name="vm2tipoGestion"]').forEach(function (r) {
+			r.addEventListener('change', function () {
+				vm2SyncGestionModeUI();
+			});
+		});
+
+		var btnVm2Ct = document.getElementById('vm2-btn-confirmar-contratacion');
+		if (btnVm2Ct) {
+			btnVm2Ct.addEventListener('click', function () {
+				var card = document.querySelector('.vacancy-m2-candidate-card.is-selected');
+				var aplId = card && card.getAttribute('data-aplicacion-id');
+				if (!aplId || aplId === '—') return;
+				var url = vm2BuildVm2GestionPostUrl(aplId);
+				var csrf = vm2GetCsrfToken();
+				btnVm2Ct.disabled = true;
+				fetch(url, {
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': csrf
+					},
+					body: JSON.stringify({ accion: 'ir_contratacion' })
+				})
+					.then(function (r) { return r.json().then(function (j) { return { ok: r.ok, json: j }; }); })
+					.then(function (res) {
+						if (res.ok && res.json && res.json.ok) {
+							window.location.reload();
+							return;
+						}
+						var msg = (res.json && res.json.error) ? res.json.error : 'No fue posible completar la acción.';
+						alert(msg);
+					})
+					.catch(function () {
+						alert('Error de red al continuar a contratación.');
+					})
+					.finally(function () {
+						btnVm2Ct.disabled = false;
+					});
+			});
+		}
+
+		var btnVm2De = document.getElementById('vm2-btn-registrar-decisiones');
+		if (btnVm2De) {
+			btnVm2De.addEventListener('click', function () {
+				var card = document.querySelector('.vacancy-m2-candidate-card.is-selected');
+				var aplId = card && card.getAttribute('data-aplicacion-id');
+				if (!aplId || aplId === '—') return;
+				var url = vm2BuildVm2GestionPostUrl(aplId);
+				var csrf = vm2GetCsrfToken();
+				var reportes = vm2CollectReportesDecisiones();
+				btnVm2De.disabled = true;
+				fetch(url, {
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': csrf
+					},
+					body: JSON.stringify({ accion: 'registrar_decisiones', reportes: reportes })
+				})
+					.then(function (r) { return r.json().then(function (j) { return { ok: r.ok, json: j }; }); })
+					.then(function (res) {
+						if (res.ok && res.json && res.json.ok) {
+							window.location.reload();
+							return;
+						}
+						var msg = (res.json && res.json.error) ? res.json.error : 'No fue posible registrar las decisiones.';
+						alert(msg);
+					})
+					.catch(function () {
+						alert('Error de red al registrar decisiones definitivas.');
+					})
+					.finally(function () {
+						btnVm2De.disabled = false;
+					});
+			});
+		}
+
+		var modalInfoCand = document.getElementById('vm2ModalInfoCandidato');
+		if (modalInfoCand) {
+			modalInfoCand.addEventListener('show.bs.modal', function () {
+				var cardSel = document.querySelector('.vacancy-m2-candidate-card.is-selected');
+				var infoUrl = cardSel && cardSel.getAttribute('data-vm2-info-url');
+				var bodyEl = document.getElementById('vm2ModalInfoCandidatoBody');
+				if (!bodyEl) return;
+				if (!infoUrl) {
+					bodyEl.innerHTML = '<p class="text-muted text-center py-4 mb-0">Seleccione un candidato en el panel lateral.</p>';
+					return;
+				}
+				bodyEl.innerHTML = '<div class="text-secondary py-5 text-center"><span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Cargando información…</div>';
+				fetch(infoUrl, { credentials: 'same-origin' })
+					.then(function (r) { return r.text(); })
+					.then(function (html) {
+						bodyEl.innerHTML = html;
+					})
+					.catch(function () {
+						bodyEl.innerHTML = '<p class="text-danger text-center py-4 mb-0">No fue posible cargar la información del candidato.</p>';
+					});
+			});
+		}
+		if (typeof feather !== 'undefined') {
+			feather.replace();
+		}
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', init);
+	} else {
+		init();
+	}
+})();
+</script>
+{% endblock %}

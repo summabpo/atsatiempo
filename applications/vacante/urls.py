@@ -27,9 +27,30 @@ urlpatterns = [
         client_views.vacancy_aplicacion_modal_cuerpo,
         name='vacancy_aplicacion_modal_cuerpo',
     ),
+    path(
+        url_principal + 'detalle/<int:vacante_pk>/aplicacion/<int:aplicacion_pk>/panel-reporte-final/',
+        client_views.vacancy_aplicacion_panel_reporte_final,
+        name='vacancy_aplicacion_panel_reporte_final',
+    ),
+    path(
+        url_principal + 'detalle/<int:vacante_pk>/aplicacion/<int:aplicacion_pk>/historial-filas/',
+        client_views.vacancy_aplicacion_historial_filas,
+        name='vacancy_aplicacion_historial_filas',
+    ),
+    path(
+        url_principal + 'detalle/<int:vacante_pk>/aplicacion/<int:aplicacion_pk>/vm2-info-candidato/',
+        client_views.vacancy_aplicacion_vm2_info_candidato,
+        name='vacancy_aplicacion_vm2_info_candidato',
+    ),
+    path(
+        url_principal + 'detalle/<int:vacante_pk>/aplicacion/<int:aplicacion_pk>/vm2-gestion-accion/',
+        client_views.vacancy_aplicacion_vm2_gestion_accion,
+        name='vacancy_aplicacion_vm2_gestion_accion',
+    ),
     path( url_principal+'detalle/entrevistas/<int:pk>/', client_views.detail_vacancy_interview, name='vacantes_entrevista_cliente'),
     path( url_principal+'asignar_analista/<int:pk>/', client_views.detail_vacancy_assign, name='vacantes_asignar_analista_cliente'),
     path( url_principal+'gestionar/<int:pk>/<int:vacante_id>/', client_views.vacancy_management_from_client, name='vacantes_gestion_propias_cliente'),
+    path( url_principal+'gestionar2/<int:pk>/<int:vacante_id>/', client_views.vacancy_management_from_client_2, name='vacantes_gestion_propias_cliente_2'),
 
     #client_headhunter_user
     path( url_principal+'clientes/', client_views.vacancy_client_assigned, name='vacantes_detalle_cliente_headhunter'),

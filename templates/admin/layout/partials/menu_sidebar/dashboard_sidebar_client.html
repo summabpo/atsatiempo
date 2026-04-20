@@ -1,7 +1,7 @@
 {% load custom_tags %}
 
 <li class="menu-title small text-uppercase">
-    <span class="menu-title-text">VACANTES</span>
+    <span class="menu-title-text text-primary">VACANTES</span>
 </li>
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'vacantes_crear_cliente' %}open{% endif %}
@@ -57,7 +57,7 @@
 </li>
 
 <li class="menu-title small text-uppercase">
-    <span class="menu-title-text">CLIENTES</span>
+    <span class="menu-title-text text-primary">CLIENTES</span>
 </li>
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'client_headhunter_asignados' %}open{% endif %}
@@ -131,7 +131,7 @@
 </li> {% endcomment %}
 
 <li class="menu-title small text-uppercase">
-    <span class="menu-title-text">GRUPO DE TRABAJO</span>
+    <span class="menu-title-text text-primary">GRUPO DE TRABAJO</span>
 </li>
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'users_client' %}open{% endif %}
@@ -151,7 +151,7 @@
 </li>
 
 <li class="menu-title small text-uppercase">
-    <span class="menu-title-text">PARAMETRIZACIÓN</span>
+    <span class="menu-title-text text-primary">PARAMETRIZACIÓN</span>
 </li>
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'info_principal_cliente' %}open{% endif %}

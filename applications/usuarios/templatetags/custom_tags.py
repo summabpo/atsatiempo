@@ -45,6 +45,7 @@ URLS_VACANTES_CLIENTE  = [
     'vacantes_entrevista_cliente',
     'vacantes_asignar_analista_cliente',
     'vacantes_gestion_propias_cliente',
+    'vacantes_gestion_propias_cliente_2',
     'reclutados_detalle_cliente',
     'entrevistar_gestionar_cliente',
 ]

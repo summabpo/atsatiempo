@@ -1,0 +1,50 @@
+{% load static %}
+<div class="default-table-area all-projects">
+	<div class="table-responsive">
+		<table class="table align-middle text-center mb-0">
+			<thead>
+				<tr>
+					<th scope="col">Candidato</th>
+					<th scope="col" class="d-none d-md-table-cell">Ciudad</th>
+					<th scope="col">Estado aplicación</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for e in candidatos %}
+				<tr class="vacancy-m2-candidate-card"
+					role="button" tabindex="0"
+					data-aplicacion-id="{{ e.id }}"
+					data-img="{% if e.candidato_101.imagen_perfil %}{{ e.candidato_101.imagen_perfil.url|escape }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}"
+					data-nombre="{{ e.candidato_nombre|default:''|escape }}"
+					data-ciudad="{% if e.candidato_101.ciudad_id_004 %}{{ e.candidato_101.ciudad_id_004.nombre|escape }}{% else %}—{% endif %}"
+					data-titulo="{% if e.ultimo_titulo_graduado %}{{ e.ultimo_titulo_graduado|escape }}{% elif e.ultima_carrera_graduada %}{{ e.ultima_carrera_graduada|escape }}{% elif e.ultima_profesion_graduada %}{{ e.ultima_profesion_graduada|escape }}{% else %}—{% endif %}"
+					data-reporte-url="{% url 'vacantes:vacancy_aplicacion_panel_reporte_final' vacante.id e.id %}"
+					data-estado="{{ e.get_estado_aplicacion_display|escape }}"
+					data-estado-aplicacion="{{ e.estado_aplicacion }}"
+					data-reporte-prom="{% if e.vm2_reporte_final_promedio is not None %}{{ e.vm2_reporte_final_promedio|floatformat:2 }}{% endif %}"
+					data-reporte-pct="{% if e.vm2_reporte_final_pct is not None %}{{ e.vm2_reporte_final_pct }}{% endif %}"
+					data-detalle-url="{% if request.session.grupo_id == 5 %}{% url 'reclutados:reclutados_detalle_analista_interno' e.id %}{% else %}{% url 'reclutados:reclutados_detalle_cliente' e.id %}{% endif %}">
+					<td class="text-start">
+						<div class="d-flex align-items-center gap-2 min-w-0">
+							<div class="flex-shrink-0">
+								{% if e.candidato_101.imagen_perfil %}
+								<img src="{{ e.candidato_101.imagen_perfil.url }}" alt="" class="rounded-circle" width="38" height="38" style="object-fit: cover;">
+								{% else %}
+								<img src="{% static 'admin/images/blank.png' %}" alt="" class="rounded-circle" width="38" height="38" style="object-fit: cover;">
+								{% endif %}
+							</div>
+							<span class="fw-semibold text-dark text-break">{{ e.candidato_nombre }}</span>
+						</div>
+					</td>
+					<td class="text-secondary d-none d-md-table-cell">{% if e.candidato_101.ciudad_id_004 %}{{ e.candidato_101.ciudad_id_004.nombre }}{% else %}—{% endif %}</td>
+					<td class="text-secondary text-break">{{ e.get_estado_aplicacion_display }}</td>
+				</tr>
+				{% empty %}
+				<tr>
+					<td colspan="3" class="text-center text-muted py-4">Sin candidatos en esta etapa.</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
