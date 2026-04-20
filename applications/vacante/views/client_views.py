@@ -1,14 +1,21 @@
 from collections import defaultdict
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import F, Count, Q, Value, Case, When, CharField, Max
+from django.db.models import F, Count, Q, Value, Case, When, CharField, Max, Prefetch
 from django.db import transaction, IntegrityError
-from applications.cliente.models import Cli051Cliente, Cli064AsignacionCliente, Cli078MotivadoresCandidato
+from django.views.decorators.http import require_POST
+from applications.cliente.models import (
+    Cli051Cliente,
+    Cli064AsignacionCliente,
+    Cli078MotivadoresCandidato,
+    Cli086AsignacionCargoAccionesDecisivas,
+)
+from applications.cliente.acciones_cargo_utils import acciones_decisivas_asignadas_cargo_activas
 
 from applications.services.service_interview import query_interview_all, attach_ultima_entrevista_a_reclutados
 from applications.services.service_recruited import query_recruited_vacancy_id
 from applications.reclutado.forms.FormRecruited import ReclutadoCrearForm
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones, Cli075GrupoProfesion
-from applications.reclutado.models import Cli056AplicacionVacante
+from applications.reclutado.models import Cli056AplicacionVacante, Cli087ReporteAccionDecisivaReclutado
 from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import Permiso, UsuarioBase
 from applications.common.models import Cat001Estado, Cat004Ciudad
@@ -20,6 +27,7 @@ from django.contrib.auth.decorators import login_required
 from applications.usuarios.decorators  import validar_permisos
 from django.db.models.functions import Concat
 from django.utils import timezone
+from django.db.models import OuterRef, Subquery
 
 #forms
 from applications.vacante.forms.VacanteForms import VacancyAssingForm, VacancyFormAllV2, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll, VacancyAssignRecruiterForm
@@ -29,10 +37,27 @@ from applications.services.service_vacanty import query_vacanty_all, query_vacan
 
 #query
 from applications.services.service_client import query_client_detail
-from applications.services.service_recruited import consultar_historial_aplicacion_vacante_candidate
+from applications.services.service_recruited import (
+    consultar_historial_aplicacion_vacante_candidate,
+)
 from applications.services.service_candidate import buscar_candidato
 from applications.usuarios.templatetags.custom_tags import get_match_inicial_porcentaje
 from applications.reclutado.views.admin_views import estructurar_resultado_entrevista_json
+from applications.candidato.models import Can103Educacion
+
+
+from components.RegistrarHistorialVacante import crear_historial_aplicacion
+
+
+def _vm2_vacante_ok_for_cliente_session(request, vacante):
+    """Si hay cliente en sesión, la vacante debe pertenecer a ese cliente asignado."""
+    cid = request.session.get("cliente_id")
+    if not cid:
+        return True
+    asig = getattr(vacante, "asignacion_cliente_id_064", None)
+    if not asig or not asig.id_cliente_asignado_id:
+        return False
+    return int(asig.id_cliente_asignado_id) == int(cid)
 
 
 #crear todas las vacantes
@@ -1147,6 +1172,240 @@ def vacancy_aplicacion_modal_cuerpo(request, vacante_pk, aplicacion_pk):
     )
 
 
+@login_required
+@validar_permisos(
+    "acceso_admin",
+    "acceso_cliente",
+    "acceso_analista_seleccion_ats",
+    "acceso_analista_seleccion",
+)
+def vacancy_aplicacion_panel_reporte_final(request, vacante_pk, aplicacion_pk):
+    """
+    Fragmento HTML para el panel (vacancy_management2):
+    muestra el resultado compacto del reporte final (última entrevista).
+    """
+    aplicacion = get_object_or_404(
+        Cli056AplicacionVacante.objects.select_related("vacante_id_052"),
+        pk=aplicacion_pk,
+        vacante_id_052_id=vacante_pk,
+    )
+
+    entrevistas = (
+        Cli057AsignacionEntrevista.objects.filter(asignacion_vacante=aplicacion)
+        .order_by("-fecha_entrevista", "-hora_entrevista", "-id")
+    )
+    entrevista = entrevistas.first()
+
+    json_match_inicial = {}
+    raw_jm = aplicacion.json_match_inicial
+    if raw_jm:
+        try:
+            if isinstance(raw_jm, str):
+                json_match_inicial = json.loads(raw_jm)
+            else:
+                json_match_inicial = raw_jm
+        except (json.JSONDecodeError, TypeError):
+            json_match_inicial = {}
+
+    datos_reporte_final = None
+    if entrevista and entrevista.resultado_entrevista:
+        datos_reporte_final = estructurar_resultado_entrevista_json(
+            entrevista.resultado_entrevista, json_match_inicial
+        )
+
+    return render(
+        request,
+        "admin/vacancy/partials/panel_reporte_final_compacto.html",
+        {"datos_reporte_final": datos_reporte_final},
+    )
+
+
+@login_required
+@validar_permisos(
+    "acceso_admin",
+    "acceso_cliente",
+    "acceso_analista_seleccion_ats",
+    "acceso_analista_seleccion",
+)
+def vacancy_aplicacion_historial_filas(request, vacante_pk, aplicacion_pk):
+    """
+    Filas HTML del historial (cli_063) para una sola aplicación a vacante.
+    Usado en vacancy_management2 al seleccionar candidato.
+    """
+    get_object_or_404(
+        Cli056AplicacionVacante.objects.select_related("vacante_id_052"),
+        pk=aplicacion_pk,
+        vacante_id_052_id=vacante_pk,
+    )
+    historial = consultar_historial_aplicacion_vacante_candidate(aplicacion_pk)
+    return render(
+        request,
+        "admin/vacancy/partials/vm2_historial_aplicacion_filas.html",
+        {"historial": historial},
+    )
+
+
+@login_required
+@validar_permisos(
+    "acceso_admin",
+    "acceso_cliente",
+    "acceso_analista_seleccion_ats",
+    "acceso_analista_seleccion",
+)
+def vacancy_aplicacion_vm2_info_candidato(request, vacante_pk, aplicacion_pk):
+    """HTML para el modal «Información del candidato» en vacancy_management2."""
+    aplicacion = get_object_or_404(
+        Cli056AplicacionVacante.objects.select_related(
+            "candidato_101",
+            "candidato_101__ciudad_id_004",
+        ),
+        pk=aplicacion_pk,
+        vacante_id_052_id=vacante_pk,
+    )
+    candidato = aplicacion.candidato_101
+    info_detalle_candidato = buscar_candidato(candidato.id)
+    idiomas_vm2 = _vm2_idiomas_candidato(candidato)
+    return render(
+        request,
+        "admin/vacancy/partials/vm2_modal_info_candidato.html",
+        {
+            "aplicacion": aplicacion,
+            "candidato": candidato,
+            "info_detalle_candidato": info_detalle_candidato,
+            "idiomas_vm2": idiomas_vm2,
+        },
+    )
+
+
+@login_required
+@require_POST
+@validar_permisos(
+    "acceso_admin",
+    "acceso_cliente",
+    "acceso_analista_seleccion_ats",
+    "acceso_analista_seleccion",
+)
+def vacancy_aplicacion_vm2_gestion_accion(request, vacante_pk, aplicacion_pk):
+    """
+    Desde gestión de vacante (vm2): pasar a viaje de contratación (estado 13)
+    o registrar decisiones definitivas (estado 5 + filas cli_087).
+    Requiere aplicación en estado 3 (Entrevista aprobada).
+    """
+    try:
+        body = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"ok": False, "error": "JSON inválido"}, status=400)
+
+    accion = (body.get("accion") or "").strip()
+    aplicacion = get_object_or_404(
+        Cli056AplicacionVacante.objects.select_related(
+            "vacante_id_052",
+            "vacante_id_052__asignacion_cliente_id_064",
+        ),
+        pk=aplicacion_pk,
+        vacante_id_052_id=vacante_pk,
+    )
+    vacante = aplicacion.vacante_id_052
+    if not _vm2_vacante_ok_for_cliente_session(request, vacante):
+        return JsonResponse({"ok": False, "error": "No autorizado."}, status=403)
+
+    if aplicacion.estado_aplicacion != 3:
+        return JsonResponse(
+            {
+                "ok": False,
+                "error": "La aplicación debe estar en estado Entrevista aprobada para esta acción.",
+            },
+            status=400,
+        )
+
+    uid = request.session.get("_auth_user_id") or getattr(request.user, "id", None)
+    if not uid:
+        return JsonResponse({"ok": False, "error": "Usuario no identificado."}, status=403)
+    usuario = get_object_or_404(UsuarioBase, pk=uid)
+
+    estado_activo = Cat001Estado.objects.filter(nombre__iexact="Activo").first()
+    if not estado_activo:
+        estado_activo = Cat001Estado.objects.filter(pk=1).first()
+    if not estado_activo:
+        return JsonResponse({"ok": False, "error": "No hay estado catálogo Activo."}, status=500)
+
+    if accion == "ir_contratacion":
+        crear_historial_aplicacion(
+            aplicacion,
+            13,
+            uid,
+            "Pase a viaje de contratación (en espera por respuesta de contratación)",
+        )
+        return JsonResponse({"ok": True, "estado_aplicacion": 13})
+
+    if accion == "registrar_decisiones":
+        cargo = vacante.cargo
+        if not cargo:
+            return JsonResponse(
+                {"ok": False, "error": "La vacante no tiene cargo asociado."},
+                status=400,
+            )
+
+        ids_cargo = set(
+            Cli086AsignacionCargoAccionesDecisivas.objects.filter(cargo=cargo).values_list(
+                "accion_decisiva_id", flat=True
+            )
+        )
+        if not ids_cargo:
+            return JsonResponse(
+                {
+                    "ok": False,
+                    "error": "No hay acciones decisivas configuradas para el cargo.",
+                },
+                status=400,
+            )
+
+        reportes_in = {}
+        for r in body.get("reportes") or []:
+            aid = r.get("accion_decisiva_id")
+            if aid is None:
+                continue
+            try:
+                aid = int(aid)
+            except (TypeError, ValueError):
+                continue
+            if aid not in ids_cargo:
+                return JsonResponse(
+                    {"ok": False, "error": "Acción decisiva no asignada al cargo."},
+                    status=400,
+                )
+            reportes_in[aid] = r.get("respuestas") if isinstance(r.get("respuestas"), dict) else {}
+
+        if not reportes_in:
+            return JsonResponse(
+                {
+                    "ok": False,
+                    "error": "Seleccione al menos una acción decisiva para registrar.",
+                },
+                status=400,
+            )
+
+        with transaction.atomic():
+            for aid, resp in reportes_in.items():
+                Cli087ReporteAccionDecisivaReclutado.objects.create(
+                    aplicacion_vacante_056=aplicacion,
+                    accion_decisiva_id=aid,
+                    usuario_cargado=usuario,
+                    estado=estado_activo,
+                    json_data=resp,
+                )
+            crear_historial_aplicacion(
+                aplicacion,
+                5,
+                uid,
+                "Registro de decisiones definitivas (acciones decisivas del cargo)",
+            )
+
+        return JsonResponse({"ok": True, "estado_aplicacion": 5})
+
+    return JsonResponse({"ok": False, "error": "Acción no válida."}, status=400)
+
+
 #detalle de la vacante
 @login_required
 @validar_permisos('acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats')
@@ -1225,22 +1484,166 @@ def vacancy_client_assigned(request):
     return render(request, 'admin/vacancy/client_user/headhunter/vacancy_client_assigned.html', context)
 
 
+def _json_match_inicial_dict(aplicacion):
+    raw = aplicacion.json_match_inicial
+    if not raw:
+        return {}
+    if isinstance(raw, dict):
+        return raw
+    try:
+        return json.loads(raw)
+    except (json.JSONDecodeError, TypeError):
+        return {}
+
+
+def _vm2_idiomas_candidato(candidato):
+    """Lista de dicts {nombre, nivel_label, line} desde el JSON de idiomas del candidato."""
+    from applications.services.choices import NIVEL_IDIOMA_CHOICES_STATIC
+
+    niv_map = dict(NIVEL_IDIOMA_CHOICES_STATIC)
+    raw = getattr(candidato, "idiomas", None)
+    if not raw:
+        return []
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except (json.JSONDecodeError, TypeError):
+            return []
+    if not isinstance(raw, list):
+        return []
+    out = []
+    for it in raw:
+        if not isinstance(it, dict):
+            continue
+        nombre = (it.get("nombre") or "").strip() or "—"
+        ncode = it.get("nivel")
+        if ncode in (None, ""):
+            nlabel = "—"
+        else:
+            nlabel = niv_map.get(ncode)
+            if nlabel is None:
+                nlabel = str(ncode)
+        line = f"{nombre} — {nlabel}"
+        out.append({"nombre": nombre, "nivel_label": nlabel, "line": line})
+    return out
+
+
+def _enrich_reclutados_reporte_final_listado(aplicaciones):
+    """
+    Añade vm2_reporte_final_promedio (0..10 o None) y vm2_reporte_final_pct (0..100 o None)
+    por aplicación, usando la última entrevista con resultado (misma lógica que el panel).
+    """
+    for aplicacion in aplicaciones:
+        ent = None
+        for e in aplicacion.asignaciones_entrevista.all()[:1]:
+            ent = e
+            break
+        prom = None
+        pct = None
+        if ent and ent.resultado_entrevista:
+            datos = estructurar_resultado_entrevista_json(
+                ent.resultado_entrevista, _json_match_inicial_dict(aplicacion)
+            )
+            if datos and datos.get("promedio_total") is not None:
+                try:
+                    prom = float(datos["promedio_total"])
+                    pct = max(0, min(100, round(prom * 10)))
+                except (TypeError, ValueError):
+                    prom = None
+                    pct = None
+        aplicacion.vm2_reporte_final_promedio = prom
+        aplicacion.vm2_reporte_final_pct = pct
+
+
 # gestionar la vacante2
 @login_required
 @validar_permisos('acceso_cliente')
 def vacancy_management_from_client_2(request, pk, vacante_id):
     data = query_client_detail(pk)
-    vacante = get_object_or_404(Cli052Vacante.objects.prefetch_related('habilidades'), id=vacante_id)
+    vacante = get_object_or_404(
+        Cli052Vacante.objects.select_related(
+            "cargo",
+            "perfil_vacante",
+            "perfil_vacante__lugar_trabajo",
+            "perfil_vacante__profesion_estudio",
+            "perfil_vacante__grupo_profesion",
+            "asignacion_cliente_id_064__id_cliente_asignado",
+        ).prefetch_related("habilidades"),
+        id=vacante_id,
+    )
 
-    reclutados = (
+    ultimo_estudio_graduado = (
+        Can103Educacion.objects.filter(
+            candidato_id_101=OuterRef("candidato_101_id"),
+            estado_id_001=1,
+            estado_estudios="G",
+        )
+        .order_by("-fecha_final", "-id")
+    )
+
+    prefetch_entrevistas = Prefetch(
+        "asignaciones_entrevista",
+        queryset=Cli057AsignacionEntrevista.objects.order_by(
+            "-fecha_entrevista", "-hora_entrevista", "-id"
+        ),
+    )
+
+    reclutados_qs = (
         query_recruited_vacancy_id(vacante.id)
         .filter(estado_aplicacion__in=[3, 5, 6, 7, 13, 14, 15])
-        .select_related('candidato_101__ciudad_id_004')
+        .select_related("candidato_101__ciudad_id_004")
+        .prefetch_related(prefetch_entrevistas)
+        .annotate(
+            ultimo_titulo_graduado=Subquery(ultimo_estudio_graduado.values("titulo")[:1]),
+            ultima_carrera_graduada=Subquery(ultimo_estudio_graduado.values("carrera")[:1]),
+            ultima_profesion_graduada=Subquery(
+                ultimo_estudio_graduado.values("profesion_estudio__nombre")[:1]
+            ),
+        )
     )
+
+    reclutados = list(reclutados_qs)
+    _enrich_reclutados_reporte_final_listado(reclutados)
+
+    # Tarjetas resumen: feedback (3), decisivas (5), aprob./seguimiento (6,13), no aprobados (7,14), contratados (15)
+    vm2_por_feedback = [a for a in reclutados if a.estado_aplicacion == 3]
+    vm2_decisiones_decisivas = [a for a in reclutados if a.estado_aplicacion == 5]
+    orden_seguimiento = {6: 0, 13: 1}
+    vm2_tras_decision = sorted(
+        [a for a in reclutados if a.estado_aplicacion in (6, 13)],
+        key=lambda x: (orden_seguimiento.get(x.estado_aplicacion, 99), (x.candidato_nombre or "").strip().lower()),
+    )
+    vm2_no_aprobados = sorted(
+        [a for a in reclutados if a.estado_aplicacion in (7, 14)],
+        key=lambda x: (x.estado_aplicacion, (x.candidato_nombre or "").strip().lower()),
+    )
+    vm2_contratados = [a for a in reclutados if a.estado_aplicacion == 15]
+
+    vm2_candidato_perfil_video = {}
+    for a in reclutados:
+        cand = a.candidato_101
+        vid_url = ""
+        if cand.video_perfil:
+            vid_url = cand.video_perfil.url
+        idiomas_rows = _vm2_idiomas_candidato(cand)
+        vm2_candidato_perfil_video[str(a.id)] = {
+            "video_url": vid_url,
+            "perfil": (cand.perfil or "").strip(),
+            "idiomas_display": [row["line"] for row in idiomas_rows],
+        }
+
+    vm2_acciones_cargo_decisivas = acciones_decisivas_asignadas_cargo_activas(vacante.cargo)
 
     context = {
         'data': data,
         'vacante': vacante,
         'reclutados': reclutados,
+        'vm2_por_feedback': vm2_por_feedback,
+        'vm2_decisiones_decisivas': vm2_decisiones_decisivas,
+        'vm2_tras_decision': vm2_tras_decision,
+        'vm2_no_aprobados': vm2_no_aprobados,
+        'vm2_contratados': vm2_contratados,
+        'vm2_candidato_perfil_video': vm2_candidato_perfil_video,
+        'vm2_acciones_cargo_decisivas': vm2_acciones_cargo_decisivas,
     }
     return render(request, 'admin/vacancy/client_user/vacancy_management2.html', context)

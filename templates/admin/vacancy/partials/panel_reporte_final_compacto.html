@@ -1,0 +1,27 @@
+{% comment %}
+Panel: resultado reporte final compacto.
+Requiere: datos_reporte_final (salida de estructurar_resultado_entrevista_json) o None.
+{% endcomment %}
+
+{% if datos_reporte_final %}
+  {# Meta para actualizar el gauge con el resultado final (promedio_total 0..10) #}
+  {% widthratio datos_reporte_final.promedio_total 10 100 as reporte_final_pct %}
+  <div id="vm2-reporte-final-meta"
+       data-promedio-total="{{ datos_reporte_final.promedio_total|default:0|floatformat:2 }}"
+       data-pct="{{ reporte_final_pct }}"
+       data-hs="{{ datos_reporte_final.promedios.hard_skills|default:0|floatformat:2 }}"
+       data-hab="{{ datos_reporte_final.promedios.habilidades|default:0|floatformat:2 }}"
+       data-fc="{{ datos_reporte_final.promedios.fit_cultural|default:0|floatformat:2 }}"
+       data-mot="{{ datos_reporte_final.promedios.motivadores|default:0|floatformat:2 }}"
+       data-pru="{% if datos_reporte_final.pruebas and datos_reporte_final.pruebas.0.calificacion %}{{ datos_reporte_final.pruebas.0.calificacion|floatformat:2 }}{% else %}0{% endif %}"
+       data-conf="{% if datos_reporte_final.confiabilidad_riesgo and datos_reporte_final.confiabilidad_riesgo.calificacion %}{{ datos_reporte_final.confiabilidad_riesgo.calificacion|floatformat:2 }}{% else %}0{% endif %}"></div>
+
+  {% include 'admin/vacancy/partials/modal_entrevista_resultado_reporte_compacto.html' with datos_reporte_final=datos_reporte_final %}
+{% else %}
+  <div id="vm2-reporte-final-meta" data-promedio-total="" data-pct=""></div>
+  <div class="text-secondary py-4 text-center">
+    <i class="ri-file-search-line fs-40 d-block mb-2 opacity-50"></i>
+    <p class="mb-0">No hay reporte final disponible para este candidato.</p>
+  </div>
+{% endif %}
+

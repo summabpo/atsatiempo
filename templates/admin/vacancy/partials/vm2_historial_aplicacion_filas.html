@@ -1,0 +1,20 @@
+{% for h in historial %}
+<tr class="vm2-historial-row">
+	<td class="fs-12 fw-semibold text-body-color-50 text-nowrap text-center">{{ h.fecha|date:"d/m/Y H:i" }}</td>
+	<td class="text-center">
+		{% with c=h.color %}
+		{% if c == "gris" %}
+		<span class="d-inline-block px-2 bg-secondary bg-opacity-10 text-secondary border border-secondary rounded-pill fs-12 fw-medium">{{ h.estado }}</span>
+		{% else %}
+		<span class="d-inline-block px-2 bg-{{ c }} bg-opacity-10 text-{{ c }} border border-{{ c }} rounded-pill fs-12 fw-medium">{{ h.estado }}</span>
+		{% endif %}
+		{% endwith %}
+	</td>
+	<td class="fs-12 text-body text-break text-center" style="max-width: 320px;">{{ h.descripcion }}</td>
+	<td class="fs-12 text-body text-center">{{ h.usuario }}</td>
+</tr>
+{% empty %}
+<tr class="vm2-historial-empty">
+	<td colspan="4" class="text-center text-muted py-5 fs-13">No hay movimientos en el historial para esta aplicación.</td>
+</tr>
+{% endfor %}

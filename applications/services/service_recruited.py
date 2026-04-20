@@ -113,13 +113,15 @@ def consultar_historial_aplicacion_vacante_candidate(aplicacion_vacante_id):
         Cli063AplicacionVacanteHistorial.objects
         .filter(aplicacion_vacante_056__id=aplicacion_vacante_id)
         .select_related('aplicacion_vacante_056', 'usuario_id_genero')
-        .order_by('-fecha')
+        .order_by('-fecha', '-id')
     )
 
     historial_datos = []
     for h in historial_aplicaciones:
 
-        estado_info = ESTADO_APLICACION_COLOR_STATIC.get(h.estado, {'estado': 'Desconocido', 'color': 'gris'})
+        estado_info = ESTADO_APLICACION_COLOR_STATIC.get(
+            h.estado, ('Desconocido', 'secondary')
+        )
 
         historial_datos.append({
             'estado': estado_info[0],
