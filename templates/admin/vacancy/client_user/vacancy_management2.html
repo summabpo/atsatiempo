@@ -78,10 +78,21 @@ Gestión de Vacante
 		<div class="col-12 col-lg-9">
 			{{ vm2_candidato_perfil_video|json_script:"vm2-candidatos-perfil-video" }}
 			{{ vm2_acciones_cargo_decisivas|json_script:"vm2-acciones-cargo-decisivas" }}
+			{{ vm2_cli087_por_aplicacion|json_script:"vm2-cli087-por-aplicacion" }}
+			{# Base con aplicacion_pk=0 y cli087_pk=0; el JS sustituye con regex para no colisionar con vacante.id #}
+			<script type="text/plain" id="vm2-cli087-url-template">{% url 'vacantes:vacancy_aplicacion_vm2_cli087' vacante.id 0 0 %}</script>
 			<div class="main-content-container overflow-hidden" style="padding-left: 12px; padding-right: 12px;">
-				<div class="d-flex justify-content-end mb-2 mx-auto w-100 d-none" style="max-width: 1306px;" id="vm2-gestionar-wrap" aria-hidden="true">
-					<button type="button" id="vm2-btn-gestionar" class="btn btn-sm fw-semibold text-white border-0 px-4 py-2 rounded-2 shadow-sm" style="background-color: #B10022;" data-bs-toggle="modal" data-bs-target="#vm2ModalAccionesDecisivas" data-detalle-url="">
+				<div class="d-flex flex-wrap gap-2 justify-content-end mb-2 mx-auto w-100 vm2-top-actions" style="max-width: 1306px;" id="vm2-gestionar-wrap" aria-hidden="false">
+					<button type="button" id="vm2-btn-gestionar" class="btn btn-sm fw-semibold text-white border-0 px-4 py-2 rounded-2 shadow-sm d-none" style="background-color: #B10022;" data-bs-toggle="modal" data-bs-target="#vm2ModalAccionesDecisivas" data-detalle-url="" aria-hidden="true">
 						Gestionar
+					</button>
+					<button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3 border-0 rounded-2 vm2-top-actions-btn" data-bs-toggle="modal" data-bs-target="#vm2ModalVacancyFullDetail">
+						<i class="material-symbols-outlined fs-18 align-middle me-1" style="vertical-align: -3px;">visibility</i>
+						Ver información de la vacante
+					</button>
+					<button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3 border-0 rounded-2 vm2-top-actions-btn" data-bs-toggle="modal" data-bs-target="#vm2ModalInfoCandidato" id="vm2-btn-info-candidato-top">
+						<i class="material-symbols-outlined fs-18 align-middle me-1" style="vertical-align: -3px;">person</i>
+						Ver información del candidato
 					</button>
 				</div>
 				<div class="card border-0 p-4 p-xl-0 rounded-3 position-relative mx-auto" style="background: linear-gradient(272deg, #FF5A6E 31.27%, #B10022 98.4%); max-width: 1306px;">
@@ -99,9 +110,17 @@ Gestión de Vacante
 									<span class="text-white fs-14 text-break" id="vm2-banner-ciudad">—</span>
 								</div>
 							</div>
-							<img src="{% static 'admin/images/blank.png' %}" class="rounded-3 mt-3 mt-sm-0 flex-shrink-0" id="vm2-banner-candidato-img" width="210" height="241" style="width: 210px; height: 241px; object-fit: cover;" alt="">
+							<div class="d-flex align-items-end gap-3 mt-3 mt-sm-0 flex-shrink-0 vm2-banner-media">
+								<div class="d-none vm2-banner-match" id="vm2-match-chart-wrap" aria-hidden="true">
+									<div id="vm2_match_perfil_chart"></div>
+									<div class="text-center text-secondary small mt-1 d-none" id="vm2-match-fallback">
+										<span class="fw-semibold" id="vm2-match-fallback-pct">—</span>
+									</div>
+								</div>
+								<img src="{% static 'admin/images/blank.png' %}" class="rounded-3 flex-shrink-0" id="vm2-banner-candidato-img" width="210" height="241" style="width: 210px; height: 241px; object-fit: cover;" alt="">
+							</div>
 						</div>
-						<img src="{% static 'admin/images/shape-11.png' %}" class="position-absolute bottom-0 end-0" alt="shape">
+						{% comment %} <img src="{% static 'admin/images/shape-11.png' %}" class="position-absolute bottom-0 end-0" alt="shape"> {% endcomment %}
 					</div>
 				</div>
 				<div class="mx-auto" style="max-width: 1120px; margin-top: -22px;">
@@ -169,7 +188,25 @@ Gestión de Vacante
 					<div class="row justify-content-center">
 						<div class="col-12">
 							<div class="row g-3">
-								<div class="col-xl-7 col-md-6">
+								<div id="vm2-panel-columna-izquierda" class="col-12 col-lg-7">
+									<div id="vm2-panel-respuesta-wrap" class="card bg-white border-0 rounded-3 mb-3 shadow-sm">
+										<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-top-3">
+											<h3 class="text-primary mb-0 fs-5 fw-semibold">Respuesta del cliente</h3>
+										</div>
+										<div class="card-body p-4">
+											<p id="vm2-panel-respuesta-cliente" class="mb-0 text-secondary small fst-italic">Seleccione un candidato para ver la respuesta registrada.</p>
+										</div>
+									</div>
+									<div id="vm2-panel-acciones-decisivas-wrap" class="card bg-white border-0 rounded-3 mb-4 shadow-sm">
+										<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-top-3">
+											<h3 class="text-primary mb-0 fs-5 fw-semibold">Acciones decisivas</h3>
+										</div>
+										<div class="card-body p-4 vm2-panel-acciones-decisivas" id="vm2-panel-acciones-decisivas-body">
+											<p class="text-secondary small mb-0">Seleccione un candidato para ver el detalle.</p>
+										</div>
+									</div>
+								</div>
+								<div id="vm2-panel-columna-indicadores" class="col-12 col-lg-5">
 									<div class="card bg-white border-0 rounded-3 mb-4 shadow-sm h-100">
 										<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-top-3">
 											<h3 class="text-primary mb-0 fs-5 fw-semibold">Indicadores por categoría</h3>
@@ -183,50 +220,41 @@ Gestión de Vacante
 										</div>
 									</div>
 								</div>
-								<div class="col-xl-5 col-md-6">
-									<div class="card bg-white border-0 rounded-3 mb-4 shadow-sm h-100">
-										<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-top-3">
-											<h3 class="text-primary mb-0 fs-5 fw-semibold">Reporte final</h3>
-										</div>
-										<div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-center">
-											<div class="d-none vm2-radial-reporte-final mb-0 w-100" id="vm2-match-chart-wrap">
-												<div id="vm2_match_perfil_chart"></div>
-												<div class="text-center text-secondary small mt-2 d-none" id="vm2-match-fallback">
-													<span class="fw-semibold" id="vm2-match-fallback-pct">—</span>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-xl-12 col-md-12">
+								<div class="col-12">
 									<div class="card bg-white border-0 rounded-3 mb-4 shadow-sm">
 										<div class="card-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-top-3">
-											<h3 class="text-primary mb-0 fs-5 fw-semibold">Resumen</h3>
+											<h3 class="text-primary mb-0 fs-5 fw-semibold">Historial de la aplicación</h3>
 										</div>
 										<div class="card-body p-4">
-											<div id="vm2-resumen-presentacion" class="mb-4">
-												<div class="row g-3 g-lg-4 align-items-start">
-													<div class="col-md-5 col-lg-4">
-														<p class="fs-12 fw-semibold text-secondary text-uppercase letter-spacing-1 mb-2">Video de presentación</p>
-														<div id="vm2-resumen-video-wrap" class="rounded-3 overflow-hidden bg-dark border d-none" style="min-height: 180px;">
-															<video id="vm2-resumen-video" class="w-100 d-block" controls playsinline preload="metadata" style="max-height: 280px; background: #111;"></video>
-														</div>
-														<p id="vm2-resumen-sin-video" class="text-muted small mb-0 mt-2 d-none rounded-3 border bg-light py-4 px-3 text-center">Este candidato no tiene video de perfil cargado.</p>
-													</div>
-													<div class="col-md-7 col-lg-8">
-														<p class="fs-12 fw-semibold text-secondary text-uppercase letter-spacing-1 mb-2">Perfil del candidato</p>
-														<div id="vm2-resumen-perfil" class="fs-14 text-body lh-base text-start text-break border rounded-3 p-3 bg-white d-none" style="white-space: pre-wrap; min-height: 120px;"></div>
-														<p id="vm2-resumen-sin-perfil" class="text-muted small mb-0 mt-2">No hay descripción de perfil registrada.</p>
-														<div class="mt-3 pt-3 border-top border-light">
-															<p class="fs-12 fw-semibold text-secondary text-uppercase letter-spacing-1 mb-2">Idiomas registrados</p>
-															<div id="vm2-resumen-idiomas" class="d-flex flex-wrap gap-2"></div>
-															<p id="vm2-resumen-sin-idiomas" class="text-muted small mb-0 d-none">Sin idiomas registrados.</p>
-															<button type="button" class="btn btn-sm w-100 bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3 border-0 rounded-2 mt-3" data-bs-toggle="modal" data-bs-target="#vm2ModalInfoCandidato" id="vm2-btn-info-candidato">
-																<i class="material-symbols-outlined fs-18 align-middle me-1" style="vertical-align: -3px;">person</i>
-																Ver información del candidato
-															</button>
-														</div>
-													</div>
+											<p class="text-secondary small mb-4 mb-lg-4 text-center">Seleccione un candidato en el panel lateral para ver el historial de esa postulación.</p>
+											<div class="default-table-area style-two campaigns-table latest-transaction-table">
+												<div class="table-responsive">
+													<table class="table align-middle border-0 mb-0 text-center">
+														<thead>
+															<tr class="border-bottom">
+																<th scope="col" class="bg-transparent text-body fw-medium text-center">
+																	<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">FECHA</span>
+																</th>
+																<th scope="col" class="bg-transparent text-body fw-medium text-center">
+																	<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">ESTADO</span>
+																</th>
+																<th scope="col" class="bg-transparent text-body fw-medium text-center">
+																	<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">DESCRIPCIÓN</span>
+																</th>
+																<th scope="col" class="bg-transparent text-body fw-medium text-center">
+																	<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">REGISTRADO POR</span>
+																</th>
+															</tr>
+														</thead>
+														<tbody id="vm2-historial-tbody">
+															<tr>
+																<td colspan="4" class="text-center text-muted py-5 fs-13">Seleccione un candidato para ver el historial de la aplicación.</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+												<div id="vm2-historial-footer" class="d-none d-flex justify-content-center align-items-center flex-wrap gap-2 showing-wrap mt-4 text-center">
+													<span class="fs-12 fw-medium text-body-color-50"></span>
 												</div>
 											</div>
 										</div>
@@ -237,49 +265,6 @@ Gestión de Vacante
 					</div>
 					</div>
 
-					<div class="row">
-						<div class="col-12">
-							<div class="card bg-white border-0 rounded-3 mb-4">
-								<div class="card-body p-4">
-									<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-0">
-										<h3 class="mb-0 fs-5 fw-semibold text-body text-center w-100">Historial de la aplicación</h3>
-									</div>
-									<p class="text-secondary small mb-4 mb-lg-4 text-center">Seleccione un candidato en el panel lateral para ver el historial de esa postulación.</p>
-									<div class="default-table-area style-two campaigns-table latest-transaction-table">
-										<div class="table-responsive">
-											<table class="table align-middle border-0 mb-0 text-center">
-												<thead>
-													<tr class="border-bottom">
-														<th scope="col" class="bg-transparent text-body fw-medium text-center">
-															<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">FECHA</span>
-														</th>
-														<th scope="col" class="bg-transparent text-body fw-medium text-center">
-															<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">ESTADO</span>
-														</th>
-														<th scope="col" class="bg-transparent text-body fw-medium text-center">
-															<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">DESCRIPCIÓN</span>
-														</th>
-														<th scope="col" class="bg-transparent text-body fw-medium text-center">
-															<span class="fs-10 fw-bold letter-spacing-1 text-body-color-60">REGISTRADO POR</span>
-														</th>
-													</tr>
-												</thead>
-												<tbody id="vm2-historial-tbody">
-													<tr>
-														<td colspan="4" class="text-center text-muted py-5 fs-13">Seleccione un candidato para ver el historial de la aplicación.</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-
-										<div id="vm2-historial-footer" class="d-none d-flex justify-content-center align-items-center flex-wrap gap-2 showing-wrap mt-4 text-center">
-											<span class="fs-12 fw-medium text-body-color-50"></span>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -366,6 +351,27 @@ Gestión de Vacante
 	</div>
 </div>
 
+{# Modal: reporte Cli087 — metadatos + formulario dinámico según Cli085.json_data #}
+<div class="modal fade" id="vm2ModalAccionDecisivaDetalle" tabindex="-1" aria-labelledby="vm2ModalAccionDecisivaTitulo" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+		<div class="modal-content border-0 rounded-2 shadow-sm bg-white overflow-hidden">
+			<div class="modal-header bg-primary bg-opacity-10 border-0 py-3 px-4 rounded-0">
+				<h2 class="modal-title fs-16 fw-semibold text-primary mb-0" id="vm2ModalAccionDecisivaTitulo">Acción decisiva</h2>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body p-3 p-md-4 bg-light" id="vm2ModalAccionDecisivaBody">
+				{% csrf_token %}
+				<p class="text-secondary text-center mb-0 py-4" id="vm2ModalAccionDecisivaPlaceholder">Cargando…</p>
+				<div id="vm2ModalAccionDecisivaInner" class="d-none"></div>
+			</div>
+			<div class="modal-footer border-0 border-top py-3 px-4 bg-white d-flex flex-wrap gap-2 justify-content-end">
+				<button type="button" id="vm2-btn-guardar-cli087-json" class="btn btn-sm fw-semibold text-white border-0 py-2 px-4 rounded-2 d-none" style="background-color: #B10022;">Guardar</button>
+				<button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 border-0 rounded-2" data-bs-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 {# Modal: vía contratación o decisiones definitivas + cli_087 #}
 <div class="modal fade" id="vm2ModalAccionesDecisivas" tabindex="-1" aria-labelledby="vm2ModalAccionesDecisivasLabel" aria-hidden="true"
 	data-vm2-post-url-template="{% url 'vacantes:vacancy_aplicacion_vm2_gestion_accion' vacante.id 999999999 %}">
@@ -386,7 +392,14 @@ Gestión de Vacante
 						<label class="btn btn-outline-primary" for="vm2radioContratacion">Viaje de contratación</label>
 						<input type="radio" class="btn-check" name="vm2tipoGestion" id="vm2radioDecisiones" value="decisiones" autocomplete="off">
 						<label class="btn btn-outline-primary" for="vm2radioDecisiones" id="vm2label-radio-decisiones">Decisiones definitivas</label>
+						<input type="radio" class="btn-check" name="vm2tipoGestion" id="vm2radioNoApto" value="no_apto" autocomplete="off">
+						<label class="btn btn-outline-primary" for="vm2radioNoApto">No Apto</label>
 					</div>
+				</div>
+				<div class="mb-3">
+					<label for="vm2-descripcion-respuesta-cliente" class="form-label fw-semibold text-body mb-1">Descripción / respuesta del cliente</label>
+					<textarea class="form-control" id="vm2-descripcion-respuesta-cliente" rows="3" placeholder="Escriba la descripción…" maxlength="1000"></textarea>
+					<div class="form-text text-secondary">Esta descripción se guardará en la aplicación y en el historial.</div>
 				</div>
 				<div id="vm2-vm-contratacion-copy">
 					<p class="text-secondary small mb-2">
@@ -404,10 +417,16 @@ Gestión de Vacante
 						<p class="text-muted text-center py-4 mb-0">Seleccione un candidato y abra de nuevo este modal.</p>
 					</div>
 				</div>
+				<div id="vm2-vm-noapto-copy" class="d-none">
+					<p class="text-secondary small mb-0">
+						Al confirmar, el candidato pasará a <strong>No Apto</strong>.
+					</p>
+				</div>
 			</div>
 			<div class="modal-footer border-0 border-top py-3 px-4 bg-white flex-wrap gap-2">
 				<button type="button" class="btn btn-sm fw-semibold text-white border-0 py-2 px-4 rounded-2 d-none" id="vm2-btn-confirmar-contratacion" style="background-color: #B10022;">Continuar a contratación</button>
 				<button type="button" class="btn btn-sm fw-semibold text-white border-0 py-2 px-4 rounded-2 d-none" id="vm2-btn-registrar-decisiones" style="background-color: #B10022;">Registrar decisiones definitivas</button>
+				<button type="button" class="btn btn-sm fw-semibold text-white border-0 py-2 px-4 rounded-2 d-none" id="vm2-btn-marcar-noapto" style="background-color: #B10022;">Marcar No Apto</button>
 				<button type="button" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 border-0 rounded-2 ms-auto" data-bs-dismiss="modal">Cerrar</button>
 			</div>
 		</div>
@@ -447,6 +466,50 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 #vm2_match_perfil_chart { min-height: 260px; max-height: 320px; }
 #vm2_metricas_chart { min-height: 280px; }
 .vm2-indicadores-radar-inner { margin: -28px 0 -18px 0; }
+.vm2-banner-match{
+	width: 152px;
+	height: 152px;
+	min-height: 152px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.98);
+	box-shadow: 0 0.65rem 1.35rem rgba(0, 0, 0, 0.18);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 6px;
+	overflow: hidden;
+}
+.vm2-banner-match #vm2_match_perfil_chart{
+	min-height: 0 !important;
+	max-height: none !important;
+	width: 140px;
+	height: 140px;
+}
+.vm2-banner-match svg{ display: block; }
+.vm2-banner-match .apexcharts-canvas,
+.vm2-banner-match .apexcharts-svg{
+	width: 140px !important;
+	height: 140px !important;
+}
+.vm2-banner-match .apexcharts-tooltip,
+.vm2-banner-match .apexcharts-xaxistooltip,
+.vm2-banner-match .apexcharts-yaxistooltip{
+	display: none !important;
+}
+.vm2-banner-match .apexcharts-canvas{ margin: 0 auto; }
+.vm2-accion-decisiva-icon {
+	width: 40px;
+	height: 40px;
+}
+.vm2-banner-media{
+	padding-bottom: 0.15rem;
+}
+.vm2-top-actions .vm2-top-actions-btn{
+	flex: 1 1 260px;
+}
+.vm2-top-actions #vm2-btn-gestionar{
+	flex: 0 0 auto;
+}
 .vm2-tabla-scroll {
 	max-height: min(55vh, 380px);
 	overflow: auto;
@@ -566,6 +629,879 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 		return d.innerHTML;
 	}
 
+	function escapeAttrVm2(s) {
+		return String(s != null ? s : '')
+			.replace(/&/g, '&amp;')
+			.replace(/"/g, '&quot;')
+			.replace(/</g, '&lt;');
+	}
+
+	var vm2Cli087Ctx = {
+		url: '',
+		tienePlantilla: false,
+		valoresSnapshot: null
+	};
+
+	function vm2GetCli087UrlTemplate() {
+		var el = document.getElementById('vm2-cli087-url-template');
+		return el && el.textContent ? el.textContent.trim() : '';
+	}
+
+	/** Construye la URL del API Cli087 sin colisionar con IDs de vacante (evita replace global de placeholders). */
+	function vm2BuildCli087FetchUrl(aplicacionId, cli087Id) {
+		var tpl = vm2GetCli087UrlTemplate();
+		if (!tpl) return '';
+		var a = String(aplicacionId);
+		var c = String(cli087Id);
+		return tpl
+			.replace(/\/aplicacion\/\d+\//, '/aplicacion/' + a + '/')
+			.replace(/\/cli087\/\d+\//, '/cli087/' + c + '/');
+	}
+
+	function vm2HumanizeKey(key) {
+		if (key === null || key === undefined) return '';
+		var s = String(key).replace(/_/g, ' ').replace(/\s+/g, ' ').trim();
+		if (!s) return '';
+		return s.charAt(0).toUpperCase() + s.slice(1);
+	}
+
+	/** Plantilla tipo catálogo: { type, label, ... } — el tipo define el control; label es el texto visible. */
+	function vm2IsSchemaField(obj) {
+		return (
+			obj !== null &&
+			typeof obj === 'object' &&
+			!Array.isArray(obj) &&
+			typeof obj.type === 'string' &&
+			typeof obj.label === 'string'
+		);
+	}
+
+	/**
+	 * true si el valor guardado es la definición de campo Cli085 (u otro JSON con type+label), no un dato de usuario.
+	 * No debe mostrarse dentro de los controles del formulario.
+	 */
+	function vm2ValorEsDefinicionPlantillaCli085(val) {
+		if (val === null || val === undefined) return false;
+		if (typeof val === 'object' && !Array.isArray(val)) {
+			return vm2IsSchemaField(val);
+		}
+		if (typeof val === 'string') {
+			var st = val.trim();
+			if (st.charAt(0) !== '{') return false;
+			try {
+				var p = JSON.parse(st);
+				return vm2IsSchemaField(p);
+			} catch (e0) {
+				return false;
+			}
+		}
+		return false;
+	}
+
+	/** Valor para input de una línea: nunca serializa la plantilla Cli085 en el control. */
+	function vm2ValorParaInput(val) {
+		if (val === null || val === undefined) return '';
+		if (vm2ValorEsDefinicionPlantillaCli085(val)) return '';
+		if (typeof val === 'object') {
+			try {
+				return JSON.stringify(val);
+			} catch (e0) {
+				return '';
+			}
+		}
+		return String(val);
+	}
+
+	/** Textarea: mismo criterio; objetos reales como JSON legible. */
+	function vm2ValorParaTextarea(val) {
+		if (val === null || val === undefined) return '';
+		if (vm2ValorEsDefinicionPlantillaCli085(val)) return '';
+		if (typeof val === 'object') {
+			try {
+				return JSON.stringify(val, null, 2);
+			} catch (e0) {
+				return '';
+			}
+		}
+		return String(val);
+	}
+
+	/** Nombre de archivo en json_data: solo texto de archivo, no plantilla. */
+	function vm2NombreArchivoCampoFile(val) {
+		if (val === null || val === undefined) return '';
+		if (vm2ValorEsDefinicionPlantillaCli085(val)) return '';
+		if (typeof val === 'object') {
+			try {
+				return JSON.stringify(val);
+			} catch (e1) {
+				return '';
+			}
+		}
+		return String(val).trim();
+	}
+
+	function vm2SegAttrJson(segments) {
+		return escapeAttrVm2(encodeURIComponent(JSON.stringify(segments)));
+	}
+
+	function vm2NewFieldId(segments) {
+		return (
+			'vm2jp-' +
+			String(segments.join('-'))
+				.replace(/[^\w-]+/g, '-')
+				.replace(/^-+|-+$/g, '')
+				.slice(0, 80) +
+			'-' +
+			Math.random().toString(36).slice(2, 7)
+		);
+	}
+
+	/**
+	 * Renderiza un campo según schema.type / schema.widget.
+	 * val = valor guardado (primitivo), no el objeto schema.
+	 */
+	function vm2SchemaFieldHtml(segments, schema, val) {
+		var enc = vm2SegAttrJson(segments);
+		var id = vm2NewFieldId(segments);
+		var label = schema.label != null ? String(schema.label).trim() : '';
+		if (!label) label = segments.length ? vm2HumanizeKey(String(segments[segments.length - 1])) : 'Campo';
+		var ph = schema.placeholder != null ? String(schema.placeholder) : '';
+		var req = schema.required === true ? ' required' : '';
+		var t = (schema.type != null ? String(schema.type) : 'string').toLowerCase();
+		var w = (schema.widget != null ? String(schema.widget) : '').toLowerCase();
+		var help =
+			schema.help_text != null && String(schema.help_text).trim() !== ''
+				? '<div class="form-text text-secondary">' + escapeHtmlVm2(String(schema.help_text)) + '</div>'
+				: '';
+
+		if (t === 'boolean') {
+			var ck = val === true || val === 1 || val === '1' || val === 'true';
+			return (
+				'<div class="form-check border rounded-3 px-3 py-2 bg-white h-100">' +
+				'<input class="form-check-input" type="checkbox" id="' +
+				id +
+				'" data-vm2-q="' +
+				enc +
+				'" value="1"' +
+				(ck ? ' checked' : '') +
+				req +
+				'>' +
+				'<label class="form-check-label fw-semibold text-body" for="' +
+				id +
+				'">' +
+				escapeHtmlVm2(label) +
+				'</label>' +
+				help +
+				'</div>'
+			);
+		}
+
+		if (t === 'number') {
+			var nv = val !== undefined && val !== null && val !== '' && !isNaN(Number(val)) ? String(val) : '';
+			return (
+				'<label class="form-label fw-semibold text-body mb-1" for="' +
+				id +
+				'">' +
+				escapeHtmlVm2(label) +
+				'</label>' +
+				'<input type="number" step="any" class="form-control" id="' +
+				id +
+				'" data-vm2-q="' +
+				enc +
+				'" value="' +
+				escapeAttrVm2(nv) +
+				'" placeholder="' +
+				escapeAttrVm2(ph) +
+				'"' +
+				req +
+				'>' +
+				help
+			);
+		}
+
+		if (t === 'date' || w === 'date') {
+			var dv =
+				val != null && val !== ''
+					? vm2ValorParaInput(val).slice(0, 10)
+					: '';
+			return (
+				'<label class="form-label fw-semibold text-body mb-1" for="' +
+				id +
+				'">' +
+				escapeHtmlVm2(label) +
+				'</label>' +
+				'<input type="date" class="form-control" id="' +
+				id +
+				'" data-vm2-q="' +
+				enc +
+				'" value="' +
+				escapeAttrVm2(dv) +
+				'"' +
+				req +
+				'>' +
+				help
+			);
+		}
+
+		if (t === 'email' || w === 'email') {
+			var ev = vm2ValorParaInput(val);
+			return (
+				'<label class="form-label fw-semibold text-body mb-1" for="' +
+				id +
+				'">' +
+				escapeHtmlVm2(label) +
+				'</label>' +
+				'<input type="email" class="form-control" id="' +
+				id +
+				'" data-vm2-q="' +
+				enc +
+				'" value="' +
+				escapeAttrVm2(ev) +
+				'" placeholder="' +
+				escapeAttrVm2(ph) +
+				'"' +
+				req +
+				'>' +
+				help
+			);
+		}
+
+		if (t === 'tel' || t === 'phone' || w === 'tel') {
+			var tv = vm2ValorParaInput(val);
+			return (
+				'<label class="form-label fw-semibold text-body mb-1" for="' +
+				id +
+				'">' +
+				escapeHtmlVm2(label) +
+				'</label>' +
+				'<input type="tel" class="form-control" id="' +
+				id +
+				'" data-vm2-q="' +
+				enc +
+				'" value="' +
+				escapeAttrVm2(tv) +
+				'" placeholder="' +
+				escapeAttrVm2(ph) +
+				'"' +
+				req +
+				'>' +
+				help
+			);
+		}
+
+		if (t === 'select' && schema.options && Array.isArray(schema.options)) {
+			var sv = vm2ValorParaInput(val);
+			var opts = '<option value="">—</option>';
+			for (var oi = 0; oi < schema.options.length; oi++) {
+				var op = schema.options[oi];
+				var ov = op && op.value != null ? String(op.value) : '';
+				var ol = op && op.label != null ? String(op.label) : ov;
+				opts +=
+					'<option value="' +
+					escapeAttrVm2(ov) +
+					'"' +
+					(ov === sv ? ' selected' : '') +
+					'>' +
+					escapeHtmlVm2(ol) +
+					'</option>';
+			}
+			return (
+				'<label class="form-label fw-semibold text-body mb-1" for="' +
+				id +
+				'">' +
+				escapeHtmlVm2(label) +
+				'</label>' +
+				'<select class="form-select" id="' +
+				id +
+				'" data-vm2-q="' +
+				enc +
+				'"' +
+				req +
+				'>' +
+				opts +
+				'</select>' +
+				help
+			);
+		}
+
+		if (t === 'file' || w === 'file') {
+			var acc =
+				schema.accept != null && String(schema.accept).trim() !== ''
+					? String(schema.accept).trim()
+					: '.pdf,.doc,.docx,image/*';
+			var fv = vm2NombreArchivoCampoFile(val);
+			return (
+				'<label class="form-label fw-semibold text-body mb-1" for="' +
+				id +
+				'">' +
+				escapeHtmlVm2(label) +
+				'</label>' +
+				'<input type="file" class="form-control" id="' +
+				id +
+				'" data-vm2-q="' +
+				enc +
+				'" data-vm2-saved-name="' +
+				escapeAttrVm2(fv) +
+				'" accept="' +
+				escapeAttrVm2(acc) +
+				'"' +
+				req +
+				'>' +
+				'<div class="form-text text-secondary">Seleccione un archivo; se guarda como adjunto del reporte.</div>' +
+				help
+			);
+		}
+
+		if (w === 'textarea' || t === 'textarea') {
+			var tx = vm2ValorParaTextarea(val);
+			var rows = schema.rows != null ? parseInt(schema.rows, 10) : 3;
+			if (isNaN(rows) || rows < 2) rows = 3;
+			return (
+				'<label class="form-label fw-semibold text-body mb-1" for="' +
+				id +
+				'">' +
+				escapeHtmlVm2(label) +
+				'</label>' +
+				'<textarea rows="' +
+				rows +
+				'" class="form-control" id="' +
+				id +
+				'" data-vm2-q="' +
+				enc +
+				'" placeholder="' +
+				escapeAttrVm2(ph) +
+				'"' +
+				req +
+				'>' +
+				escapeHtmlVm2(tx) +
+				'</textarea>' +
+				help
+			);
+		}
+
+		/* string por defecto: una línea */
+		var st = vm2ValorParaInput(val);
+		return (
+			'<label class="form-label fw-semibold text-body mb-1" for="' +
+			id +
+			'">' +
+			escapeHtmlVm2(label) +
+			'</label>' +
+			'<input type="text" class="form-control" id="' +
+			id +
+			'" data-vm2-q="' +
+			enc +
+			'" value="' +
+			escapeAttrVm2(st) +
+			'" placeholder="' +
+			escapeAttrVm2(ph) +
+			'"' +
+			req +
+			'>' +
+			help
+		);
+	}
+
+	function vm2LeafPreguntaHtml(segments, questionLabel, inputKind, val) {
+		var enc = vm2SegAttrJson(segments);
+		var id =
+			'vm2jp-' +
+			String(segments.join('-'))
+				.replace(/[^\w-]+/g, '-')
+				.replace(/^-+|-+$/g, '')
+				.slice(0, 80) +
+			'-' +
+			Math.random().toString(36).slice(2, 7);
+		var v;
+		if (val === undefined || val === null) {
+			v = '';
+		} else if (vm2ValorEsDefinicionPlantillaCli085(val)) {
+			v = '';
+		} else if (typeof val === 'object') {
+			try {
+				v = JSON.stringify(val, null, 2);
+			} catch (eLeaf) {
+				v = '';
+			}
+		} else {
+			v = val;
+		}
+		if (inputKind === 'checkbox') {
+			var ck =
+				val === true ||
+				val === 1 ||
+				val === '1' ||
+				val === 'true';
+			return (
+				'<div class="col-12">' +
+				'<div class="form-check border rounded-3 px-3 py-2 bg-white h-100">' +
+				'<input class="form-check-input" type="checkbox" id="' +
+				id +
+				'" data-vm2-q="' +
+				enc +
+				'" value="1"' +
+				(ck ? ' checked' : '') +
+				'>' +
+				'<label class="form-check-label fw-semibold text-body" for="' +
+				id +
+				'">' +
+				escapeHtmlVm2(questionLabel) +
+				'</label>' +
+				'</div>' +
+				'</div>'
+			);
+		}
+		if (inputKind === 'number') {
+			var nv =
+				val !== undefined &&
+				val !== null &&
+				val !== '' &&
+				!isNaN(Number(val))
+					? String(val)
+					: '';
+			return (
+				'<div class="col-12 col-md-6">' +
+				'<label class="form-label fw-semibold text-body mb-1" for="' +
+				id +
+				'">' +
+				escapeHtmlVm2(questionLabel) +
+				'</label>' +
+				'<input type="number" step="any" class="form-control" id="' +
+				id +
+				'" data-vm2-q="' +
+				enc +
+				'" value="' +
+				escapeAttrVm2(nv) +
+				'">' +
+				'</div>'
+			);
+		}
+		var st = String(v);
+		return (
+			'<div class="col-12">' +
+			'<label class="form-label fw-semibold text-body mb-1" for="' +
+			id +
+			'">' +
+			escapeHtmlVm2(questionLabel) +
+			'</label>' +
+			'<textarea rows="3" class="form-control" id="' +
+			id +
+			'" data-vm2-q="' +
+			enc +
+			'">' +
+			escapeHtmlVm2(st) +
+			'</textarea>' +
+			'</div>'
+		);
+	}
+
+	function vm2ColClassForSchema(schema) {
+		var t = (schema.type || '').toString().toLowerCase();
+		var w = (schema.widget || '').toString().toLowerCase();
+		if (w === 'textarea' || t === 'textarea' || t === 'file' || w === 'file') return 'col-12';
+		return 'col-12 col-md-6';
+	}
+
+	function vm2RenderJsonNode(plantilla, valores, segments, depth) {
+		depth = depth || 0;
+		var pad = depth ? ' ps-2 ms-1 border-start border-opacity-25' : '';
+		if (plantilla === null) {
+			var ql = segments.length ? vm2HumanizeKey(String(segments[segments.length - 1])) : 'Valor';
+			return '<div class="' + pad + '">' + vm2LeafPreguntaHtml(segments, ql, 'text', valores) + '</div>';
+		}
+		if (
+			typeof plantilla === 'object' &&
+			!Array.isArray(plantilla) &&
+			vm2IsSchemaField(plantilla)
+		) {
+			return (
+				'<div class="' +
+				vm2ColClassForSchema(plantilla) +
+				pad +
+				'">' +
+				vm2SchemaFieldHtml(segments, plantilla, valores) +
+				'</div>'
+			);
+		}
+		var tp = typeof plantilla;
+		if (tp === 'string' || tp === 'number' || tp === 'boolean') {
+			var lab = segments.length ? vm2HumanizeKey(String(segments[segments.length - 1])) : 'Campo';
+			var vcur = valores !== undefined && valores !== null ? valores : plantilla;
+			var ik = tp === 'number' ? 'number' : tp === 'boolean' ? 'checkbox' : 'text';
+			return '<div class="' + pad + '">' + vm2LeafPreguntaHtml(segments, lab, ik, vcur) + '</div>';
+		}
+		if (Array.isArray(plantilla)) {
+			if (!plantilla.length) {
+				return '<div class="col-12"><p class="text-muted small mb-0">(Plantilla: lista vacía)</p></div>';
+			}
+			var itemTpl = plantilla[0];
+			var valArr = Array.isArray(valores) ? valores : [];
+			var n = Math.max(valArr.length, 1);
+			var html = '';
+			var j;
+			for (j = 0; j < n; j++) {
+				var subVal = valArr[j];
+				if (subVal === undefined && typeof itemTpl === 'object' && itemTpl !== null && !Array.isArray(itemTpl)) {
+					subVal = {};
+				}
+				html +=
+					'<div class="col-12' +
+					pad +
+					'">' +
+					'<div class="p-3 rounded-3 border bg-white shadow-sm mb-3">' +
+					'<div class="fs-12 fw-semibold text-secondary mb-3"><i class="ri-list-check-2 me-1" aria-hidden="true"></i> Registro ' +
+					(j + 1) +
+					'</div>' +
+					'<div class="row g-3">' +
+					vm2RenderJsonNode(itemTpl, subVal, segments.concat(j), depth + 1) +
+					'</div>' +
+					'</div>' +
+					'</div>';
+			}
+			return html;
+		}
+		if (tp === 'object') {
+			var keys = Object.keys(plantilla);
+			var out = '';
+			var kx;
+			for (kx = 0; kx < keys.length; kx++) {
+				var kk = keys[kx];
+				var subP = plantilla[kk];
+				var subV =
+					valores && typeof valores === 'object' && !Array.isArray(valores) ? valores[kk] : undefined;
+				var segs = segments.concat(kk);
+				if (subP !== null && typeof subP === 'object' && !Array.isArray(subP) && vm2IsSchemaField(subP)) {
+					out +=
+						'<div class="' +
+						vm2ColClassForSchema(subP) +
+						pad +
+						'">' +
+						vm2SchemaFieldHtml(segs, subP, subV) +
+						'</div>';
+					continue;
+				}
+				var isNestedObj =
+					subP !== null &&
+					typeof subP === 'object' &&
+					!Array.isArray(subP) &&
+					Object.keys(subP).length > 0;
+				var isArr = Array.isArray(subP) && subP.length > 0;
+				var subHtml = vm2RenderJsonNode(subP, subV, segs, depth + 1);
+				if (isNestedObj || isArr) {
+					out +=
+						'<div class="col-12' +
+						pad +
+						'">' +
+						'<div class="card border-0 shadow-sm mb-3">' +
+						'<div class="card-header bg-primary bg-opacity-10 border-0 py-2 px-3">' +
+						'<span class="text-primary fw-semibold fs-13">' +
+						escapeHtmlVm2(vm2HumanizeKey(kk)) +
+						'</span>' +
+						'</div>' +
+						'<div class="card-body p-3">' +
+						'<div class="row g-3">' +
+						subHtml +
+						'</div>' +
+						'</div>' +
+						'</div>' +
+						'</div>';
+				} else {
+					out += subHtml;
+				}
+			}
+			return out;
+		}
+		return '';
+	}
+
+	function vm2BuildJsonPreguntasFormHtml(plantilla, valores) {
+		if (plantilla === null || plantilla === undefined) {
+			return (
+				'<p class="text-secondary small mb-0">La acción decisiva no tiene <strong>json_data</strong> en el catálogo (Cli085).</p>'
+			);
+		}
+		var inner = vm2RenderJsonNode(plantilla, valores, [], 0);
+		return (
+			'<div class="card border-0 shadow-sm">' +
+			'<div class="card-header bg-body-secondary border-0 py-2 px-3">' +
+			'<span class="fw-semibold text-body fs-13">Respuestas (según plantilla de la acción)</span>' +
+			'</div>' +
+			'<div class="card-body p-3 bg-white">' +
+			'<form id="vm2-form-cli087-json" novalidate>' +
+			'<div class="row g-3">' +
+			inner +
+			'</div>' +
+			'</form>' +
+			'</div>' +
+			'</div>'
+		);
+	}
+
+	function vm2DeepSetRespuesta(target, path, value) {
+		if (!path || path.length === 0) return;
+		if (path.length === 1) {
+			var last = path[0];
+			if (Array.isArray(target)) {
+				var li = typeof last === 'number' ? last : parseInt(last, 10);
+				if (isNaN(li)) return;
+				while (target.length <= li) target.push(null);
+				target[li] = value;
+				return;
+			}
+			if (typeof target === 'object' && target !== null) {
+				target[last] = value;
+			}
+			return;
+		}
+		var head = path[0];
+		var rest = path.slice(1);
+		var nextIsNum =
+			typeof rest[0] === 'number' ||
+			(typeof rest[0] === 'string' && /^\d+$/.test(String(rest[0])));
+		if (typeof head === 'number' || (typeof head === 'string' && /^\d+$/.test(String(head)))) {
+			if (!Array.isArray(target)) return;
+			var hi = typeof head === 'number' ? head : parseInt(head, 10);
+			if (isNaN(hi)) return;
+			while (target.length <= hi) target.push(null);
+			if (target[hi] === null || target[hi] === undefined) {
+				target[hi] = nextIsNum ? [] : {};
+			}
+			vm2DeepSetRespuesta(target[hi], rest, value);
+			return;
+		}
+		if (typeof target !== 'object' || target === null) return;
+		if (!(head in target) || target[head] === null || target[head] === undefined) {
+			target[head] = nextIsNum ? [] : {};
+		}
+		vm2DeepSetRespuesta(target[head], rest, value);
+	}
+
+	function vm2CollectJsonPreguntasForm(formEl) {
+		var root = {};
+		if (!formEl) return root;
+		var inputs = formEl.querySelectorAll('[data-vm2-q]');
+		var i;
+		for (i = 0; i < inputs.length; i++) {
+			var inp = inputs[i];
+			var raw = inp.getAttribute('data-vm2-q');
+			if (!raw) continue;
+			var seg;
+			try {
+				seg = JSON.parse(decodeURIComponent(raw));
+			} catch (e1) {
+				continue;
+			}
+			if (!seg || !seg.length) continue;
+			var val;
+			if (inp.type === 'checkbox') {
+				val = inp.checked === true;
+			} else if (inp.type === 'file') {
+				if (inp.files && inp.files[0] && inp.files[0].name) {
+					val = String(inp.files[0].name);
+				} else {
+					var sn = inp.getAttribute('data-vm2-saved-name');
+					val = sn != null && String(sn).trim() !== '' ? String(sn).trim() : '';
+				}
+			} else if (inp.type === 'number') {
+				var nv = inp.value.trim();
+				val = nv === '' ? null : parseFloat(nv);
+				if (isNaN(val)) val = null;
+			} else {
+				val = inp.value;
+			}
+			vm2DeepSetRespuesta(root, seg, val);
+		}
+		return root;
+	}
+
+	function vm2BuildCli087MetaPanelHtml(d) {
+		var selCod = d.estado_accion_decisiva != null ? String(d.estado_accion_decisiva) : 'pendiente';
+		var choices = Array.isArray(d.estado_accion_decisiva_choices) ? d.estado_accion_decisiva_choices : [];
+		var opts = '';
+		for (var c = 0; c < choices.length; c++) {
+			var it = choices[c];
+			var v = it && it.value != null ? String(it.value) : '';
+			var lb = it && it.label != null ? String(it.label) : v;
+			opts +=
+				'<option value="' +
+				escapeAttrVm2(v) +
+				'"' +
+				(v === selCod ? ' selected' : '') +
+				'>' +
+				escapeHtmlVm2(lb) +
+				'</option>';
+		}
+		return (
+			'<div class="card border-0 shadow-sm mb-3">' +
+			'<div class="card-header bg-white border-0 py-2 px-3">' +
+			'<span class="fw-semibold text-body fs-13">Estado de la decisión</span>' +
+			'</div>' +
+			'<div class="card-body p-3">' +
+			'<div class="row g-3">' +
+			'<div class="col-12 col-md-8 col-lg-6">' +
+			'<label class="form-label fw-semibold mb-1" for="vm2-cli087-estado">Estado acción decisiva</label>' +
+			'<select class="form-select" id="vm2-cli087-estado">' +
+			opts +
+			'</select>' +
+			'</div>' +
+			'</div>' +
+			'</div>' +
+			'</div>'
+		);
+	}
+
+	function vm2LoadCli087DetalleModal(cli087Id, aplicacionId) {
+		var body = document.getElementById('vm2ModalAccionDecisivaBody');
+		var inner = document.getElementById('vm2ModalAccionDecisivaInner');
+		var ph = document.getElementById('vm2ModalAccionDecisivaPlaceholder');
+		var btnG = document.getElementById('vm2-btn-guardar-cli087-json');
+		if (!body || !inner) return;
+		var url = vm2BuildCli087FetchUrl(aplicacionId, cli087Id);
+		if (!url) {
+			if (ph) ph.innerHTML = '<span class="text-danger">URL del reporte no configurada.</span>';
+			return;
+		}
+		vm2Cli087Ctx.url = url;
+		vm2Cli087Ctx.tienePlantilla = false;
+		vm2Cli087Ctx.valoresSnapshot = null;
+		if (ph) {
+			ph.classList.remove('d-none');
+			ph.innerHTML =
+				'<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Cargando formulario…';
+		}
+		inner.classList.add('d-none');
+		inner.innerHTML = '';
+		if (btnG) btnG.classList.add('d-none');
+		fetch(url, { credentials: 'same-origin' })
+			.then(function (r) {
+				return r.text().then(function (text) {
+					var j = null;
+					try {
+						j = text && text.trim() ? JSON.parse(text) : null;
+					} catch (eParse) {
+						return {
+							httpOk: r.ok,
+							status: r.status,
+							json: null,
+							parseError: true,
+						};
+					}
+					return { httpOk: r.ok, status: r.status, json: j, parseError: false };
+				});
+			})
+			.then(function (res) {
+				if (res.parseError) {
+					var pe =
+						'El servidor no devolvió JSON (HTTP ' +
+						(res.status != null ? res.status : '?') +
+						'). Compruebe sesión, migraciones (cli_087) o el log del servidor.';
+					if (ph) ph.innerHTML = '<span class="text-danger">' + escapeHtmlVm2(pe) + '</span>';
+					return;
+				}
+				var j = res.json;
+				if (!res.httpOk || !j || !j.ok) {
+					var err =
+						(j && j.error ? j.error : null) ||
+						(!res.httpOk ? 'Error HTTP ' + (res.status != null ? res.status : '') : null) ||
+						'No se pudo cargar el reporte.';
+					if (ph) ph.innerHTML = '<span class="text-danger">' + escapeHtmlVm2(err) + '</span>';
+					return;
+				}
+				var d = j;
+				vm2Cli087Ctx.tienePlantilla = !!(d.tiene_plantilla && d.plantilla != null);
+				vm2Cli087Ctx.valoresSnapshot = d.valores;
+				try {
+					var metaHtml = vm2BuildCli087MetaPanelHtml(d);
+					var jsonHtml = vm2BuildJsonPreguntasFormHtml(d.plantilla, d.valores);
+					if (ph) ph.classList.add('d-none');
+					inner.innerHTML = metaHtml + jsonHtml;
+					inner.classList.remove('d-none');
+					if (btnG) btnG.classList.remove('d-none');
+				} catch (eBuild) {
+					console.error('vm2 Cli087 render', eBuild);
+					if (ph) {
+						ph.classList.remove('d-none');
+						ph.innerHTML =
+							'<span class="text-danger">Error al montar el formulario: ' +
+							escapeHtmlVm2(eBuild && eBuild.message ? eBuild.message : String(eBuild)) +
+							'</span>';
+					}
+				}
+			})
+			.catch(function (err) {
+				console.error('vm2 Cli087 fetch', err);
+				if (ph) {
+					ph.innerHTML =
+						'<span class="text-danger">Error de red al cargar. Compruebe la conexión o intente de nuevo.</span>';
+				}
+			});
+	}
+
+	function vm2AccionDecisivaIconHtml(esPendiente) {
+		var dotClass = esPendiente ? 'bg-danger' : 'bg-success';
+		return (
+			'<div class="flex-shrink-0 position-relative z-1">' +
+			'<div class="vm2-accion-decisiva-icon rounded-2 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center">' +
+			'<i class="ri-flashlight-line text-primary fs-20" aria-hidden="true"></i>' +
+			'</div>' +
+			'<span class="' +
+			dotClass +
+			' rounded-circle d-inline-block position-absolute top-50 start-100 translate-middle" style="width: 8px; height: 8px;" aria-hidden="true"></span>' +
+			'</div>'
+		);
+	}
+
+	/** Indicador según estado_accion_decisiva (Cli087): aprobada | pendiente | no_aprobada */
+	function vm2AccionDecisivaIconHtmlPorEstado(cod) {
+		var c = cod != null ? String(cod).trim().toLowerCase() : 'pendiente';
+		if (c !== 'aprobada' && c !== 'pendiente' && c !== 'no_aprobada') c = 'pendiente';
+		var dotClass =
+			c === 'aprobada' ? 'bg-success' : c === 'pendiente' ? 'bg-warning' : 'bg-danger';
+		return (
+			'<div class="flex-shrink-0 position-relative z-1">' +
+			'<div class="vm2-accion-decisiva-icon rounded-2 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center">' +
+			'<i class="ri-flashlight-line text-primary fs-20" aria-hidden="true"></i>' +
+			'</div>' +
+			'<span class="' +
+			dotClass +
+			' rounded-circle d-inline-block position-absolute top-50 start-100 translate-middle" style="width: 8px; height: 8px;" aria-hidden="true"></span>' +
+			'</div>'
+		);
+	}
+
+	function vm2BadgeEstadoAccionDecisivaHtml(cod, label) {
+		var c = cod != null ? String(cod).trim().toLowerCase() : 'pendiente';
+		if (c !== 'aprobada' && c !== 'pendiente' && c !== 'no_aprobada') c = 'pendiente';
+		var text = label != null && String(label).trim() !== '' ? String(label).trim() : c;
+		var cls =
+			c === 'aprobada'
+				? 'bg-success bg-opacity-10 text-success border border-success'
+				: c === 'pendiente'
+					? 'bg-warning bg-opacity-10 text-warning border border-warning'
+					: 'bg-danger bg-opacity-10 text-danger border border-danger';
+		return (
+			'<span class="badge rounded-pill ' +
+			cls +
+			'">' +
+			escapeHtmlVm2(text) +
+			'</span>'
+		);
+	}
+
+	function vm2WrapAccionesDecisivasTable(tbodyHtml) {
+		return (
+			'<div class="default-table-area style-three agents-performance-overview">' +
+			'<div class="table-responsive">' +
+			'<table class="table align-middle border-0 mb-0">' +
+			'<tbody>' +
+			tbodyHtml +
+			'</tbody>' +
+			'</table>' +
+			'</div>' +
+			'</div>'
+		);
+	}
+
 	function getVm2AccionesCargoDecisivas() {
 		var el = document.getElementById('vm2-acciones-cargo-decisivas');
 		if (!el) return [];
@@ -577,89 +1513,22 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 		}
 	}
 
-	function vm2ExtractCamposDesdeJson(jd) {
-		if (jd == null) return [];
-		if (Array.isArray(jd)) return jd;
-		if (typeof jd === 'object') {
-			var arr = jd.campos || jd.fields || jd.Campos || jd.Fields;
-			if (Array.isArray(arr)) return arr;
+	function getVm2Cli087PorAplicacion() {
+		var el = document.getElementById('vm2-cli087-por-aplicacion');
+		if (!el) return {};
+		try {
+			var parsed = JSON.parse(el.textContent);
+			return parsed && typeof parsed === 'object' ? parsed : {};
+		} catch (e1) {
+			return {};
 		}
-		return [];
-	}
-
-	function vm2SanitizeFieldName(name, idx) {
-		var n = (name != null && String(name).trim() !== '') ? String(name).trim() : 'campo_' + idx;
-		return n.replace(/[^\w\-]/g, '_');
-	}
-
-	function vm2BuildInputHtml(field, idx, accionId, aplicacionId) {
-		var rawName = field.name != null ? field.name : 'campo_' + idx;
-		var fname = vm2SanitizeFieldName(rawName, idx);
-		var uid = 'vm2-ad-' + accionId + '-' + idx + '-' + fname;
-		var label = (field.label != null && String(field.label).trim() !== '') ? String(field.label) : fname;
-		var req = field.required === true || field.required === 'true' || field.required === 1;
-		var ph = field.placeholder != null ? String(field.placeholder) : '';
-		var t = (field.type != null ? String(field.type) : 'text').toLowerCase();
-		var help = field.help != null ? String(field.help) : (field.ayuda != null ? String(field.ayuda) : '');
-
-		var helpHtml = help
-			? '<div class="form-text">' + escapeHtmlVm2(help) + '</div>'
-			: '';
-
-		if (t === 'textarea') {
-			return (
-				'<div class="mb-3">' +
-				'<label class="form-label fw-medium" for="' + uid + '">' + escapeHtmlVm2(label) + (req ? ' <span class="text-danger">*</span>' : '') + '</label>' +
-				'<textarea class="form-control" id="' + uid + '" name="' + escapeHtmlVm2(fname) + '" rows="' + (field.rows ? parseInt(field.rows, 10) || 3 : 3) + '" placeholder="' + escapeHtmlVm2(ph) + '" ' + (req ? 'required' : '') + ' data-vm2-accion="' + accionId + '" data-vm2-aplicacion="' + escapeHtmlVm2(String(aplicacionId)) + '"></textarea>' +
-				helpHtml +
-				'</div>'
-			);
-		}
-		if (t === 'select') {
-			var opts = field.options || field.opciones || [];
-			var optHtml = '<option value="">Seleccione…</option>';
-			for (var oi = 0; oi < opts.length; oi++) {
-				var o = opts[oi];
-				if (o == null) continue;
-				var ov = o.value != null ? String(o.value) : (o.valor != null ? String(o.valor) : '');
-				var ol = o.label != null ? String(o.label) : (o.etiqueta != null ? String(o.etiqueta) : ov);
-				optHtml += '<option value="' + escapeHtmlVm2(ov) + '">' + escapeHtmlVm2(ol) + '</option>';
-			}
-			return (
-				'<div class="mb-3">' +
-				'<label class="form-label fw-medium" for="' + uid + '">' + escapeHtmlVm2(label) + (req ? ' <span class="text-danger">*</span>' : '') + '</label>' +
-				'<select class="form-select" id="' + uid + '" name="' + escapeHtmlVm2(fname) + '" ' + (req ? 'required' : '') + ' data-vm2-accion="' + accionId + '" data-vm2-aplicacion="' + escapeHtmlVm2(String(aplicacionId)) + '">' +
-				optHtml +
-				'</select>' +
-				helpHtml +
-				'</div>'
-			);
-		}
-		if (t === 'checkbox' || t === 'boolean') {
-			return (
-				'<div class="mb-3 form-check">' +
-				'<input type="checkbox" class="form-check-input" id="' + uid + '" name="' + escapeHtmlVm2(fname) + '" value="1" data-vm2-accion="' + accionId + '" data-vm2-aplicacion="' + escapeHtmlVm2(String(aplicacionId)) + '">' +
-				'<label class="form-check-label" for="' + uid + '">' + escapeHtmlVm2(label) + (req ? ' <span class="text-danger">*</span>' : '') + '</label>' +
-				helpHtml +
-				'</div>'
-			);
-		}
-		var inputType = 'text';
-		if (t === 'number' || t === 'date' || t === 'email' || t === 'tel' || t === 'time' || t === 'datetime-local') {
-			inputType = t;
-		}
-		return (
-			'<div class="mb-3">' +
-			'<label class="form-label fw-medium" for="' + uid + '">' + escapeHtmlVm2(label) + (req ? ' <span class="text-danger">*</span>' : '') + '</label>' +
-			'<input type="' + inputType + '" class="form-control" id="' + uid + '" name="' + escapeHtmlVm2(fname) + '" placeholder="' + escapeHtmlVm2(ph) + '" ' + (req ? 'required' : '') + ' data-vm2-accion="' + accionId + '" data-vm2-aplicacion="' + escapeHtmlVm2(String(aplicacionId)) + '">' +
-			helpHtml +
-			'</div>'
-		);
 	}
 
 	function vm2GetCsrfToken() {
-		var modal = document.getElementById('vm2ModalAccionesDecisivas');
-		var inp = modal ? modal.querySelector('input[name="csrfmiddlewaretoken"]') : null;
+		var modal1 = document.getElementById('vm2ModalAccionesDecisivas');
+		var modal2 = document.getElementById('vm2ModalAccionDecisivaBody');
+		var inp = modal1 ? modal1.querySelector('input[name="csrfmiddlewaretoken"]') : null;
+		if (!inp && modal2) inp = modal2.querySelector('input[name="csrfmiddlewaretoken"]');
 		if (inp && inp.value) return inp.value;
 		var m = document.cookie.match(/csrftoken=([^;]+)/);
 		return m ? decodeURIComponent(m[1]) : '';
@@ -676,11 +1545,16 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 		var tieneAcciones = acciones.length > 0;
 		var radC = document.getElementById('vm2radioContratacion');
 		var radD = document.getElementById('vm2radioDecisiones');
+		var radN = document.getElementById('vm2radioNoApto');
 		var lblD = document.getElementById('vm2label-radio-decisiones');
 		var wrapCt = document.getElementById('vm2-vm-contratacion-copy');
 		var wrapDe = document.getElementById('vm2-vm-decisiones-wrapper');
+		var wrapNo = document.getElementById('vm2-vm-noapto-copy');
 		var btnCt = document.getElementById('vm2-btn-confirmar-contratacion');
 		var btnDe = document.getElementById('vm2-btn-registrar-decisiones');
+		var btnNo = document.getElementById('vm2-btn-marcar-noapto');
+		var descEl = document.getElementById('vm2-descripcion-respuesta-cliente');
+		var descOk = !!(descEl && String(descEl.value || '').trim());
 		if (radD && !tieneAcciones) {
 			radD.disabled = true;
 			if (lblD) lblD.classList.add('opacity-50');
@@ -689,43 +1563,34 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 			radD.disabled = false;
 			if (lblD) lblD.classList.remove('opacity-50');
 		}
-		var modo = radC && radC.checked ? 'contratacion' : 'decisiones';
+		var modo = 'contratacion';
+		if (radD && radD.checked) modo = 'decisiones';
+		else if (radN && radN.checked) modo = 'no_apto';
 		if (wrapCt) wrapCt.classList.toggle('d-none', modo !== 'contratacion');
 		if (wrapDe) wrapDe.classList.toggle('d-none', modo !== 'decisiones');
+		if (wrapNo) wrapNo.classList.toggle('d-none', modo !== 'no_apto');
 		if (btnCt) {
 			btnCt.classList.toggle('d-none', modo !== 'contratacion');
-			btnCt.disabled = false;
+			btnCt.disabled = !descOk;
 		}
 		var nChecks = document.querySelectorAll('#vm2-acciones-decisivas-body .vm2-check-accion-decisiva:checked').length;
 		if (btnDe) {
 			var showReg = modo === 'decisiones' && tieneAcciones;
 			btnDe.classList.toggle('d-none', !showReg);
-			btnDe.disabled = !showReg || (modo === 'decisiones' && nChecks === 0);
+			btnDe.disabled = !showReg || (modo === 'decisiones' && (nChecks === 0 || !descOk));
+		}
+		if (btnNo) {
+			btnNo.classList.toggle('d-none', modo !== 'no_apto');
+			btnNo.disabled = !descOk;
 		}
 	}
 
 	function vm2CollectReportesDecisiones() {
-		var bodyEl = document.getElementById('vm2-acciones-decisivas-body');
 		var reportes = [];
 		document.querySelectorAll('#vm2-acciones-decisivas-body .vm2-check-accion-decisiva:checked').forEach(function (cb) {
 			var aid = parseInt(cb.getAttribute('data-accion-id'), 10);
 			if (!aid) return;
-			var resp = {};
-			if (bodyEl) {
-				var form = bodyEl.querySelector('.vm2-accion-decisiva-form[data-accion-id="' + aid + '"]');
-				if (form) {
-					form.querySelectorAll('input, select, textarea').forEach(function (el) {
-						var n = el.name;
-						if (!n) return;
-						if (el.type === 'checkbox') {
-							resp[n] = !!el.checked;
-						} else {
-							resp[n] = el.value;
-						}
-					});
-				}
-			}
-			reportes.push({ accion_decisiva_id: aid, respuestas: resp });
+			reportes.push({ accion_decisiva_id: aid });
 		});
 		return reportes;
 	}
@@ -787,8 +1652,6 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 				'</label>';
 		}
 		listaChecks += '</div>';
-		listaChecks +=
-			'<p class="text-secondary small fw-semibold mb-2 mt-3">Formularios por acción</p>';
 
 		var formsHtml = '';
 		for (var i = 0; i < acciones.length; i++) {
@@ -803,25 +1666,6 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 					  escapeHtmlVm2(String(dias)) +
 					  ' días gestión</span>'
 					: '';
-			var campos = vm2ExtractCamposDesdeJson(acc.json_data);
-			var formInner;
-			if (!campos.length) {
-				formInner =
-					'<p class="text-muted small mb-0">No hay campos definidos en <code class="small">json_data</code> para esta acción. Use el formato <code class="small">{"campos":[...]}</code> o <code class="small">{"fields":[...]}</code> en el catálogo.</p>';
-			} else {
-				var inputs = '';
-				for (var ci = 0; ci < campos.length; ci++) {
-					inputs += vm2BuildInputHtml(campos[ci], ci, aid, aplId);
-				}
-				formInner =
-					'<form class="vm2-accion-decisiva-form" onsubmit="return false;" data-accion-id="' +
-					escapeHtmlVm2(String(aid)) +
-					'" data-aplicacion-id="' +
-					escapeHtmlVm2(String(aplId)) +
-					'">' +
-					inputs +
-					'</form>';
-			}
 			var descBlock = desc
 				? '<p class="text-secondary small mb-3">' + escapeHtmlVm2(desc) + '</p>'
 				: '';
@@ -835,7 +1679,6 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 				metaDias +
 				'</h6>' +
 				descBlock +
-				formInner +
 				'</div>' +
 				'</div>';
 		}
@@ -949,11 +1792,54 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 		}
 	}
 
+	function updateVm2ModalVideoPerfil(aplicacionId) {
+		var root = document.getElementById('vm2ModalInfoCandidatoBody');
+		if (!root) return;
+		var vid = root.querySelector('#vm2-modal-video');
+		var wrap = root.querySelector('#vm2-modal-video-wrap');
+		var sinV = root.querySelector('#vm2-modal-sin-video');
+		var perfilEl = root.querySelector('#vm2-modal-perfil');
+		var sinP = root.querySelector('#vm2-modal-sin-perfil');
+		if (!vid || !wrap || !sinV || !perfilEl || !sinP) return;
+
+		var extra = getVm2CandidatoExtra(aplicacionId);
+		var videoUrl = (extra.video_url || '').trim();
+		var perfil = (extra.perfil || '').trim();
+
+		try { vid.pause(); } catch (e1) {}
+		vid.removeAttribute('src');
+		try { vid.load(); } catch (e2) {}
+
+		if (videoUrl) {
+			vid.src = videoUrl;
+			wrap.classList.remove('d-none');
+			sinV.classList.add('d-none');
+		} else {
+			wrap.classList.add('d-none');
+			sinV.classList.remove('d-none');
+		}
+
+		if (perfil) {
+			perfilEl.textContent = perfil;
+			perfilEl.classList.remove('d-none');
+			sinP.classList.add('d-none');
+		} else {
+			perfilEl.textContent = '';
+			perfilEl.classList.add('d-none');
+			sinP.classList.remove('d-none');
+		}
+	}
+
 	function selectVm2Card(card) {
 		document.querySelectorAll('.vacancy-m2-candidate-card').forEach(function (c) {
 			c.classList.remove('is-selected');
 		});
 		card.classList.add('is-selected');
+		var estAp = card.getAttribute('data-estado-aplicacion');
+		updateVm2LayoutPorEstado(estAp);
+		if (estAp !== '3') {
+			updateVm2PanelRespuestaCliente(card);
+		}
 		var emptyEl = document.getElementById('vm2-panel-empty');
 		var selEl = document.getElementById('vm2-panel-selected');
 		var imgEl = document.getElementById('vm2-panel-img');
@@ -1008,6 +1894,7 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 		if (tituloEl) tituloEl.textContent = dt;
 		if (estadoEl) estadoEl.textContent = card.getAttribute('data-estado') || '—';
 		var aplId = card.getAttribute('data-aplicacion-id') || '—';
+		updateVm2PanelAccionesContent(aplId, estAp);
 		if (infoCiudad) infoCiudad.textContent = dc || '—';
 		if (infoTitulo) infoTitulo.textContent = dt || '—';
 		if (infoCode) infoCode.textContent = 'APL-' + aplId;
@@ -1019,15 +1906,14 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 		var gestWrap = document.getElementById('vm2-gestionar-wrap');
 		var gestBtn = document.getElementById('vm2-btn-gestionar');
 		if (gestWrap && gestBtn) {
-			var estAp = card.getAttribute('data-estado-aplicacion');
 			var detalleUrl = card.getAttribute('data-detalle-url') || '';
 			if (estAp === '3' && detalleUrl) {
-				gestWrap.classList.remove('d-none');
-				gestWrap.setAttribute('aria-hidden', 'false');
+				gestBtn.classList.remove('d-none');
+				gestBtn.setAttribute('aria-hidden', 'false');
 				gestBtn.setAttribute('data-detalle-url', detalleUrl);
 			} else {
-				gestWrap.classList.add('d-none');
-				gestWrap.setAttribute('aria-hidden', 'true');
+				gestBtn.classList.add('d-none');
+				gestBtn.setAttribute('aria-hidden', 'true');
 				gestBtn.setAttribute('data-detalle-url', '');
 			}
 		}
@@ -1121,28 +2007,36 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 		}
 
 		var primaryHex = getPrimaryColor();
+		var size = el.clientWidth || 140;
+		var chartSize = Math.max(96, Math.min(160, size));
+		var valueFont = chartSize <= 110 ? "20px" : (chartSize <= 130 ? "22px" : "26px");
+		var nameFont = chartSize <= 110 ? "10px" : "11px";
 
 		var options = {
 			series: [0],
 			chart: {
-				height: 300,
-				type: "radialBar"
+				height: chartSize,
+				type: "radialBar",
+				toolbar: { show: false },
+				sparkline: { enabled: true }
 			},
 			plotOptions: {
 				radialBar: {
-					startAngle: -135,
-					endAngle: 135,
-					hollow: { size: '58%' },
+					startAngle: 0,
+					endAngle: 360,
+					hollow: { size: '52%' },
 					dataLabels: {
 						name: {
-							offsetY: -10,
-							fontSize: "13px",
+							show: true,
+							offsetY: -12,
+							fontSize: nameFont,
 							fontFamily: 'Inter',
 							color: primaryHex,
 							fontWeight: "600"
 						},
 						value: {
-							fontSize: "34px",
+							offsetY: 10,
+							fontSize: valueFont,
 							fontFamily: 'Inter',
 							color: primaryHex,
 							fontWeight: "700",
@@ -1157,7 +2051,7 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 				}
 			},
 			colors: [primaryHex],
-			labels: ["Reporte final"],
+			labels: ["Resultado"],
 			stroke: { dashArray: 7 }
 		};
 
@@ -1364,6 +2258,182 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 		}
 	}
 
+	function renderVm2PanelAccionesDecisivasCargo() {
+		var body = document.getElementById('vm2-panel-acciones-decisivas-body');
+		if (!body) return;
+		var acciones = getVm2AccionesCargoDecisivas();
+		if (!acciones.length) {
+			body.innerHTML =
+				'<p class="text-secondary small mb-0">No hay acciones decisivas configuradas para el cargo de esta vacante.</p>';
+			return;
+		}
+		var tbody = '';
+		for (var i = 0; i < acciones.length; i++) {
+			var a = acciones[i];
+			var nom = a.nombre != null ? String(a.nombre).trim() : 'Acción';
+			if (!nom) nom = 'Acción decisiva';
+			var desc = a.descripcion != null ? String(a.descripcion).trim() : '';
+			var dias = a.cantidad_dias_gestion;
+			var subline = '';
+			if (dias != null && dias !== '') {
+				subline = escapeHtmlVm2(String(dias)) + ' días gestión';
+			} else if (desc) {
+				subline =
+					desc.length > 96 ? escapeHtmlVm2(desc.slice(0, 93)) + '…' : escapeHtmlVm2(desc);
+			} else {
+				subline = '<span class="text-muted fst-italic">Sin descripción</span>';
+			}
+			var aid = a.id != null ? String(a.id) : '';
+			var btn =
+				'<button type="button" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0 rounded-2 fw-medium"' +
+				' data-bs-toggle="modal" data-bs-target="#vm2ModalAccionDecisivaDetalle"' +
+				' data-vm2-accion-cargo-id="' +
+				escapeAttrVm2(aid) +
+				'" data-vm2-accion-nombre="' +
+				escapeAttrVm2(nom) +
+				'">Ver</button>';
+			tbody +=
+				'<tr><td>' +
+				'<div class="d-flex align-items-center flex-wrap gap-3 justify-content-between">' +
+				'<div class="d-flex align-items-center min-w-0 flex-grow-1">' +
+				vm2AccionDecisivaIconHtml(false) +
+				'<div class="flex-grow-1 ms-10 min-w-0">' +
+				'<h4 class="fs-14 fw-medium mb-0 text-break">' +
+				escapeHtmlVm2(nom) +
+				'</h4>' +
+				'<span class="text-secondary fs-13 d-block">' +
+				subline +
+				'</span>' +
+				'</div>' +
+				'</div>' +
+				'<div class="d-flex align-items-center gap-2 flex-shrink-0">' +
+				btn +
+				'</div>' +
+				'</div>' +
+				'</td></tr>';
+			if (i < acciones.length - 1) {
+				tbody +=
+					'<tr aria-hidden="true"><td class="bg-white border-0" style="padding: 5px !important;"></td></tr>';
+			}
+		}
+		body.innerHTML = vm2WrapAccionesDecisivasTable(tbody);
+	}
+
+	function renderVm2PanelAccionesCli087(aplicacionId) {
+		var body = document.getElementById('vm2-panel-acciones-decisivas-body');
+		if (!body) return;
+		var map = getVm2Cli087PorAplicacion();
+		var rows = map[String(aplicacionId)] || [];
+		if (!rows.length) {
+			body.innerHTML =
+				'<p class="text-secondary small mb-0">No hay acciones decisivas registradas para esta aplicación.</p>';
+			return;
+		}
+		var tbody = '';
+		for (var i = 0; i < rows.length; i++) {
+			var row = rows[i];
+			var nom = row.accion_nombre != null ? String(row.accion_nombre).trim() : '';
+			if (!nom) nom = 'Acción decisiva';
+			var codAd =
+				row.estado_accion_decisiva != null && String(row.estado_accion_decisiva).trim() !== ''
+					? String(row.estado_accion_decisiva).trim().toLowerCase()
+					: 'pendiente';
+			var lblAd =
+				row.estado_accion_decisiva_label != null && String(row.estado_accion_decisiva_label).trim() !== ''
+					? String(row.estado_accion_decisiva_label).trim()
+					: '';
+			var est = row.estado_nombre != null ? String(row.estado_nombre).trim() : '';
+			var subEstadoBlock = '';
+			if (est && est.toLowerCase() !== 'activo') {
+				subEstadoBlock =
+					'<span class="text-secondary fs-12 d-block mt-1">Estado registro: ' +
+					escapeHtmlVm2(est) +
+					'</span>';
+			}
+			var badgeEstado = vm2BadgeEstadoAccionDecisivaHtml(codAd, lblAd);
+			var rid = row.id != null ? String(row.id) : '';
+			var btn =
+				'<button type="button" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0 rounded-2 fw-medium"' +
+				' data-bs-toggle="modal" data-bs-target="#vm2ModalAccionDecisivaDetalle"' +
+				' data-vm2-cli087-id="' +
+				escapeAttrVm2(rid) +
+				'" data-vm2-aplicacion-id="' +
+				escapeAttrVm2(String(aplicacionId)) +
+				'" data-vm2-accion-nombre="' +
+				escapeAttrVm2(nom) +
+				'">Ver</button>';
+			tbody +=
+				'<tr><td>' +
+				'<div class="d-flex align-items-center flex-wrap gap-3 justify-content-between">' +
+				'<div class="d-flex align-items-center min-w-0 flex-grow-1">' +
+				vm2AccionDecisivaIconHtmlPorEstado(codAd) +
+				'<div class="flex-grow-1 ms-10 min-w-0">' +
+				'<h4 class="fs-14 fw-medium mb-0 text-break">' +
+				escapeHtmlVm2(nom) +
+				'</h4>' +
+				subEstadoBlock +
+				'</div>' +
+				'</div>' +
+				'<div class="d-flex align-items-center gap-2 flex-shrink-0">' +
+				badgeEstado +
+				btn +
+				'</div>' +
+				'</div>' +
+				'</td></tr>';
+			if (i < rows.length - 1) {
+				tbody +=
+					'<tr aria-hidden="true"><td class="bg-white border-0" style="padding: 5px !important;"></td></tr>';
+			}
+		}
+		body.innerHTML = vm2WrapAccionesDecisivasTable(tbody);
+	}
+
+	function updateVm2PanelAccionesContent(aplicacionId, estAp) {
+		if (estAp === '3') return;
+		if (estAp === '5') {
+			renderVm2PanelAccionesCli087(aplicacionId);
+		} else {
+			renderVm2PanelAccionesDecisivasCargo();
+		}
+	}
+
+	function updateVm2LayoutPorEstado(estAp) {
+		var colIzq = document.getElementById('vm2-panel-columna-izquierda');
+		var colInd = document.getElementById('vm2-panel-columna-indicadores');
+		if (!colInd) return;
+		if (estAp === '3') {
+			if (colIzq) {
+				colIzq.classList.add('d-none');
+				colIzq.setAttribute('aria-hidden', 'true');
+			}
+			colInd.classList.remove('col-lg-5');
+			colInd.classList.add('col-lg-12');
+		} else {
+			if (colIzq) {
+				colIzq.classList.remove('d-none');
+				colIzq.setAttribute('aria-hidden', 'false');
+			}
+			colInd.classList.remove('col-lg-12');
+			colInd.classList.add('col-lg-5');
+		}
+	}
+
+	function updateVm2PanelRespuestaCliente(card) {
+		var el = document.getElementById('vm2-panel-respuesta-cliente');
+		if (!el) return;
+		var raw = card && card.getAttribute('data-respuesta-cliente');
+		var txt = raw != null ? String(raw).trim() : '';
+		if (txt) {
+			el.className = 'mb-0 text-body fs-13';
+			el.style.whiteSpace = 'pre-wrap';
+			el.textContent = txt;
+		} else {
+			el.className = 'mb-0 text-secondary small fst-italic';
+			el.style.whiteSpace = '';
+			el.textContent = 'Sin respuesta del cliente registrada.';
+		}
+	}
+
 	function updateMatchPerfilGauge(pctInt, color) {
 		var fallbackWrap = document.getElementById('vm2-match-fallback');
 		var fallbackPct = document.getElementById('vm2-match-fallback-pct');
@@ -1397,6 +2467,55 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 	}
 
 	function init() {
+		var modalAccionDet = document.getElementById('vm2ModalAccionDecisivaDetalle');
+		if (modalAccionDet) {
+			modalAccionDet.addEventListener('show.bs.modal', function (ev) {
+				var btn = ev.relatedTarget;
+				var titEl = document.getElementById('vm2ModalAccionDecisivaTitulo');
+				var ph = document.getElementById('vm2ModalAccionDecisivaPlaceholder');
+				var inner = document.getElementById('vm2ModalAccionDecisivaInner');
+				var btnG = document.getElementById('vm2-btn-guardar-cli087-json');
+				if (titEl && btn && btn.getAttribute) {
+					var nt = btn.getAttribute('data-vm2-accion-nombre');
+					titEl.textContent = nt && nt.trim() ? nt.trim() : 'Acción decisiva';
+				} else if (titEl) {
+					titEl.textContent = 'Acción decisiva';
+				}
+				var cli087Id = btn && btn.getAttribute ? btn.getAttribute('data-vm2-cli087-id') : null;
+				var aplFromBtn = btn && btn.getAttribute ? btn.getAttribute('data-vm2-aplicacion-id') : null;
+				var card = document.querySelector('.vacancy-m2-candidate-card.is-selected');
+				var aplId = aplFromBtn || (card ? card.getAttribute('data-aplicacion-id') : null);
+				if (cli087Id && aplId) {
+					vm2LoadCli087DetalleModal(cli087Id, aplId);
+				} else {
+					vm2Cli087Ctx.url = '';
+					vm2Cli087Ctx.tienePlantilla = false;
+					vm2Cli087Ctx.valoresSnapshot = null;
+					if (inner) {
+						inner.innerHTML = '';
+						inner.classList.add('d-none');
+					}
+					if (ph) {
+						ph.classList.remove('d-none');
+						ph.innerHTML =
+							'<span class="text-secondary">Abra <strong>Ver</strong> desde un reporte ya registrado (lista de acciones decisivas con estado) para cargar el formulario del reporte.</span>';
+					}
+					if (btnG) btnG.classList.add('d-none');
+				}
+			});
+			modalAccionDet.addEventListener('hidden.bs.modal', function () {
+				var ph = document.getElementById('vm2ModalAccionDecisivaPlaceholder');
+				var inner = document.getElementById('vm2ModalAccionDecisivaInner');
+				if (ph) {
+					ph.classList.remove('d-none');
+					ph.textContent = 'Cargando…';
+				}
+				if (inner) {
+					inner.innerHTML = '';
+					inner.classList.add('d-none');
+				}
+			});
+		}
 		// No inicializar ni mostrar el gauge hasta que el usuario seleccione un candidato.
 		document.addEventListener('click', function (e) {
 			var btn = e.target && e.target.closest ? e.target.closest('.vm2-metrica-open') : null;
@@ -1438,6 +2557,107 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 				vm2SyncGestionModeUI();
 			});
 		});
+		var vm2Desc = document.getElementById('vm2-descripcion-respuesta-cliente');
+		if (vm2Desc) {
+			vm2Desc.addEventListener('input', function () {
+				vm2SyncGestionModeUI();
+			});
+		}
+
+		function vm2Notify(msg, icon) {
+			var m = (msg != null ? String(msg) : '').trim();
+			if (!m) m = 'Ocurrió un error.';
+			try {
+				if (window.Swal && typeof window.Swal.fire === 'function') {
+					window.Swal.fire({
+						icon: icon || 'info',
+						text: m,
+						confirmButtonText: 'Aceptar'
+					});
+					return;
+				}
+			} catch (e1) {}
+			alert(m);
+		}
+
+		var btnGuardarCli087JsonEl = document.getElementById('vm2-btn-guardar-cli087-json');
+		if (btnGuardarCli087JsonEl) {
+			btnGuardarCli087JsonEl.addEventListener('click', function () {
+				if (!vm2Cli087Ctx.url) return;
+				var formJson = document.getElementById('vm2-form-cli087-json');
+				if (formJson && formJson.checkValidity && !formJson.checkValidity()) {
+					if (formJson.reportValidity) formJson.reportValidity();
+					return;
+				}
+				var respuestas;
+				if (vm2Cli087Ctx.tienePlantilla && formJson) {
+					respuestas = vm2CollectJsonPreguntasForm(formJson);
+				} else {
+					respuestas = vm2Cli087Ctx.valoresSnapshot || {};
+				}
+				var estSel = document.getElementById('vm2-cli087-estado');
+				var estadoAd = estSel && estSel.value ? String(estSel.value).trim() : '';
+				var fd = new FormData();
+				fd.append('csrfmiddlewaretoken', vm2GetCsrfToken());
+				fd.append('estado_accion_decisiva', estadoAd);
+				fd.append('respuestas', JSON.stringify(respuestas));
+				var filePicked = null;
+				if (formJson) {
+					var sf = formJson.querySelectorAll('input[type="file"][data-vm2-q]');
+					var si;
+					for (si = 0; si < sf.length; si++) {
+						if (sf[si].files && sf[si].files[0]) {
+							filePicked = sf[si].files[0];
+							break;
+						}
+					}
+				}
+				if (!filePicked) {
+					var finp = document.getElementById('vm2-cli087-archivo');
+					if (finp && finp.files && finp.files[0]) filePicked = finp.files[0];
+				}
+				if (filePicked) {
+					fd.append('archivo_reporte', filePicked);
+				}
+				var btnG = btnGuardarCli087JsonEl;
+				btnG.disabled = true;
+				fetch(vm2Cli087Ctx.url, {
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: {
+						'X-CSRFToken': vm2GetCsrfToken()
+					},
+					body: fd
+				})
+					.then(function (r) {
+						return r.json().then(function (j) {
+							return { ok: r.ok, json: j };
+						});
+					})
+					.then(function (res) {
+						if (res.ok && res.json && res.json.ok) {
+							vm2Notify(res.json.message || 'Datos guardados correctamente.', 'success');
+							try {
+								var modalEl = document.getElementById('vm2ModalAccionDecisivaDetalle');
+								if (modalEl && window.bootstrap && window.bootstrap.Modal) {
+									var inst = window.bootstrap.Modal.getInstance(modalEl);
+									if (inst) inst.hide();
+								}
+							} catch (eH) {}
+							return;
+						}
+						var msgg =
+							res.json && res.json.error ? res.json.error : 'No fue posible guardar los datos.';
+						vm2Notify(msgg, 'error');
+					})
+					.catch(function () {
+						vm2Notify('Error de red al guardar.', 'error');
+					})
+					.finally(function () {
+						btnG.disabled = false;
+					});
+			});
+		}
 
 		var btnVm2Ct = document.getElementById('vm2-btn-confirmar-contratacion');
 		if (btnVm2Ct) {
@@ -1447,6 +2667,13 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 				if (!aplId || aplId === '—') return;
 				var url = vm2BuildVm2GestionPostUrl(aplId);
 				var csrf = vm2GetCsrfToken();
+				var desc = (document.getElementById('vm2-descripcion-respuesta-cliente') || {}).value || '';
+				desc = String(desc).trim();
+				if (!desc) {
+					vm2Notify('La descripción / respuesta del cliente es obligatoria.', 'warning');
+					vm2SyncGestionModeUI();
+					return;
+				}
 				btnVm2Ct.disabled = true;
 				fetch(url, {
 					method: 'POST',
@@ -1455,7 +2682,7 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 						'Content-Type': 'application/json',
 						'X-CSRFToken': csrf
 					},
-					body: JSON.stringify({ accion: 'ir_contratacion' })
+					body: JSON.stringify({ accion: 'ir_contratacion', descripcion_respuesta_cliente: desc })
 				})
 					.then(function (r) { return r.json().then(function (j) { return { ok: r.ok, json: j }; }); })
 					.then(function (res) {
@@ -1464,10 +2691,10 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 							return;
 						}
 						var msg = (res.json && res.json.error) ? res.json.error : 'No fue posible completar la acción.';
-						alert(msg);
+						vm2Notify(msg, 'error');
 					})
 					.catch(function () {
-						alert('Error de red al continuar a contratación.');
+						vm2Notify('Error de red al continuar a contratación.', 'error');
 					})
 					.finally(function () {
 						btnVm2Ct.disabled = false;
@@ -1484,6 +2711,13 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 				var url = vm2BuildVm2GestionPostUrl(aplId);
 				var csrf = vm2GetCsrfToken();
 				var reportes = vm2CollectReportesDecisiones();
+				var desc = (document.getElementById('vm2-descripcion-respuesta-cliente') || {}).value || '';
+				desc = String(desc).trim();
+				if (!desc) {
+					vm2Notify('La descripción / respuesta del cliente es obligatoria.', 'warning');
+					vm2SyncGestionModeUI();
+					return;
+				}
 				btnVm2De.disabled = true;
 				fetch(url, {
 					method: 'POST',
@@ -1492,7 +2726,7 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 						'Content-Type': 'application/json',
 						'X-CSRFToken': csrf
 					},
-					body: JSON.stringify({ accion: 'registrar_decisiones', reportes: reportes })
+					body: JSON.stringify({ accion: 'registrar_decisiones', reportes: reportes, descripcion_respuesta_cliente: desc })
 				})
 					.then(function (r) { return r.json().then(function (j) { return { ok: r.ok, json: j }; }); })
 					.then(function (res) {
@@ -1501,13 +2735,56 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 							return;
 						}
 						var msg = (res.json && res.json.error) ? res.json.error : 'No fue posible registrar las decisiones.';
-						alert(msg);
+						vm2Notify(msg, 'error');
 					})
 					.catch(function () {
-						alert('Error de red al registrar decisiones definitivas.');
+						vm2Notify('Error de red al registrar decisiones definitivas.', 'error');
 					})
 					.finally(function () {
 						btnVm2De.disabled = false;
+					});
+			});
+		}
+
+		var btnVm2No = document.getElementById('vm2-btn-marcar-noapto');
+		if (btnVm2No) {
+			btnVm2No.addEventListener('click', function () {
+				var card = document.querySelector('.vacancy-m2-candidate-card.is-selected');
+				var aplId = card && card.getAttribute('data-aplicacion-id');
+				if (!aplId || aplId === '—') return;
+				var url = vm2BuildVm2GestionPostUrl(aplId);
+				var csrf = vm2GetCsrfToken();
+				var desc = (document.getElementById('vm2-descripcion-respuesta-cliente') || {}).value || '';
+				desc = String(desc).trim();
+				if (!desc) {
+					vm2Notify('La descripción / respuesta del cliente es obligatoria.', 'warning');
+					vm2SyncGestionModeUI();
+					return;
+				}
+				btnVm2No.disabled = true;
+				fetch(url, {
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': csrf
+					},
+					body: JSON.stringify({ accion: 'marcar_no_apto', descripcion_respuesta_cliente: desc })
+				})
+					.then(function (r) { return r.json().then(function (j) { return { ok: r.ok, json: j }; }); })
+					.then(function (res) {
+						if (res.ok && res.json && res.json.ok) {
+							window.location.reload();
+							return;
+						}
+						var msg = (res.json && res.json.error) ? res.json.error : 'No fue posible marcar No Apto.';
+						vm2Notify(msg, 'error');
+					})
+					.catch(function () {
+						vm2Notify('Error de red al marcar No Apto.', 'error');
+					})
+					.finally(function () {
+						btnVm2No.disabled = false;
 					});
 			});
 		}
@@ -1528,6 +2805,8 @@ tbody tr.vacancy-m2-candidate-card.is-selected {
 					.then(function (r) { return r.text(); })
 					.then(function (html) {
 						bodyEl.innerHTML = html;
+						var aplId = cardSel && cardSel.getAttribute('data-aplicacion-id');
+						updateVm2ModalVideoPerfil(aplId);
 					})
 					.catch(function () {
 						bodyEl.innerHTML = '<p class="text-danger text-center py-4 mb-0">No fue posible cargar la información del candidato.</p>';

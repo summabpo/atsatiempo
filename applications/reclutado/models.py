@@ -257,6 +257,25 @@ class Cli087ReporteAccionDecisivaReclutado(models.Model):
         verbose_name="Datos del reporte"
     )
 
+    ACCION_DECISIVA_ESTADO_CHOICES = [
+        ('aprobada', 'Aprobada'),
+        ('pendiente', 'Pendiente'),
+        ('no_aprobada', 'No aprobada'),
+    ]
+    estado_accion_decisiva = models.CharField(
+        max_length=20,
+        choices=ACCION_DECISIVA_ESTADO_CHOICES,
+        default='pendiente',
+        verbose_name="Estado Acción Decisiva"
+    )
+
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    usuario_actualizado = models.ForeignKey(
+        UsuarioBase, 
+        on_delete=models.CASCADE, 
+        related_name='reportes_accion_decisiva_actualizados'
+    )
+
     def __str__(self):
         return f"Reporte Acción Decisiva para la aplicación {self.aplicacion_vacante_056.id}"
 

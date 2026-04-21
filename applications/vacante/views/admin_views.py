@@ -235,6 +235,13 @@ def create_vacanty_from_client(request, pk):
                         profesion_estudio_obj = Cli055ProfesionEstudio.objects.get(id=profesion_estudio_value)
                     except Cli055ProfesionEstudio.DoesNotExist:
                         profesion_estudio_obj = None
+
+                cargo_obj = Cli068Cargo.objects.get(id=form.cleaned_data['cargo'])
+                refs_solicitud = []
+                for i in range(1, (cargo_obj.referencias_laborales or 0) + 1):
+                    txt = (form.cleaned_data.get(f'ref_laboral_{i}') or '').strip()
+                    if txt:
+                        refs_solicitud.append({'orden': i, 'descripcion': txt})
                 
                 perfil_vacante = Cli073PerfilVacante.objects.create(
                     edad_inicial=form.cleaned_data['edad_inicial'],
@@ -263,12 +270,11 @@ def create_vacanty_from_client(request, pk):
                     funciones_responsabilidades=funciones_data,
                     tipo_profesion=form.cleaned_data['tipo_profesion'],
                     profesion_estudio_listado=form.cleaned_data['profesion_estudio_listado'],
-                    grupo_profesion=grupo_profesion_obj
+                    grupo_profesion=grupo_profesion_obj,
+                    referencias_laborales_solicitud=refs_solicitud or None,
                 )
     
                 # --- 3. Crea la Vacante ---
-                cargo_obj = Cli068Cargo.objects.get(id=form.cleaned_data['cargo'])
-                
                 vacante = Cli052Vacante.objects.create(
                     cargo=cargo_obj,
                     numero_posiciones=form.cleaned_data['numero_posiciones'],
@@ -341,10 +347,15 @@ def create_vacanty_from_client(request, pk):
     else:
         form = VacancyFormAllV2(cliente_id=pk)
 
+    cargos_refs_map = {
+        str(c.id): (c.referencias_laborales or 0)
+        for c in Cli068Cargo.objects.filter(cliente_id=pk)
+    }
     context = {
         'data': data,
         'vacantes': vacantes,
-        'form': form
+        'form': form,
+        'cargos_refs_map': cargos_refs_map,
     }
 
     return render(request, 'admin/vacancy/admin_user/client_detail_vacancy_create.html', context) 
@@ -491,6 +502,17 @@ def edit_vacanty_from_client(request, pk, vacante_id):
                     bloque = funcion.get('bloque', 1)
                     initial[f'funciones_responsabilidades_{bloque}'] = funcion.get('funcion', '')
 
+        ref_sol = getattr(perfil_vacante, 'referencias_laborales_solicitud', None)
+        if ref_sol:
+            for item in ref_sol:
+                if isinstance(item, dict):
+                    try:
+                        o = int(item.get('orden', 0))
+                    except (TypeError, ValueError):
+                        continue
+                    if 1 <= o <= 10:
+                        initial[f'ref_laboral_{o}'] = (item.get('descripcion') or '').strip()
+
     # Requerimientos especiales (en vacante, no en perfil)
     if vacante.requerimientos_especiales:
         req_list = vacante.requerimientos_especiales
@@ -504,6 +526,11 @@ def edit_vacanty_from_client(request, pk, vacante_id):
     initial['grupo_fit_3'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_3_IDS).values_list('id', flat=True))
     initial['grupo_fit_4'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_4_IDS).values_list('id', flat=True))
     initial['grupo_fit_5'] = list(vacante.fit_cultural.filter(id__in=FIT_GRUPO_5_IDS).values_list('id', flat=True))
+
+    cargos_refs_map = {
+        str(c.id): (c.referencias_laborales or 0)
+        for c in Cli068Cargo.objects.filter(cliente_id=pk)
+    }
 
     if request.method == 'POST':
         form = VacancyFormAllV2(
@@ -521,7 +548,8 @@ def edit_vacanty_from_client(request, pk, vacante_id):
                 messages.error(request, 'Debe seleccionar un cargo válido.')
                 context = {
                     'data': data,
-                    'form': form
+                    'form': form,
+                    'cargos_refs_map': cargos_refs_map,
                 }
                 return render(request, 'admin/vacancy/admin_user/client_detail_vacancy_edit.html', context)
             
@@ -660,6 +688,19 @@ def edit_vacanty_from_client(request, pk, vacante_id):
                         'funcion': funcion
                     })
             perfil_vacante.funciones_responsabilidades = funciones_data
+
+            cargo_edit = form.cleaned_data.get('cargo')
+            refs_edit = []
+            if cargo_edit:
+                try:
+                    co_ed = Cli068Cargo.objects.get(pk=cargo_edit)
+                    for i in range(1, (co_ed.referencias_laborales or 0) + 1):
+                        tx = (form.cleaned_data.get(f'ref_laboral_{i}') or '').strip()
+                        if tx:
+                            refs_edit.append({'orden': i, 'descripcion': tx})
+                except Cli068Cargo.DoesNotExist:
+                    pass
+            perfil_vacante.referencias_laborales_solicitud = refs_edit or None
             
             perfil_vacante.save()
 
@@ -754,7 +795,8 @@ def edit_vacanty_from_client(request, pk, vacante_id):
 
     context = {
         'data': data,
-        'form': form
+        'form': form,
+        'cargos_refs_map': cargos_refs_map,
     }
 
     return render(request, 'admin/vacancy/admin_user/client_detail_vacancy_edit.html', context)

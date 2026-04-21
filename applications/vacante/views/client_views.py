@@ -1,12 +1,16 @@
 from collections import defaultdict
+from os.path import basename
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F, Count, Q, Value, Case, When, CharField, Max, Prefetch
-from django.db import transaction, IntegrityError
-from django.views.decorators.http import require_POST
+from django.db import DatabaseError, transaction, IntegrityError
+import copy
+
+from django.views.decorators.http import require_POST, require_http_methods
 from applications.cliente.models import (
     Cli051Cliente,
     Cli064AsignacionCliente,
     Cli078MotivadoresCandidato,
+    Cli085AccionesDecisivas,
     Cli086AsignacionCargoAccionesDecisivas,
 )
 from applications.cliente.acciones_cargo_utils import acciones_decisivas_asignadas_cargo_activas
@@ -15,7 +19,11 @@ from applications.services.service_interview import query_interview_all, attach_
 from applications.services.service_recruited import query_recruited_vacancy_id
 from applications.reclutado.forms.FormRecruited import ReclutadoCrearForm
 from applications.vacante.models import Cli052Vacante, Cli055ProfesionEstudio, Cli053SoftSkill, Cli054HardSkill, Cli052VacanteHardSkillsId054, Cli052VacanteSoftSkillsId053, Cli072FuncionesResponsabilidades, Cli073PerfilVacante, Cli068Cargo, Cli074AsignacionFunciones, Cli075GrupoProfesion
-from applications.reclutado.models import Cli056AplicacionVacante, Cli087ReporteAccionDecisivaReclutado
+from applications.reclutado.models import (
+    Cli056AplicacionVacante,
+    Cli063AplicacionVacanteHistorial,
+    Cli087ReporteAccionDecisivaReclutado,
+)
 from applications.entrevista.models import Cli057AsignacionEntrevista
 from applications.usuarios.models import Permiso, UsuarioBase
 from applications.common.models import Cat001Estado, Cat004Ciudad
@@ -413,6 +421,13 @@ def create_vacanty_v2(request):
             descripcion_vacante = form.cleaned_data.get('descripcion_vacante')
 
             #creacion perfil de la vacante
+            cargo_obj = Cli068Cargo.objects.get(id=form.cleaned_data['cargo'])
+            refs_solicitud = []
+            for i in range(1, (cargo_obj.referencias_laborales or 0) + 1):
+                txt = (form.cleaned_data.get(f'ref_laboral_{i}') or '').strip()
+                if txt:
+                    refs_solicitud.append({'orden': i, 'descripcion': txt})
+
             perfil_vacante = Cli073PerfilVacante.objects.create(
                 edad_inicial=form.cleaned_data['edad_inicial'],
                 edad_final=form.cleaned_data['edad_final'],
@@ -440,11 +455,11 @@ def create_vacanty_v2(request):
                 funciones_responsabilidades=funciones_data,
                 tipo_profesion=form.cleaned_data['tipo_profesion'],
                 profesion_estudio_listado=form.cleaned_data['profesion_estudio_listado'],
-                grupo_profesion=grupo_profesion_obj
+                grupo_profesion=grupo_profesion_obj,
+                referencias_laborales_solicitud=refs_solicitud or None,
             )
 
             # --- 3. Crea la Vacante ---
-            cargo_obj = Cli068Cargo.objects.get(id=form.cleaned_data['cargo'])
             
             vacante = Cli052Vacante.objects.create(
                 cargo=cargo_obj,
@@ -503,8 +518,13 @@ def create_vacanty_v2(request):
     else:
         form = VacancyFormAllV2(cliente_id=cliente_id)
 
+    cargos_refs_map = {
+        str(c.id): (c.referencias_laborales or 0)
+        for c in Cli068Cargo.objects.filter(cliente_id=cliente_id)
+    }
     context = {
         'form': form,
+        'cargos_refs_map': cargos_refs_map,
     }
 
     return render(request, 'admin/vacancy/client_user/vacancy_create_v2.html', context)
@@ -740,6 +760,18 @@ def detail_vacancy(request, pk):
                     bloque = funcion.get('bloque', 1)
                     initial[f'funciones_responsabilidades_{bloque}'] = funcion.get('funcion', '')
 
+        # Referencias laborales solicitadas (según cargo al crear/editar)
+        ref_sol = getattr(perfil_vacante, "referencias_laborales_solicitud", None)
+        if ref_sol:
+            for item in ref_sol:
+                if isinstance(item, dict):
+                    try:
+                        o = int(item.get("orden", 0))
+                    except (TypeError, ValueError):
+                        continue
+                    if 1 <= o <= 10:
+                        initial[f"ref_laboral_{o}"] = (item.get("descripcion") or "").strip()
+
     # Requerimientos especiales (en vacante, no en perfil)
     if vacante.requerimientos_especiales:
         req_list = vacante.requerimientos_especiales
@@ -879,7 +911,20 @@ def detail_vacancy(request, pk):
                         'funcion': funcion
                     })
             perfil_vacante.funciones_responsabilidades = funciones_data
-            
+
+            cargo_edit = form.cleaned_data.get("cargo")
+            refs_edit = []
+            if cargo_edit:
+                try:
+                    co_ed = Cli068Cargo.objects.get(pk=cargo_edit)
+                    for i in range(1, (co_ed.referencias_laborales or 0) + 1):
+                        tx = (form.cleaned_data.get(f"ref_laboral_{i}") or "").strip()
+                        if tx:
+                            refs_edit.append({"orden": i, "descripcion": tx})
+                except Cli068Cargo.DoesNotExist:
+                    pass
+            perfil_vacante.referencias_laborales_solicitud = refs_edit or None
+
             perfil_vacante.save()
 
             # Update skills (ManyToMany fields)
@@ -1059,9 +1104,15 @@ def detail_vacancy(request, pk):
             nota = "El último envío al cliente es anterior a la fecha de presentación."
         diferencia_fechas_presentacion_envio = {"texto": texto_diff, "nota": nota}
 
+    cargos_refs_map = {
+        str(c.id): (c.referencias_laborales or 0)
+        for c in Cli068Cargo.objects.filter(cliente_id=cliente_id)
+    }
+
     context = {
         "vacante": vacante,
         "form": form,
+        "cargos_refs_map": cargos_refs_map,
         "data": {"cliente": cliente_asignado},
         "is_candidato": False,
         "aplicaciones_tabla": aplicaciones_tabla,
@@ -1297,6 +1348,7 @@ def vacancy_aplicacion_vm2_gestion_accion(request, vacante_pk, aplicacion_pk):
         return JsonResponse({"ok": False, "error": "JSON inválido"}, status=400)
 
     accion = (body.get("accion") or "").strip()
+    descripcion_respuesta_cliente = (body.get("descripcion_respuesta_cliente") or "").strip()
     aplicacion = get_object_or_404(
         Cli056AplicacionVacante.objects.select_related(
             "vacante_id_052",
@@ -1323,6 +1375,15 @@ def vacancy_aplicacion_vm2_gestion_accion(request, vacante_pk, aplicacion_pk):
         return JsonResponse({"ok": False, "error": "Usuario no identificado."}, status=403)
     usuario = get_object_or_404(UsuarioBase, pk=uid)
 
+    if not descripcion_respuesta_cliente:
+        return JsonResponse(
+            {
+                "ok": False,
+                "error": "La descripción / respuesta del cliente es obligatoria.",
+            },
+            status=400,
+        )
+
     estado_activo = Cat001Estado.objects.filter(nombre__iexact="Activo").first()
     if not estado_activo:
         estado_activo = Cat001Estado.objects.filter(pk=1).first()
@@ -1330,13 +1391,51 @@ def vacancy_aplicacion_vm2_gestion_accion(request, vacante_pk, aplicacion_pk):
         return JsonResponse({"ok": False, "error": "No hay estado catálogo Activo."}, status=500)
 
     if accion == "ir_contratacion":
-        crear_historial_aplicacion(
-            aplicacion,
-            13,
-            uid,
-            "Pase a viaje de contratación (en espera por respuesta de contratación)",
+        with transaction.atomic():
+            rr = aplicacion.registro_reclutamiento or {}
+            if not isinstance(rr, dict):
+                rr = {}
+            rr["descripcion_respuesta_cliente"] = descripcion_respuesta_cliente
+            aplicacion.registro_reclutamiento = rr
+            aplicacion.save(update_fields=["registro_reclutamiento"])
+            crear_historial_aplicacion(
+                aplicacion,
+                13,
+                uid,
+                "Pase a viaje de contratación (en espera por respuesta de contratación). "
+                f"Respuesta cliente: {descripcion_respuesta_cliente}",
+            )
+        messages.success(request, "Candidato enviado a viaje de contratación.")
+        return JsonResponse(
+            {
+                "ok": True,
+                "estado_aplicacion": 13,
+                "message": "Candidato enviado a viaje de contratación.",
+            }
         )
-        return JsonResponse({"ok": True, "estado_aplicacion": 13})
+
+    if accion == "marcar_no_apto":
+        with transaction.atomic():
+            rr = aplicacion.registro_reclutamiento or {}
+            if not isinstance(rr, dict):
+                rr = {}
+            rr["descripcion_respuesta_cliente"] = descripcion_respuesta_cliente
+            aplicacion.registro_reclutamiento = rr
+            aplicacion.save(update_fields=["registro_reclutamiento"])
+            crear_historial_aplicacion(
+                aplicacion,
+                12,
+                uid,
+                f"No Apto. Respuesta cliente: {descripcion_respuesta_cliente}",
+            )
+        messages.success(request, "Candidato marcado como No Apto.")
+        return JsonResponse(
+            {
+                "ok": True,
+                "estado_aplicacion": 12,
+                "message": "Candidato marcado como No Apto.",
+            }
+        )
 
     if accion == "registrar_decisiones":
         cargo = vacante.cargo
@@ -1385,25 +1484,340 @@ def vacancy_aplicacion_vm2_gestion_accion(request, vacante_pk, aplicacion_pk):
                 status=400,
             )
 
+        acciones_map = Cli085AccionesDecisivas.objects.in_bulk(reportes_in.keys())
+        if len(acciones_map) != len(reportes_in):
+            return JsonResponse(
+                {"ok": False, "error": "Una o más acciones decisivas no existen."},
+                status=400,
+            )
+
         with transaction.atomic():
+            rr = aplicacion.registro_reclutamiento or {}
+            if not isinstance(rr, dict):
+                rr = {}
+            rr["descripcion_respuesta_cliente"] = descripcion_respuesta_cliente
+            aplicacion.registro_reclutamiento = rr
+            aplicacion.save(update_fields=["registro_reclutamiento"])
+
+            # 1) Crear filas cli_087 por acción seleccionada
             for aid, resp in reportes_in.items():
                 Cli087ReporteAccionDecisivaReclutado.objects.create(
                     aplicacion_vacante_056=aplicacion,
                     accion_decisiva_id=aid,
                     usuario_cargado=usuario,
+                    usuario_actualizado=usuario,
                     estado=estado_activo,
                     json_data=resp,
                 )
+
+            # 2) Un solo cambio de estado 3 → 5 en historial (y en la aplicación)
             crear_historial_aplicacion(
                 aplicacion,
                 5,
                 uid,
-                "Registro de decisiones definitivas (acciones decisivas del cargo)",
+                "Registro de decisiones definitivas. "
+                f"Respuesta cliente: {descripcion_respuesta_cliente}",
             )
 
-        return JsonResponse({"ok": True, "estado_aplicacion": 5})
+            # 3) Entradas adicionales de historial, una por acción, conservando estado 5
+            #    (sin volver a forzar “Cambio de estado ... a ...” por cada acción).
+            for aid in sorted(reportes_in.keys()):
+                acc = acciones_map.get(aid)
+                nombre_acc = (getattr(acc, "nombre", "") or "").strip() or f"ID {aid}"
+                Cli063AplicacionVacanteHistorial.objects.create(
+                    aplicacion_vacante_056=aplicacion,
+                    usuario_id_genero=usuario,
+                    estado=5,
+                    descripcion=f"Acción decisiva asignada: {nombre_acc}",
+                )
+
+        messages.success(request, "Decisiones definitivas registradas correctamente.")
+        return JsonResponse(
+            {
+                "ok": True,
+                "estado_aplicacion": 5,
+                "message": "Decisiones definitivas registradas correctamente.",
+            }
+        )
 
     return JsonResponse({"ok": False, "error": "Acción no válida."}, status=400)
+
+
+def _vm2_is_schema_field_dict(d):
+    """Nodo hoja: metadatos de campo (type, label, …) definidos en Cli085.json_data."""
+    if not isinstance(d, dict) or not d:
+        return False
+    return "type" in d and "label" in d
+
+
+def _vm2_schema_default_val(schema):
+    t = str(schema.get("type") or "string").lower()
+    if t == "boolean":
+        return False
+    if t == "number":
+        return None
+    if t == "file":
+        return ""
+    return ""
+
+
+def _vm2_nombre_usuario_cli087(u):
+    if not u:
+        return ""
+    parts = [
+        getattr(u, "primer_nombre", None) or "",
+        getattr(u, "segundo_nombre", None) or "",
+        getattr(u, "primer_apellido", None) or "",
+        getattr(u, "segundo_apellido", None) or "",
+    ]
+    s = " ".join(p for p in parts if p).strip()
+    return s or (getattr(u, "username", None) or "").strip() or str(getattr(u, "pk", "") or "")
+
+
+def _vm2_merge_json_valores_sobre_plantilla(plantilla, valores):
+    """Superpone valores guardados (Cli087) sobre la plantilla (Cli085.json_data)."""
+    if plantilla is None:
+        return valores
+    if isinstance(plantilla, dict) and _vm2_is_schema_field_dict(plantilla):
+        if valores is None:
+            return _vm2_schema_default_val(plantilla)
+        if isinstance(valores, str) and valores.strip().startswith("{"):
+            try:
+                parsed = json.loads(valores)
+                if isinstance(parsed, dict) and _vm2_is_schema_field_dict(parsed):
+                    return _vm2_schema_default_val(plantilla)
+            except json.JSONDecodeError:
+                pass
+        if isinstance(valores, dict) and _vm2_is_schema_field_dict(valores):
+            # No usar una copia de la plantilla como valor (provoca "[object Object]" / JSON vacío en UI).
+            if "value" in valores:
+                inner = valores.get("value")
+                return copy.deepcopy(inner) if inner is not None else _vm2_schema_default_val(plantilla)
+            return _vm2_schema_default_val(plantilla)
+        return valores
+    if isinstance(plantilla, dict):
+        if not isinstance(valores, dict):
+            return copy.deepcopy(plantilla)
+        out = {}
+        for k, pv in plantilla.items():
+            if k in valores:
+                out[k] = _vm2_merge_json_valores_sobre_plantilla(pv, valores[k])
+            else:
+                out[k] = copy.deepcopy(pv)
+        return out
+    if isinstance(plantilla, list) and plantilla:
+        item_tpl = plantilla[0]
+        if not valores or not isinstance(valores, list):
+            return copy.deepcopy(plantilla)
+        res = []
+        for item in valores:
+            if isinstance(item_tpl, dict) and isinstance(item, dict):
+                res.append(_vm2_merge_json_valores_sobre_plantilla(item_tpl, item))
+            else:
+                res.append(item)
+        return res if res else copy.deepcopy(plantilla)
+    return valores if valores is not None else plantilla
+
+
+def _vm2_normalizar_json_respuesta_plantilla(plantilla, posted):
+    """Alinea el JSON enviado a la forma de la plantilla (solo claves definidas en Cli085)."""
+    if plantilla is None:
+        return posted
+    if isinstance(plantilla, dict) and _vm2_is_schema_field_dict(plantilla):
+        return posted
+    if isinstance(plantilla, dict):
+        if not isinstance(posted, dict):
+            return copy.deepcopy(plantilla)
+        out = {}
+        for k, tv in plantilla.items():
+            if k in posted:
+                out[k] = _vm2_normalizar_json_respuesta_plantilla(tv, posted[k])
+            else:
+                out[k] = copy.deepcopy(tv)
+        return out
+    if isinstance(plantilla, list) and plantilla:
+        item_tpl = plantilla[0]
+        if not isinstance(posted, list):
+            return copy.deepcopy(plantilla)
+        out = []
+        for p in posted:
+            if isinstance(item_tpl, dict) and isinstance(p, dict):
+                out.append(_vm2_normalizar_json_respuesta_plantilla(item_tpl, p))
+        return out if out else copy.deepcopy(plantilla)
+    return posted
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+@validar_permisos(
+    "acceso_admin",
+    "acceso_cliente",
+    "acceso_analista_seleccion_ats",
+    "acceso_analista_seleccion",
+)
+def vacancy_aplicacion_vm2_cli087(request, vacante_pk, aplicacion_pk, cli087_pk):
+    """
+    GET: plantilla json_data (Cli085) + valores fusionados (Cli087).
+    POST: guarda respuestas anidadas en Cli087.json_data según la forma de la plantilla.
+    """
+    aplicacion = get_object_or_404(
+        Cli056AplicacionVacante.objects.select_related("vacante_id_052__asignacion_cliente_id_064"),
+        pk=aplicacion_pk,
+        vacante_id_052_id=vacante_pk,
+    )
+    vacante = aplicacion.vacante_id_052
+    if not _vm2_vacante_ok_for_cliente_session(request, vacante):
+        return JsonResponse({"ok": False, "error": "No autorizado."}, status=403)
+
+    try:
+        cli087 = get_object_or_404(
+            Cli087ReporteAccionDecisivaReclutado.objects.select_related(
+                "accion_decisiva",
+                "usuario_cargado",
+                "usuario_actualizado",
+            ),
+            pk=cli087_pk,
+            aplicacion_vacante_056_id=aplicacion_pk,
+        )
+    except DatabaseError:
+        return JsonResponse(
+            {
+                "ok": False,
+                "error": (
+                    "No se pudo cargar el reporte: revise que la base de datos tenga las columnas del modelo "
+                    "Cli087 (migraciones de la app reclutado, p. ej. fecha_actualizacion / usuario_actualizado)."
+                ),
+            },
+            status=500,
+        )
+
+    acc = cli087.accion_decisiva
+    plantilla = acc.json_data
+
+    if request.method == "GET":
+        guardado = cli087.json_data
+        if not isinstance(guardado, dict) and not isinstance(guardado, list):
+            guardado = {}
+        merged = _vm2_merge_json_valores_sobre_plantilla(plantilla, guardado)
+        fech_txt = ""
+        if cli087.fecha_cargado:
+            fech_txt = timezone.localtime(cli087.fecha_cargado).strftime("%d/%m/%Y %H:%M")
+        fech_act_txt = ""
+        fa = getattr(cli087, "fecha_actualizacion", None)
+        if fa:
+            fech_act_txt = timezone.localtime(fa).strftime("%d/%m/%Y %H:%M")
+        elif cli087.fecha_cargado:
+            fech_act_txt = fech_txt
+        archivo_url = ""
+        archivo_nom = ""
+        try:
+            if cli087.archivo_reporte:
+                archivo_url = cli087.archivo_reporte.url
+                archivo_nom = basename(cli087.archivo_reporte.name) or ""
+        except (ValueError, AttributeError):
+            pass
+        choices_ad = [
+            {"value": k, "label": str(v)}
+            for k, v in Cli087ReporteAccionDecisivaReclutado.ACCION_DECISIVA_ESTADO_CHOICES
+        ]
+        cod_ad = getattr(cli087, "estado_accion_decisiva", None) or "pendiente"
+        valid_cods = {c[0] for c in Cli087ReporteAccionDecisivaReclutado.ACCION_DECISIVA_ESTADO_CHOICES}
+        if cod_ad not in valid_cods:
+            cod_ad = "pendiente"
+        return JsonResponse(
+            {
+                "ok": True,
+                "cli087_id": cli087.id,
+                "accion_id": acc.id,
+                "accion_nombre": acc.nombre or "",
+                "plantilla": plantilla,
+                "valores": merged,
+                "tiene_plantilla": plantilla is not None,
+                "archivo_reporte_url": archivo_url,
+                "archivo_reporte_name": archivo_nom,
+                "fecha_cargado": fech_txt,
+                "fecha_actualizacion": fech_act_txt,
+                "usuario_cargado_nombre": _vm2_nombre_usuario_cli087(cli087.usuario_cargado),
+                "usuario_actualizado_nombre": _vm2_nombre_usuario_cli087(
+                    getattr(cli087, "usuario_actualizado", None) or cli087.usuario_cargado
+                ),
+                "estado_accion_decisiva": cod_ad,
+                "estado_accion_decisiva_label": cli087.get_estado_accion_decisiva_display(),
+                "estado_accion_decisiva_choices": choices_ad,
+            }
+        )
+
+    valid_estados = {c[0] for c in Cli087ReporteAccionDecisivaReclutado.ACCION_DECISIVA_ESTADO_CHOICES}
+    respuestas = None
+    estado_ad = ""
+
+    content_type = (request.content_type or "").lower()
+    if "multipart/form-data" in content_type:
+        raw_resp = request.POST.get("respuestas") or ""
+        try:
+            respuestas = json.loads(raw_resp) if raw_resp.strip() else None
+        except json.JSONDecodeError:
+            return JsonResponse({"ok": False, "error": "Campo respuestas no es JSON válido."}, status=400)
+        estado_ad = (request.POST.get("estado_accion_decisiva") or "").strip()
+        archivo = request.FILES.get("archivo_reporte")
+    else:
+        try:
+            body = json.loads(request.body.decode("utf-8"))
+        except json.JSONDecodeError:
+            return JsonResponse({"ok": False, "error": "JSON inválido"}, status=400)
+        respuestas = body.get("respuestas")
+        estado_ad = (body.get("estado_accion_decisiva") or "").strip()
+        archivo = None
+
+    if not isinstance(respuestas, dict) and not isinstance(respuestas, list):
+        return JsonResponse(
+            {"ok": False, "error": "Se requiere un objeto o arreglo respuestas."},
+            status=400,
+        )
+
+    normalizado = _vm2_normalizar_json_respuesta_plantilla(plantilla, respuestas)
+    uid = request.session.get("_auth_user_id") or getattr(request.user, "id", None)
+    usuario = get_object_or_404(UsuarioBase, pk=uid)
+
+    cli087.json_data = normalizado
+    update_fields = ["json_data"]
+    if estado_ad in valid_estados:
+        cli087.estado_accion_decisiva = estado_ad
+        update_fields.append("estado_accion_decisiva")
+    if archivo:
+        cli087.archivo_reporte = archivo
+        update_fields.append("archivo_reporte")
+    cli087.usuario_actualizado = usuario
+    update_fields.append("usuario_actualizado")
+    update_fields.append("fecha_actualizacion")
+    try:
+        cli087.save(update_fields=update_fields)
+    except DatabaseError:
+        return JsonResponse(
+            {
+                "ok": False,
+                "error": (
+                    "No se pudo guardar el reporte. Aplique las migraciones pendientes de la app reclutado "
+                    "sobre cli_087_reporte_accion_decisiva_reclutado."
+                ),
+            },
+            status=500,
+        )
+
+    return JsonResponse(
+        {
+            "ok": True,
+            "message": "Datos guardados correctamente.",
+            "valores": normalizado,
+            "estado_accion_decisiva": cli087.estado_accion_decisiva,
+            "fecha_actualizacion": timezone.localtime(cli087.fecha_actualizacion).strftime(
+                "%d/%m/%Y %H:%M"
+            )
+            if getattr(cli087, "fecha_actualizacion", None)
+            else "",
+            "usuario_actualizado_nombre": _vm2_nombre_usuario_cli087(cli087.usuario_actualizado),
+        }
+    )
 
 
 #detalle de la vacante
@@ -1528,6 +1942,43 @@ def _vm2_idiomas_candidato(candidato):
     return out
 
 
+def _vm2_cli087_por_aplicacion_map(reclutados):
+    """
+    Filas Cli087ReporteAccionDecisivaReclutado por id de aplicación, para el panel VM2 (estado 5).
+    """
+    ids = [a.id for a in reclutados]
+    if not ids:
+        return {}
+    out = defaultdict(list)
+    qs = (
+        Cli087ReporteAccionDecisivaReclutado.objects.filter(aplicacion_vacante_056_id__in=ids)
+        .select_related("accion_decisiva", "estado")
+        .order_by("aplicacion_vacante_056_id", "fecha_cargado", "id")
+    )
+    _labels_estado_ad = dict(Cli087ReporteAccionDecisivaReclutado.ACCION_DECISIVA_ESTADO_CHOICES)
+
+    for r in qs:
+        aid = str(r.aplicacion_vacante_056_id)
+        estado_nom = ""
+        if r.estado_id:
+            estado_nom = (getattr(r.estado, "nombre", None) or "").strip()
+        es_pendiente = estado_nom.lower() == "activo"
+        cod_ad = getattr(r, "estado_accion_decisiva", None) or "pendiente"
+        if cod_ad not in _labels_estado_ad:
+            cod_ad = "pendiente"
+        out[aid].append(
+            {
+                "id": r.id,
+                "accion_nombre": (getattr(r.accion_decisiva, "nombre", None) or "").strip(),
+                "estado_nombre": estado_nom,
+                "es_pendiente": es_pendiente,
+                "estado_accion_decisiva": cod_ad,
+                "estado_accion_decisiva_label": _labels_estado_ad.get(cod_ad, cod_ad),
+            }
+        )
+    return dict(out)
+
+
 def _enrich_reclutados_reporte_final_listado(aplicaciones):
     """
     Añade vm2_reporte_final_promedio (0..10 o None) y vm2_reporte_final_pct (0..100 o None)
@@ -1634,6 +2085,8 @@ def vacancy_management_from_client_2(request, pk, vacante_id):
 
     vm2_acciones_cargo_decisivas = acciones_decisivas_asignadas_cargo_activas(vacante.cargo)
 
+    vm2_cli087_por_aplicacion = _vm2_cli087_por_aplicacion_map(reclutados)
+
     context = {
         'data': data,
         'vacante': vacante,
@@ -1645,5 +2098,6 @@ def vacancy_management_from_client_2(request, pk, vacante_id):
         'vm2_contratados': vm2_contratados,
         'vm2_candidato_perfil_video': vm2_candidato_perfil_video,
         'vm2_acciones_cargo_decisivas': vm2_acciones_cargo_decisivas,
+        'vm2_cli087_por_aplicacion': vm2_cli087_por_aplicacion,
     }
     return render(request, 'admin/vacancy/client_user/vacancy_management2.html', context)

@@ -29,6 +29,7 @@
 							data-estado-aplicacion="{{ e.estado_aplicacion }}"
 							data-reporte-prom="{% if e.vm2_reporte_final_promedio is not None %}{{ e.vm2_reporte_final_promedio|floatformat:2 }}{% endif %}"
 							data-reporte-pct="{% if e.vm2_reporte_final_pct is not None %}{{ e.vm2_reporte_final_pct }}{% endif %}"
+							data-respuesta-cliente="{% with rr=e.registro_reclutamiento %}{% if rr %}{{ rr.descripcion_respuesta_cliente|default:''|escape }}{% endif %}{% endwith %}"
 							data-detalle-url="{% if request.session.grupo_id == 5 %}{% url 'reclutados:reclutados_detalle_analista_interno' e.id %}{% else %}{% url 'reclutados:reclutados_detalle_cliente' e.id %}{% endif %}">
 							<td style="padding-top: 17px; padding-bottom: 17px;">
 								<div class="d-flex align-items-center gap-2 min-w-0">

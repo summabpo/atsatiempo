@@ -2912,6 +2912,21 @@ class VacancyFormAllV2(forms.Form):
                 required=False
             )
 
+        # Referencias laborales (hasta 10; visibilidad y obligatoriedad según cargo.referencias_laborales)
+        for i in range(1, 11):
+            self.fields[f'ref_laboral_{i}'] = forms.CharField(
+                label='',
+                max_length=500,
+                required=False,
+                widget=forms.Textarea(attrs={
+                    'class': 'form-control form-control-solid',
+                    'rows': 3,
+                    'placeholder': 'Ej.: Último empleador, jefe inmediato, teléfono de RRHH, mínimo 2 años de experiencia…',
+                    'data-ref-laboral-index': str(i),
+                    'aria-label': f'Descripción referencia laboral {i}',
+                }),
+            )
+
         motivadores = Cli078MotivadoresCandidato.objects.filter(estado=1).order_by('id')
         motivadores_choices = [(str(motivador.id), f"{motivador.nombre}") for motivador in motivadores]
         motivadores_titles = {str(m.id): (m.descripcion or m.nombre) for m in motivadores}
@@ -3264,5 +3279,23 @@ class VacancyFormAllV2(forms.Form):
             if req and str(req).strip():
                 requerimientos_list.append(str(req).strip())
         cleaned_data['requerimientos_especiales'] = requerimientos_list if requerimientos_list else None
+
+        # Referencias laborales según cargo
+        cargo_id = cleaned_data.get('cargo')
+        if cargo_id:
+            try:
+                cargo_obj = Cli068Cargo.objects.get(pk=cargo_id)
+                n_ref = cargo_obj.referencias_laborales or 0
+                if n_ref > 0:
+                    for i in range(1, n_ref + 1):
+                        key = f'ref_laboral_{i}'
+                        val = (cleaned_data.get(key) or '').strip()
+                        if not val:
+                            self.add_error(
+                                key,
+                                f'La referencia {i} es obligatoria: el cargo exige {n_ref} referencia(s) laboral(es).',
+                            )
+            except Cli068Cargo.DoesNotExist:
+                pass
 
         return cleaned_data

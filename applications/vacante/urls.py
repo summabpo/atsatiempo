@@ -47,6 +47,11 @@ urlpatterns = [
         client_views.vacancy_aplicacion_vm2_gestion_accion,
         name='vacancy_aplicacion_vm2_gestion_accion',
     ),
+    path(
+        url_principal + 'detalle/<int:vacante_pk>/aplicacion/<int:aplicacion_pk>/cli087/<int:cli087_pk>/',
+        client_views.vacancy_aplicacion_vm2_cli087,
+        name='vacancy_aplicacion_vm2_cli087',
+    ),
     path( url_principal+'detalle/entrevistas/<int:pk>/', client_views.detail_vacancy_interview, name='vacantes_entrevista_cliente'),
     path( url_principal+'asignar_analista/<int:pk>/', client_views.detail_vacancy_assign, name='vacantes_asignar_analista_cliente'),
     path( url_principal+'gestionar/<int:pk>/<int:vacante_id>/', client_views.vacancy_management_from_client, name='vacantes_gestion_propias_cliente'),

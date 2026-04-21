@@ -63,6 +63,29 @@
 
 			<!-- Columna Derecha -->
 			<div style="width: 100%; max-width: 100%; flex: 2 1 500px; padding: 1rem; box-sizing: border-box;">
+				{# Perfil + Video (solo modal) #}
+				<div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+					<div style="flex: 1 1 360px; min-width: 280px; background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); padding: 1.5rem;">
+						<h3 style="margin: 0 0 1rem 0; font-size: 1.25rem; font-weight: 600; color: #212529; display: flex; align-items: center;">
+							<span class="material-symbols-outlined text-primary" style="margin-right: 0.75rem;">person</span>
+							Perfil del candidato
+						</h3>
+						<div id="vm2-modal-perfil" style="white-space: pre-wrap; color: #212529; line-height: 1.55; font-size: 0.95rem; border: 1px solid #dee2e6; border-radius: 0.6rem; padding: 0.9rem; background: #fff; min-height: 180px;" class="d-none"></div>
+						<p id="vm2-modal-sin-perfil" style="color: #6c757d; margin: 0;">No hay descripción de perfil registrada.</p>
+					</div>
+
+					<div style="flex: 1 1 360px; min-width: 280px; background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); padding: 1.5rem;">
+						<h3 style="margin: 0 0 1rem 0; font-size: 1.25rem; font-weight: 600; color: #212529; display: flex; align-items: center;">
+							<span class="material-symbols-outlined text-primary" style="margin-right: 0.75rem;">smart_display</span>
+							Video de perfil
+						</h3>
+						<div id="vm2-modal-video-wrap" class="rounded-3 overflow-hidden bg-dark border d-none" style="min-height: 180px;">
+							<video id="vm2-modal-video" class="w-100 d-block" controls playsinline preload="metadata" style="max-height: 280px; background: #111;"></video>
+						</div>
+						<p id="vm2-modal-sin-video" class="text-muted small mb-0 mt-2 rounded-3 border bg-light py-4 px-3 text-center">Este candidato no tiene video de perfil cargado.</p>
+					</div>
+				</div>
+
 				<div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07); margin-bottom: 1.5rem; padding: 1.5rem;">
 					<h3 style="margin: 0 0 1.5rem 0; font-size: 1.25rem; font-weight: 600; color: #212529; display: flex; align-items: center;">
 						<span class="material-symbols-outlined text-primary" style="margin-right: 0.75rem;">school</span>
