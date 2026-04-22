@@ -1,6 +1,7 @@
 from collections import defaultdict
 from os.path import basename
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.db.models import F, Count, Q, Value, Case, When, CharField, Max, Prefetch
 from django.db import DatabaseError, transaction, IntegrityError
 import copy
@@ -52,9 +53,13 @@ from applications.services.service_candidate import buscar_candidato
 from applications.usuarios.templatetags.custom_tags import get_match_inicial_porcentaje
 from applications.reclutado.views.admin_views import estructurar_resultado_entrevista_json
 from applications.candidato.models import Can103Educacion
+from applications.services.choices import ESTADO_APLICACION_COLOR_STATIC
 
 
-from components.RegistrarHistorialVacante import crear_historial_aplicacion
+from components.RegistrarHistorialVacante import (
+    crear_historial_aplicacion,
+    obtener_nombre_estado_aplicacion,
+)
 
 
 def _vm2_vacante_ok_for_cliente_session(request, vacante):
@@ -548,9 +553,330 @@ def list_vacanty_all(request):
 
     context ={ 
         'vacantes': vacantes,
+        'vacantes_filtro': 'todas',
     }
 
     return render(request, 'admin/vacancy/client_user/vacancy_list.html', context)
+
+
+@login_required
+@validar_permisos('acceso_cliente')
+def list_vacanty_pendientes(request):
+    """Listado de vacantes activas o en proceso (pendientes)."""
+    cliente_id = request.session.get('cliente_id')
+    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+
+    vacantes = (
+        query_vacanty_all()
+        .filter(estado_id_001=1, asignacion_cliente_id_064__id_cliente_asignado=cliente)
+        .filter(estado_vacante__in=(1, 2))
+        .order_by('-fecha_creacion')
+    )
+    return render(
+        request,
+        'admin/vacancy/client_user/vacancy_list.html',
+        {'vacantes': vacantes, 'vacantes_filtro': 'pendientes'},
+    )
+
+
+@login_required
+@validar_permisos('acceso_cliente')
+def list_vacanty_finalizadas(request):
+    """Listado de vacantes finalizadas/cerradas."""
+    cliente_id = request.session.get('cliente_id')
+    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+
+    vacantes = (
+        query_vacanty_all()
+        .filter(estado_id_001=1, asignacion_cliente_id_064__id_cliente_asignado=cliente)
+        .filter(estado_vacante=3)
+        .order_by('-fecha_creacion')
+    )
+    return render(
+        request,
+        'admin/vacancy/client_user/vacancy_list.html',
+        {'vacantes': vacantes, 'vacantes_filtro': 'finalizadas'},
+    )
+
+
+@login_required
+@validar_permisos('acceso_cliente')
+def list_vacanty_vencidas(request):
+    """Listado de vacantes vencidas (fecha_cierra_planteada < hoy y sigue activa/en proceso)."""
+    cliente_id = request.session.get('cliente_id')
+    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+
+    vacantes = (
+        query_vacanty_all()
+        .filter(estado_id_001=1, asignacion_cliente_id_064__id_cliente_asignado=cliente)
+        .filter(estado_vacante__in=(1, 2))
+        .filter(fecha_cierra_planteada__isnull=False)
+        .filter(fecha_cierra_planteada__lt=timezone.now())
+        .order_by('-fecha_creacion')
+    )
+    return render(
+        request,
+        'admin/vacancy/client_user/vacancy_list.html',
+        {'vacantes': vacantes, 'vacantes_filtro': 'vencidas'},
+    )
+
+
+@login_required
+@validar_permisos('acceso_cliente')
+def vacancy_management_summary(request, pk, vacante_id):
+    """
+    Resumen de gestión de una vacante finalizada:
+    - métricas (aplicados/en proceso/seleccionados/contratados)
+    - candidato contratado (seleccionable si hay varios)
+    - línea de tiempo basada en historial de la aplicación
+    """
+    cliente_id = request.session.get('cliente_id')
+    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+
+    vacante = get_object_or_404(
+        Cli052Vacante.objects.select_related(
+            'cargo',
+            'asignacion_cliente_id_064',
+            'asignacion_cliente_id_064__id_cliente_asignado',
+        ),
+        id=vacante_id,
+        estado_id_001=1,
+        asignacion_cliente_id_064__id_cliente_asignado=cliente,
+    )
+
+    metricas = Cli056AplicacionVacante.calcular_cantidades_y_porcentajes(vacante.id)
+
+    contratados_qs = (
+        Cli056AplicacionVacante.objects.select_related('candidato_101')
+        .filter(vacante_id_052_id=vacante.id, estado_aplicacion=15)
+        .order_by('fecha_actualizacion', 'fecha_aplicacion', 'id')
+    )
+
+    aplicacion_id = request.GET.get('aplicacion')
+    aplicacion_seleccionada = None
+    if aplicacion_id and str(aplicacion_id).isdigit():
+        aplicacion_seleccionada = contratados_qs.filter(id=int(aplicacion_id)).first()
+    if not aplicacion_seleccionada:
+        aplicacion_seleccionada = contratados_qs.first()
+
+    timeline = []
+    if aplicacion_seleccionada:
+        timeline = list(
+            Cli063AplicacionVacanteHistorial.objects.filter(
+                aplicacion_vacante_056_id=aplicacion_seleccionada.id
+            )
+            .select_related('usuario_id_genero')
+            .order_by('-fecha')
+        )
+
+    timeline_rows = []
+    icon_by_estado = {
+        1: "assignment",
+        2: "event",
+        3: "check_circle",
+        4: "cancel",
+        5: "task",
+        6: "verified",
+        7: "dangerous",
+        8: "person_check",
+        9: "flag",
+        10: "block",
+        11: "logout",
+        12: "do_not_disturb_on",
+        13: "hourglass_top",
+        14: "cancel",
+        15: "check_circle",
+    }
+    for h in timeline:
+        estado_code = getattr(h, "estado", None)
+        estado_nombre, color = ESTADO_APLICACION_COLOR_STATIC.get(
+            estado_code, (obtener_nombre_estado_aplicacion(estado_code), "secondary")
+        )
+        badge_bg = f"bg-{color} bg-opacity-10 text-{color}"
+        timeline_rows.append(
+            {
+                'fecha': h.fecha,
+                'estado': estado_code,
+                'estado_nombre': estado_nombre,
+                'badge_bg': badge_bg,
+                'icon': icon_by_estado.get(estado_code, "timeline"),
+                'descripcion': getattr(h, 'descripcion', None),
+                'usuario': getattr(h, 'usuario_id_genero', None),
+            }
+        )
+
+    # Gráfica por candidato (según aplicación seleccionada): usa promedios/calificaciones del reporte final.
+    reporte_chart = None
+    reporte_compacto_html = ''
+    if aplicacion_seleccionada:
+        entrevista = (
+            Cli057AsignacionEntrevista.objects.filter(
+                asignacion_vacante=aplicacion_seleccionada,
+                resultado_entrevista__isnull=False,
+            )
+            .exclude(resultado_entrevista={})
+            .order_by('-fecha_entrevista', '-hora_entrevista')
+            .first()
+        )
+
+        json_match_inicial_raw = aplicacion_seleccionada.json_match_inicial
+        json_match_inicial = {}
+        if json_match_inicial_raw:
+            try:
+                json_match_inicial = (
+                    json.loads(json_match_inicial_raw)
+                    if isinstance(json_match_inicial_raw, str)
+                    else json_match_inicial_raw
+                )
+            except (json.JSONDecodeError, TypeError):
+                json_match_inicial = {}
+
+        resultado_part = estructurar_resultado_entrevista_json(
+            entrevista.resultado_entrevista if entrevista else None,
+            json_match_inicial,
+        )
+        promedios = resultado_part.get('promedios') or {}
+        pruebas_list = resultado_part.get('pruebas') or []
+        conf = resultado_part.get('confiabilidad_riesgo') or {}
+
+        def _to_float(v):
+            try:
+                return float(v)
+            except (TypeError, ValueError):
+                return 0.0
+
+        labels = [
+            'Hard Skills',
+            'Habilidades',
+            'Fit cultural',
+            'Motivadores',
+            'Pruebas',
+            'Confiabilidad / riesgo',
+        ]
+        keys = ['hard_skills', 'habilidades', 'fit_cultural', 'motivadores', 'pruebas', 'confiabilidad_riesgo']
+        values = [
+            _to_float(promedios.get('hard_skills')),
+            _to_float(promedios.get('habilidades')),
+            _to_float(promedios.get('fit_cultural')),
+            _to_float(promedios.get('motivadores')),
+            _to_float(pruebas_list[0].get('calificacion')) if isinstance(pruebas_list, list) and pruebas_list else 0.0,
+            _to_float(conf.get('calificacion')) if isinstance(conf, dict) else 0.0,
+        ]
+        promedio_total = _to_float(resultado_part.get('promedio_total'))
+        pct = int(max(0, min(100, round(promedio_total * 10)))) if promedio_total else 0
+
+        # Bandas de color como vm2 (según % global).
+        if pct >= 80:
+            color = '#198754'
+        elif pct >= 60:
+            color = '#f59e0b'
+        elif pct >= 40:
+            color = '#0ea5e9'
+        elif pct > 0:
+            color = '#6c757d'
+        else:
+            color = '#B10022'
+
+        def _vm2_resumen_score_badge(val):
+            try:
+                v = float(val)
+            except (TypeError, ValueError):
+                v = 0.0
+            if v >= 8:
+                return 'text-success bg-success bg-opacity-10 border-success'
+            if v >= 6:
+                return 'text-warning bg-warning bg-opacity-10 border-warning'
+            if v >= 4:
+                return 'text-warning bg-warning bg-opacity-10 border-warning'
+            if v > 0:
+                return 'text-danger bg-danger bg-opacity-10 border-danger'
+            return 'text-secondary bg-secondary bg-opacity-10 border-secondary'
+
+        rounded_vals = [round(max(0.0, min(10.0, v)), 2) for v in values]
+        stat_cards = []
+        for i, k in enumerate(keys):
+            val = rounded_vals[i] if i < len(rounded_vals) else 0.0
+            score_txt = f'{val:.1f}' if val > 0 else '—'
+            stat_cards.append(
+                {
+                    'key': k,
+                    'label': labels[i],
+                    'score': score_txt,
+                    'badge': _vm2_resumen_score_badge(val),
+                }
+            )
+
+        reporte_chart = {
+            'labels': labels,
+            'keys': keys,
+            'values': rounded_vals,
+            'pct': pct,
+            'color': color,
+            'stat_cards': stat_cards,
+        }
+        reporte_compacto_html = render_to_string(
+            'admin/vacancy/partials/modal_entrevista_resultado_reporte_compacto.html',
+            {'datos_reporte_final': resultado_part},
+        )
+
+    banner_ctx = {
+        'nombre': '—',
+        'estudio': '—',
+        'ciudad': '—',
+        'imagen': None,
+    }
+    respuesta_cliente = ''
+    if aplicacion_seleccionada:
+        reg = aplicacion_seleccionada.registro_reclutamiento
+        if isinstance(reg, dict):
+            respuesta_cliente = (reg.get('descripcion_respuesta_cliente') or '').strip()
+        cand = aplicacion_seleccionada.candidato_101
+        if cand:
+            det = buscar_candidato(cand.id)
+            estudio = '—'
+            eds = det.get('educacion') or []
+            if eds:
+                e0 = eds[0]
+                estudio = (
+                    e0.get('titulo')
+                    or e0.get('carrera')
+                    or e0.get('tipo_estudio')
+                    or '—'
+                )
+            banner_ctx = {
+                'nombre': (det.get('nombre_completo') or cand.nombre_completo()),
+                'estudio': estudio,
+                'ciudad': (det.get('ciudad') or '—'),
+                'imagen': det.get('imagen_perfil'),
+            }
+
+    duracion_cierre = None
+    if vacante.fecha_creacion and vacante.fecha_cierre:
+        duracion_cierre = vacante.fecha_cierre - vacante.fecha_creacion
+
+    total_postulaciones = Cli056AplicacionVacante.objects.filter(vacante_id_052_id=vacante.id).count()
+    no_aptos_cnt = (metricas.get('no_aptas') or {}).get('cantidad', 0) if isinstance(metricas, dict) else 0
+    contratados_cnt = contratados_qs.count()
+    resumen_cifras = {
+        'total_aplicaron': total_postulaciones,
+        'no_aptos': no_aptos_cnt,
+        'contratados': contratados_cnt,
+    }
+
+    context = {
+        'vacante': vacante,
+        'metricas': metricas,
+        'resumen_cifras': resumen_cifras,
+        'contratados': contratados_qs,
+        'aplicacion_seleccionada': aplicacion_seleccionada,
+        'timeline': timeline_rows,
+        'duracion_cierre': duracion_cierre,
+        'reporte_chart': reporte_chart,
+        'reporte_compacto_html': reporte_compacto_html,
+        'banner_ctx': banner_ctx,
+        'respuesta_cliente': respuesta_cliente,
+    }
+    return render(request, 'admin/vacancy/client_user/vacancy_management_summary.html', context)
 
 
 #gestionar la vacante
@@ -1543,6 +1869,93 @@ def vacancy_aplicacion_vm2_gestion_accion(request, vacante_pk, aplicacion_pk):
     return JsonResponse({"ok": False, "error": "Acción no válida."}, status=400)
 
 
+@login_required
+@require_POST
+@validar_permisos(
+    "acceso_admin",
+    "acceso_cliente",
+    "acceso_analista_seleccion_ats",
+    "acceso_analista_seleccion",
+)
+def vacancy_aplicacion_vm2_gestion_estado_13(request, vacante_pk, aplicacion_pk):
+    """
+    Desde gestión de vacante (vm2): cierre de estado 13 (En espera por respuesta de contratación)
+    hacia 15 (Contratado) o 14 (No contratado), registrando observación en historial.
+    """
+    try:
+        body = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"ok": False, "error": "JSON inválido"}, status=400)
+
+    decision = (body.get("decision") or "").strip().lower()
+    observacion = (body.get("observacion") or "").strip()
+
+    if decision not in ("contratado", "no_contratado"):
+        return JsonResponse({"ok": False, "error": "Decisión inválida."}, status=400)
+    if not observacion:
+        return JsonResponse({"ok": False, "error": "La observación es obligatoria."}, status=400)
+
+    aplicacion = get_object_or_404(
+        Cli056AplicacionVacante.objects.select_related(
+            "vacante_id_052",
+            "vacante_id_052__asignacion_cliente_id_064",
+        ),
+        pk=aplicacion_pk,
+        vacante_id_052_id=vacante_pk,
+    )
+    vacante = aplicacion.vacante_id_052
+    if not _vm2_vacante_ok_for_cliente_session(request, vacante):
+        return JsonResponse({"ok": False, "error": "No autorizado."}, status=403)
+
+    if aplicacion.estado_aplicacion != 13:
+        return JsonResponse(
+            {"ok": False, "error": "La aplicación debe estar en estado 13 para gestionar esta acción."},
+            status=400,
+        )
+
+    uid = request.session.get("_auth_user_id") or getattr(request.user, "id", None)
+    if not uid:
+        return JsonResponse({"ok": False, "error": "Usuario no identificado."}, status=403)
+
+    nuevo_estado = 15 if decision == "contratado" else 14
+    titulo = "Contratado" if nuevo_estado == 15 else "No contratado"
+    with transaction.atomic():
+        # Bloquear la vacante para evitar carreras al completar cupos.
+        vacante = (
+            Cli052Vacante.objects.select_for_update()
+            .only("id", "numero_posiciones", "estado_vacante", "fecha_cierre")
+            .get(pk=vacante.pk)
+        )
+        crear_historial_aplicacion(
+            aplicacion,
+            nuevo_estado,
+            uid,
+            f"{titulo}. Observación: {observacion}",
+        )
+
+        # Si fue contratado, verificar si ya se completó el número de posiciones.
+        if nuevo_estado == 15:
+            contratados = Cli056AplicacionVacante.objects.filter(
+                vacante_id_052_id=vacante.id,
+                estado_aplicacion=15,
+            ).count()
+            if vacante.numero_posiciones and contratados >= int(vacante.numero_posiciones):
+                # 3 = Finalizada (según ESTADO_VACANTE_CHOICHES_STATIC)
+                if vacante.estado_vacante != 3:
+                    vacante.estado_vacante = 3
+                if not vacante.fecha_cierre:
+                    vacante.fecha_cierre = timezone.now()
+                vacante.save(update_fields=["estado_vacante", "fecha_cierre"])
+
+    return JsonResponse(
+        {
+            "ok": True,
+            "estado_aplicacion": nuevo_estado,
+            "message": f"Estado actualizado a {titulo}.",
+        }
+    )
+
+
 def _vm2_is_schema_field_dict(d):
     """Nodo hoja: metadatos de campo (type, label, …) definidos en Cli085.json_data."""
     if not isinstance(d, dict) or not d:
@@ -1716,13 +2129,15 @@ def vacancy_aplicacion_vm2_cli087(request, vacante_pk, aplicacion_pk, cli087_pk)
                 archivo_nom = basename(cli087.archivo_reporte.name) or ""
         except (ValueError, AttributeError):
             pass
+        # Para estado 5: el dictamen es obligatorio y final: aprobada | no_aprobada.
+        # Se deja "pendiente" solo como estado informativo, no seleccionable.
         choices_ad = [
             {"value": k, "label": str(v)}
             for k, v in Cli087ReporteAccionDecisivaReclutado.ACCION_DECISIVA_ESTADO_CHOICES
+            if k in ("aprobada", "no_aprobada")
         ]
-        cod_ad = getattr(cli087, "estado_accion_decisiva", None) or "pendiente"
-        valid_cods = {c[0] for c in Cli087ReporteAccionDecisivaReclutado.ACCION_DECISIVA_ESTADO_CHOICES}
-        if cod_ad not in valid_cods:
+        cod_ad = (getattr(cli087, "estado_accion_decisiva", None) or "pendiente").strip()
+        if cod_ad not in {"aprobada", "pendiente", "no_aprobada"}:
             cod_ad = "pendiente"
         return JsonResponse(
             {
@@ -1747,7 +2162,6 @@ def vacancy_aplicacion_vm2_cli087(request, vacante_pk, aplicacion_pk, cli087_pk)
             }
         )
 
-    valid_estados = {c[0] for c in Cli087ReporteAccionDecisivaReclutado.ACCION_DECISIVA_ESTADO_CHOICES}
     respuestas = None
     estado_ad = ""
 
@@ -1769,11 +2183,30 @@ def vacancy_aplicacion_vm2_cli087(request, vacante_pk, aplicacion_pk, cli087_pk)
         estado_ad = (body.get("estado_accion_decisiva") or "").strip()
         archivo = None
 
-    if not isinstance(respuestas, dict) and not isinstance(respuestas, list):
+    # Solo lectura / evitar doble registro: una vez decidida (aprobada/no_aprobada) no se permite editar.
+    estado_actual_ad = (getattr(cli087, "estado_accion_decisiva", None) or "pendiente").strip().lower()
+    if estado_actual_ad in ("aprobada", "no_aprobada"):
         return JsonResponse(
-            {"ok": False, "error": "Se requiere un objeto o arreglo respuestas."},
+            {
+                "ok": False,
+                "error": "Esta acción decisiva ya fue gestionada y está en modo solo lectura.",
+            },
             status=400,
         )
+
+    # Dictamen obligatorio: aprobada | no_aprobada (no se admite 'pendiente' al guardar).
+    estado_ad = (estado_ad or "").strip().lower()
+    if estado_ad not in ("aprobada", "no_aprobada"):
+        return JsonResponse(
+            {"ok": False, "error": "El estado de la acción decisiva es obligatorio (aprobada / no_aprobada)."},
+            status=400,
+        )
+
+    # respuestas (json_data) es opcional en este flujo; si no viene, se conserva lo existente.
+    if respuestas is None:
+        respuestas = cli087.json_data if isinstance(cli087.json_data, (dict, list)) else {}
+    if not isinstance(respuestas, (dict, list)):
+        respuestas = {}
 
     normalizado = _vm2_normalizar_json_respuesta_plantilla(plantilla, respuestas)
     uid = request.session.get("_auth_user_id") or getattr(request.user, "id", None)
@@ -1781,9 +2214,8 @@ def vacancy_aplicacion_vm2_cli087(request, vacante_pk, aplicacion_pk, cli087_pk)
 
     cli087.json_data = normalizado
     update_fields = ["json_data"]
-    if estado_ad in valid_estados:
-        cli087.estado_accion_decisiva = estado_ad
-        update_fields.append("estado_accion_decisiva")
+    cli087.estado_accion_decisiva = estado_ad
+    update_fields.append("estado_accion_decisiva")
     if archivo:
         cli087.archivo_reporte = archivo
         update_fields.append("archivo_reporte")
@@ -1791,7 +2223,57 @@ def vacancy_aplicacion_vm2_cli087(request, vacante_pk, aplicacion_pk, cli087_pk)
     update_fields.append("usuario_actualizado")
     update_fields.append("fecha_actualizacion")
     try:
-        cli087.save(update_fields=update_fields)
+        with transaction.atomic():
+            cli087.save(update_fields=update_fields)
+
+            # 1) Historial por acción (estado 3) con el resultado.
+            acc_nombre = (getattr(acc, "nombre", None) or "").strip() or f"ID {getattr(acc, 'pk', '') or ''}"
+            etiqueta = "Aprobada" if estado_ad == "aprobada" else "No aprobada"
+            Cli063AplicacionVacanteHistorial.objects.create(
+                aplicacion_vacante_056=aplicacion,
+                usuario_id_genero=usuario,
+                estado=3,
+                descripcion=f"Acción decisiva: {acc_nombre}. Resultado: {etiqueta}.",
+            )
+
+            # 2) Reglas de actualización del estado de la aplicación (transiciones 6→13 o 7→12).
+            #    Solo aplican cuando la aplicación está en estado 5 (Acciones decisivas programadas).
+            if aplicacion.estado_aplicacion == 5:
+                if estado_ad == "no_aprobada":
+                    crear_historial_aplicacion(
+                        aplicacion,
+                        7,
+                        uid,
+                        f"Acciones decisivas no aprobadas. Acción no aprobada: {acc_nombre}.",
+                    )
+                    crear_historial_aplicacion(
+                        aplicacion,
+                        12,
+                        uid,
+                        "No Apto por acciones decisivas no aprobadas.",
+                    )
+                else:
+                    # Si todas las acciones decisivas de la aplicación están aprobadas → 6 y luego 13.
+                    total = Cli087ReporteAccionDecisivaReclutado.objects.filter(
+                        aplicacion_vacante_056_id=aplicacion_pk
+                    ).count()
+                    aprobadas = Cli087ReporteAccionDecisivaReclutado.objects.filter(
+                        aplicacion_vacante_056_id=aplicacion_pk,
+                        estado_accion_decisiva="aprobada",
+                    ).count()
+                    if total > 0 and aprobadas == total:
+                        crear_historial_aplicacion(
+                            aplicacion,
+                            6,
+                            uid,
+                            "Acciones decisivas aprobadas (todas las acciones quedaron aprobadas).",
+                        )
+                        crear_historial_aplicacion(
+                            aplicacion,
+                            13,
+                            uid,
+                            "En espera por respuesta de contratación (post aprobación de acciones decisivas).",
+                        )
     except DatabaseError:
         return JsonResponse(
             {
@@ -1810,12 +2292,16 @@ def vacancy_aplicacion_vm2_cli087(request, vacante_pk, aplicacion_pk, cli087_pk)
             "message": "Datos guardados correctamente.",
             "valores": normalizado,
             "estado_accion_decisiva": cli087.estado_accion_decisiva,
+            "estado_accion_decisiva_label": cli087.get_estado_accion_decisiva_display(),
+            "archivo_reporte_url": (cli087.archivo_reporte.url if cli087.archivo_reporte else ""),
+            "archivo_reporte_name": (basename(cli087.archivo_reporte.name) if cli087.archivo_reporte else ""),
             "fecha_actualizacion": timezone.localtime(cli087.fecha_actualizacion).strftime(
                 "%d/%m/%Y %H:%M"
             )
             if getattr(cli087, "fecha_actualizacion", None)
             else "",
             "usuario_actualizado_nombre": _vm2_nombre_usuario_cli087(cli087.usuario_actualizado),
+            "estado_aplicacion": aplicacion.estado_aplicacion,
         }
     )
 
@@ -2041,7 +2527,7 @@ def vacancy_management_from_client_2(request, pk, vacante_id):
 
     reclutados_qs = (
         query_recruited_vacancy_id(vacante.id)
-        .filter(estado_aplicacion__in=[3, 5, 6, 7, 13, 14, 15])
+        .filter(estado_aplicacion__in=[3, 5, 6, 7, 12, 13, 14, 15])
         .select_related("candidato_101__ciudad_id_004")
         .prefetch_related(prefetch_entrevistas)
         .annotate(
@@ -2056,7 +2542,7 @@ def vacancy_management_from_client_2(request, pk, vacante_id):
     reclutados = list(reclutados_qs)
     _enrich_reclutados_reporte_final_listado(reclutados)
 
-    # Tarjetas resumen: feedback (3), decisivas (5), aprob./seguimiento (6,13), no aprobados (7,14), contratados (15)
+    # Tarjetas resumen: feedback (3), decisivas (5), aprob./seguimiento (6,13), no aprobados (7,12,14), contratados (15)
     vm2_por_feedback = [a for a in reclutados if a.estado_aplicacion == 3]
     vm2_decisiones_decisivas = [a for a in reclutados if a.estado_aplicacion == 5]
     orden_seguimiento = {6: 0, 13: 1}
@@ -2065,7 +2551,7 @@ def vacancy_management_from_client_2(request, pk, vacante_id):
         key=lambda x: (orden_seguimiento.get(x.estado_aplicacion, 99), (x.candidato_nombre or "").strip().lower()),
     )
     vm2_no_aprobados = sorted(
-        [a for a in reclutados if a.estado_aplicacion in (7, 14)],
+        [a for a in reclutados if a.estado_aplicacion in (7, 12, 14)],
         key=lambda x: (x.estado_aplicacion, (x.candidato_nombre or "").strip().lower()),
     )
     vm2_contratados = [a for a in reclutados if a.estado_aplicacion == 15]

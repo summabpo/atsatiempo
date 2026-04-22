@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
 from django.db.models import Q
+from django.utils import timezone
 
 from ...decorators  import validar_permisos
 from applications.usuarios.views.commons.dashboard_panels import (
@@ -74,7 +75,10 @@ def dashboard_cliente(request):
     """ Vista que carga la página de inicio y muestra variables de sesión """
     vacantes_activas_count = 0
     vacantes_finalizadas_count = 0
+    vacantes_vencidas_count = 0
     candidatos_entrevista_aprobada_sin_calificar_count = 0
+    feedback_pendiente_ultimos = []
+    feedback_pendiente_extra_count = 0
     cliente_id = request.session.get('cliente_id')
     if cliente_id:
         # Criterio por asignación (Cli064):
@@ -96,6 +100,14 @@ def dashboard_cliente(request):
         # Finalizadas/cerradas: Finalizada (3)
         vacantes_finalizadas_count = base_vacantes.filter(estado_vacante=3).count()
 
+        # Vencidas: fecha_cierra_planteada ya pasó y la vacante sigue activa/en proceso
+        vacantes_vencidas_count = (
+            base_vacantes.filter(estado_vacante__in=(1, 2))
+            .filter(fecha_cierra_planteada__isnull=False)
+            .filter(fecha_cierra_planteada__lt=timezone.now())
+            .count()
+        )
+
         # Candidatos con entrevista aprobada (estado_aplicacion=3) aún sin calificación del cliente.
         # En este flujo la calificación del cliente ocurre después (p. ej. Seleccionado por Cliente / No Apto),
         # por eso se cuentan los que siguen en estado 3.
@@ -104,10 +116,23 @@ def dashboard_cliente(request):
             .filter(estado_aplicacion=3)
             .count()
         )
+
+        qs_feedback_pendiente = (
+            Cli056AplicacionVacante.objects.filter(vacante_id_052__in=base_vacantes)
+            .filter(estado_aplicacion=3)
+            .select_related("candidato_101")
+            .order_by("-fecha_actualizacion")
+        )
+        feedback_pendiente_total = qs_feedback_pendiente.count()
+        feedback_pendiente_ultimos = list(qs_feedback_pendiente[:4])
+        feedback_pendiente_extra_count = max(0, feedback_pendiente_total - len(feedback_pendiente_ultimos))
     context = {
         'vacantes_activas_count': vacantes_activas_count,
         'vacantes_finalizadas_count': vacantes_finalizadas_count,
+        'vacantes_vencidas_count': vacantes_vencidas_count,
         'candidatos_entrevista_aprobada_sin_calificar_count': candidatos_entrevista_aprobada_sin_calificar_count,
+        'feedback_pendiente_ultimos': feedback_pendiente_ultimos,
+        'feedback_pendiente_extra_count': feedback_pendiente_extra_count,
     }
     return render(request, 'admin/dashboard/dashboard_client.html', context)
 

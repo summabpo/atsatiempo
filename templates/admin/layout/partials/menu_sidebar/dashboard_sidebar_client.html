@@ -6,6 +6,10 @@
 <li class="menu-item 
     {% if request.resolver_match.url_name == 'vacantes_crear_cliente' %}open{% endif %}
     {% if request.resolver_match.url_name == 'vacantes_listado_cliente' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_listado_cliente_pendientes' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_listado_cliente_finalizadas' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_resumen_gestion' %}open{% endif %}
+    {% if request.resolver_match.url_name == 'vacantes_listado_cliente_vencidas' %}open{% endif %}
     {% if request.resolver_match.url_name|is_active_url_cliente_vacante %}open{% endif %}
     {% if request.resolver_match.url_name == 'vacantes_gestion_propias' %}open{% endif %}
     {% if request.resolver_match.url_name == 'vacantes_editar_propias' %}open{% endif %}
@@ -31,6 +35,21 @@
                 Ver Todas las Vacantes
             </a>
         </li>
+		<li class="menu-item">
+			<a href="{% url 'vacantes:vacantes_listado_cliente_pendientes' %}" class="menu-link {% if request.resolver_match.url_name == 'vacantes_listado_cliente_pendientes' %}active{% endif %}">
+				Vacantes Pendientes
+			</a>
+		</li>
+		<li class="menu-item">
+			<a href="{% url 'vacantes:vacantes_listado_cliente_finalizadas' %}" class="menu-link {% if request.resolver_match.url_name == 'vacantes_listado_cliente_finalizadas' or request.resolver_match.url_name == 'vacantes_resumen_gestion' %}active{% endif %}">
+				Vacantes Finalizadas
+			</a>
+		</li>
+		<li class="menu-item">
+			<a href="{% url 'vacantes:vacantes_listado_cliente_vencidas' %}" class="menu-link {% if request.resolver_match.url_name == 'vacantes_listado_cliente_vencidas' %}active{% endif %}">
+				Vacantes Vencidas
+			</a>
+		</li>
     </ul>
 </li>
 

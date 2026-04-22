@@ -21,7 +21,15 @@ urlpatterns = [
     # path( url_principal+'crear_vacante/', client_views.create_vacanty, name='vacantes_crear_cliente'),
     path( url_principal+'crear_vacante/', client_views.create_vacanty_v2, name='vacantes_crear_cliente'),
     path( url_principal+'listado/', client_views.list_vacanty_all, name='vacantes_listado_cliente'),
+    path( url_principal+'listado/pendientes/', client_views.list_vacanty_pendientes, name='vacantes_listado_cliente_pendientes'),
+    path( url_principal+'listado/finalizadas/', client_views.list_vacanty_finalizadas, name='vacantes_listado_cliente_finalizadas'),
+    path( url_principal+'listado/vencidas/', client_views.list_vacanty_vencidas, name='vacantes_listado_cliente_vencidas'),
     path( url_principal+'detalle/<int:pk>/', client_views.detail_vacancy, name='vacantes_detalle_cliente'),
+    path(
+        url_principal + 'resumen/<int:pk>/<int:vacante_id>/',
+        client_views.vacancy_management_summary,
+        name='vacantes_resumen_gestion',
+    ),
     path(
         url_principal + 'detalle/<int:vacante_pk>/aplicacion/<int:aplicacion_pk>/modal-cuerpo/',
         client_views.vacancy_aplicacion_modal_cuerpo,
@@ -46,6 +54,11 @@ urlpatterns = [
         url_principal + 'detalle/<int:vacante_pk>/aplicacion/<int:aplicacion_pk>/vm2-gestion-accion/',
         client_views.vacancy_aplicacion_vm2_gestion_accion,
         name='vacancy_aplicacion_vm2_gestion_accion',
+    ),
+    path(
+        url_principal + 'detalle/<int:vacante_pk>/aplicacion/<int:aplicacion_pk>/vm2-gestion-estado-13/',
+        client_views.vacancy_aplicacion_vm2_gestion_estado_13,
+        name='vacancy_aplicacion_vm2_gestion_estado_13',
     ),
     path(
         url_principal + 'detalle/<int:vacante_pk>/aplicacion/<int:aplicacion_pk>/cli087/<int:cli087_pk>/',
