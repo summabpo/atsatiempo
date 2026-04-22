@@ -1,0 +1,41 @@
+{# Requiere variables en contexto: h, forloop #}
+<div class="accordion-item border-0 mb-2">
+  <h2 class="accordion-header" id="vm2TlHeading{{ forloop.counter }}">
+    <button class="accordion-button collapsed shadow-none px-3 py-3 rounded-3 border vm2-tl-btn"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#vm2TlCollapse{{ forloop.counter }}"
+            aria-expanded="false"
+            aria-controls="vm2TlCollapse{{ forloop.counter }}">
+      <div class="d-flex align-items-center justify-content-between w-100 gap-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="vm2-tl-icon {{ h.badge_bg|default:'bg-secondary bg-opacity-10 text-secondary' }}">
+            <i class="material-symbols-outlined">{{ h.icon|default:"timeline" }}</i>
+          </span>
+          <span class="badge {{ h.badge_bg|default:'bg-secondary bg-opacity-10 text-secondary' }} p-2 fs-12 fw-normal">
+            {{ h.estado_nombre|default:"—" }}
+          </span>
+        </div>
+        <div class="text-secondary small text-nowrap">
+          {{ h.fecha|date:"Y-m-d H:i" }}
+        </div>
+      </div>
+    </button>
+  </h2>
+  <div id="vm2TlCollapse{{ forloop.counter }}"
+       class="accordion-collapse collapse"
+       aria-labelledby="vm2TlHeading{{ forloop.counter }}"
+       data-bs-parent="#vm2TimelineAccordion">
+    <div class="accordion-body pt-2 pb-3 px-3">
+      <div class="text-secondary small">
+        <div class="fw-semibold text-dark mb-1">Descripción</div>
+        <div>{{ h.descripcion|default:"—" }}</div>
+      </div>
+      <div class="text-secondary small mt-3">
+        <div class="fw-semibold text-dark mb-1">Registrado por</div>
+        <div>{% if h.usuario %}{{ h.usuario }}{% else %}—{% endif %}</div>
+      </div>
+    </div>
+  </div>
+</div>
+

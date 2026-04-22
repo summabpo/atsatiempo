@@ -4,13 +4,31 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
+{% if vacantes_filtro == 'pendientes' %}
+Vacantes pendientes
+{% elif vacantes_filtro == 'finalizadas' %}
+Vacantes finalizadas
+{% elif vacantes_filtro == 'vencidas' %}
+Vacantes vencidas
+{% else %}
 Listado de vacantes
+{% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-		<h3 class="mb-0" style="color: #B10022;">LISTADO DE LAS VACANTES: </h3>
+		<h3 class="mb-0" style="color: #B10022;">
+			{% if vacantes_filtro == 'pendientes' %}
+				LISTADO DE VACANTES PENDIENTES
+			{% elif vacantes_filtro == 'finalizadas' %}
+				LISTADO DE VACANTES FINALIZADAS
+			{% elif vacantes_filtro == 'vencidas' %}
+				LISTADO DE VACANTES VENCIDAS
+			{% else %}
+				LISTADO DE LAS VACANTES
+			{% endif %}
+		</h3>
 		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
 			<ol class="breadcrumb align-items-center mb-0 lh-1">
 				<li class="breadcrumb-item">
@@ -20,7 +38,17 @@ Listado de vacantes
 					</a>
 				</li>
 				<li class="breadcrumb-item active" aria-current="page">
-					<span class="fw-medium">Listado Vacante</span>
+					<span class="fw-medium">
+						{% if vacantes_filtro == 'pendientes' %}
+							Vacantes pendientes
+						{% elif vacantes_filtro == 'finalizadas' %}
+							Vacantes finalizadas
+						{% elif vacantes_filtro == 'vencidas' %}
+							Vacantes vencidas
+						{% else %}
+							Listado de vacantes
+						{% endif %}
+					</span>
 				</li>
 			</ol>
 		</nav>
@@ -29,7 +57,17 @@ Listado de vacantes
 		<div class="col-12">
 			<div class="card bg-white border-0 rounded-3 mb-4">
                 <div class="card-header bg-primary bg-opacity-10 align-middle border-0"> 
-                    <p class="text-primary my-2 fs-4 fw-semibold">Listados de Vacantes</p>
+                    <p class="text-primary my-2 fs-4 fw-semibold">
+						{% if vacantes_filtro == 'pendientes' %}
+							Vacantes pendientes
+						{% elif vacantes_filtro == 'finalizadas' %}
+							Vacantes finalizadas
+						{% elif vacantes_filtro == 'vencidas' %}
+							Vacantes vencidas
+						{% else %}
+							Listado de vacantes
+						{% endif %}
+					</p>
                 </div>
 				<div class="card-body p-4">
                     <div class="row">
@@ -63,23 +101,32 @@ Listado de vacantes
                                             <tr>
                                                 <td class="text-center">
                                                     <div class="d-flex justify-content-center align-items-center gap-1">
-                                                        <div class="d-flex justify-content-center align-items-center gap-1">
-                                                            <a href="{% url 'vacantes:vacantes_editar_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" title="Editar Vacante">
-                                                                <i class="material-symbols-outlined fs-16">edit</i>
+                                                        {% if vacantes_filtro == 'finalizadas' %}
+                                                            <a href="{% url 'vacantes:vacantes_resumen_gestion' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}"
+                                                               class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3"
+                                                               title="Resumen de gestión de vacante">
+                                                                <i class="material-symbols-outlined fs-16">analytics</i>
+                                                                <span class="ms-1 d-none d-md-inline">Resumen</span>
                                                             </a>
-                                                            {% if request.session.grupo_id != 3 or request.session.user_login.cliente_tipo != '3' %}
-                                                            <a href="{% url 'vacantes:vacantes_gestion_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" title="Gestionar">
-                                                                <i class="material-symbols-outlined fs-16">inbox_customize</i>
-                                                            </a>
-                                                            {% else %}
-                                                            <a href="{% url 'vacantes:vacantes_gestion_propias_cliente' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" title="Gestionar">
-                                                                <i class="material-symbols-outlined fs-16">inbox_customize</i>
-                                                            </a>
-                                                            <a href="{% url 'vacantes:vacantes_gestion_propias_cliente_2' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" title="Gestionar">
-                                                                <i class="material-symbols-outlined fs-16">manage_search</i>
-                                                            </a>
-                                                            {% endif %}
-                                                        </div>
+                                                        {% else %}
+                                                            <div class="d-flex justify-content-center align-items-center gap-1">
+                                                                <a href="{% url 'vacantes:vacantes_editar_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" title="Editar Vacante">
+                                                                    <i class="material-symbols-outlined fs-16">edit</i>
+                                                                </a>
+                                                                {% if request.session.grupo_id != 3 or request.session.user_login.cliente_tipo != '3' %}
+                                                                <a href="{% url 'vacantes:vacantes_gestion_propias' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" title="Gestionar">
+                                                                    <i class="material-symbols-outlined fs-16">inbox_customize</i>
+                                                                </a>
+                                                                {% else %}
+                                                                <a href="{% url 'vacantes:vacantes_gestion_propias_cliente' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" title="Gestionar">
+                                                                    <i class="material-symbols-outlined fs-16">inbox_customize</i>
+                                                                </a>
+                                                                <a href="{% url 'vacantes:vacantes_gestion_propias_cliente_2' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" title="Gestionar">
+                                                                    <i class="material-symbols-outlined fs-16">manage_search</i>
+                                                                </a>
+                                                                {% endif %}
+                                                            </div>
+                                                        {% endif %}
                                                     </div>
                                                 </td> 
                                                 <td class="text-center">

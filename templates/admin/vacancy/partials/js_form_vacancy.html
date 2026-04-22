@@ -1081,4 +1081,78 @@ $(document).ready(function() {
     aplicarAlturaSelect2Multiple();
     setTimeout(aplicarAlturaSelect2Multiple, 100);
 });
+
+/**
+ * Referencias laborales: cantidad según Cli068Cargo.referencias_laborales (mapa en #cargos-refs-data).
+ */
+function vm2SyncReferenciasLaboralesDesdeCargo() {
+    var el = document.getElementById('cargos-refs-data');
+    var section = document.getElementById('ref-laborales-section');
+    var hint = document.getElementById('ref-laborales-hint');
+    if (!section) return;
+    var map = {};
+    if (el && el.textContent) {
+        try {
+            map = JSON.parse(el.textContent) || {};
+        } catch (e) {
+            map = {};
+        }
+    }
+    var cargoSel = document.getElementById('id_cargo');
+    var cid = cargoSel && cargoSel.value ? String(cargoSel.value) : '';
+    var n = cid && map[cid] != null ? parseInt(map[cid], 10) : 0;
+    if (isNaN(n) || n < 0) n = 0;
+    if (n > 10) n = 10;
+
+    var j, extra = 0;
+    for (j = 1; j <= 10; j++) {
+        var inp = document.getElementById('id_ref_laboral_' + j);
+        if (!inp) continue;
+        var wrapErr = document.getElementById('ref-laboral-wrap-' + j);
+        var hasErr =
+            inp.classList.contains('is-invalid') ||
+            (wrapErr && wrapErr.querySelector('.invalid-feedback, .errorlist, .text-danger'));
+        if (hasErr) extra = Math.max(extra, j);
+    }
+    if (extra > n) n = extra;
+
+    var i;
+    for (i = 1; i <= 10; i++) {
+        var wrap = document.getElementById('ref-laboral-wrap-' + i);
+        if (!wrap) continue;
+        if (i <= n) {
+            wrap.classList.remove('d-none');
+        } else {
+            wrap.classList.add('d-none');
+        }
+    }
+
+    if (n > 0) {
+        section.classList.remove('d-none');
+        if (hint) {
+            hint.textContent =
+                'Este cargo requiere ' +
+                n +
+                ' referencia(s) laboral(es). Detalle qué debe presentar el candidato en cada una.';
+        }
+    } else {
+        section.classList.add('d-none');
+        if (hint) {
+            hint.textContent =
+                'Seleccione un cargo para ver cuántas referencias debe solicitar el candidato, según la configuración del cargo.';
+        }
+    }
+}
+
+$(document).ready(function () {
+    vm2SyncReferenciasLaboralesDesdeCargo();
+    $(document).on('change', '#id_cargo', function () {
+        vm2SyncReferenciasLaboralesDesdeCargo();
+    });
+    if (typeof $.fn.select2 !== 'undefined') {
+        $('#id_cargo').on('select2:select', function () {
+            vm2SyncReferenciasLaboralesDesdeCargo();
+        });
+    }
+});
 </script>
