@@ -71,6 +71,72 @@ Inicio | Dashboard Cliente
 		font-weight: 800;
 		line-height: 1.05;
 	}
+
+	/* Cards métricas radial (cerradas / pendientes / vencidas / feedback): panel centrado */
+	.dashboard-card-vacantes-cerradas .card-body,
+	.dashboard-card-vacantes-pendientes .card-body,
+	.dashboard-card-vacantes-vencidas .card-body,
+	.dashboard-card-feedback-pendiente .card-body {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+	.dashboard-card-vacantes-cerradas .card-body > hr,
+	.dashboard-card-vacantes-pendientes .card-body > hr,
+	.dashboard-card-vacantes-vencidas .card-body > hr,
+	.dashboard-card-feedback-pendiente .card-body > hr {
+		align-self: stretch;
+		width: 100%;
+	}
+	.dashboard-card-vacantes-cerradas .dashboard-cerradas-chart-wrap,
+	.dashboard-card-vacantes-pendientes .dashboard-pendientes-chart-wrap,
+	.dashboard-card-vacantes-vencidas .dashboard-vencidas-chart-wrap {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		min-height: 200px;
+		margin-bottom: 0.25rem;
+	}
+	.dashboard-card-vacantes-cerradas .dashboard-cerradas-chart-wrap .apexcharts-canvas,
+	.dashboard-card-vacantes-pendientes .dashboard-pendientes-chart-wrap .apexcharts-canvas,
+	.dashboard-card-vacantes-vencidas .dashboard-vencidas-chart-wrap .apexcharts-canvas {
+		margin-left: auto !important;
+		margin-right: auto !important;
+	}
+
+	/* Por Retroalimentar: icono central + número (sin gráfica) */
+	.dashboard-card-feedback-pendiente .dashboard-feedback-icon-wrap {
+		width: 100%;
+		min-height: 200px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 0.25rem;
+	}
+	.dashboard-card-feedback-pendiente .dashboard-feedback-icon-circle {
+		width: 100px;
+		height: 100px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(96, 93, 255, 0.14);
+		color: #605dff;
+	}
+	.dashboard-card-feedback-pendiente .dashboard-feedback-icon-circle i {
+		font-size: 2.75rem;
+		line-height: 1;
+	}
+	.dashboard-card-feedback-pendiente .dashboard-feedback-count-numeric {
+		font-size: 2rem;
+		font-weight: 800;
+		line-height: 1.15;
+		margin-top: 0.75rem;
+		color: #1f2937;
+	}
 </style>
 {% endblock %}
 
@@ -191,8 +257,115 @@ Inicio | Dashboard Cliente
 			</div>
 		</div>
 	</div> {% endcomment %}
+	<div class="row">
+		<!-- Card 1: Vacantes Cerradas -->
+		<div class="col-xxl-2 col-sm-6">
+			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-vacantes-cerradas">
+				<div class="card-body p-4 text-center">
+					<h3 class="mb-4">Vacantes Cerradas</h3>
+					<div class="dashboard-cerradas-chart-wrap">
+						<div id="chart_cerradas"></div>
+					</div>
+					<span class="d-block mb-1 text-secondary small">Vacantes Cerradas (total)</span>
+					<h3 class="mb-0 fs-20 fw-bold">{{ vacantes_finalizadas_count|default:0 }}</h3>
+					<hr class="my-3 text-muted opacity-25 w-100 color-primary border-primary">
+					<p class="mb-0 fs-14 text-secondary">
+						{{ vacantes_finalizadas_mes_count|default:0 }} Cerradas
+						<span class="text-muted"> (mes en curso)</span>
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Card 2: Vacantes Pendientes -->
+		<div class="col-xxl-2 col-sm-6">
+			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-vacantes-pendientes">
+				<div class="card-body p-4 text-center">
+					<h3 class="mb-4">Vacantes Pendientes</h3>
+					<div class="dashboard-pendientes-chart-wrap">
+						<div id="chart_pendientes"></div>
+					</div>
+					<span class="d-block mb-1 text-secondary small">Vacantes Pendientes (total)</span>
+					<h3 class="mb-0 fs-20 fw-bold">{{ vacantes_activas_count|default:0 }}</h3>
+					<hr class="my-3 text-muted opacity-25 w-100 color-primary border-primary">
+					<p class="mb-0 fs-14 text-secondary">
+						{{ vacantes_activas_mes_count|default:0 }} Pendientes
+						<span class="text-muted"> (mes en curso)</span>
+					</p>
+				</div>
+			</div>
+		</div>
+
+		
+
+		<!-- Card 3: Vacantes Vencidas -->
+		<div class="col-xxl-2 col-sm-6">
+			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-vacantes-vencidas">
+				<div class="card-body p-4 text-center">
+					<h3 class="mb-4">Vacantes Vencidas</h3>
+					<div class="dashboard-vencidas-chart-wrap">
+						<div id="chart_vencidas"></div>
+					</div>
+					<span class="d-block mb-1 text-secondary small">Vacantes Vencidas (total)</span>
+					<h3 class="mb-0 fs-20 fw-bold">{{ vacantes_vencidas_count|default:0 }}</h3>
+					<hr class="my-3 text-muted opacity-25 w-100 color-primary border-primary">
+					<p class="mb-0 fs-14 text-secondary">
+						{{ vacantes_vencidas_mes_count|default:0 }} Vencidas
+						<span class="text-muted"> (mes en curso)</span>
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Card 4: Por Retroalimentar (icono + cantidad; sin gráfica) -->
+		<div class="col-xxl-3 col-sm-6">
+			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-feedback-pendiente">
+				<div class="card-body p-4 text-center">
+					<h3 class="mb-4">Por Retroalimentar</h3>
+					<div class="dashboard-feedback-icon-wrap">
+						<div class="dashboard-feedback-icon-circle" aria-hidden="true">
+							<i class="ri-user-voice-line"></i>
+						</div>
+						<div class="dashboard-feedback-count-numeric">{{ candidatos_entrevista_aprobada_sin_calificar_count|default:0 }}</div>
+					</div>
+					<span class="d-block text-secondary small">Personal pendiente por retroalimentar / feedback</span>
+					<hr class="my-3 text-muted opacity-25 w-100 color-primary border-primary">
+					<p class="mb-0 fs-14 text-secondary">
+						{{ candidatos_feedback_mes_count|default:0 }} Pendientes
+						<span class="text-muted"> (mes en curso)</span>
+					</p>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="col-xxl-3 col-sm-6">
+			<div class="card border-2 border-primary rounded-3 bg-white p-4 mb-4 shadow-sm">
+				<h3 class="mb-4">Accesos directos</h3>
+				<div class="quick-access-vertical d-grid gap-2">
+					<a href="{% url 'vacantes:vacantes_crear_cliente' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
+						<span class="material-symbols-outlined">add_circle</span>
+						<span>Crear Vacante</span>
+					</a>
+					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
+						<span class="material-symbols-outlined">work</span>
+						<span>Ver Vacantes</span>
+					</a>
+					<a href="{% url 'accesses:users_client' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
+						<span class="material-symbols-outlined">groups</span>
+						<span>Grupo de Trabajo</span>
+					</a>
+					<a href="{% url 'clientes:info_principal_cliente' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
+						<span class="material-symbols-outlined">person</span>
+						<span>Información Personal</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
+	
 	<!-- Dashboard completo (replicado de store-analytics.html) -->
 	<div class="row">
 		<div class="col-lg-9">
@@ -357,7 +530,223 @@ Inicio | Dashboard Cliente
 		</div>
 	</div>
 
-	
+	<div class="flex-grow-1"></div>
+
+	<div class="row">
+		<div class="col-xxl-8">
+			<div class="card custom-shadow rounded-3 bg-white border mb-4">
+				<div class="custom-padding-30">
+					<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 pb-4">
+						<h3 class="mb-0 fw-semibold">Overview</h3>
+						<div class="dropdown select-dropdown">
+							<button class="dropdown-toggle bg-transparent border text-body rounded-2" style="padding-right: 35px;" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								This Year
+							</button>
+						  
+							<ul class="dropdown-menu dropdown-menu-end bg-white border-0 box-shadow py-3">
+								<li>
+									<button class="dropdown-item text-secondary py-2 px-3">This Day</button>
+								</li>
+								<li>
+									<button class="dropdown-item text-secondary py-2 px-3">This Week</button>
+								</li>
+								<li>
+									<button class="dropdown-item text-secondary py-2 px-3">This Month</button>
+								</li>
+								<li>
+									<button class="dropdown-item text-secondary py-2 px-3">This Year</button>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div id="nav-tab" class=" call-overview-tabs" role="tablist">
+						<div class="row justify-content-center">
+							<div class="col-md-4 col-sm-6">
+								<div class="card bg-primary bg-opacity-10 border-0 rounded-3 p-4 mb-4 calls-card active" id="nav-total-calls-tab" data-bs-toggle="tab" data-bs-target="#nav-total-calls" type="button" role="tab" aria-controls="nav-total-calls" aria-selected="true">
+									<div class="d-flex align-items-center mb-3">
+										<div class="flex-grow-1 me-3">
+											<span class="text-body d-block mb-1">Total Calls</span>
+											<h3 class="fs-24 fw-semibold text-secondary">26,435</h3>
+										</div>
+
+										<div class="flex-shrink-0">
+											<img src="assets/images/total-calls.svg" alt="total-calls">
+										</div>
+									</div>
+									<span class="d-flex align-items-center align-items-center text-body"> 
+										<i class="material-symbols-outlined fs-18 pe-2 position-relative top-1 text-success">trending_up</i> 
+										<span class="fw-medium me-1 text-secondary">+15%</span> last year
+									</span>
+								</div>
+							</div>
+							<div class="col-md-4 col-sm-6">
+								<div class="card bg-primary-divs border-0 rounded-3 p-4 mb-4 calls-card" id="nav-answered-calls-tab" data-bs-toggle="tab" data-bs-target="#nav-answered-calls" type="button" role="tab" aria-controls="nav-answered-calls" aria-selected="false" style="background-color: #FAF5FF;">
+									<div class="d-flex align-items-center mb-3">
+										<div class="flex-grow-1 me-3">
+											<span class="text-body d-block mb-1">Answered Calls</span>
+											<h3 class="fs-24 fw-semibold text-secondary">18,520</h3>
+										</div>
+
+										<div class="flex-shrink-0">
+											<img src="assets/images/answered-calls.svg" alt="answered-calls">
+										</div>
+									</div>
+									<span class="d-flex align-items-center align-items-center text-body"> 
+										<i class="material-symbols-outlined fs-18 pe-2 position-relative top-1 text-success-60">trending_up</i> 
+										<span class="fw-medium me-1 text-secondary">+15%</span> last year
+									</span>
+								</div>
+							</div>
+							<div class="col-md-4 col-sm-12">
+								<div class="card bg-dangers border-0 rounded-3 p-4 mb-4 calls-card" id="nav-missed-calls-tab" data-bs-toggle="tab" data-bs-target="#nav-missed-calls" type="button" role="tab" aria-controls="nav-missed-calls" aria-selected="false" style="background-color: #FFF5ED;">
+									<div class="d-flex align-items-center mb-3">
+										<div class="flex-grow-1 me-3">
+											<span class="text-body d-block mb-1">Missed Calls</span>
+											<h3 class="fs-24 fw-semibold text-secondary">3,735</h3>
+										</div>
+
+										<div class="flex-shrink-0">
+											<img src="assets/images/missed-calls.svg" alt="missed-calls">
+										</div>
+									</div>
+									<span class="d-flex align-items-center align-items-center text-body"> 
+										<i class="material-symbols-outlined fs-18 pe-2 position-relative top-1 text-danger-50">trending_down</i> 
+										<span class="fw-medium me-1 text-secondary">-25%</span> last year
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="tab-content" id="nav-tabContent">
+						<div class="tab-pane fade show active" id="nav-total-calls" role="tabpanel" aria-labelledby="nav-total-calls-tab" tabindex="0">
+							<div style="margin: -24px -10px -26px -18px;">
+								<div id="total_calls"></div>
+							</div>
+						</div>
+						<div class="tab-pane fade" id="nav-answered-calls" role="tabpanel" aria-labelledby="nav-answered-calls-tab" tabindex="0">
+							<div style="margin: -24px -10px -26px -18px;">
+								<div id="answered_calls"></div>
+							</div>
+						</div>
+						<div class="tab-pane fade" id="nav-missed-calls" role="tabpanel" aria-labelledby="nav-missed-calls-tab" tabindex="0">
+							<div style="margin: -24px -10px -26px -18px;">
+								<div id="missed_calls"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xxl-4">
+			<div class="row">
+				<div class="col-xxl-12 col-md-6">
+					<div class="card custom-shadow rounded-3 bg-white border mb-4">
+						<div class="custom-padding-30">
+							<div class="d-flex justify-content-between align-items-center flex-wrap gap-1 pb-4 position-relative z-1">
+								<div>
+									<h3 class="mb-0 fw-semibold">Inbound Calls</h3>
+									<span class="fs-12">Overview of incoming call volume</span>
+								</div>
+								<div class="dropdown select-dropdown without-border position-relative" style="right: -5px;">
+									<button class="dropdown-toggle bg-transparent border text-body rounded-2" style="padding-right: 20px;" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+										Today
+									</button>
+								  
+									<ul class="dropdown-menu dropdown-menu-end bg-white border-0 box-shadow py-3">
+										<li>
+											<button class="dropdown-item text-secondary py-2 px-3">Today</button>
+										</li>
+										<li>
+											<button class="dropdown-item text-secondary py-2 px-3">Last Week</button>
+										</li>
+										<li>
+											<button class="dropdown-item text-secondary py-2 px-3">Last Month</button>
+										</li>
+									</ul>
+								</div>
+							</div>
+
+							<div style="margin: -53px -9px -30px -11px;">
+								<div id="inbound_calls"></div>
+							</div>
+
+							<div class="d-flex align-items-center position-relative z-1">
+								<div class="d-flex align-items-center">
+									<div class="flex-shrink-0">
+										<div class="bg-body-bg border text-center rounded-2" style="width: 48px; height: 48px; line-height: 48px;">
+											<img src="assets/images/inbound-calls.svg" alt="inbound-calls">
+										</div>
+									</div>
+									<div class="flex-grow-1 ms-3">
+										<h3 class="fs-28 fw-semibold text-secondary mb-0">1,235</h3>
+										<span class="text-body d-block">Past 24 hours</span>
+									</div>
+								</div>
+
+								<span class="d-flex align-items-center align-items-center text-body ms-5"> 
+									<i class="material-symbols-outlined fs-18 pe-2 text-success-60">trending_up</i> 
+									<span class="fw-medium me-1 text-secondary">+7.5%</span>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xxl-12 col-md-6">
+					<div class="card custom-shadow rounded-3 bg-white border mb-4">
+						<div class="custom-padding-30">
+							<div class="d-flex justify-content-between align-items-center flex-wrap gap-1 pb-4 position-relative z-1">
+								<div>
+									<h3 class="mb-0 fw-semibold">Outbound Calls</h3>
+									<span class="fs-12">Summary of outgoing call efforts</span>
+								</div>
+								<div class="dropdown select-dropdown without-border position-relative" style="right: -5px;">
+									<button class="dropdown-toggle bg-transparent border text-body rounded-2" style="padding-right: 20px;" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+										Last Month
+									</button>
+								  
+									<ul class="dropdown-menu dropdown-menu-end bg-white border-0 box-shadow py-3">
+										<li>
+											<button class="dropdown-item text-secondary py-2 px-3">Today</button>
+										</li>
+										<li>
+											<button class="dropdown-item text-secondary py-2 px-3">Last Week</button>
+										</li>
+										<li>
+											<button class="dropdown-item text-secondary py-2 px-3">Last Month</button>
+										</li>
+									</ul>
+								</div>
+							</div>
+
+							<div style="margin: -53px -9px -30px -11px;">
+								<div id="outbound_calls"></div>
+							</div>
+
+							<div class="d-flex align-items-center position-relative z-1">
+								<div class="d-flex align-items-center">
+									<div class="flex-shrink-0">
+										<div class="bg-body-bg border text-center rounded-2" style="width: 48px; height: 48px; line-height: 48px;">
+											<img src="assets/images/outbound-calls.svg" alt="outbound-calls">
+										</div>
+									</div>
+									<div class="flex-grow-1 ms-3">
+										<h3 class="fs-28 fw-semibold text-secondary mb-0">8,90</h3>
+										<span class="text-body d-block">Last month</span>
+									</div>
+								</div>
+
+								<span class="d-flex align-items-center align-items-center text-body ms-5"> 
+									<i class="material-symbols-outlined fs-18 pe-2 text-danger-50">trending_down</i> 
+									<span class="fw-medium me-1 text-secondary">-5.8%</span>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	
 
@@ -393,5 +782,117 @@ Inicio | Dashboard Cliente
 			});
 		});
 	})();
+</script>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		function toNumber(value) {
+			var n = Number(value);
+			return Number.isFinite(n) ? n : 0;
+		}
+
+		function clamp(n, min, max) {
+			return Math.min(max, Math.max(min, n));
+		}
+
+		function percent(count, total) {
+			var t = toNumber(total);
+			if (t <= 0) return 0;
+			return clamp((toNumber(count) / t) * 100, 0, 100);
+		}
+
+		function chartConfig(opts) {
+			var count = toNumber(opts.count);
+			var pct = Math.round(percent(count, opts.total));
+			var chartH = toNumber(opts.chartHeight) || 170;
+			var chartW = toNumber(opts.chartWidth) || 170;
+			var valueFs = opts.valueFontSize || '14px';
+
+			return {
+				chart: {
+					height: chartH,
+					width: chartW,
+					type: 'radialBar',
+				},
+				series: [pct],
+				colors: [opts.color],
+				plotOptions: {
+					radialBar: {
+						hollow: {
+							margin: 0,
+							size: '35%',
+							background: '#F5F7F8',
+							margin: 10,
+						},
+						track: {
+							background: '#F5F7F8',
+						},
+						dataLabels: {
+							name: { show: false },
+							value: {
+								show: true,
+								offsetY: 5,
+								color: '#3A4252',
+								fontSize: valueFs,
+								fontWeight: 700,
+								fontFamily: 'Inter',
+								formatter: function () {
+									return String(count);
+								},
+							},
+						},
+					},
+				},
+				stroke: { lineCap: '0' },
+				labels: ['Status'],
+			};
+		}
+
+		function renderChart(selector, cfg) {
+			var el = document.querySelector(selector);
+			if (!el || typeof ApexCharts === 'undefined') return;
+			el.innerHTML = '';
+			new ApexCharts(el, cfg).render();
+		}
+
+		// Totales reales para calcular porcentajes (vacantes: cerradas + pendientes + vencidas)
+		var vacCerradas = toNumber('{{ vacantes_finalizadas_count|default:0 }}');
+		var vacPendientes = toNumber('{{ vacantes_activas_count|default:0 }}');
+		var vacVencidas = toNumber('{{ vacantes_vencidas_count|default:0 }}');
+		var totalVacantes = vacCerradas + vacPendientes + vacVencidas;
+
+		renderChart(
+			'#chart_cerradas',
+			chartConfig({
+				count: vacCerradas,
+				total: Math.max(totalVacantes, 1),
+				color: '#37D80A',
+				chartHeight: 200,
+				chartWidth: 200,
+				valueFontSize: '16px',
+			})
+		);
+		renderChart(
+			'#chart_pendientes',
+			chartConfig({
+				count: vacPendientes,
+				total: Math.max(totalVacantes, 1),
+				color: '#B10022',
+				chartHeight: 200,
+				chartWidth: 200,
+				valueFontSize: '16px',
+			})
+		);
+		renderChart(
+			'#chart_vencidas',
+			chartConfig({
+				count: vacVencidas,
+				total: Math.max(totalVacantes, 1),
+				color: '#FF1A5F',
+				chartHeight: 200,
+				chartWidth: 200,
+				valueFontSize: '16px',
+			})
+		);
+	});
 </script>
 {% endblock %}

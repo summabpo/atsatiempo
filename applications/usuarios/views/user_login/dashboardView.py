@@ -74,9 +74,13 @@ def dashboard_candidato(request):
 def dashboard_cliente(request):
     """ Vista que carga la página de inicio y muestra variables de sesión """
     vacantes_activas_count = 0
+    vacantes_activas_mes_count = 0
     vacantes_finalizadas_count = 0
+    vacantes_finalizadas_mes_count = 0
     vacantes_vencidas_count = 0
+    vacantes_vencidas_mes_count = 0
     candidatos_entrevista_aprobada_sin_calificar_count = 0
+    candidatos_feedback_mes_count = 0
     feedback_pendiente_ultimos = []
     feedback_pendiente_extra_count = 0
     cliente_id = request.session.get('cliente_id')
@@ -100,11 +104,44 @@ def dashboard_cliente(request):
         # Finalizadas/cerradas: Finalizada (3)
         vacantes_finalizadas_count = base_vacantes.filter(estado_vacante=3).count()
 
+        # Cerradas en el mes en curso (por fecha_cierre; rango [inicio_mes, siguiente_mes))
+        ahora = timezone.now()
+        inicio_mes = ahora.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if inicio_mes.month == 12:
+            fin_mes_exclusivo = inicio_mes.replace(year=inicio_mes.year + 1, month=1, day=1)
+        else:
+            fin_mes_exclusivo = inicio_mes.replace(month=inicio_mes.month + 1, day=1)
+        vacantes_finalizadas_mes_count = (
+            base_vacantes.filter(estado_vacante=3)
+            .filter(fecha_cierre__isnull=False)
+            .filter(fecha_cierre__gte=inicio_mes, fecha_cierre__lt=fin_mes_exclusivo)
+            .count()
+        )
+
+        # Activas/en proceso creadas en el mes en curso (fecha_cierre aún no aplica)
+        vacantes_activas_mes_count = (
+            base_vacantes.filter(estado_vacante__in=(1, 2))
+            .filter(fecha_creacion__gte=inicio_mes, fecha_creacion__lt=fin_mes_exclusivo)
+            .count()
+        )
+
         # Vencidas: fecha_cierra_planteada ya pasó y la vacante sigue activa/en proceso
         vacantes_vencidas_count = (
             base_vacantes.filter(estado_vacante__in=(1, 2))
             .filter(fecha_cierra_planteada__isnull=False)
             .filter(fecha_cierra_planteada__lt=timezone.now())
+            .count()
+        )
+
+        # Vencidas con fecha de cierre planteada en el mes en curso (y ya vencida)
+        vacantes_vencidas_mes_count = (
+            base_vacantes.filter(estado_vacante__in=(1, 2))
+            .filter(fecha_cierra_planteada__isnull=False)
+            .filter(fecha_cierra_planteada__lt=timezone.now())
+            .filter(
+                fecha_cierra_planteada__gte=inicio_mes,
+                fecha_cierra_planteada__lt=fin_mes_exclusivo,
+            )
             .count()
         )
 
@@ -114,6 +151,14 @@ def dashboard_cliente(request):
         candidatos_entrevista_aprobada_sin_calificar_count = (
             Cli056AplicacionVacante.objects.filter(vacante_id_052__in=base_vacantes)
             .filter(estado_aplicacion=3)
+            .count()
+        )
+
+        # Misma lógica estado 3, aplicaciones registradas en el mes en curso (fecha_aplicacion)
+        candidatos_feedback_mes_count = (
+            Cli056AplicacionVacante.objects.filter(vacante_id_052__in=base_vacantes)
+            .filter(estado_aplicacion=3)
+            .filter(fecha_aplicacion__gte=inicio_mes, fecha_aplicacion__lt=fin_mes_exclusivo)
             .count()
         )
 
@@ -128,9 +173,13 @@ def dashboard_cliente(request):
         feedback_pendiente_extra_count = max(0, feedback_pendiente_total - len(feedback_pendiente_ultimos))
     context = {
         'vacantes_activas_count': vacantes_activas_count,
+        'vacantes_activas_mes_count': vacantes_activas_mes_count,
         'vacantes_finalizadas_count': vacantes_finalizadas_count,
+        'vacantes_finalizadas_mes_count': vacantes_finalizadas_mes_count,
         'vacantes_vencidas_count': vacantes_vencidas_count,
+        'vacantes_vencidas_mes_count': vacantes_vencidas_mes_count,
         'candidatos_entrevista_aprobada_sin_calificar_count': candidatos_entrevista_aprobada_sin_calificar_count,
+        'candidatos_feedback_mes_count': candidatos_feedback_mes_count,
         'feedback_pendiente_ultimos': feedback_pendiente_ultimos,
         'feedback_pendiente_extra_count': feedback_pendiente_extra_count,
     }
