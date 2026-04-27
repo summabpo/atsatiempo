@@ -21,6 +21,8 @@ from applications.services.service_candidate import personal_information_calcula
 from applications.services.service_vacanty import query_vacanty_with_skills_and_details
 from applications.vacante.models import Cli052Vacante
 from applications.reclutado.models import Cli056AplicacionVacante
+from django.utils.formats import date_format
+from django.db.models import Exists, OuterRef
 
 #pantalla inicio
 @login_required
@@ -83,6 +85,15 @@ def dashboard_cliente(request):
     candidatos_feedback_mes_count = 0
     feedback_pendiente_ultimos = []
     feedback_pendiente_extra_count = 0
+    vacantes_cancelables_count = 0
+    vacantes_cancelables = []
+    vacantes_cancelables_payload = []
+    vacantes_talento_por_enviar_count = 0
+    aplicaciones_validacion_confianza_count = 0
+    aplicaciones_espera_respuesta_count = 0
+    vacantes_talento_por_enviar_payload = []
+    aplicaciones_validacion_confianza_payload = []
+    aplicaciones_espera_respuesta_payload = []
     cliente_id = request.session.get('cliente_id')
     if cliente_id:
         # Criterio por asignación (Cli064):
@@ -100,6 +111,99 @@ def dashboard_cliente(request):
 
         # Activas: Activa (1) o En proceso (2)
         vacantes_activas_count = base_vacantes.filter(estado_vacante__in=(1, 2)).count()
+
+        # Vacantes sin envío de candidatos al cliente:
+        # no tienen aplicaciones en estados "enviados/gestionados por el cliente" (3..15).
+        estados_enviados_cliente = (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+        qs_talento_por_enviar = (
+            base_vacantes.filter(estado_vacante__in=(1, 2))
+            .annotate(
+                tiene_candidatos_enviados=Exists(
+                    Cli056AplicacionVacante.objects.filter(vacante_id_052_id=OuterRef("pk")).filter(
+                        estado_aplicacion__in=estados_enviados_cliente
+                    )
+                )
+            )
+            .filter(tiene_candidatos_enviados=False)
+        )
+        vacantes_talento_por_enviar_count = qs_talento_por_enviar.count()
+        vacantes_talento_por_enviar_payload = list(
+            qs_talento_por_enviar.select_related("cargo").order_by("-id")[:200].values(
+                "id",
+                "titulo",
+                "cargo__nombre_cargo",
+                "numero_posiciones",
+                "fecha_creacion",
+            )
+        )
+
+        # Aplicaciones en estados solicitados
+        qs_estado_5 = (
+            Cli056AplicacionVacante.objects.filter(vacante_id_052__in=base_vacantes)
+            .filter(estado_aplicacion=5)
+            .select_related("candidato_101", "vacante_id_052__cargo")
+            .order_by("-fecha_actualizacion")
+        )
+        aplicaciones_validacion_confianza_count = qs_estado_5.count()
+        aplicaciones_validacion_confianza_payload = [
+            {
+                "aplicacion_id": a.id,
+                "vacante_id": a.vacante_id_052_id,
+                "cargo": (a.vacante_id_052.cargo.nombre_cargo if getattr(a.vacante_id_052, "cargo", None) else a.vacante_id_052.titulo),
+                "candidato": getattr(a.candidato_101, "nombre_completo", None) or " ".join(
+                    [p for p in [a.candidato_101.primer_nombre, a.candidato_101.segundo_nombre, a.candidato_101.primer_apellido, a.candidato_101.segundo_apellido] if p]
+                ).strip(),
+                "estado": "Acciones decisivas programadas",
+            }
+            for a in list(qs_estado_5[:300])
+        ]
+
+        qs_estado_13 = (
+            Cli056AplicacionVacante.objects.filter(vacante_id_052__in=base_vacantes)
+            .filter(estado_aplicacion=13)
+            .select_related("candidato_101", "vacante_id_052__cargo")
+            .order_by("-fecha_actualizacion")
+        )
+        aplicaciones_espera_respuesta_count = qs_estado_13.count()
+        aplicaciones_espera_respuesta_payload = [
+            {
+                "aplicacion_id": a.id,
+                "vacante_id": a.vacante_id_052_id,
+                "cargo": (a.vacante_id_052.cargo.nombre_cargo if getattr(a.vacante_id_052, "cargo", None) else a.vacante_id_052.titulo),
+                "candidato": getattr(a.candidato_101, "nombre_completo", None) or " ".join(
+                    [p for p in [a.candidato_101.primer_nombre, a.candidato_101.segundo_nombre, a.candidato_101.primer_apellido, a.candidato_101.segundo_apellido] if p]
+                ).strip(),
+                "estado": "En espera por respuesta de contratación",
+            }
+            for a in list(qs_estado_13[:300])
+        ]
+
+        # Vacantes cancelables (Activa/En proceso) para el panel "Cancelar Vacantes"
+        vacantes_cancelables = list(
+            base_vacantes.filter(estado_vacante__in=(1, 2))
+            .select_related("cargo", "usuario_asignado", "asignacion_reclutador")
+            .order_by("-id")[:200]
+        )
+        vacantes_cancelables_count = len(vacantes_cancelables)
+
+        def _nombre_usuario(u):
+            if not u:
+                return ""
+            partes = [u.primer_nombre, u.segundo_nombre, u.primer_apellido, u.segundo_apellido]
+            return " ".join([p for p in partes if p]).strip()
+
+        vacantes_cancelables_payload = [
+            {
+                "id": v.id,
+                "cargo": (v.cargo.nombre_cargo if getattr(v, "cargo", None) else ""),
+                "fecha_inicio": date_format(timezone.localtime(v.fecha_creacion), "SHORT_DATETIME_FORMAT")
+                if v.fecha_creacion
+                else "",
+                "analista_asignado": _nombre_usuario(getattr(v, "usuario_asignado", None)),
+                "reclutador_asignado": _nombre_usuario(getattr(v, "asignacion_reclutador", None)),
+            }
+            for v in vacantes_cancelables
+        ]
 
         # Finalizadas/cerradas: Finalizada (3)
         vacantes_finalizadas_count = base_vacantes.filter(estado_vacante=3).count()
@@ -182,6 +286,15 @@ def dashboard_cliente(request):
         'candidatos_feedback_mes_count': candidatos_feedback_mes_count,
         'feedback_pendiente_ultimos': feedback_pendiente_ultimos,
         'feedback_pendiente_extra_count': feedback_pendiente_extra_count,
+        'vacantes_cancelables_count': vacantes_cancelables_count,
+        'vacantes_cancelables': vacantes_cancelables,
+        'vacantes_cancelables_payload': vacantes_cancelables_payload,
+        'vacantes_talento_por_enviar_count': vacantes_talento_por_enviar_count,
+        'aplicaciones_validacion_confianza_count': aplicaciones_validacion_confianza_count,
+        'aplicaciones_espera_respuesta_count': aplicaciones_espera_respuesta_count,
+        'vacantes_talento_por_enviar_payload': vacantes_talento_por_enviar_payload,
+        'aplicaciones_validacion_confianza_payload': aplicaciones_validacion_confianza_payload,
+        'aplicaciones_espera_respuesta_payload': aplicaciones_espera_respuesta_payload,
     }
     return render(request, 'admin/dashboard/dashboard_client.html', context)
 

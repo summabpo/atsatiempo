@@ -1,0 +1,520 @@
+{% extends 'admin/layout/dashboard_base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block title %}Vacantes pendientes | Resumen{% endblock %}
+
+{% block styles %}
+<style>
+	.vp-card {
+		border: 2px solid rgba(var(--bs-primary-rgb), 0.25);
+		border-radius: 14px;
+	}
+	.vp-panel-title {
+		font-weight: 900;
+		letter-spacing: 0.3px;
+	}
+	.vp-soft {
+		background: rgba(var(--bs-primary-rgb), 0.10);
+		border: 1px solid rgba(var(--bs-primary-rgb), 0.18);
+		border-radius: 12px;
+	}
+	.vp-match-circle {
+		width: 52px;
+		height: 52px;
+		border-radius: 999px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 900;
+		font-size: 0.9rem;
+		border: 2px solid rgba(25, 135, 84, 0.35);
+		background: rgba(25, 135, 84, 0.12);
+		color: #198754;
+	}
+	.vp-match-circle.warn {
+		border-color: rgba(255, 193, 7, 0.45);
+		background: rgba(255, 193, 7, 0.15);
+		color: #b58100;
+	}
+	.vp-match-circle.danger {
+		border-color: rgba(220, 53, 69, 0.4);
+		background: rgba(220, 53, 69, 0.12);
+		color: #dc3545;
+	}
+	.vp-candidates-table tbody tr {
+		border-bottom: 1px solid rgba(var(--bs-primary-rgb), 1);
+	}
+	.vp-candidates-table tbody tr:last-child {
+		border-bottom: 0;
+	}
+	.vp-candidates-table tbody td {
+		background: transparent !important;
+	}
+	.vp-panorama-btn {
+		width: 100%;
+		border: 1px solid rgba(var(--bs-primary-rgb), 0.55);
+		border-radius: 14px;
+		background: transparent;
+		padding: 14px 14px;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+	}
+	.vp-panorama-btn .vp-icon {
+		width: 44px;
+		height: 44px;
+		border-radius: 999px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(var(--bs-primary-rgb), 0.10);
+		color: rgba(var(--bs-primary-rgb), 1);
+	}
+	.vp-panorama-btn .vp-title {
+		font-weight: 800;
+		color: rgba(var(--bs-secondary-rgb), 1);
+		letter-spacing: 0.2px;
+	}
+	.vp-panorama-btn .vp-big {
+		font-weight: 900;
+		font-size: 2.1rem;
+		line-height: 1;
+		color: rgba(var(--bs-primary-rgb), 1);
+	}
+	.vp-panorama-btn .vp-sub {
+		font-size: 0.78rem;
+		color: rgba(var(--bs-secondary-rgb), 0.75);
+	}
+	.vp-panorama-btn.active {
+		border-color: rgba(var(--bs-primary-rgb), 1);
+		background: rgba(var(--bs-primary-rgb), 0.08);
+		box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.12);
+	}
+	.vp-timeline-card {
+		border-radius: 16px;
+		border: 1px solid rgba(var(--bs-primary-rgb), 0.35);
+		background: linear-gradient(180deg, rgba(var(--bs-primary-rgb), 0.06), rgba(var(--bs-primary-rgb), 0.02));
+	}
+	.vp-tl-title {
+		font-weight: 900;
+		letter-spacing: 0.3px;
+		text-transform: uppercase;
+		line-height: 1.15;
+	}
+	.vp-tl-subtitle {
+		font-weight: 800;
+		color: rgba(var(--bs-secondary-rgb), 1);
+	}
+	.vp-tl-track {
+		position: relative;
+		padding: 10px 6px 6px 6px;
+	}
+	.vp-tl-track:before {
+		content: "";
+		position: absolute;
+		left: 18px;
+		top: 10px;
+		bottom: 10px;
+		width: 4px;
+		border-radius: 999px;
+		background: rgba(var(--bs-primary-rgb), 0.25);
+	}
+	.vp-tl-step {
+		position: relative;
+		display: flex;
+		gap: 12px;
+		padding: 10px 6px 10px 0;
+	}
+	.vp-tl-dot {
+		width: 36px;
+		height: 36px;
+		border-radius: 999px;
+		background: rgba(var(--bs-primary-rgb), 0.12);
+		border: 2px solid rgba(var(--bs-primary-rgb), 0.65);
+		color: rgba(var(--bs-primary-rgb), 1);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex: 0 0 36px;
+		z-index: 1;
+	}
+	.vp-tl-step.active .vp-tl-dot {
+		background: rgba(var(--bs-primary-rgb), 0.18);
+		border-color: rgba(var(--bs-primary-rgb), 1);
+		box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), 0.14);
+	}
+	.vp-tl-step .vp-tl-label {
+		font-weight: 800;
+		color: rgba(var(--bs-secondary-rgb), 1);
+		line-height: 1.2;
+	}
+	.vp-tl-step .vp-tl-date {
+		font-size: 0.78rem;
+		color: rgba(var(--bs-secondary-rgb), 0.75);
+		margin-top: 2px;
+	}
+	.vp-tl-footer {
+		border-top: 1px solid rgba(var(--bs-primary-rgb), 0.25);
+		padding-top: 12px;
+		margin-top: 8px;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container overflow-hidden">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+		<div>
+			<h3 class="mb-1 vp-panel-title text-primary">VACANTES PENDIENTES · RESUMEN</h3>
+		</div>
+		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+			<ol class="breadcrumb align-items-center mb-0 lh-1">
+				<li class="breadcrumb-item">
+					<a href="{% url 'accesses:inicio_cliente' %}" class="d-flex align-items-center text-decoration-none">
+						<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+						<span class="text-secondary fw-medium hover">Inicio</span>
+					</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">
+					<span class="fw-medium">Resumen pendientes</span>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<div class="row g-4">
+		<!-- TALENTO ENVIADO -->
+		<div class="col-12 col-lg-8">
+			<div class="card bg-white border-3 border-primary rounded-3 mb-4">
+				<div class="card-body p-4">
+					<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+						<div class="d-flex align-items-center gap-2">
+							<div class="bg-primary bg-opacity-10 text-primary text-center rounded-circle" style="width: 44px; height: 44px; line-height: 44px;">
+								<span class="material-symbols-outlined" style="font-size: 22px; transform: translateY(3px);">analytics</span>
+							</div>
+							<div>
+								<div class="fw-bold text-secondary">PANORAMA DE ACTIVIDAD</div>
+								<small class="text-muted">Estado de los procesos y pendientes</small>
+							</div>
+						</div>
+					</div>
+
+					<form method="get" class="vp-soft p-3 mb-3">
+						<label class="form-label fw-semibold mb-1">Seleccionar Vacante</label>
+						<select class="form-select select2" name="vacante_id" id="vpVacanteSelect">
+							{% for v in vacantes %}
+								<option value="{{ v.id }}" {% if vacante and v.id == vacante.id %}selected{% endif %}>
+									ID {{ v.id }} - {{ v.cargo.nombre_cargo|default:v.titulo }}
+								</option>
+							{% endfor %}
+						</select>
+						<div class="d-grid mt-2">
+							<button class="btn bg-primary bg-opacity-10 fw-medium text-primary">Ver resumen</button>
+						</div>
+					</form>
+
+				</div>
+			</div>
+			<hr class="my-3 text-muted opacity-25 w-100 color-primary border-primary">
+
+			<div class="row g-4">
+				<!-- TALENTO ENVIADO -->
+				<div class="col-12 col-lg-6">
+					<div class="card bg-white border-3 border-primary rounded-3 mb-4">
+						<div class="card-body p-4">
+							<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+								<div class="d-flex align-items-center gap-2">
+									<div class="bg-primary bg-opacity-10 text-primary text-center rounded-circle" style="width: 44px; height: 44px; line-height: 44px;">
+										<span class="material-symbols-outlined" style="font-size: 22px; transform: translateY(3px);">send</span>
+									</div>
+									<div>
+										<div class="fw-bold text-secondary">TALENTO ENVIADO</div>
+										<small class="text-muted">Candidatos asociados a la vacante</small>
+									</div>
+								</div>
+							</div>
+
+							<div class="table-responsive">
+								<table class="table table-borderless align-middle mb-0 vp-candidates-table">
+									<tbody>
+										{% for a in aplicaciones_enviadas %}
+											{% with pct=a.json_match_inicial|get_match_inicial_porcentaje ea=a.obtener_estado_con_color %}
+												<tr>
+													<td>
+														<div class="d-flex align-items-center">
+															<div class="flex-shrink-0">
+																{% if a.candidato_101.imagen_perfil %}
+																	<img src="{{ a.candidato_101.imagen_perfil.url }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;" alt="{{ a.candidato_101.primer_nombre|default:'Candidato' }}">
+																{% else %}
+																	<img src="{% static 'admin/images/user-81.png' %}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;" alt="Candidato">
+																{% endif %}
+															</div>
+															<div class="ms-2 ps-1 flex-grow-1">
+																<div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-1">
+																	<h6 class="fw-medium fs-15 text-secondary mb-0">{{ a.candidato_101.primer_nombre }} {{ a.candidato_101.primer_apellido }}</h6>
+																	{% if ea.estado %}
+																		<span class="badge bg-opacity-10 bg-{{ ea.color }} py-1 px-2 text-{{ ea.color }} rounded-1 fw-medium fs-12 flex-shrink-0">{{ ea.estado }}</span>
+																	{% endif %}
+																</div>
+																<div class="fs-13 text-body">
+																	{% comment %} <span class="text-muted">·</span> {% endcomment %}
+																	<span class="text-muted">Fecha envío: {{ a.fecha_actualizacion|date:"d/m/Y"|default:"-" }}</span>
+																</div>
+															</div>
+														</div>
+													</td>
+													<td class="text-center">
+														{% if pct %}
+															{% if pct >= 80 %}
+																<span class="badge bg-success text-white px-3 py-2">{{ pct }}%</span>
+															{% elif pct >= 60 %}
+																<span class="badge bg-warning text-dark px-3 py-2">{{ pct }}%</span>
+															{% else %}
+																<span class="badge bg-danger text-white px-3 py-2">{{ pct }}%</span>
+															{% endif %}
+														{% else %}
+															<span class="text-muted">—</span>
+														{% endif %}
+													</td>
+												</tr>
+											{% endwith %}
+										{% empty %}
+											<tr>
+												<td colspan="2" class="text-muted text-center py-4">No hay candidatos enviados para esta vacante.</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-12 col-lg-6">
+					<div class="card bg-white border-3 border-primary rounded-3 mb-4">
+						<div class="card-body p-4">
+							<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+								<div class="d-flex align-items-center gap-2">
+									<div class="bg-primary bg-opacity-10 text-primary text-center rounded-circle" style="width: 44px; height: 44px; line-height: 44px;">
+										<span class="material-symbols-outlined" style="font-size: 22px; transform: translateY(3px);">analytics</span>
+									</div>
+									<div>
+										<div class="fw-bold text-secondary">PANORAMA DE ACTIVIDAD</div>
+										<small class="text-muted">Resumen para la vacante seleccionada</small>
+									</div>
+								</div>
+							</div>
+
+							<div class="row g-3">
+								{% if not aplicaciones_enviadas %}
+									<div class="col-12">
+										<button type="button" class="btn bg-primary bg-opacity-10 w-100 h-100 text-center py-4 border border-primary">
+											<span class="material-symbols-outlined text-primary d-inline-block mb-2" style="font-size: 44px; line-height: 1;">handshake</span>
+											<div class="fw-semibold text-secondary">Talento por enviar</div>
+											<div class="fw-bold text-primary mt-1" style="font-size: 34px; line-height: 1.05;">{{ panorama.talento_por_enviar|default:0 }}</div>
+											<div class="text-muted small mt-2">Vacantes sin candidatos enviados al cliente</div>
+										</button>
+									</div>
+								{% else %}
+									<div class="col-12">
+										<button type="button" class="btn bg-primary bg-opacity-10 w-100 h-100 text-center py-4">
+											<span class="material-symbols-outlined text-primary d-inline-block mb-2" style="font-size: 44px; line-height: 1;">visibility</span>
+											<div class="fw-semibold text-secondary">Validación de confianza</div>
+											<div class="fw-bold text-primary mt-1" style="font-size: 34px; line-height: 1.05;">{{ panorama.validacion_confianza|default:0 }}</div>
+											<div class="text-muted small mt-2">Acciones decisivas programadas</div>
+										</button>
+									</div>
+									<div class="col-12">
+										<button type="button" class="btn bg-primary bg-opacity-10 w-100 h-100 text-center py-4">
+											<span class="material-symbols-outlined text-primary d-inline-block mb-2" style="font-size: 44px; line-height: 1;">swap_horiz</span>
+											<div class="fw-semibold text-secondary">Viaje de contratación</div>
+											<div class="fw-bold text-primary mt-1" style="font-size: 34px; line-height: 1.05;">{{ panorama.viaje_contratacion|default:0 }}</div>
+											<div class="text-muted small mt-2">En espera por respuesta de contratación</div>
+										</button>
+									</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-lg-4 d-flex flex-column gap-4">
+			
+			{% if vacante %}
+				<div class="mb-2 w-100">
+					<a href="{% url 'vacantes:vacantes_gestion_propias_cliente_2' vacante.asignacion_cliente_id_064.id_cliente_asignado.id vacante.id %}"
+					   class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-3 rounded-3 border-0 w-100 d-flex align-items-center justify-content-center gap-2"
+					   title="Abrir pantalla de gestión de la vacante">
+						<i class="material-symbols-outlined fs-18 align-middle">manage_search</i>
+						<span>Ir a gestión</span>
+					</a>
+				</div>
+				<div class="card bg-white border-3 border-primary rounded-3">
+					<div class="card-body p-4">
+						<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+							<div class="d-flex align-items-center gap-2">
+								<div class="bg-primary bg-opacity-10 text-primary text-center rounded-circle" style="width: 40px; height: 40px; line-height: 40px;">
+									<span class="material-symbols-outlined" style="font-size: 20px; transform: translateY(2px);">date_range</span>
+								</div>
+								<div>
+									<div class="fw-bold text-secondary">RESUMEN DE GESTIÓN</div>
+									<small class="text-muted">Días transcurridos desde la creación de la vacante</small>
+								</div>
+							</div>
+						</div>
+						<div class="text-center bg-primary bg-opacity-25 border border-primary rounded-3 px-3 py-4">
+							<div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3" style="width: 60px; height: 60px;">
+								<span class="material-symbols-outlined" style="font-size: 32px; line-height: 1;">date_range</span>
+							</div>
+							<div class="fw-bold text-secondary text-uppercase mb-1" style="font-size: 1.05rem; letter-spacing: 0.04em;">Días de gestión</div>
+							<div class="text-primary fw-black mb-2" style="font-size: 3.25rem; line-height: 1;">{% if dias_gestion_vacante is not None %}{{ dias_gestion_vacante }}{% else %}—{% endif %}</div>
+							{% if dias_gestion_vacante is not None %}
+								<div class="text-secondary fw-semibold mb-2" style="font-size: 1.15rem;">día{% if dias_gestion_vacante != 1 %}s{% endif %} en total</div>
+							{% else %}
+								<div class="text-muted fw-semibold mb-2" style="font-size: 1rem;">Días de gestión no disponibles</div>
+							{% endif %}
+							<div class="text-muted small">
+								Desde <span class="fw-semibold text-body">{{ vacante.fecha_creacion|date:"d/m/Y" }}</span>
+								hasta <span class="fw-semibold text-body"> Fecha actual: {% now "d/m/Y" %}</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			<div class="card bg-white border-3 border-primary rounded-3">
+				<div class="card-body p-4">
+					<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+						<div class="d-flex align-items-center gap-2">
+							<div class="bg-info bg-opacity-10 text-info text-center rounded-circle" style="width: 44px; height: 44px; line-height: 44px;">
+								<span class="material-symbols-outlined" style="font-size: 22px; transform: translateY(3px);">history</span>
+							</div>
+							<div>
+								<div class="fw-bold text-secondary">LÍNEA DEL TIEMPO DE LA VACANTE</div>
+								<small class="text-muted">Creación, envíos al cliente y actividades</small>
+							</div>
+						</div>
+					</div>
+
+					{% if vacante %}
+						<div class="card bg-white border-0 rounded-3">
+							<div class="card-body p-0">
+								<h3 class="fs-18 mb-3 px-1 text-primary">Actividades de la vacante</h3>
+								<div class="mt-2 pt-1" style="padding-left: 11px; max-height: 520px; overflow-y: auto;">
+									<div class="position-relative z-1" style="border-left: 1px dashed #D5D9E2; padding-left: 22px;">
+										<div class="mb-4 position-relative">
+											<div class="p-4 rounded-3 position-relative bg-info bg-opacity-25">
+												<div class="d-flex flex-wrap gap-2 justify-content-between align-items-start">
+													<div>
+														<div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+															<span class="fs-14 fw-semibold text-secondary d-block">{{ vacante.fecha_creacion|date:"d/m/Y" }}</span>
+															<span class="fs-14 fw-semibold text-muted d-block">{{ vacante.fecha_creacion|date:"g:i A" }}</span>
+															<span class="bg-white px-2 border border-info d-inline-block text-info rounded-pill fs-12 fw-semibold">Creación</span>
+														</div>
+														<span class="d-block mb-2 fw-semibold text-secondary">Vacante creada</span>
+														<div class="text-muted small">
+															{{ vacante.cargo.nombre_cargo|default:vacante.titulo|default:"Vacante" }}
+															<span class="text-muted">·</span>
+															<span class="fw-medium text-body">Estado vacante:</span> {{ vacante.get_estado_vacante_display }}
+														</div>
+													</div>
+												</div>
+												<div class="position-absolute top-50 start-0 translate-middle bg-white rounded-circle border border-2 border-info d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; left: -22px !important;">
+													<span class="material-symbols-outlined text-info" style="font-size: 18px;">add_circle</span>
+												</div>
+											</div>
+										</div>
+
+										{% for ev in envios_al_cliente_cronologico %}
+											<div class="mb-4 position-relative">
+												<div class="p-4 rounded-3 position-relative bg-info bg-opacity-25">
+													<div class="d-flex flex-wrap gap-2 justify-content-between align-items-start">
+														<div>
+															<div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+																<span class="fs-14 fw-semibold text-secondary d-block">{{ ev.fecha_actualizacion|date:"d/m/Y" }}</span>
+																<span class="fs-14 fw-semibold text-muted d-block">{{ ev.fecha_actualizacion|date:"g:i A" }}</span>
+																<div class="text-center rounded-circle bg-info d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+																	<span class="material-symbols-outlined fs-18 text-white">send</span>
+																</div>
+																<span class="bg-white px-2 border border-info d-inline-block text-info rounded-pill fs-12 fw-semibold">Envío al cliente</span>
+															</div>
+															<span class="d-block mb-2">Candidato presentado al cliente</span>
+															<div class="d-flex align-items-center">
+																{% if ev.candidato_101.imagen_perfil %}
+																	<img src="{{ ev.candidato_101.imagen_perfil.url }}" class="rounded-circle border border-2 border-white" style="width: 28px; height: 28px; object-fit: cover;" alt="">
+																{% else %}
+																	<img src="{% static 'admin/images/user-81.png' %}" class="rounded-circle border border-2 border-white" style="width: 28px; height: 28px; object-fit: cover;" alt="">
+																{% endif %}
+																<span class="fs-14 fw-semibold text-body ms-2">{{ ev.candidato_101.primer_nombre }} {{ ev.candidato_101.primer_apellido }}</span>
+															</div>
+															<div class="mt-2">
+																<span class="badge bg-opacity-10 bg-{{ ev.obtener_estado_con_color.color }} py-1 px-2 text-{{ ev.obtener_estado_con_color.color }} rounded-1 fw-medium fs-12">{{ ev.obtener_estado_con_color.estado }}</span>
+															</div>
+														</div>
+													</div>
+													<div class="position-absolute top-50 start-0 translate-middle bg-white rounded-circle border border-2 border-info d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; left: -22px !important;">
+														<span class="material-symbols-outlined text-info" style="font-size: 18px;">check_circle</span>
+													</div>
+												</div>
+											</div>
+										{% empty %}
+											<div class="mb-0 position-relative">
+												<div class="p-4 rounded-3 position-relative bg-info bg-opacity-25">
+													<div class="text-muted small">Aún no hay envíos al cliente para esta vacante.</div>
+													<div class="position-absolute top-50 start-0 translate-middle bg-white rounded-circle border border-2 border-info d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; left: -22px !important;">
+														<span class="material-symbols-outlined text-info" style="font-size: 18px;">hourglass_empty</span>
+													</div>
+												</div>
+											</div>
+										{% endfor %}
+
+										<div class="mb-0 position-relative">
+											<div class="p-4 rounded-3 position-relative bg-info bg-opacity-25">
+												<div class="d-flex flex-wrap gap-2 justify-content-between align-items-start">
+													<div>
+														<div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+															<span class="fs-14 fw-semibold text-secondary d-block">{% now "d/m/Y" %}</span>
+															<span class="fs-14 fw-semibold text-muted d-block">{% now "g:i A" %}</span>
+															<span class="bg-white px-2 border border-info d-inline-block text-info rounded-pill fs-12 fw-semibold">Hoy</span>
+														</div>
+														<span class="d-block mb-1 fw-semibold text-secondary">Cierre del recorrido</span>
+														<div class="text-muted small mt-2">
+															Envíos al cliente registrados: <span class="fw-semibold text-body">{{ envios_al_cliente_cronologico|length }}</span>
+														</div>
+													</div>
+												</div>
+												<div class="position-absolute top-50 start-0 translate-middle bg-white rounded-circle border border-2 border-info d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; left: -22px !important;">
+													<span class="material-symbols-outlined text-info" style="font-size: 18px;">today</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% else %}
+						<p class="text-muted small mb-0">No hay vacantes pendientes para mostrar la línea de tiempo.</p>
+					{% endif %}
+				</div>
+			</div>
+
+			
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		if (typeof window.initializeSelect2 === 'function') {
+			window.initializeSelect2('#vpVacanteSelect');
+		} else if (window.jQuery && jQuery.fn && typeof jQuery.fn.select2 === 'function') {
+			jQuery('#vpVacanteSelect').select2({ width: '100%' });
+		}
+	});
+</script>
+{% endblock %}

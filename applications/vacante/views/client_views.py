@@ -61,6 +61,8 @@ from components.RegistrarHistorialVacante import (
     obtener_nombre_estado_aplicacion,
 )
 
+from components.RegistrarGestionVacante import validar_vacante_cancelar
+
 
 def _vm2_vacante_ok_for_cliente_session(request, vacante):
     """Si hay cliente en sesión, la vacante debe pertenecer a ese cliente asignado."""
@@ -71,6 +73,59 @@ def _vm2_vacante_ok_for_cliente_session(request, vacante):
     if not asig or not asig.id_cliente_asignado_id:
         return False
     return int(asig.id_cliente_asignado_id) == int(cid)
+
+
+@login_required
+@validar_permisos('acceso_cliente')
+@require_POST
+def cancel_vacancy_from_dashboard(request):
+    """
+    Cancela una vacante (estado 4) desde el dashboard del cliente.
+    Espera JSON: { "vacante_id": <int>, "descripcion": <str> }
+    """
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except Exception:
+        return JsonResponse({"ok": False, "error": "JSON inválido"}, status=400)
+
+    vacante_id = payload.get("vacante_id")
+    descripcion = (payload.get("descripcion") or "").strip()
+
+    if not vacante_id:
+        return JsonResponse({"ok": False, "error": "Falta vacante_id"}, status=400)
+    if not descripcion:
+        return JsonResponse({"ok": False, "error": "La descripción de cancelación es obligatoria"}, status=400)
+
+    cliente_id = request.session.get("cliente_id")
+    if not cliente_id:
+        return JsonResponse({"ok": False, "error": "Sesión de cliente no encontrada"}, status=403)
+
+    vacante = (
+        Cli052Vacante.objects.select_related("asignacion_cliente_id_064")
+        .filter(id=vacante_id, estado_id_001_id=1)
+        .filter(Q(asignacion_cliente_id_064__id_cliente_asignado_id=cliente_id) | Q(asignacion_cliente_id_064__id_cliente_maestro_id=cliente_id))
+        .first()
+    )
+    if not vacante:
+        return JsonResponse({"ok": False, "error": "Vacante no encontrada"}, status=404)
+
+    if int(vacante.estado_vacante) not in (1, 2):
+        return JsonResponse({"ok": False, "error": "La vacante no está en un estado cancelable"}, status=409)
+
+    url_actual = f"{request.scheme}://{request.get_host()}"
+
+    try:
+        with transaction.atomic():
+            # Cancela aplicaciones relacionadas (si aplica) y envía correo
+            validar_vacante_cancelar(vacante, url_actual)
+
+            vacante.estado_vacante = 4
+            vacante.comentarios = descripcion
+            vacante.save(update_fields=["estado_vacante", "comentarios"])
+    except Exception as e:
+        return JsonResponse({"ok": False, "error": "No fue posible cancelar la vacante"}, status=500)
+
+    return JsonResponse({"ok": True, "vacante_id": vacante.id})
 
 
 #crear todas las vacantes
@@ -577,6 +632,88 @@ def list_vacanty_pendientes(request):
         'admin/vacancy/client_user/vacancy_list.html',
         {'vacantes': vacantes, 'vacantes_filtro': 'pendientes'},
     )
+
+
+@login_required
+@validar_permisos('acceso_cliente')
+def pending_vacancies_summary(request):
+    """
+    Resumen de vacantes pendientes (Activa / En proceso) en un solo tablero:
+    - selector de vacante
+    - "talento enviado" (candidatos asociados + match inicial si existe)
+    - panorama (talento por enviar / validación de confianza / viaje de contratación)
+    - línea de tiempo (historial de la aplicación más reciente)
+    """
+    cliente_id = request.session.get('cliente_id')
+    cliente = get_object_or_404(Cli051Cliente, id=cliente_id)
+
+    vacantes = (
+        query_vacanty_all()
+        .filter(estado_id_001=1, asignacion_cliente_id_064__id_cliente_asignado=cliente)
+        .filter(estado_vacante__in=(1, 2))
+        .select_related("cargo")
+        .order_by('-fecha_creacion')
+    )
+
+    vacante_id = request.GET.get("vacante_id")
+    vacante_seleccionada = None
+    if vacante_id:
+        vacante_seleccionada = vacantes.filter(id=vacante_id).first()
+    if not vacante_seleccionada:
+        vacante_seleccionada = vacantes.first()
+
+    aplicaciones = []
+    aplicaciones_enviadas = []
+    envios_al_cliente_cronologico = []
+    dias_gestion_vacante = None
+    timeline_items = []
+    panorama = {"talento_por_enviar": 0, "validacion_confianza": 0, "viaje_contratacion": 0}
+
+    if vacante_seleccionada:
+        aplicaciones_qs = (
+            Cli056AplicacionVacante.objects.select_related("candidato_101")
+            .filter(vacante_id_052_id=vacante_seleccionada.id)
+            .order_by("-fecha_actualizacion", "-fecha_aplicacion", "-id")
+        )
+        aplicaciones = list(aplicaciones_qs[:200])
+
+        # "Enviados al cliente": desde Entrevista Programada (3) en adelante
+        aplicaciones_enviadas = list(aplicaciones_qs.filter(estado_aplicacion__gte=3)[:50])
+        envios_al_cliente_cronologico = list(
+            aplicaciones_qs.filter(estado_aplicacion__gte=3).order_by("fecha_actualizacion", "id")[:40]
+        )
+
+        creacion = vacante_seleccionada.fecha_creacion
+        if creacion:
+            if timezone.is_aware(creacion):
+                d0 = timezone.localtime(creacion).date()
+            else:
+                d0 = creacion.date()
+            dias_gestion_vacante = max(0, (timezone.localdate() - d0).days)
+
+        panorama["talento_por_enviar"] = 1 if aplicaciones_qs.filter(estado_aplicacion__gte=3).count() == 0 else 0
+        panorama["validacion_confianza"] = aplicaciones_qs.filter(estado_aplicacion=5).count()
+        panorama["viaje_contratacion"] = aplicaciones_qs.filter(estado_aplicacion=13).count()
+
+        aplicacion_timeline = aplicaciones_qs.first()
+        if aplicacion_timeline:
+            timeline_items = list(
+                Cli063AplicacionVacanteHistorial.objects.filter(aplicacion_vacante_056_id=aplicacion_timeline.id)
+                .order_by("-fecha")[:12]
+            )
+
+    context = {
+        "vacantes": vacantes,
+        "vacante": vacante_seleccionada,
+        "aplicaciones": aplicaciones,
+        "aplicaciones_enviadas": aplicaciones_enviadas,
+        "envios_al_cliente_cronologico": envios_al_cliente_cronologico,
+        "dias_gestion_vacante": dias_gestion_vacante,
+        "panorama": panorama,
+        "timeline_items": timeline_items,
+        "now": timezone.now(),
+    }
+    return render(request, "admin/vacancy/client_user/vacancy_pendientes_summary.html", context)
 
 
 @login_required

@@ -44,6 +44,20 @@ Inicio | Dashboard Cliente
 		line-height: 1;
 		transform: translateY(1px);
 	}
+	.quick-access-vertical .qa-icon {
+		width: 34px;
+		height: 34px;
+		min-width: 34px;
+		border-radius: 50%;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(var(--bs-primary-rgb), 0.12);
+		border: 1px solid rgba(var(--bs-primary-rgb), 0.2);
+	}
+	.quick-access-vertical .qa-icon .material-symbols-outlined {
+		transform: none;
+	}
     @media (max-width: 768px) {
         .info-panel-card .card-body { padding: 0.5rem !important; }
         .info-panel-card .card-body .material-symbols-outlined { font-size: 20px !important; }
@@ -136,6 +150,58 @@ Inicio | Dashboard Cliente
 		line-height: 1.15;
 		margin-top: 0.75rem;
 		color: #1f2937;
+	}
+
+	/* Tema TalentTray (rojo corporativo) */
+	.bg-talenttray {
+		background-color: #B10022 !important;
+		color: #fff !important;
+		border-color: #B10022 !important;
+	}
+	.bg-talenttray:hover,
+	.bg-talenttray:focus {
+		background-color: #8f001b !important;
+		border-color: #8f001b !important;
+		color: #fff !important;
+	}
+
+	/* Panel cancelar vacantes: alinear alturas Select2 + botón */
+	.cancel-vacancy-panel .select2-container .select2-selection--single {
+		height: 38px !important;
+	}
+	.cancel-vacancy-panel .select2-container--default .select2-selection--single .select2-selection__rendered {
+		line-height: 38px !important;
+	}
+	.cancel-vacancy-panel .select2-container--default .select2-selection--single .select2-selection__arrow {
+		height: 38px !important;
+	}
+	.cancel-vacancy-panel .cancel-vacancy-btn {
+		height: 38px;
+	}
+
+	/* Modal cancelar vacante: look tipo form sin inputs */
+	.cv-modal-section {
+		border: 1px solid rgba(177, 0, 34, 0.18);
+		border-radius: 12px;
+		padding: 14px;
+		background: rgba(177, 0, 34, 0.04);
+	}
+	.cv-info-item {
+		background: rgba(var(--bs-primary-rgb), 0.10);
+		border: 1px solid rgba(var(--bs-primary-rgb), 0.18);
+		border-radius: 10px;
+		padding: 10px 12px;
+		min-height: 44px;
+	}
+	.cv-info-label {
+		font-size: 12px;
+		color: #6b7280;
+		margin-bottom: 2px;
+	}
+	.cv-info-value {
+		font-weight: 700;
+		color: #111827;
+		line-height: 1.2;
 	}
 </style>
 {% endblock %}
@@ -260,9 +326,16 @@ Inicio | Dashboard Cliente
 	<div class="row">
 		<!-- Card 1: Vacantes Cerradas -->
 		<div class="col-xxl-2 col-sm-6">
-			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-vacantes-cerradas">
+			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-vacantes-cerradas dashboard-metric-card"
+				role="button" tabindex="0"
+				data-href="{% url 'vacantes:vacantes_listado_cliente_finalizadas' %}">
 				<div class="card-body p-4 text-center">
-					<h3 class="mb-4">Vacantes Cerradas</h3>
+					<div class="d-flex align-items-center justify-content-center gap-2 mb-4">
+						<div class="bg-success bg-opacity-25 text-success text-center rounded-circle" style="width: 44px; height: 44px; line-height: 44px;">
+							<i class="ri-checkbox-circle-line fs-22"></i>
+						</div>
+						<h3 class="mb-0">Vacantes Cerradas</h3>
+					</div>
 					<div class="dashboard-cerradas-chart-wrap">
 						<div id="chart_cerradas"></div>
 					</div>
@@ -279,9 +352,16 @@ Inicio | Dashboard Cliente
 
 		<!-- Card 2: Vacantes Pendientes -->
 		<div class="col-xxl-2 col-sm-6">
-			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-vacantes-pendientes">
+			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-vacantes-pendientes dashboard-metric-card"
+				role="button" tabindex="0"
+				data-href="{% url 'vacantes:vacantes_resumen_pendientes' %}">
 				<div class="card-body p-4 text-center">
-					<h3 class="mb-4">Vacantes Pendientes</h3>
+					<div class="d-flex align-items-center justify-content-center gap-2 mb-4">
+						<div class="bg-primary bg-opacity-25 text-primary text-center rounded-circle" style="width: 44px; height: 44px; line-height: 44px;">
+							<i class="ri-briefcase-2-line fs-22"></i>
+						</div>
+						<h3 class="mb-0">Vacantes Pendientes</h3>
+					</div>
 					<div class="dashboard-pendientes-chart-wrap">
 						<div id="chart_pendientes"></div>
 					</div>
@@ -300,9 +380,16 @@ Inicio | Dashboard Cliente
 
 		<!-- Card 3: Vacantes Vencidas -->
 		<div class="col-xxl-2 col-sm-6">
-			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-vacantes-vencidas">
+			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-vacantes-vencidas dashboard-metric-card"
+				role="button" tabindex="0"
+				data-href="{% url 'vacantes:vacantes_listado_cliente_vencidas' %}">
 				<div class="card-body p-4 text-center">
-					<h3 class="mb-4">Vacantes Vencidas</h3>
+					<div class="d-flex align-items-center justify-content-center gap-2 mb-4">
+						<div class="bg-danger bg-opacity-25 text-danger text-center rounded-circle" style="width: 44px; height: 44px; line-height: 44px;">
+							<i class="ri-alarm-warning-line fs-22"></i>
+						</div>
+						<h3 class="mb-0">Vacantes Vencidas</h3>
+					</div>
 					<div class="dashboard-vencidas-chart-wrap">
 						<div id="chart_vencidas"></div>
 					</div>
@@ -319,9 +406,16 @@ Inicio | Dashboard Cliente
 
 		<!-- Card 4: Por Retroalimentar (icono + cantidad; sin gráfica) -->
 		<div class="col-xxl-3 col-sm-6">
-			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-feedback-pendiente">
+			<div class="card bg-white border-3 border-primary rounded-3 mb-4 dashboard-card-feedback-pendiente dashboard-metric-card"
+				role="button" tabindex="0"
+				data-href="{% url 'vacantes:vacantes_listado_cliente_pendientes' %}">
 				<div class="card-body p-4 text-center">
-					<h3 class="mb-4">Por Retroalimentar</h3>
+					<div class="d-flex align-items-center justify-content-center gap-2 mb-4">
+						<div class="bg-warning bg-opacity-25 text-warning text-center rounded-circle" style="width: 44px; height: 44px; line-height: 44px;">
+							<i class="ri-user-voice-line fs-22"></i>
+						</div>
+						<h3 class="mb-0">Por Retroalimentar</h3>
+					</div>
 					<div class="dashboard-feedback-icon-wrap">
 						<div class="dashboard-feedback-icon-circle" aria-hidden="true">
 							<i class="ri-user-voice-line"></i>
@@ -344,415 +438,121 @@ Inicio | Dashboard Cliente
 				<h3 class="mb-4">Accesos directos</h3>
 				<div class="quick-access-vertical d-grid gap-2">
 					<a href="{% url 'vacantes:vacantes_crear_cliente' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
-						<span class="material-symbols-outlined">add_circle</span>
+						<span class="qa-icon"><span class="material-symbols-outlined">add_circle</span></span>
 						<span>Crear Vacante</span>
 					</a>
 					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
-						<span class="material-symbols-outlined">work</span>
+						<span class="qa-icon"><span class="material-symbols-outlined">work</span></span>
 						<span>Ver Vacantes</span>
 					</a>
 					<a href="{% url 'accesses:users_client' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
-						<span class="material-symbols-outlined">groups</span>
+						<span class="qa-icon"><span class="material-symbols-outlined">groups</span></span>
 						<span>Grupo de Trabajo</span>
 					</a>
 					<a href="{% url 'clientes:info_principal_cliente' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
-						<span class="material-symbols-outlined">person</span>
+						<span class="qa-icon"><span class="material-symbols-outlined">person</span></span>
 						<span>Información Personal</span>
 					</a>
 				</div>
 			</div>
 		</div>
 	</div>
+
+	{{ vacantes_cancelables_payload|json_script:"vacantes-cancelables-data" }}
+	{{ vacantes_talento_por_enviar_payload|json_script:"panorama-talento-por-enviar-data" }}
+	{{ aplicaciones_validacion_confianza_payload|json_script:"panorama-validacion-confianza-data" }}
+	{{ aplicaciones_espera_respuesta_payload|json_script:"panorama-viaje-contratacion-data" }}
+
+	<div class="row">
+		<div class="col-12 col-lg-6">
+			<div class="card border-3 border-primary rounded-3 bg-white p-4 mb-4 shadow-sm cancel-vacancy-panel">
+				<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+					<div class="d-flex align-items-center gap-2">
+						<div class="bg-danger bg-opacity-25 text-danger text-center rounded-circle" style="width: 44px; height: 44px; line-height: 44px;">
+							<i class="ri-close-circle-line fs-22"></i>
+						</div>
+						<div>
+							<h3 class="mb-0">Cancelar Vacantes</h3>
+							<div class="d-flex align-items-center gap-2 mt-1">
+								<span class="text-muted small">Activas / En proceso</span>
+								<span class="badge bg-primary fs-6">{{ vacantes_cancelables_count|default:0 }}</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row g-2 align-items-end">
+					<div class="col-12 col-md-8">
+						<label class="form-label fw-semibold mb-1">Vacante</label>
+						<select class="form-select select2" id="cancelVacancySelect">
+							<option value="">Seleccione una vacante...</option>
+							{% for v in vacantes_cancelables %}
+								<option value="{{ v.id }}">ID {{ v.id }} - {{ v.cargo.nombre_cargo|default:v.titulo }}</option>
+							{% empty %}
+								<option value="" disabled>No hay vacantes en estado 1 o 2</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="col-12 col-md-4 d-flex">
+						<button class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100 mt-auto cancel-vacancy-btn" id="openCancelVacancyModal" type="button" disabled data-bs-toggle="modal" data-bs-target="#cancelVacancyModal">
+							Cancelar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-lg-6">
+			<div class="card border-3 border-primary rounded-3 bg-white p-4 mb-4 shadow-sm">
+				<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+					<div class="d-flex align-items-center gap-2">
+						<div class="bg-primary bg-opacity-10 text-primary text-center rounded-circle" style="width: 44px; height: 44px; line-height: 44px;">
+							<span class="material-symbols-outlined" style="font-size: 22px; transform: translateY(3px);">analytics</span>
+						</div>
+						<div>
+							<h3 class="mb-0">Panorama de Actividad</h3>
+							<small class="text-muted">Estados de procesos y pendientes</small>
+						</div>
+					</div>
+				</div>
+
+				<div class="row g-3">
+					<div class="col-12 col-md-4">
+						<button type="button" class="btn bg-primary bg-opacity-10 w-100 h-100 text-center py-4"
+							data-bs-toggle="modal" data-bs-target="#panoramaTalentoPorEnviarModal">
+							<span class="material-symbols-outlined text-primary d-inline-block mb-2" style="font-size: 44px; line-height: 1;">handshake</span>
+							<div class="fw-semibold text-secondary">Talento por enviar</div>
+							<div class="fw-bold text-primary mt-1" style="font-size: 34px; line-height: 1.05;">{{ vacantes_talento_por_enviar_count|default:0 }}</div>
+							<div class="text-muted small mt-2">Vacantes sin candidatos enviados al cliente</div>
+						</button>
+					</div>
+
+					<div class="col-12 col-md-4">
+						<button type="button" class="btn bg-primary bg-opacity-10 w-100 h-100 text-center py-4"
+							data-bs-toggle="modal" data-bs-target="#panoramaValidacionConfianzaModal">
+							<span class="material-symbols-outlined text-primary d-inline-block mb-2" style="font-size: 44px; line-height: 1;">visibility</span>
+							<div class="fw-semibold text-secondary">Validación de confianza</div>
+							<div class="fw-bold text-primary mt-1" style="font-size: 34px; line-height: 1.05;">{{ aplicaciones_validacion_confianza_count|default:0 }}</div>
+							<div class="text-muted small mt-2">Acciones decisivas programadas</div>
+						</button>
+					</div>
+
+					<div class="col-12 col-md-4">
+						<button type="button" class="btn bg-primary bg-opacity-10 w-100 h-100 text-center py-4"
+							data-bs-toggle="modal" data-bs-target="#panoramaViajeContratacionModal">
+							<span class="material-symbols-outlined text-primary d-inline-block mb-2" style="font-size: 44px; line-height: 1;">swap_horiz</span>
+							<div class="fw-semibold text-secondary">Viaje de contratación</div>
+							<div class="fw-bold text-primary mt-1" style="font-size: 34px; line-height: 1.05;">{{ aplicaciones_espera_respuesta_count|default:0 }}</div>
+							<div class="text-muted small mt-2">En espera por respuesta de contratación</div>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	
 </div>
-
-	
-	<!-- Dashboard completo (replicado de store-analytics.html) -->
-	<div class="row">
-		<div class="col-lg-9">
-			<div class="card border-1 border-primary rounded-3 p-4" style="background: linear-gradient(104deg, #B10022 2.4%, #FF5A6E 112.33%);">
-				<div class="d-flex justify-content-between flex-wrap gap-3">
-					<div class="mt-sm-4 ms-sm-4">
-						<span class="fw-medium d-block mb-2" style="color: #C2CDFF;">
-							Hola {{ request.session.user_login.primer_nombre }} ✋
-						</span>
-						<h3 class="fs-28 text-white fw-900 mb-0">
-							<span class="fw-normal">Bienvenido a</span> Talent Tray
-						</h3>
-					</div>
-					<div class="py-sm-1">
-						<img src="{% static 'admin/images/store.png' %}" alt="store">
-					</div>
-				</div>
-			</div>
-
-			<div class="px-sm-4 px-xxl-5" style="margin-top: -48px;">
-				<div class="row justify-content-center align-items-stretch">
-					<div class="col-md-3 col-sm-6">
-						<div class="card border-3 border-success rounded-3 bg-white p-4 mb-4 shadow-sm h-100 dashboard-metric-card"
-							role="button" tabindex="0"
-							data-href="{% url 'vacantes:vacantes_listado_cliente_finalizadas' %}">
-							<div class="d-flex align-items-center">
-								<div class="flex-grow-1 me-1 metric-content">
-									<span class="d-block mb-2">VACANTES CERRADAS</span>
-									<h2 class="mb-2 metric-number">{{ vacantes_finalizadas_count|default:0 }}</h2>
-									<small class="text-muted">Finalizadas (Cerradas)</small>
-								</div>
-								<div class="flex-shrink-0">
-									<div class="bg-success bg-opacity-25 text-success text-center rounded-circle" style="width: 48px; height: 48px; line-height: 48px;">
-										<i class="ri-checkbox-circle-line fs-24"></i>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-3 col-sm-6">
-						<div class="card border-3 border-primary rounded-3 bg-white p-4 mb-4 shadow-sm h-100 dashboard-metric-card"
-							role="button" tabindex="0"
-							data-href="{% url 'vacantes:vacantes_listado_cliente_pendientes' %}">
-							<div class="d-flex align-items-center">
-								<div class="flex-grow-1 me-1 metric-content">
-									<span class="d-block mb-2">VACANTES PENDIENTES</span>
-									<h2 class="mb-2 metric-number">{{ vacantes_activas_count }}</h2>
-									<small class="text-muted">Activa o en proceso (no finalizadas)</small>
-								</div>
-								<div class="flex-shrink-0">
-									<div class="bg-primary bg-opacity-25 text-primary text-center rounded-circle" style="width: 48px; height: 48px; line-height: 48px;">
-										<i class="ri-briefcase-2-line fs-24"></i>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					
-					<div class="col-md-3 col-sm-6">
-						<div class="card border-3 border-warning rounded-3 bg-white p-4 mb-4 shadow-sm h-100 dashboard-metric-card"
-							role="button" tabindex="0"
-							data-href="{% url 'vacantes:vacantes_listado_cliente_pendientes' %}">
-							<div class="d-flex align-items-center">
-								<div class="flex-grow-1 me-1 metric-content">
-									<span class="d-block mb-2">PENDIENTE POR FEEDBACK</span>
-									<h2 class="mb-2 metric-number">{{ candidatos_entrevista_aprobada_sin_calificar_count|default:0 }}</h2>
-									<ul class="ps-0 mb-0 list-unstyled d-flex align-items-center">
-										{% for ap in feedback_pendiente_ultimos %}
-											<li class="{% if not forloop.first %}ms-m-15{% endif %}">
-												<a href="javascript:;">
-													{% if ap.candidato_101.imagen_perfil %}
-														<img src="{{ ap.candidato_101.imagen_perfil.url }}" class="wh-34 lh-34 rounded-circle border border-1 border-color-white" alt="{{ ap.candidato_101.nombre_completo|default:'Candidato' }}">
-													{% else %}
-														<img src="{% static 'admin/images/user-81.png' %}" class="wh-34 lh-34 rounded-circle border border-1 border-color-white" alt="{{ ap.candidato_101.nombre_completo|default:'Candidato' }}">
-													{% endif %}
-												</a>
-											</li>
-										{% empty %}
-											<li>
-												<a href="javascript:;">
-													<img src="{% static 'admin/images/user-106.png' %}" class="wh-34 lh-34 rounded-circle border border-1 border-color-white" alt="user">
-												</a>
-											</li>
-											<li class="ms-m-15">
-												<a href="javascript:;">
-													<img src="{% static 'admin/images/user-107.png' %}" class="wh-34 lh-34 rounded-circle border border-1 border-color-white" alt="user">
-												</a>
-											</li>
-											<li class="ms-m-15">
-												<a href="javascript:;">
-													<img src="{% static 'admin/images/user-108.png' %}" class="wh-34 lh-34 rounded-circle border border-1 border-color-white" alt="user">
-												</a>
-											</li>
-											<li class="ms-m-15">
-												<a href="javascript:;">
-													<img src="{% static 'admin/images/user-109.png' %}" class="wh-34 lh-34 rounded-circle border border-1 border-color-white" alt="user">
-												</a>
-											</li>
-										{% endfor %}
-										{% if feedback_pendiente_extra_count|default:0 %}
-											<li class="ms-m-15">
-												<a href="javascript:;" class="wh-34 lh-34 rounded-circle bg-warning d-block text-center text-decoration-none text-white fs-12 fw-medium border border-1 border-color-white">
-													+{{ feedback_pendiente_extra_count }}
-												</a>
-											</li>
-										{% endif %}
-									</ul>
-								</div>
-								<div class="flex-shrink-0">
-									<div class="bg-warning bg-opacity-25 text-warning text-center rounded-circle" style="width: 48px; height: 48px; line-height: 48px;">
-										<i class="ri-user-follow-line fs-24"></i>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="col-md-3 col-sm-6">
-						<div class="card border-3 border-danger rounded-3 bg-white p-4 mb-4 shadow-sm h-100 dashboard-metric-card"
-							role="button" tabindex="0"
-							data-href="{% url 'vacantes:vacantes_listado_cliente_vencidas' %}">
-							<div class="d-flex align-items-center">
-								<div class="flex-grow-1 me-1 metric-content">
-									<span class="d-block mb-2">VACANTES VENCIDAS</span>
-									<h2 class="mb-2 metric-number">{{ vacantes_vencidas_count|default:0 }}</h2>
-									<small class="text-muted">Con fecha de cierre planteada vencida</small>
-								</div>
-								<div class="flex-shrink-0">
-									<div class="bg-primary bg-opacity-25 text-primary text-center rounded-circle" style="width: 48px; height: 48px; line-height: 48px;">
-										<i class="ri-briefcase-2-line fs-24"></i>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="col-lg-3">
-			<div class="card border-2 border-primary rounded-3 bg-white p-4 mb-4 shadow-sm">
-				<h3 class="mb-4">Accesos directos</h3>
-				<div class="quick-access-vertical d-grid gap-2">
-					<a href="{% url 'vacantes:vacantes_crear_cliente' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
-						<span class="material-symbols-outlined">add_circle</span>
-						<span>Crear Vacante</span>
-					</a>
-					<a href="{% url 'vacantes:vacantes_listado_cliente' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
-						<span class="material-symbols-outlined">work</span>
-						<span>Ver Vacantes</span>
-					</a>
-					<a href="{% url 'accesses:users_client' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
-						<span class="material-symbols-outlined">groups</span>
-						<span>Grupo de Trabajo</span>
-					</a>
-					<a href="{% url 'clientes:info_principal_cliente' %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary w-100">
-						<span class="material-symbols-outlined">person</span>
-						<span>Información Personal</span>
-					</a>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="flex-grow-1"></div>
-
-	<div class="row">
-		<div class="col-xxl-8">
-			<div class="card custom-shadow rounded-3 bg-white border mb-4">
-				<div class="custom-padding-30">
-					<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 pb-4">
-						<h3 class="mb-0 fw-semibold">Overview</h3>
-						<div class="dropdown select-dropdown">
-							<button class="dropdown-toggle bg-transparent border text-body rounded-2" style="padding-right: 35px;" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-								This Year
-							</button>
-						  
-							<ul class="dropdown-menu dropdown-menu-end bg-white border-0 box-shadow py-3">
-								<li>
-									<button class="dropdown-item text-secondary py-2 px-3">This Day</button>
-								</li>
-								<li>
-									<button class="dropdown-item text-secondary py-2 px-3">This Week</button>
-								</li>
-								<li>
-									<button class="dropdown-item text-secondary py-2 px-3">This Month</button>
-								</li>
-								<li>
-									<button class="dropdown-item text-secondary py-2 px-3">This Year</button>
-								</li>
-							</ul>
-						</div>
-					</div>
-					<div id="nav-tab" class=" call-overview-tabs" role="tablist">
-						<div class="row justify-content-center">
-							<div class="col-md-4 col-sm-6">
-								<div class="card bg-primary bg-opacity-10 border-0 rounded-3 p-4 mb-4 calls-card active" id="nav-total-calls-tab" data-bs-toggle="tab" data-bs-target="#nav-total-calls" type="button" role="tab" aria-controls="nav-total-calls" aria-selected="true">
-									<div class="d-flex align-items-center mb-3">
-										<div class="flex-grow-1 me-3">
-											<span class="text-body d-block mb-1">Total Calls</span>
-											<h3 class="fs-24 fw-semibold text-secondary">26,435</h3>
-										</div>
-
-										<div class="flex-shrink-0">
-											<img src="assets/images/total-calls.svg" alt="total-calls">
-										</div>
-									</div>
-									<span class="d-flex align-items-center align-items-center text-body"> 
-										<i class="material-symbols-outlined fs-18 pe-2 position-relative top-1 text-success">trending_up</i> 
-										<span class="fw-medium me-1 text-secondary">+15%</span> last year
-									</span>
-								</div>
-							</div>
-							<div class="col-md-4 col-sm-6">
-								<div class="card bg-primary-divs border-0 rounded-3 p-4 mb-4 calls-card" id="nav-answered-calls-tab" data-bs-toggle="tab" data-bs-target="#nav-answered-calls" type="button" role="tab" aria-controls="nav-answered-calls" aria-selected="false" style="background-color: #FAF5FF;">
-									<div class="d-flex align-items-center mb-3">
-										<div class="flex-grow-1 me-3">
-											<span class="text-body d-block mb-1">Answered Calls</span>
-											<h3 class="fs-24 fw-semibold text-secondary">18,520</h3>
-										</div>
-
-										<div class="flex-shrink-0">
-											<img src="assets/images/answered-calls.svg" alt="answered-calls">
-										</div>
-									</div>
-									<span class="d-flex align-items-center align-items-center text-body"> 
-										<i class="material-symbols-outlined fs-18 pe-2 position-relative top-1 text-success-60">trending_up</i> 
-										<span class="fw-medium me-1 text-secondary">+15%</span> last year
-									</span>
-								</div>
-							</div>
-							<div class="col-md-4 col-sm-12">
-								<div class="card bg-dangers border-0 rounded-3 p-4 mb-4 calls-card" id="nav-missed-calls-tab" data-bs-toggle="tab" data-bs-target="#nav-missed-calls" type="button" role="tab" aria-controls="nav-missed-calls" aria-selected="false" style="background-color: #FFF5ED;">
-									<div class="d-flex align-items-center mb-3">
-										<div class="flex-grow-1 me-3">
-											<span class="text-body d-block mb-1">Missed Calls</span>
-											<h3 class="fs-24 fw-semibold text-secondary">3,735</h3>
-										</div>
-
-										<div class="flex-shrink-0">
-											<img src="assets/images/missed-calls.svg" alt="missed-calls">
-										</div>
-									</div>
-									<span class="d-flex align-items-center align-items-center text-body"> 
-										<i class="material-symbols-outlined fs-18 pe-2 position-relative top-1 text-danger-50">trending_down</i> 
-										<span class="fw-medium me-1 text-secondary">-25%</span> last year
-									</span>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="tab-content" id="nav-tabContent">
-						<div class="tab-pane fade show active" id="nav-total-calls" role="tabpanel" aria-labelledby="nav-total-calls-tab" tabindex="0">
-							<div style="margin: -24px -10px -26px -18px;">
-								<div id="total_calls"></div>
-							</div>
-						</div>
-						<div class="tab-pane fade" id="nav-answered-calls" role="tabpanel" aria-labelledby="nav-answered-calls-tab" tabindex="0">
-							<div style="margin: -24px -10px -26px -18px;">
-								<div id="answered_calls"></div>
-							</div>
-						</div>
-						<div class="tab-pane fade" id="nav-missed-calls" role="tabpanel" aria-labelledby="nav-missed-calls-tab" tabindex="0">
-							<div style="margin: -24px -10px -26px -18px;">
-								<div id="missed_calls"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-xxl-4">
-			<div class="row">
-				<div class="col-xxl-12 col-md-6">
-					<div class="card custom-shadow rounded-3 bg-white border mb-4">
-						<div class="custom-padding-30">
-							<div class="d-flex justify-content-between align-items-center flex-wrap gap-1 pb-4 position-relative z-1">
-								<div>
-									<h3 class="mb-0 fw-semibold">Inbound Calls</h3>
-									<span class="fs-12">Overview of incoming call volume</span>
-								</div>
-								<div class="dropdown select-dropdown without-border position-relative" style="right: -5px;">
-									<button class="dropdown-toggle bg-transparent border text-body rounded-2" style="padding-right: 20px;" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-										Today
-									</button>
-								  
-									<ul class="dropdown-menu dropdown-menu-end bg-white border-0 box-shadow py-3">
-										<li>
-											<button class="dropdown-item text-secondary py-2 px-3">Today</button>
-										</li>
-										<li>
-											<button class="dropdown-item text-secondary py-2 px-3">Last Week</button>
-										</li>
-										<li>
-											<button class="dropdown-item text-secondary py-2 px-3">Last Month</button>
-										</li>
-									</ul>
-								</div>
-							</div>
-
-							<div style="margin: -53px -9px -30px -11px;">
-								<div id="inbound_calls"></div>
-							</div>
-
-							<div class="d-flex align-items-center position-relative z-1">
-								<div class="d-flex align-items-center">
-									<div class="flex-shrink-0">
-										<div class="bg-body-bg border text-center rounded-2" style="width: 48px; height: 48px; line-height: 48px;">
-											<img src="assets/images/inbound-calls.svg" alt="inbound-calls">
-										</div>
-									</div>
-									<div class="flex-grow-1 ms-3">
-										<h3 class="fs-28 fw-semibold text-secondary mb-0">1,235</h3>
-										<span class="text-body d-block">Past 24 hours</span>
-									</div>
-								</div>
-
-								<span class="d-flex align-items-center align-items-center text-body ms-5"> 
-									<i class="material-symbols-outlined fs-18 pe-2 text-success-60">trending_up</i> 
-									<span class="fw-medium me-1 text-secondary">+7.5%</span>
-								</span>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-xxl-12 col-md-6">
-					<div class="card custom-shadow rounded-3 bg-white border mb-4">
-						<div class="custom-padding-30">
-							<div class="d-flex justify-content-between align-items-center flex-wrap gap-1 pb-4 position-relative z-1">
-								<div>
-									<h3 class="mb-0 fw-semibold">Outbound Calls</h3>
-									<span class="fs-12">Summary of outgoing call efforts</span>
-								</div>
-								<div class="dropdown select-dropdown without-border position-relative" style="right: -5px;">
-									<button class="dropdown-toggle bg-transparent border text-body rounded-2" style="padding-right: 20px;" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-										Last Month
-									</button>
-								  
-									<ul class="dropdown-menu dropdown-menu-end bg-white border-0 box-shadow py-3">
-										<li>
-											<button class="dropdown-item text-secondary py-2 px-3">Today</button>
-										</li>
-										<li>
-											<button class="dropdown-item text-secondary py-2 px-3">Last Week</button>
-										</li>
-										<li>
-											<button class="dropdown-item text-secondary py-2 px-3">Last Month</button>
-										</li>
-									</ul>
-								</div>
-							</div>
-
-							<div style="margin: -53px -9px -30px -11px;">
-								<div id="outbound_calls"></div>
-							</div>
-
-							<div class="d-flex align-items-center position-relative z-1">
-								<div class="d-flex align-items-center">
-									<div class="flex-shrink-0">
-										<div class="bg-body-bg border text-center rounded-2" style="width: 48px; height: 48px; line-height: 48px;">
-											<img src="assets/images/outbound-calls.svg" alt="outbound-calls">
-										</div>
-									</div>
-									<div class="flex-grow-1 ms-3">
-										<h3 class="fs-28 fw-semibold text-secondary mb-0">8,90</h3>
-										<span class="text-body d-block">Last month</span>
-									</div>
-								</div>
-
-								<span class="d-flex align-items-center align-items-center text-body ms-5"> 
-									<i class="material-symbols-outlined fs-18 pe-2 text-danger-50">trending_down</i> 
-									<span class="fw-medium me-1 text-secondary">-5.8%</span>
-								</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	
-
-
-
-
 
 {% endblock %}
 
@@ -894,5 +694,354 @@ Inicio | Dashboard Cliente
 			})
 		);
 	});
+</script>
+
+<div class="modal fade" id="cancelVacancyModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-primary bg-opacity-10">
+				<h5 class="modal-title text-primary fw-semibold">Cancelar Vacante</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body">
+				<div class="cv-modal-section">
+					<div class="row g-3">
+						<div class="col-12 col-md-6">
+							<div class="cv-info-item">
+								<div class="cv-info-label">ID Vacante</div>
+								<div class="cv-info-value" id="cvFieldId"></div>
+							</div>
+						</div>
+						<div class="col-12 col-md-6">
+							<div class="cv-info-item">
+								<div class="cv-info-label">Cargo Vacante</div>
+								<div class="cv-info-value" id="cvFieldCargo"></div>
+							</div>
+						</div>
+						<div class="col-12 col-md-6">
+							<div class="cv-info-item">
+								<div class="cv-info-label">Fecha de inicio</div>
+								<div class="cv-info-value" id="cvFieldFecha"></div>
+							</div>
+						</div>
+						<div class="col-12 col-md-6">
+							<div class="cv-info-item">
+								<div class="cv-info-label">Analista asignado</div>
+								<div class="cv-info-value" id="cvFieldAnalista"></div>
+							</div>
+						</div>
+						<div class="col-12 col-md-6">
+							<div class="cv-info-item">
+								<div class="cv-info-label">Reclutador asignado</div>
+								<div class="cv-info-value" id="cvFieldReclutador"></div>
+							</div>
+						</div>
+
+						<div class="col-12">
+							<label class="form-label fw-semibold mb-1">Descripción de la cancelación</label>
+							<textarea class="form-control" id="cvCancelDescripcion" rows="4" placeholder="Escribe el motivo / descripción..."></textarea>
+							<div class="form-text text-muted">Este texto quedará registrado en la vacante.</div>
+						</div>
+						<div class="col-12">
+							<div class="alert alert-danger d-none mb-0" id="cvCancelError"></div>
+							<div class="alert alert-success d-none mb-0" id="cvCancelSuccess">Vacante cancelada correctamente.</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				<button type="button" class="btn bg-primary bg-opacity-10 fw-medium text-primary" id="cvConfirmCancel">Confirmar cancelación</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modales Panorama de Actividad -->
+<div class="modal fade" id="panoramaTalentoPorEnviarModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-primary bg-opacity-10">
+				<h5 class="modal-title text-primary fw-semibold">Talento por enviar</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body">
+				<div class="table-responsive">
+					<table class="table align-middle mb-0">
+						<thead>
+							<tr>
+								<th style="width: 90px;">ID</th>
+								<th>Cargo / Vacante</th>
+								<th style="width: 140px;">Posiciones</th>
+							</tr>
+						</thead>
+						<tbody id="panoramaTalentoPorEnviarTbody"></tbody>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="panoramaValidacionConfianzaModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-primary bg-opacity-10">
+				<h5 class="modal-title text-primary fw-semibold">Validación de confianza</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body">
+				<div class="table-responsive">
+					<table class="table align-middle mb-0">
+						<thead>
+							<tr>
+								<th style="width: 120px;">Vacante</th>
+								<th>Cargo</th>
+								<th>Personal</th>
+								<th style="width: 220px;">Estado</th>
+							</tr>
+						</thead>
+						<tbody id="panoramaValidacionConfianzaTbody"></tbody>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="panoramaViajeContratacionModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-primary bg-opacity-10">
+				<h5 class="modal-title text-primary fw-semibold">Viaje de contratación</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body">
+				<div class="table-responsive">
+					<table class="table align-middle mb-0">
+						<thead>
+							<tr>
+								<th style="width: 120px;">Vacante</th>
+								<th>Cargo</th>
+								<th>Personal</th>
+								<th style="width: 260px;">Estado</th>
+							</tr>
+						</thead>
+						<tbody id="panoramaViajeContratacionTbody"></tbody>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	(function () {
+		function getCookie(name) {
+			var cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+				var cookies = document.cookie.split(';');
+				for (var i = 0; i < cookies.length; i++) {
+					var cookie = cookies[i].trim();
+					if (cookie.substring(0, name.length + 1) === (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+
+		var select = document.getElementById('cancelVacancySelect');
+		var openBtn = document.getElementById('openCancelVacancyModal');
+		var confirmBtn = document.getElementById('cvConfirmCancel');
+		var descripcionEl = document.getElementById('cvCancelDescripcion');
+		var errEl = document.getElementById('cvCancelError');
+		var okEl = document.getElementById('cvCancelSuccess');
+
+		var dataEl = document.getElementById('vacantes-cancelables-data');
+		var vacantes = [];
+		try {
+			vacantes = JSON.parse(dataEl && dataEl.textContent ? dataEl.textContent : '[]');
+		} catch (e) {
+			vacantes = [];
+		}
+		var byId = {};
+		vacantes.forEach(function (v) { byId[String(v.id)] = v; });
+
+		function setText(id, value) {
+			var el = document.getElementById(id);
+			if (!el) return;
+			el.textContent = value || '';
+		}
+
+		function clearAlerts() {
+			if (errEl) { errEl.classList.add('d-none'); errEl.textContent = ''; }
+			if (okEl) { okEl.classList.add('d-none'); }
+		}
+
+		function updateOpenBtn() {
+			if (!openBtn || !select) return;
+			openBtn.disabled = !select.value;
+		}
+
+		if (select && openBtn) {
+			select.addEventListener('change', function () {
+				updateOpenBtn();
+			});
+		}
+
+		var modalEl = document.getElementById('cancelVacancyModal');
+		if (modalEl) {
+			modalEl.addEventListener('show.bs.modal', function () {
+				clearAlerts();
+				if (descripcionEl) descripcionEl.value = '';
+				var id = select ? select.value : '';
+				var v = byId[String(id)] || {};
+				setText('cvFieldId', v.id ? String(v.id) : '');
+				setText('cvFieldCargo', v.cargo || '');
+				setText('cvFieldFecha', v.fecha_inicio || '');
+				setText('cvFieldAnalista', v.analista_asignado || '');
+				setText('cvFieldReclutador', v.reclutador_asignado || '');
+			});
+		}
+
+		// Select2 (usa helper global static/admin/js/custom/select2.js)
+		if (typeof window.initializeSelect2 === 'function') {
+			window.initializeSelect2('#cancelVacancySelect');
+		} else if (window.jQuery && jQuery.fn && typeof jQuery.fn.select2 === 'function') {
+			jQuery('#cancelVacancySelect').select2({ width: '100%' });
+		}
+
+		// Con Select2, reforzar eventos para habilitar/deshabilitar el botón
+		if (window.jQuery) {
+			var $sel = window.jQuery('#cancelVacancySelect');
+			if ($sel && $sel.length) {
+				$sel.on('select2:select select2:clear', function () {
+					updateOpenBtn();
+				});
+			}
+		}
+		updateOpenBtn();
+
+		if (confirmBtn) {
+			confirmBtn.addEventListener('click', async function () {
+				clearAlerts();
+				var id = select ? select.value : '';
+				var descripcion = (descripcionEl ? descripcionEl.value : '').trim();
+				if (!id) {
+					if (errEl) { errEl.textContent = 'Seleccione una vacante.'; errEl.classList.remove('d-none'); }
+					return;
+				}
+				if (!descripcion) {
+					if (errEl) { errEl.textContent = 'La descripción de cancelación es obligatoria.'; errEl.classList.remove('d-none'); }
+					return;
+				}
+
+				confirmBtn.disabled = true;
+				try {
+					var resp = await fetch("{% url 'vacantes:vacante_cancelar_dashboard' %}", {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-CSRFToken': getCookie('csrftoken')
+						},
+						body: JSON.stringify({ vacante_id: Number(id), descripcion: descripcion })
+					});
+					var data = await resp.json().catch(function () { return {}; });
+					if (!resp.ok || !data.ok) {
+						var msg = data && data.error ? data.error : 'Error al cancelar la vacante.';
+						if (errEl) { errEl.textContent = msg; errEl.classList.remove('d-none'); }
+						return;
+					}
+					if (okEl) okEl.classList.remove('d-none');
+					// Recarga para actualizar conteos/listado
+					setTimeout(function () { window.location.reload(); }, 900);
+				} catch (e) {
+					if (errEl) { errEl.textContent = 'Error de red al cancelar la vacante.'; errEl.classList.remove('d-none'); }
+				} finally {
+					confirmBtn.disabled = false;
+				}
+			});
+		}
+	})();
+</script>
+
+<script>
+	(function () {
+		function safeJson(id) {
+			var el = document.getElementById(id);
+			try { return JSON.parse(el && el.textContent ? el.textContent : '[]'); } catch (e) { return []; }
+		}
+
+		function esc(s) {
+			return String(s == null ? '' : s)
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;')
+				.replace(/'/g, '&#39;');
+		}
+
+		var talento = safeJson('panorama-talento-por-enviar-data');
+		var est5 = safeJson('panorama-validacion-confianza-data');
+		var est13 = safeJson('panorama-viaje-contratacion-data');
+
+		function renderTalento() {
+			var tb = document.getElementById('panoramaTalentoPorEnviarTbody');
+			if (!tb) return;
+			if (!talento.length) {
+				tb.innerHTML = '<tr><td colspan="3" class="text-muted text-center py-4">Sin registros</td></tr>';
+				return;
+			}
+			tb.innerHTML = talento.map(function (v) {
+				var cargo = v.cargo__nombre_cargo || v.titulo || '';
+				return '<tr>'
+					+ '<td><span class="fw-semibold">#' + esc(v.id) + '</span></td>'
+					+ '<td>' + esc(cargo) + '</td>'
+					+ '<td>' + esc(v.numero_posiciones || '') + '</td>'
+					+ '</tr>';
+			}).join('');
+		}
+
+		function renderAplicaciones(list, tbodyId) {
+			var tb = document.getElementById(tbodyId);
+			if (!tb) return;
+			if (!list.length) {
+				tb.innerHTML = '<tr><td colspan="4" class="text-muted text-center py-4">Sin registros</td></tr>';
+				return;
+			}
+			tb.innerHTML = list.map(function (a) {
+				return '<tr>'
+					+ '<td><span class="fw-semibold">#' + esc(a.vacante_id) + '</span></td>'
+					+ '<td>' + esc(a.cargo || '') + '</td>'
+					+ '<td>' + esc(a.candidato || '') + '</td>'
+					+ '<td><span class="badge bg-primary bg-opacity-10 text-primary border border-1 border-primary">' + esc(a.estado || '') + '</span></td>'
+					+ '</tr>';
+			}).join('');
+		}
+
+		var m1 = document.getElementById('panoramaTalentoPorEnviarModal');
+		if (m1) m1.addEventListener('show.bs.modal', renderTalento);
+
+		var m2 = document.getElementById('panoramaValidacionConfianzaModal');
+		if (m2) m2.addEventListener('show.bs.modal', function () {
+			renderAplicaciones(est5, 'panoramaValidacionConfianzaTbody');
+		});
+
+		var m3 = document.getElementById('panoramaViajeContratacionModal');
+		if (m3) m3.addEventListener('show.bs.modal', function () {
+			renderAplicaciones(est13, 'panoramaViajeContratacionTbody');
+		});
+	})();
 </script>
 {% endblock %}

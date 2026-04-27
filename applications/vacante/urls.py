@@ -22,6 +22,7 @@ urlpatterns = [
     path( url_principal+'crear_vacante/', client_views.create_vacanty_v2, name='vacantes_crear_cliente'),
     path( url_principal+'listado/', client_views.list_vacanty_all, name='vacantes_listado_cliente'),
     path( url_principal+'listado/pendientes/', client_views.list_vacanty_pendientes, name='vacantes_listado_cliente_pendientes'),
+    path( url_principal+'resumen/pendientes/', client_views.pending_vacancies_summary, name='vacantes_resumen_pendientes'),
     path( url_principal+'listado/finalizadas/', client_views.list_vacanty_finalizadas, name='vacantes_listado_cliente_finalizadas'),
     path( url_principal+'listado/vencidas/', client_views.list_vacanty_vencidas, name='vacantes_listado_cliente_vencidas'),
     path( url_principal+'detalle/<int:pk>/', client_views.detail_vacancy, name='vacantes_detalle_cliente'),
@@ -95,6 +96,7 @@ urlpatterns = [
 
     #apis
     path( url_principal+'api/profesiones/whitelist/', profesiones_whitelist, name='profesiones_whitelist'),
+    path(url_principal + 'api/cancelar/', client_views.cancel_vacancy_from_dashboard, name='vacante_cancelar_dashboard'),
 
     #commons
     path( url_principal+'match/<int:candidato_id>/<int:vacante_id>/', common_view.match, name='match'),
