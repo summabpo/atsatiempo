@@ -24,7 +24,7 @@ from applications.services.service_interview import query_interview_all, attach_
 from applications.services.service_recruited import query_recruited_vacancy_id
 from applications.services.service_client import query_client_detail
 from applications.services.service_candidate import buscar_candidato
-from applications.services.choices import ESTADO_RECLUTADO_CHOICES_STATIC
+from applications.services.choices import ESTADO_APLICACION_COLOR_STATIC, ESTADO_RECLUTADO_CHOICES_STATIC
 from applications.common.views.EnvioCorreo import enviar_correo, generar_token_documento
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
@@ -228,6 +228,79 @@ def vacancies_assigned_recruiter_detail(request, pk, vacante_id):
     }
     
     return render(request, 'admin/recruiter/client_recruiter/vacancies_assigned_recruiter_detail.html', context)
+
+
+@login_required
+@validar_permisos('acceso_reclutador')
+def vacancies_assigned_recruiter_detail2(request, pk, vacante_id):
+    """
+    Lista TODO el personal reclutado (todas las aplicaciones) de una vacante asignada al reclutador.
+    """
+    vacante = get_object_or_404(
+        Cli052Vacante.objects.select_related("asignacion_cliente_id_064", "cargo").prefetch_related("habilidades"),
+        id=vacante_id,
+        asignacion_reclutador=request.user,
+        estado_id_001=1,
+    )
+
+    reclutados = query_recruited_vacancy_id(vacante.id)
+    reclutados = sorted(
+        reclutados,
+        key=lambda x: (
+            x.estado_reclutamiento or 0,
+            x.fecha_aplicacion or timezone.now(),
+            x.id,
+        ),
+    )
+
+    # Edad y nivel de estudio más alto (por candidato)
+    candidato_ids = [
+        r.candidato_101_id
+        for r in reclutados
+        if getattr(r, "candidato_101_id", None)
+    ]
+    candidato_ids = list({int(cid) for cid in candidato_ids})
+
+    estudios_qs = (
+        Can103Educacion.objects.filter(candidato_id_101_id__in=candidato_ids, tipo_estudio__isnull=False)
+        .exclude(tipo_estudio="")
+        .order_by("candidato_id_101_id", "-tipo_estudio", "-id")
+        .only("id", "candidato_id_101_id", "tipo_estudio")
+    )
+    estudio_mas_alto_por_candidato = {}
+    for e in estudios_qs:
+        if e.candidato_id_101_id not in estudio_mas_alto_por_candidato:
+            estudio_mas_alto_por_candidato[e.candidato_id_101_id] = e.mostrar_tipo_estudio()
+
+    hoy = date.today()
+    for r in reclutados:
+        edad = None
+        cand = getattr(r, "candidato_101", None)
+        fn = getattr(cand, "fecha_nacimiento", None) if cand else None
+        if fn:
+            edad = hoy.year - fn.year - (1 if (hoy.month, hoy.day) < (fn.month, fn.day) else 0)
+
+        r.edad_anios = edad
+        r.nivel_estudio_maximo = estudio_mas_alto_por_candidato.get(
+            getattr(r, "candidato_101_id", None),
+            "Sin estudios registrados",
+        )
+
+    estados_map = dict(ESTADO_RECLUTADO_CHOICES_STATIC)
+    estados_aplicacion_color = ESTADO_APLICACION_COLOR_STATIC
+
+    context = {
+        "vacante": vacante,
+        "reclutados": reclutados,
+        "estados_map": estados_map,
+        "estados_aplicacion_color": estados_aplicacion_color,
+        "pk": pk,
+    }
+    return render(
+        request,
+        "admin/recruiter/client_recruiter/vacancies_assigned_recruiter_detail2.html",
+        context,
+    )
 
 @login_required
 @validar_permisos('acceso_reclutador', 'acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats', 'acceso_analista_seleccion')

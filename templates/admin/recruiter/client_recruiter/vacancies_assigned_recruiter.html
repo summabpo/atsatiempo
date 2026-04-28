@@ -67,8 +67,12 @@ Listado de vacantes
                                                             <a href="{% url 'reclutados:vacantes_gestion_reclutador' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4" title="Gestionar">
                                                                 <i class="material-symbols-outlined fs-16">inbox_customize</i>
                                                             </a>
+                                                            <a href="{% url 'reclutados:vacantes_gestion_reclutador_detail2' e.asignacion_cliente_id_064.id_cliente_asignado.id e.id %}" class="btn bg-success bg-opacity-10 fw-medium text-success py-2 px-4" title="Ver personal reclutado">
+                                                                <i class="material-symbols-outlined fs-16">group</i>
+                                                            </a>
                                                         </div>
                                                     </div>
+                                                     
                                                 </td>
                                                 <td class="text-center">
                                                     {% if e.estado_vacante == 1 %}

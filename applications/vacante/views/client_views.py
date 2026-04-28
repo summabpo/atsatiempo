@@ -37,6 +37,7 @@ from applications.usuarios.decorators  import validar_permisos
 from django.db.models.functions import Concat
 from django.utils import timezone
 from django.db.models import OuterRef, Subquery
+from datetime import timedelta
 
 #forms
 from applications.vacante.forms.VacanteForms import VacancyAssingForm, VacancyFormAllV2, VacancyFormEdit, VacanteForm, VacanteFormEdit, VacancyFormAll, VacancyAssignRecruiterForm
@@ -73,6 +74,47 @@ def _vm2_vacante_ok_for_cliente_session(request, vacante):
     if not asig or not asig.id_cliente_asignado_id:
         return False
     return int(asig.id_cliente_asignado_id) == int(cid)
+
+
+def _obtener_asignacion_cliente_existente_para_cliente_asignado(cliente_asignado_id: int):
+    """
+    Para clientes tipo '3' (Asignado), NO se debe crear CLI064.
+    Se debe reutilizar la asignación existente donde el cliente en sesión es el id_cliente_asignado.
+    """
+    if not cliente_asignado_id:
+        return None
+
+    asignacion = (
+        Cli064AsignacionCliente.objects.filter(
+            id_cliente_asignado_id=cliente_asignado_id,
+            estado_id=1,
+            tipo_asignacion="2",
+        )
+        .order_by("-id")
+        .first()
+    )
+    if asignacion:
+        return asignacion
+
+    return (
+        Cli064AsignacionCliente.objects.filter(
+            id_cliente_asignado_id=cliente_asignado_id,
+            estado_id=1,
+        )
+        .order_by("-id")
+        .first()
+    )
+
+
+def _calcular_fecha_cierre_planteada_por_cargo(cargo_obj) -> timezone.datetime:
+    dias = getattr(cargo_obj, "cantidad_dias_envio_candidatos", None)
+    try:
+        dias = int(dias) if dias is not None else 0
+    except (TypeError, ValueError):
+        dias = 0
+    if dias <= 0:
+        dias = 15
+    return timezone.now() + timedelta(days=dias)
 
 
 @login_required
@@ -236,13 +278,32 @@ def create_vacanty(request):
 
         
             #verificacion de asignación vacante
-            asignacion_cliente, asignacion_cliente_created = Cli064AsignacionCliente.objects.get_or_create(
-                id_cliente_maestro=Cli051Cliente.objects.get(id=1000),
-                id_cliente_asignado=Cli051Cliente.objects.get(id=cliente_id),
-                defaults={'tipo_asignacion': '1', 'estado': Cat001Estado.objects.get(id=1)}
+            cliente_tipo = (
+                Cli051Cliente.objects.only("tipo_cliente").get(id=cliente_id).tipo_cliente
             )
+            if str(cliente_tipo) == "3":
+                asignacion_cliente = _obtener_asignacion_cliente_existente_para_cliente_asignado(
+                    int(cliente_id)
+                )
+                if not asignacion_cliente:
+                    messages.error(
+                        request,
+                        "No se encontró una asignación activa para este cliente asignado. "
+                        "Contacte al administrador para validar la asignación (CLI064).",
+                    )
+                    return redirect("vacantes:vacantes_listado_cliente")
+            else:
+                asignacion_cliente, _ = Cli064AsignacionCliente.objects.get_or_create(
+                    id_cliente_maestro=Cli051Cliente.objects.get(id=1000),
+                    id_cliente_asignado=Cli051Cliente.objects.get(id=cliente_id),
+                    defaults={
+                        "tipo_asignacion": "1",
+                        "estado": Cat001Estado.objects.get(id=1),
+                    },
+                )
 
             #creacion de la vacante
+            cargo_obj = Cli068Cargo.objects.get(id=cargo)
             vacante = Cli052Vacante.objects.create(
                 titulo=titulo,
                 numero_posiciones=numero_posiciones,
@@ -252,9 +313,10 @@ def create_vacanty(request):
                 fecha_presentacion=fecha_presentacion,
                 # usuario_asignado=request.user,
                 asignacion_cliente_id_064=asignacion_cliente,
-                cargo=Cli068Cargo.objects.get(id=cargo),
+                cargo=cargo_obj,
                 perfil_vacante=perfil_vacante,
-                descripcion_vacante=descripcion_vacante
+                descripcion_vacante=descripcion_vacante,
+                fecha_cierra_planteada=_calcular_fecha_cierre_planteada_por_cargo(cargo_obj),
             )
 
             # Convertir el string JSON en un objeto Python (lista de diccionarios)
@@ -332,12 +394,32 @@ def create_vacanty_v2(request):
         form = VacancyFormAllV2(request.POST, cliente_id=cliente_id)
 
         if form.is_valid():
-            # Misma lógica que create_vacanty: asegurar registro de asignación cliente
-            asignacion_cliente, _ = Cli064AsignacionCliente.objects.get_or_create(
-                id_cliente_maestro=Cli051Cliente.objects.get(id=1000),
-                id_cliente_asignado=Cli051Cliente.objects.get(id=cliente_id),
-                defaults={'tipo_asignacion': '1', 'estado': Cat001Estado.objects.get(id=1)},
+            # Asignación cliente:
+            # - Si es cliente tipo 3 (Asignado): reutilizar CLI064 existente (NO crear).
+            # - Para los demás: se mantiene la lógica actual.
+            cliente_tipo = (
+                Cli051Cliente.objects.only("tipo_cliente").get(id=cliente_id).tipo_cliente
             )
+            if str(cliente_tipo) == "3":
+                asignacion_cliente = _obtener_asignacion_cliente_existente_para_cliente_asignado(
+                    int(cliente_id)
+                )
+                if not asignacion_cliente:
+                    messages.error(
+                        request,
+                        "No se encontró una asignación activa para este cliente asignado. "
+                        "Contacte al administrador para validar la asignación (CLI064).",
+                    )
+                    return redirect("vacantes:vacantes_listado_cliente")
+            else:
+                asignacion_cliente, _ = Cli064AsignacionCliente.objects.get_or_create(
+                    id_cliente_maestro=Cli051Cliente.objects.get(id=1000),
+                    id_cliente_asignado=Cli051Cliente.objects.get(id=cliente_id),
+                    defaults={
+                        "tipo_asignacion": "1",
+                        "estado": Cat001Estado.objects.get(id=1),
+                    },
+                )
             # --- 1. Recolecta los datos de los campos JSON en listas de Python ---
             # Motivo de la vacante
             motivo_vacante_data = {
@@ -482,11 +564,6 @@ def create_vacanty_v2(request):
 
             #creacion perfil de la vacante
             cargo_obj = Cli068Cargo.objects.get(id=form.cleaned_data['cargo'])
-            refs_solicitud = []
-            for i in range(1, (cargo_obj.referencias_laborales or 0) + 1):
-                txt = (form.cleaned_data.get(f'ref_laboral_{i}') or '').strip()
-                if txt:
-                    refs_solicitud.append({'orden': i, 'descripcion': txt})
 
             perfil_vacante = Cli073PerfilVacante.objects.create(
                 edad_inicial=form.cleaned_data['edad_inicial'],
@@ -516,7 +593,6 @@ def create_vacanty_v2(request):
                 tipo_profesion=form.cleaned_data['tipo_profesion'],
                 profesion_estudio_listado=form.cleaned_data['profesion_estudio_listado'],
                 grupo_profesion=grupo_profesion_obj,
-                referencias_laborales_solicitud=refs_solicitud or None,
             )
 
             # --- 3. Crea la Vacante ---
@@ -533,7 +609,8 @@ def create_vacanty_v2(request):
                 perfil_vacante=perfil_vacante,
                 descripcion_vacante=form.cleaned_data.get('descripcion_vacante'),
                 comentarios=form.cleaned_data.get('comentarios'),
-                requerimientos_especiales=form.cleaned_data.get('requerimientos_especiales')
+                requerimientos_especiales=form.cleaned_data.get('requerimientos_especiales'),
+                fecha_cierra_planteada=_calcular_fecha_cierre_planteada_por_cargo(cargo_obj),
             )
             
             # Asignar motivadores múltiples
@@ -1375,18 +1452,7 @@ def detail_vacancy(request, pk):
                     })
             perfil_vacante.funciones_responsabilidades = funciones_data
 
-            cargo_edit = form.cleaned_data.get("cargo")
-            refs_edit = []
-            if cargo_edit:
-                try:
-                    co_ed = Cli068Cargo.objects.get(pk=cargo_edit)
-                    for i in range(1, (co_ed.referencias_laborales or 0) + 1):
-                        tx = (form.cleaned_data.get(f"ref_laboral_{i}") or "").strip()
-                        if tx:
-                            refs_edit.append({"orden": i, "descripcion": tx})
-                except Cli068Cargo.DoesNotExist:
-                    pass
-            perfil_vacante.referencias_laborales_solicitud = refs_edit or None
+            # Referencias laborales: sección removida del formulario (ya no se persiste aquí).
 
             perfil_vacante.save()
 

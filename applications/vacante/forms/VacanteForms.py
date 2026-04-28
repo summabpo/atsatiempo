@@ -3280,22 +3280,4 @@ class VacancyFormAllV2(forms.Form):
                 requerimientos_list.append(str(req).strip())
         cleaned_data['requerimientos_especiales'] = requerimientos_list if requerimientos_list else None
 
-        # Referencias laborales según cargo
-        cargo_id = cleaned_data.get('cargo')
-        if cargo_id:
-            try:
-                cargo_obj = Cli068Cargo.objects.get(pk=cargo_id)
-                n_ref = cargo_obj.referencias_laborales or 0
-                if n_ref > 0:
-                    for i in range(1, n_ref + 1):
-                        key = f'ref_laboral_{i}'
-                        val = (cleaned_data.get(key) or '').strip()
-                        if not val:
-                            self.add_error(
-                                key,
-                                f'La referencia {i} es obligatoria: el cargo exige {n_ref} referencia(s) laboral(es).',
-                            )
-            except Cli068Cargo.DoesNotExist:
-                pass
-
         return cleaned_data

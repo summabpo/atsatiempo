@@ -33,6 +33,7 @@ urlpatterns = [
     #reclutador
     path( url_principal+'vacantes_asignadas/', client_recruiter_views.vacancies_assigned_recruiter, name='vacantes_asignadas_reclutador'),
     path( url_principal+'vacantes_asignadas/gestionar/<int:pk>/<int:vacante_id>/', client_recruiter_views.vacancies_assigned_recruiter_detail, name='vacantes_gestion_reclutador'),
+    path( url_principal+'vacantes_asignadas/personal/<int:pk>/<int:vacante_id>/', client_recruiter_views.vacancies_assigned_recruiter_detail2, name='vacantes_gestion_reclutador_detail2'),
     path( url_principal+'detalle/reclutado/<int:pk>/', client_recruiter_views.detail_recruited, name='reclutados_detalle_reclutador'),
     path( url_principal+'crear_entrevistas_multiples/<int:pk>/<int:vacante_id>/', client_recruiter_views.crear_entrevistas_multiples, name='crear_entrevistas_multiples'),
 

@@ -237,11 +237,6 @@ def create_vacanty_from_client(request, pk):
                         profesion_estudio_obj = None
 
                 cargo_obj = Cli068Cargo.objects.get(id=form.cleaned_data['cargo'])
-                refs_solicitud = []
-                for i in range(1, (cargo_obj.referencias_laborales or 0) + 1):
-                    txt = (form.cleaned_data.get(f'ref_laboral_{i}') or '').strip()
-                    if txt:
-                        refs_solicitud.append({'orden': i, 'descripcion': txt})
                 
                 perfil_vacante = Cli073PerfilVacante.objects.create(
                     edad_inicial=form.cleaned_data['edad_inicial'],
@@ -271,7 +266,6 @@ def create_vacanty_from_client(request, pk):
                     tipo_profesion=form.cleaned_data['tipo_profesion'],
                     profesion_estudio_listado=form.cleaned_data['profesion_estudio_listado'],
                     grupo_profesion=grupo_profesion_obj,
-                    referencias_laborales_solicitud=refs_solicitud or None,
                 )
     
                 # --- 3. Crea la Vacante ---
@@ -689,18 +683,7 @@ def edit_vacanty_from_client(request, pk, vacante_id):
                     })
             perfil_vacante.funciones_responsabilidades = funciones_data
 
-            cargo_edit = form.cleaned_data.get('cargo')
-            refs_edit = []
-            if cargo_edit:
-                try:
-                    co_ed = Cli068Cargo.objects.get(pk=cargo_edit)
-                    for i in range(1, (co_ed.referencias_laborales or 0) + 1):
-                        tx = (form.cleaned_data.get(f'ref_laboral_{i}') or '').strip()
-                        if tx:
-                            refs_edit.append({'orden': i, 'descripcion': tx})
-                except Cli068Cargo.DoesNotExist:
-                    pass
-            perfil_vacante.referencias_laborales_solicitud = refs_edit or None
+            # Referencias laborales: sección removida del formulario (ya no se persiste aquí).
             
             perfil_vacante.save()
 

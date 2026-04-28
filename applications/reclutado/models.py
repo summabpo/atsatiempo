@@ -4,7 +4,7 @@ from django.db.models import Count
 from django.utils import timezone
 from applications.common.models import Cat001Estado, Cat004Ciudad, Cat005AsignacionQr
 from applications.cliente.models import Cli051Cliente, Cli069Requisito, Cli070AsignacionRequisito, Cli085AccionesDecisivas
-from applications.candidato.models import Can101Candidato
+from applications.candidato.models import Can101Candidato, Can102Experiencia
 from applications.services.choices import ESTADO_APLICACION_CHOICES_STATIC, ESTADO_APLICACION_COLOR_STATIC, ESTADO_RECLUTADO_CHOICES_STATIC
 from applications.usuarios.models import UsuarioBase
 from applications.vacante.models import Cli052Vacante
@@ -283,3 +283,63 @@ class Cli087ReporteAccionDecisivaReclutado(models.Model):
         db_table = 'cli_087_reporte_accion_decisiva_reclutado'
         verbose_name = 'REPORTE ACCIÓN DECISIVA RECLUTADO'
         verbose_name_plural = 'REPORTES ACCIÓN DECISIVA RECLUTADO'
+
+
+class Cli088ReferenciasLaborales(models.Model):
+    """
+    Validación de referencias/experiencia laboral diligenciada por el cliente.
+
+    Basado en el formulario "VALIDACIÓN DE DATOS (Cliente)".
+    """
+
+    reporte_accion_decisiva_087 = models.ForeignKey(
+        Cli087ReporteAccionDecisivaReclutado,
+        on_delete=models.CASCADE,
+        related_name="referencias_laborales",
+    )
+
+    experiencia_candidato_102 = models.ForeignKey(
+        Can102Experiencia,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="validaciones_referencias",
+        help_text="Experiencia laboral del candidato (can_102_experiencia) referenciada por esta validación.",
+    )
+
+    # Verificación de empleo
+    candidato_trabajo_en_empresa = models.BooleanField(null=True, blank=True)
+    periodo_empleo_coincide = models.BooleanField(null=True, blank=True)
+
+    # Verificación de cargo y jefe (texto + verificación sí/no)
+    
+    cargo_mencionado_verificado = models.BooleanField(null=True, blank=True)
+    jefe_mencionado_verificado = models.BooleanField(null=True, blank=True)
+
+    # Pregunta clave
+    volveria_a_contratar = models.BooleanField(null=True, blank=True)
+
+    # Revisión final y cierre
+    validado_por = models.ForeignKey(
+        UsuarioBase,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="referencias_laborales_validadas",
+    )
+    
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    comentario_adicional = models.TextField(null=True, blank=True)
+
+    observaciones_veracidad_documentos = models.TextField(null=True, blank=True)
+
+    class Meta:
+        db_table = "cli_088_referencias_laborales"
+        verbose_name = "REFERENCIAS LABORALES (VALIDACIÓN)"
+        verbose_name_plural = "REFERENCIAS LABORALES (VALIDACIONES)"
+
+    def __str__(self):
+        return f"Referencias laborales #{self.id} (reporte 087 {self.reporte_accion_decisiva_087_id})"
+
