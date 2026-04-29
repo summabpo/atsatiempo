@@ -2,17 +2,96 @@
 
 {% load static %}
 {% load custom_tags %}
+{% load crispy_forms_tags %}
 
 {% block title %}
-Personal reclutado - Vacante
+Aspirantes a la Vacante
 {% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<style>
+/* Select2 dentro del modal: lista legible y por encima del backdrop */
+#modalCambiarEstadoPersonal .select2-container { width: 100% !important; }
+#modalCambiarEstadoPersonal .select2-container--default .select2-selection--single {
+	min-height: 42px;
+	padding-top: 6px;
+	border-radius: 0.375rem;
+}
+#modalCambiarEstadoPersonal .select2-container--default .select2-selection--single .select2-selection__rendered {
+	line-height: 1.5;
+	padding-left: 12px;
+	font-size: 0.95rem;
+}
+#modalCambiarEstadoPersonal .select2-dropdown {
+	border-radius: 0.375rem;
+	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+}
+#modalCambiarEstadoPersonal .select2-results__option {
+	padding: 0.55rem 0.85rem;
+	font-size: 0.95rem;
+}
+.btn-estado-gestion {
+	border: 0;
+	font-weight: 600;
+	font-size: 0.78rem;
+	padding: 0.4rem 0.75rem;
+	border-radius: 0.4rem;
+}
+.modal-candidato-card {
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	border-radius: 0.6rem;
+	background: #fafafa;
+}
+.modal-candidato-meta-label {
+	font-size: 0.7rem;
+	color: #6c757d;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+.modal-candidato-meta-value {
+	font-size: 0.92rem;
+	font-weight: 600;
+	color: #212529;
+}
+.modal-candidato-avatar {
+	width: 72px;
+	height: 72px;
+	object-fit: cover;
+}
+.estado-leyenda-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.35rem 0.7rem;
+	border-radius: 999px;
+	font-size: 0.72rem;
+	font-weight: 700;
+	white-space: nowrap;
+}
+.modal-perfil-body {
+	position: relative;
+	min-height: 320px;
+	max-height: min(82vh, 900px);
+	overflow-y: auto;
+	padding: 1rem;
+}
+.modal-perfil-loader {
+	position: absolute;
+	inset: 0;
+	z-index: 5;
+	background: #fff;
+}
+.modal-perfil-contenido {
+	position: relative;
+	z-index: 1;
+	min-height: 280px;
+}
+</style>
 
 <div class="main-content-container overflow-hidden">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-		<h3 class="mb-0" style="color: #B10022;">PERSONAL RECLUTADO - VACANTE #{{ vacante.id }}</h3>
+		<h3 class="mb-0" style="color: #B10022;">ASPIRANTES A LA VACANTE #{{ vacante.id }}</h3>
 		<nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
 			<ol class="breadcrumb align-items-center mb-0 lh-1">
 				<li class="breadcrumb-item">
@@ -27,7 +106,7 @@ Personal reclutado - Vacante
 					</a>
 				</li>
 				<li class="breadcrumb-item active" aria-current="page">
-					<span class="fw-medium">Personal Reclutado</span>
+					<span class="fw-medium">Aspirantes a la Vacante</span>
 				</li>
 			</ol>
 		</nav>
@@ -35,14 +114,27 @@ Personal reclutado - Vacante
 
 	<div class="row">
 		<div class="col-12">
+			
 			<div class="card bg-white border-0 rounded-3 mb-4">
 				<div class="card-header bg-primary bg-opacity-10 align-middle border-0">
 					<p class="text-primary my-2 fs-4 fw-semibold">
-						{{ vacante.titulo|default:"Vacante" }}
-						{% if vacante.cargo %}- {{ vacante.cargo.nombre_cargo }}{% endif %}
+						Aspirantes a la Vacante {{ vacante.cargo.nombre_cargo }}
+						
 					</p>
 				</div>
 				<div class="card-body p-4">
+					<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+						<div class="fw-semibold text-secondary">
+							{{ reclutados|length }} candidatos pendientes
+						</div>
+						<div class="d-flex flex-wrap justify-content-end gap-2">
+							{% for estado in estados_reclutado_leyenda %}
+								<span class="estado-leyenda-pill bg-{{ estado.color }} {% if estado.color == 'warning' %}text-dark{% else %}text-white{% endif %}">
+									{{ estado.nombre|upper }} ({{ estado.total }})
+								</span>
+							{% endfor %}
+						</div>
+					</div>
 					<div class="default-table-area all-projects">
 						<div class="table-responsive">
 							<table class="table align-middle text-center" id="tableReclutadosAll">
@@ -55,7 +147,8 @@ Personal reclutado - Vacante
 										<th scope="col" class="text-center">NIVEL ESTUDIO</th>
 										<th scope="col" class="text-center">CIUDAD</th>
 										<th scope="col" class="text-center">MATCH PERFIL</th>
-										<th scope="col" class="text-center">ESTADO</th>
+										<th scope="col" class="text-center">ESTADO RECLUTAMIENTO</th>
+										
 									</tr>
 								</thead>
 								<tbody>
@@ -72,9 +165,23 @@ Personal reclutado - Vacante
 												</div>
 												<div class="min-w-0">
 													<div class="fw-semibold text-truncate">{{ e.candidato_nombre|default:"-" }}</div>
-													<a href="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}" class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 border-0 rounded-2">
+													<button type="button"
+														class="btn btn-sm bg-primary bg-opacity-10 fw-medium text-primary py-2 px-4 border-0 rounded-2"
+														data-bs-toggle="modal"
+														data-bs-target="#modalResumenPerfilCandidato"
+														onpointerdown="var m=document.getElementById('modalResumenPerfilCandidato');if(!m)return;m.dataset.perfilFetchUrl=this.getAttribute('data-perfil-url')||'';m.dataset.perfilDetalleUrl=this.getAttribute('data-perfil-detalle-url')||'';m.dataset.perfilNombreTrigger=this.getAttribute('data-candidato-nombre')||'Candidato';"
+														data-perfil-url="{% url 'reclutados:reclutados_detalle_reclutador_modal_perfil' e.id %}"
+														data-perfil-detalle-url="{% url 'reclutados:reclutados_detalle_reclutador' e.id %}"
+														data-candidato-nombre="{{ e.candidato_nombre|default:'Candidato' }}"
+														data-candidato-img="{% if e.candidato_101 and e.candidato_101.imagen_perfil %}{{ e.candidato_101.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}"
+														data-candidato-doc="{% if e.candidato_101 and e.candidato_101.numero_documento %}{{ e.candidato_101.numero_documento }}{% else %}-{% endif %}"
+														data-candidato-fecha="{{ e.fecha_aplicacion|date:'d/m/Y'|default:'-' }}"
+														data-candidato-edad="{% if e.edad_anios is not None %}{{ e.edad_anios }}{% else %}-{% endif %}"
+														data-candidato-estudio="{{ e.nivel_estudio_maximo|default:'-' }}"
+														data-candidato-ciudad="{% if e.candidato_101 and e.candidato_101.ciudad_id_004 %}{{ e.candidato_101.ciudad_id_004 }}{% else %}-{% endif %}"
+														data-candidato-match="{% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}{% if porcentaje_inicial %}{{ porcentaje_inicial|floatformat:1 }}%{% else %}-{% endif %}{% endwith %}">
 														PERFIL
-													</a>
+													</button>
 												</div>
 											</div>
 										</td>
@@ -139,11 +246,21 @@ Personal reclutado - Vacante
 											{% endwith %}
 										</td>
 										<td class="text-center">
-											{% with estado_info=e.obtener_estado_con_color %}
-												<span class="badge bg-{{ estado_info.color|default:'secondary' }} bg-opacity-10 text-{{ estado_info.color|default:'secondary' }} p-2 fs-12 fw-normal">
-													{{ e.get_estado_aplicacion_display|default:estado_info.estado|default:"Desconocido" }}
-												</span>
-											{% endwith %}
+											<button type="button"
+												class="btn btn-estado-gestion bg-{{ e.estado_reclutamiento_color|default:'secondary' }} {% if e.estado_reclutamiento_color == 'warning' %}text-dark{% else %}text-white{% endif %}"
+												data-bs-toggle="modal" data-bs-target="{% if e.estado_reclutamiento == 3 %}#modalAsignarEntrevistaUnica{% else %}#modalCambiarEstadoPersonal{% endif %}"
+												{% if e.estado_reclutamiento == 3 %}onclick="(function(){var h=document.getElementById('aplicacionesIdsEntrevistaUnica'),k=document.getElementById('aplicacionIdEntrevistaUnicaAlt');var v='{{ e.id }}';if(h)h.value=v;if(k)k.value=v;})();"{% endif %}
+												data-aplicacion-id="{{ e.id }}" data-estado-actual="{{ e.estado_reclutamiento }}"
+												data-candidato-nombre="{{ e.candidato_nombre|default:'Candidato' }}"
+												data-candidato-img="{% if e.candidato_101 and e.candidato_101.imagen_perfil %}{{ e.candidato_101.imagen_perfil.url }}{% else %}{% static 'admin/images/blank.png' %}{% endif %}"
+												data-candidato-doc="{% if e.candidato_101 and e.candidato_101.numero_documento %}{{ e.candidato_101.numero_documento }}{% else %}-{% endif %}"
+												data-candidato-fecha="{{ e.fecha_aplicacion|date:'d/m/Y'|default:'-' }}"
+												data-candidato-edad="{% if e.edad_anios is not None %}{{ e.edad_anios }}{% else %}-{% endif %}"
+												data-candidato-estudio="{{ e.nivel_estudio_maximo|default:'-' }}"
+												data-candidato-ciudad="{% if e.candidato_101 and e.candidato_101.ciudad_id_004 %}{{ e.candidato_101.ciudad_id_004 }}{% else %}-{% endif %}"
+												data-candidato-match="{% with porcentaje_inicial=e.json_match_inicial|get_match_inicial_porcentaje %}{% if porcentaje_inicial %}{{ porcentaje_inicial|floatformat:1 }}%{% else %}-{% endif %}{% endwith %}">
+												{{ e.get_estado_reclutamiento_display|default:"—" }}
+											</button>
 										</td>
 									</tr>
 									{% empty %}
@@ -160,12 +277,362 @@ Personal reclutado - Vacante
 		</div>
 	</div>
 </div>
+
+{{ estados_reclutado_opciones|json_script:"estados-reclutado-personal-data" }}
+
+<!-- Modal resumen de perfil del candidato -->
+<div class="modal fade" id="modalResumenPerfilCandidato" tabindex="-1" aria-labelledby="modalResumenPerfilCandidatoLabel" aria-hidden="true">
+	<div class="modal-dialog modal-xl modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header bg-primary bg-opacity-10 border-0">
+				<h5 class="modal-title text-primary fw-semibold" id="modalResumenPerfilCandidatoLabel">Resumen del Candidato</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body modal-perfil-body">
+				<div id="modalResumenPerfilLoader" class="modal-perfil-loader d-flex align-items-center justify-content-center text-muted">
+					Cargando perfil del candidato...
+				</div>
+				<div id="modalResumenPerfilContenido" class="modal-perfil-contenido d-none"></div>
+			</div>
+			<div class="modal-footer border-0 pt-0">
+				<a href="#" target="_blank" class="btn bg-primary bg-opacity-10 fw-medium text-primary" id="modalResumenPerfilLink">Ver perfil completo</a>
+				<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal para asignar entrevista cuando estado = Aprobados para Entrevista -->
+<div class="modal fade" id="modalAsignarEntrevistaUnica" tabindex="-1" aria-labelledby="modalAsignarEntrevistaUnicaLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-primary bg-opacity-10 text-primary">
+				<h5 class="modal-title d-flex align-items-center" id="modalAsignarEntrevistaUnicaLabel">
+					<i class="material-symbols-outlined me-2">event</i>
+					Asignar Entrevista
+				</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form method="post" action="{% url 'reclutados:crear_entrevista_unica_reclutador' pk vacante.id %}" id="formAsignarEntrevistaUnica">
+				{% csrf_token %}
+				<input type="hidden" name="aplicaciones_ids" id="aplicacionesIdsEntrevistaUnica" value="">
+				<input type="hidden" name="aplicacion_id" id="aplicacionIdEntrevistaUnicaAlt" value="">
+				<div class="modal-body">
+					<div class="mb-4">
+						<h6 class="text-primary mb-3">Candidato seleccionado</h6>
+						<div class="border rounded p-3 d-flex align-items-center gap-3">
+							<img src="{% static 'admin/images/blank.png' %}" id="entrevistaUnicaAvatar" class="rounded-circle" style="width: 44px; height: 44px; object-fit: cover;" alt="Candidato">
+							<div>
+								<div class="fw-semibold" id="entrevistaUnicaNombre">-</div>
+								<div class="small text-muted" id="entrevistaUnicaMeta">Documento: -</div>
+							</div>
+						</div>
+					</div>
+					{% crispy form_entrevista_multiples %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+					<button type="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary">Asignar Entrevista</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="modalCambiarEstadoPersonal" tabindex="-1" aria-labelledby="modalCambiarEstadoPersonalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-primary bg-opacity-10 border-0 align-items-start">
+				<div class="min-w-0 pe-2">
+					<h5 class="modal-title text-primary fw-semibold mb-0 text-truncate" id="modalCambiarEstadoPersonalLabel">Cambiar estado del candidato</h5>
+				</div>
+				<button type="button" class="btn-close flex-shrink-0 mt-1" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<form method="post" action="{% url 'reclutados:vacantes_personal_cambiar_estado' pk vacante.id %}" id="formCambiarEstadoPersonal">
+				{% csrf_token %}
+				<input type="hidden" name="aplicacion_id" id="modal_personal_aplicacion_id" value="">
+				<div class="modal-body pt-2">
+					<div class="modal-candidato-card p-3 mb-3">
+						<div class="d-flex align-items-center gap-3 mb-3">
+							<img src="{% static 'admin/images/blank.png' %}" alt="" id="modal_personal_candidato_avatar" class="rounded-circle border border-2 border-white shadow-sm modal-candidato-avatar">
+							<div class="min-w-0">
+								<div class="modal-candidato-meta-label">Candidato</div>
+								<div class="modal-candidato-meta-value text-truncate" id="modal_personal_candidato_label"></div>
+							</div>
+						</div>
+						<div class="row g-3">
+							<div class="col-md-4">
+								<div class="modal-candidato-meta-label">Documento</div>
+								<div class="modal-candidato-meta-value" id="modal_personal_candidato_doc">-</div>
+							</div>
+							<div class="col-md-4">
+								<div class="modal-candidato-meta-label">Edad</div>
+								<div class="modal-candidato-meta-value" id="modal_personal_candidato_edad">-</div>
+							</div>
+							<div class="col-md-4">
+								<div class="modal-candidato-meta-label">Fecha aplicación</div>
+								<div class="modal-candidato-meta-value" id="modal_personal_candidato_fecha">-</div>
+							</div>
+							<div class="col-md-6">
+								<div class="modal-candidato-meta-label">Nivel estudio</div>
+								<div class="modal-candidato-meta-value text-truncate" id="modal_personal_candidato_estudio">-</div>
+							</div>
+							<div class="col-md-4">
+								<div class="modal-candidato-meta-label">Ciudad</div>
+								<div class="modal-candidato-meta-value text-truncate" id="modal_personal_candidato_ciudad">-</div>
+							</div>
+							<div class="col-md-2">
+								<div class="modal-candidato-meta-label">Match</div>
+								<div class="modal-candidato-meta-value" id="modal_personal_candidato_match">-</div>
+							</div>
+						</div>
+					</div>
+					<h6 class="text-primary mb-3">Cambiar Estado del Candidato</h6>
+					<div class="mb-3 modal-estado-select2-wrap">
+						<label for="modal_personal_estado_reclutamiento" class="form-label">Nuevo Estado <span class="text-danger">*</span></label>
+						<select name="estado_reclutamiento" id="modal_personal_estado_reclutamiento" class="form-select select2-modal-estado" required></select>
+					</div>
+					<div class="mb-0">
+						<label for="modal_personal_comentario" class="form-label">Comentario <span class="text-danger">*</span></label>
+						<textarea name="comentario" id="modal_personal_comentario" class="form-control" rows="4" placeholder="Ingrese un comentario sobre el cambio de estado..." required></textarea>
+					</div>
+				</div>
+				<div class="modal-footer border-0 pt-0">
+					<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+					<button type="submit" name="submit" class="btn bg-primary bg-opacity-10 fw-medium text-primary">Actualizar estado</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
 {% endblock %}
 
 {% block js %}
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 <script>
+	(function() {
+		var estadosRaw = [];
+		try {
+			var el = document.getElementById('estados-reclutado-personal-data');
+			if (el && el.textContent) {
+				estadosRaw = JSON.parse(el.textContent);
+			}
+		} catch (e) { estadosRaw = []; }
+
+		function initSelect2ModalEstado($sel) {
+			var $modal = $('#modalCambiarEstadoPersonal');
+			if ($sel.hasClass('select2-hidden-accessible')) {
+				$sel.select2('destroy');
+			}
+			$sel.select2({
+				width: '100%',
+				placeholder: 'Seleccione el nuevo estado',
+				allowClear: true,
+				dropdownParent: $modal,
+				language: {
+					noResults: function () { return 'No hay estados disponibles'; },
+					searching: function () { return 'Buscando...'; }
+				}
+			}).on('select2:open', function () {
+				setTimeout(function () {
+					var $search = $('.select2-container--open .select2-search__field');
+					if ($search.length) {
+						$search[0].focus();
+					}
+				}, 100);
+			});
+		}
+
+		function rebuildEstadoSelect(excludeCodigo) {
+			var $sel = $('#modal_personal_estado_reclutamiento');
+			if ($sel.hasClass('select2-hidden-accessible')) {
+				$sel.select2('destroy');
+			}
+			$sel.empty();
+			$sel.append($('<option></option>').val('').text(''));
+			estadosRaw.forEach(function (pair) {
+				var cod = pair[0];
+				var label = pair[1];
+				if (cod === '' || cod === null || cod === undefined) {
+					return;
+				}
+				var excl = excludeCodigo === null || excludeCodigo === undefined || isNaN(excludeCodigo)
+					? null
+					: Number(excludeCodigo);
+				if (excl !== null && Number(cod) === excl) {
+					return;
+				}
+				if (excl === 1 && Number(cod) === 1) {
+					return;
+				}
+				$sel.append($('<option></option>').val(cod).text(label));
+			});
+			initSelect2ModalEstado($sel);
+		}
+
+		document.getElementById('modalCambiarEstadoPersonal').addEventListener('show.bs.modal', function (event) {
+			var btn = event.relatedTarget;
+			if (!btn) return;
+			var appId = btn.getAttribute('data-aplicacion-id');
+			var estadoActual = btn.getAttribute('data-estado-actual');
+			var nombre = btn.getAttribute('data-candidato-nombre') || '';
+			var imgUrl = btn.getAttribute('data-candidato-img') || '';
+			var doc = btn.getAttribute('data-candidato-doc') || '-';
+			var fecha = btn.getAttribute('data-candidato-fecha') || '-';
+			var edad = btn.getAttribute('data-candidato-edad') || '-';
+			var estudio = btn.getAttribute('data-candidato-estudio') || '-';
+			var ciudad = btn.getAttribute('data-candidato-ciudad') || '-';
+			var match = btn.getAttribute('data-candidato-match') || '-';
+			document.getElementById('modal_personal_aplicacion_id').value = appId || '';
+			document.getElementById('modal_personal_comentario').value = '';
+			var exclude = estadoActual === '' || estadoActual === null ? null : parseInt(estadoActual, 10);
+			rebuildEstadoSelect(isNaN(exclude) ? null : exclude);
+			document.getElementById('modal_personal_candidato_label').textContent = nombre || 'Candidato';
+			document.getElementById('modal_personal_candidato_doc').textContent = doc;
+			document.getElementById('modal_personal_candidato_fecha').textContent = fecha;
+			document.getElementById('modal_personal_candidato_edad').textContent = edad;
+			document.getElementById('modal_personal_candidato_estudio').textContent = estudio;
+			document.getElementById('modal_personal_candidato_ciudad').textContent = ciudad;
+			document.getElementById('modal_personal_candidato_match').textContent = match;
+			var avatar = document.getElementById('modal_personal_candidato_avatar');
+			if (avatar && imgUrl) {
+				avatar.src = imgUrl;
+				avatar.alt = nombre || 'Candidato';
+			}
+		});
+
+		function initSelect2Entrevista(selector, $modal) {
+			var $el = $(selector);
+			if (!$el.length) return;
+			if ($el.hasClass('select2-hidden-accessible')) {
+				$el.select2('destroy');
+			}
+			$el.select2({
+				width: '100%',
+				placeholder: "Seleccione una opción",
+				allowClear: true,
+				dropdownParent: $modal,
+				language: {
+					noResults: function() { return 'No se encontraron resultados'; },
+					searching: function() { return 'Buscando...'; }
+				}
+			});
+		}
+
+		var modalEntrevistaUnicaEl = document.getElementById('modalAsignarEntrevistaUnica');
+		/* DataTables deja relatedTarget en null; guardamos datos del botón antes de abrir el modal. */
+		document.addEventListener('pointerdown', function (ev) {
+			var trigger = ev.target.closest('[data-bs-target="#modalAsignarEntrevistaUnica"]');
+			if (!trigger) return;
+			modalEntrevistaUnicaEl.dataset.entrevistaAppId = trigger.getAttribute('data-aplicacion-id') || '';
+			modalEntrevistaUnicaEl.dataset.entrevistaNombre = trigger.getAttribute('data-candidato-nombre') || 'Candidato';
+			modalEntrevistaUnicaEl.dataset.entrevistaImg = trigger.getAttribute('data-candidato-img') || '';
+			modalEntrevistaUnicaEl.dataset.entrevistaDoc = trigger.getAttribute('data-candidato-doc') || '-';
+		}, true);
+
+		modalEntrevistaUnicaEl.addEventListener('show.bs.modal', function (event) {
+			var btn = event.relatedTarget;
+			var appId = modalEntrevistaUnicaEl.dataset.entrevistaAppId || '';
+			var nombre = modalEntrevistaUnicaEl.dataset.entrevistaNombre || 'Candidato';
+			var imgUrl = modalEntrevistaUnicaEl.dataset.entrevistaImg || '';
+			var doc = modalEntrevistaUnicaEl.dataset.entrevistaDoc || '-';
+			if (!appId && btn) {
+				appId = btn.getAttribute('data-aplicacion-id') || '';
+				nombre = btn.getAttribute('data-candidato-nombre') || nombre;
+				imgUrl = btn.getAttribute('data-candidato-img') || imgUrl;
+				doc = btn.getAttribute('data-candidato-doc') || doc;
+			}
+
+			document.getElementById('aplicacionesIdsEntrevistaUnica').value = appId;
+			var hidAlt = document.getElementById('aplicacionIdEntrevistaUnicaAlt');
+			if (hidAlt) hidAlt.value = appId;
+			document.getElementById('entrevistaUnicaNombre').textContent = nombre;
+			document.getElementById('entrevistaUnicaMeta').textContent = 'Documento: ' + doc;
+
+			var avatarEnt = document.getElementById('entrevistaUnicaAvatar');
+			if (avatarEnt && imgUrl) {
+				avatarEnt.src = imgUrl;
+				avatarEnt.alt = nombre;
+			}
+
+			var $modalEnt = $('#modalAsignarEntrevistaUnica');
+			initSelect2Entrevista('#id_entrevistador', $modalEnt);
+			initSelect2Entrevista('#id_tipo_entrevista', $modalEnt);
+		});
+
+		$('#formAsignarEntrevistaUnica').on('submit', function (ev) {
+			var idVal = ($('#aplicacionesIdsEntrevistaUnica').val() || $('#aplicacionIdEntrevistaUnicaAlt').val() || '').trim();
+			if (!idVal) {
+				ev.preventDefault();
+				alert('No se identificó la aplicación del candidato. Cierre el modal y ábralo de nuevo con el botón de estado.');
+				return;
+			}
+			$('#aplicacionesIdsEntrevistaUnica').val(idVal);
+			$('#aplicacionIdEntrevistaUnicaAlt').val(idVal);
+			$('#id_entrevistador').prop('disabled', false);
+			$('#id_tipo_entrevista').prop('disabled', false);
+		});
+
+		var modalResumenPerfilEl = document.getElementById('modalResumenPerfilCandidato');
+		/* DataTables suele romper event.relatedTarget en show.bs.modal; guardamos la URL en captura. */
+		document.addEventListener('click', function (ev) {
+			var trigger = ev.target.closest('[data-bs-target="#modalResumenPerfilCandidato"][data-perfil-url]');
+			if (!trigger) return;
+			modalResumenPerfilEl.dataset.perfilFetchUrl = trigger.getAttribute('data-perfil-url') || '';
+			modalResumenPerfilEl.dataset.perfilDetalleUrl = trigger.getAttribute('data-perfil-detalle-url') || '';
+			modalResumenPerfilEl.dataset.perfilNombreTrigger = trigger.getAttribute('data-candidato-nombre') || 'Candidato';
+		}, true);
+
+		modalResumenPerfilEl.addEventListener('show.bs.modal', function (event) {
+			var nombre = modalResumenPerfilEl.dataset.perfilNombreTrigger || 'Candidato';
+			var perfilUrl = modalResumenPerfilEl.dataset.perfilFetchUrl || '';
+			var detalleUrl = modalResumenPerfilEl.dataset.perfilDetalleUrl || '#';
+			var btn = event.relatedTarget;
+			if (!perfilUrl && btn && btn.getAttribute('data-perfil-url')) {
+				perfilUrl = btn.getAttribute('data-perfil-url');
+				detalleUrl = btn.getAttribute('data-perfil-detalle-url') || detalleUrl;
+				nombre = btn.getAttribute('data-candidato-nombre') || nombre;
+			}
+			if (!perfilUrl) return;
+			var loader = document.getElementById('modalResumenPerfilLoader');
+			var cont = document.getElementById('modalResumenPerfilContenido');
+
+			document.getElementById('modalResumenPerfilCandidatoLabel').textContent = 'Perfil del candidato: ' + nombre;
+			document.getElementById('modalResumenPerfilLink').href = detalleUrl;
+			loader.classList.remove('d-none');
+			cont.classList.add('d-none');
+			cont.innerHTML = '';
+			cont.scrollTop = 0;
+			fetch(perfilUrl, {
+				credentials: 'same-origin',
+				headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' }
+			})
+				.then(function (resp) {
+					if (!resp.ok) {
+						throw new Error('No se pudo cargar el perfil');
+					}
+					return resp.text();
+				})
+				.then(function (html) {
+					cont.innerHTML = html.trim();
+					loader.classList.add('d-none');
+					cont.classList.remove('d-none');
+					cont.scrollTop = 0;
+				})
+				.catch(function () {
+					loader.classList.add('d-none');
+					cont.classList.remove('d-none');
+					cont.innerHTML = '<div class="alert alert-danger mb-0">No se pudo cargar el perfil del candidato en el modal.</div>';
+				});
+		});
+		document.getElementById('modalResumenPerfilCandidato').addEventListener('hidden.bs.modal', function () {
+			document.getElementById('modalResumenPerfilLoader').classList.remove('d-none');
+			document.getElementById('modalResumenPerfilContenido').classList.add('d-none');
+			document.getElementById('modalResumenPerfilContenido').innerHTML = '';
+		});
+	})();
+
 	$(document).ready(function() {
 		$('#tableReclutadosAll').DataTable({
 			"language": {
@@ -182,7 +649,7 @@ Personal reclutado - Vacante
 			},
 			"order": [[1, "desc"]],
 			"columnDefs": [
-				{ "targets": [0], "orderable": false, "searchable": true }
+				{ "targets": [0, 7], "orderable": false, "searchable": true }
 			]
 		});
 	});

@@ -1,10 +1,12 @@
-from django.contrib.auth.views import login_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction
 from django.db.models import F, Count, Q, Value, Case, When, CharField
 from django.contrib import messages
 from django.utils import timezone
 from datetime import date, timedelta
 from zoneinfo import ZoneInfo
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 # Hora civil Colombia para registros en JSON (evita guardar ISO solo en UTC y confundir al leer en BD/UI)
 _BOGOTA_TZ = ZoneInfo('America/Bogota')
@@ -24,7 +26,11 @@ from applications.services.service_interview import query_interview_all, attach_
 from applications.services.service_recruited import query_recruited_vacancy_id
 from applications.services.service_client import query_client_detail
 from applications.services.service_candidate import buscar_candidato
-from applications.services.choices import ESTADO_APLICACION_COLOR_STATIC, ESTADO_RECLUTADO_CHOICES_STATIC
+from applications.services.choices import (
+    ESTADO_APLICACION_COLOR_STATIC,
+    ESTADO_RECLUTADO_CHOICES_STATIC,
+    ESTADO_RECLUTADO_COLOR_STATIC,
+)
 from applications.common.views.EnvioCorreo import enviar_correo, generar_token_documento
 from components.RegistrarHistorialVacante import crear_historial_aplicacion
 
@@ -242,6 +248,17 @@ def vacancies_assigned_recruiter_detail2(request, pk, vacante_id):
         asignacion_reclutador=request.user,
         estado_id_001=1,
     )
+    cliente_id = None
+    if vacante.asignacion_cliente_id_064 and vacante.asignacion_cliente_id_064.id_cliente_asignado:
+        cliente_id = vacante.asignacion_cliente_id_064.id_cliente_asignado.id
+
+    grupo_id = request.session.get('grupo_id', 2)
+    form_entrevista_multiples = EntrevistaCrearForm(
+        grupo_id=grupo_id,
+        cliente_id=cliente_id,
+        vacante=vacante,
+        modal_id='modalAsignarEntrevistaUnica',
+    )
 
     reclutados = query_recruited_vacancy_id(vacante.id)
     reclutados = sorted(
@@ -285,15 +302,40 @@ def vacancies_assigned_recruiter_detail2(request, pk, vacante_id):
             getattr(r, "candidato_101_id", None),
             "Sin estudios registrados",
         )
+        _estado_nombre, _estado_color = ESTADO_RECLUTADO_COLOR_STATIC.get(
+            getattr(r, "estado_reclutamiento", None),
+            ("Desconocido", "secondary"),
+        )
+        r.estado_reclutamiento_color = _estado_color
 
     estados_map = dict(ESTADO_RECLUTADO_CHOICES_STATIC)
     estados_aplicacion_color = ESTADO_APLICACION_COLOR_STATIC
+    conteo_por_estado = {}
+    for r in reclutados:
+        codigo = getattr(r, "estado_reclutamiento", None)
+        if codigo is None:
+            continue
+        conteo_por_estado[codigo] = conteo_por_estado.get(codigo, 0) + 1
+    estados_reclutado_leyenda = []
+    for codigo, nombre in ESTADO_RECLUTADO_CHOICES_STATIC:
+        if codigo in ("", None):
+            continue
+        _nombre, color = ESTADO_RECLUTADO_COLOR_STATIC.get(codigo, (nombre, "secondary"))
+        estados_reclutado_leyenda.append({
+            "codigo": codigo,
+            "nombre": nombre,
+            "color": color,
+            "total": conteo_por_estado.get(codigo, 0),
+        })
 
     context = {
         "vacante": vacante,
         "reclutados": reclutados,
         "estados_map": estados_map,
         "estados_aplicacion_color": estados_aplicacion_color,
+        "estados_reclutado_opciones": list(ESTADO_RECLUTADO_CHOICES_STATIC),
+        "estados_reclutado_leyenda": estados_reclutado_leyenda,
+        "form_entrevista_multiples": form_entrevista_multiples,
         "pk": pk,
     }
     return render(
@@ -301,6 +343,109 @@ def vacancies_assigned_recruiter_detail2(request, pk, vacante_id):
         "admin/recruiter/client_recruiter/vacancies_assigned_recruiter_detail2.html",
         context,
     )
+
+
+def _historial_estados_lista_desde_registro(registro_reclutamiento):
+    historial_estados = []
+    if registro_reclutamiento:
+        try:
+            if isinstance(registro_reclutamiento, str):
+                historial_estados = json.loads(registro_reclutamiento)
+            else:
+                historial_estados = registro_reclutamiento
+            if not isinstance(historial_estados, list):
+                historial_estados = []
+        except (json.JSONDecodeError, TypeError):
+            historial_estados = []
+    return historial_estados
+
+
+def aplicar_cambio_estado_reclutado(request, asignacion_vacante, nuevo_estado, comentario):
+    """
+    Persiste el cambio de estado y el historial en registro_reclutamiento
+    (misma lógica que el POST del detalle reclutado).
+    Devuelve (nombre_estado_anterior, nombre_estado_nuevo).
+    """
+    historial_estados = _historial_estados_lista_desde_registro(asignacion_vacante.registro_reclutamiento)
+    estado_anterior_nombre = dict(ESTADO_RECLUTADO_CHOICES_STATIC).get(asignacion_vacante.estado_reclutamiento, 'Desconocido')
+    estado_nuevo_nombre = dict(ESTADO_RECLUTADO_CHOICES_STATIC).get(nuevo_estado, 'Desconocido')
+
+    ahora_bogota = timezone.now().astimezone(_BOGOTA_TZ)
+    nuevo_registro = {
+        "fecha_actualizacion": ahora_bogota.strftime("%d/%m/%Y"),
+        "hora_actualizacion": ahora_bogota.strftime("%H:%M"),
+        "fecha_hora_actualizacion": ahora_bogota.isoformat(),
+        "id_usuario_registro": request.user.id,
+        "comentario": comentario,
+        "estado_anterior": {
+            "codigo": asignacion_vacante.estado_reclutamiento,
+            "nombre": estado_anterior_nombre,
+        },
+        "estado_nuevo": {
+            "codigo": nuevo_estado,
+            "nombre": estado_nuevo_nombre,
+        },
+    }
+    historial_estados.append(nuevo_registro)
+    asignacion_vacante.estado_reclutamiento = nuevo_estado
+    asignacion_vacante.registro_reclutamiento = historial_estados
+    asignacion_vacante.save()
+    return estado_anterior_nombre, estado_nuevo_nombre
+
+
+@login_required
+@validar_permisos('acceso_reclutador')
+def cambiar_estado_personal_reclutador(request, pk, vacante_id):
+    """POST: cambio de estado desde la lista de personal reclutado (misma gestión que detalle reclutado)."""
+    redirect_lista = redirect('reclutados:vacantes_gestion_reclutador_detail2', pk=pk, vacante_id=vacante_id)
+
+    if request.method != 'POST':
+        messages.error(request, 'Método no permitido.')
+        return redirect_lista
+
+    aplicacion_id = request.POST.get('aplicacion_id')
+    if not aplicacion_id or not str(aplicacion_id).isdigit():
+        messages.error(request, 'Solicitud inválida.')
+        return redirect_lista
+
+    vacante = get_object_or_404(
+        Cli052Vacante.objects.select_related('asignacion_cliente_id_064'),
+        id=vacante_id,
+        asignacion_reclutador=request.user,
+        estado_id_001=1,
+    )
+    ac = getattr(vacante.asignacion_cliente_id_064, 'id_cliente_asignado_id', None)
+    if ac is None or ac != pk:
+        messages.error(request, 'No tiene permisos para gestionar esta aplicación.')
+        return redirect_lista
+
+    asignacion_vacante = get_object_or_404(
+        Cli056AplicacionVacante.objects.select_related('vacante_id_052'),
+        id=int(aplicacion_id),
+        vacante_id_052=vacante,
+    )
+
+    if request.session.get('grupo_id') not in (3, 5, 6):
+        if asignacion_vacante.vacante_id_052.asignacion_reclutador != request.user:
+            messages.error(request, 'No tiene permisos para acceder a este candidato.')
+            return redirect('reclutados:vacantes_asignadas_reclutador')
+
+    form = ActualizarEstadoReclutadoForm(request.POST, estado_actual=asignacion_vacante.estado_reclutamiento)
+    if form.is_valid():
+        nuevo_estado = int(form.cleaned_data['estado_reclutamiento'])
+        comentario = form.cleaned_data['comentario']
+        estado_ant, estado_nuevo = aplicar_cambio_estado_reclutado(
+            request, asignacion_vacante, nuevo_estado, comentario
+        )
+        messages.success(
+            request,
+            f'Estado actualizado de {estado_ant} a {estado_nuevo} exitosamente.',
+        )
+    else:
+        messages.error(request, 'Error al actualizar el estado. Verifique los datos.')
+
+    return redirect_lista
+
 
 @login_required
 @validar_permisos('acceso_reclutador', 'acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats', 'acceso_analista_seleccion')
@@ -464,37 +609,9 @@ def detail_recruited(request, pk):
         if form.is_valid():
             nuevo_estado = int(form.cleaned_data['estado_reclutamiento'])
             comentario = form.cleaned_data['comentario']
-            
-            # Obtener nombres de estados
-            estado_anterior_nombre = dict(ESTADO_RECLUTADO_CHOICES_STATIC).get(asignacion_vacante.estado_reclutamiento, 'Desconocido')
-            estado_nuevo_nombre = dict(ESTADO_RECLUTADO_CHOICES_STATIC).get(nuevo_estado, 'Desconocido')
-            
-            # Crear el registro del cambio de estado según el formato especificado
-            ahora_bogota = timezone.now().astimezone(_BOGOTA_TZ)
-            nuevo_registro = {
-                "fecha_actualizacion": ahora_bogota.strftime("%d/%m/%Y"),
-                "hora_actualizacion": ahora_bogota.strftime("%H:%M"),
-                "fecha_hora_actualizacion": ahora_bogota.isoformat(),
-                "id_usuario_registro": request.user.id,
-                "comentario": comentario,
-                "estado_anterior": {
-                    "codigo": asignacion_vacante.estado_reclutamiento,
-                    "nombre": estado_anterior_nombre
-                },
-                "estado_nuevo": {
-                    "codigo": nuevo_estado,
-                    "nombre": estado_nuevo_nombre
-                }
-            }
-            
-            # Agregar el nuevo registro al historial
-            historial_estados.append(nuevo_registro)
-            
-            # Actualizar el estado y el registro de reclutamiento
-            asignacion_vacante.estado_reclutamiento = nuevo_estado
-            asignacion_vacante.registro_reclutamiento = historial_estados
-            asignacion_vacante.save()
-            
+            estado_anterior_nombre, estado_nuevo_nombre = aplicar_cambio_estado_reclutado(
+                request, asignacion_vacante, nuevo_estado, comentario
+            )
             messages.success(request, f'Estado actualizado de {estado_anterior_nombre} a {estado_nuevo_nombre} exitosamente.')
             return redirect('reclutados:reclutados_detalle_reclutador', pk=pk)
         else:
@@ -522,75 +639,132 @@ def detail_recruited(request, pk):
     
     return render(request, 'admin/recruiter/client_recruiter/detail_recruited.html', context)
 
+@login_required
+@xframe_options_exempt
+@validar_permisos('acceso_reclutador', 'acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats', 'acceso_analista_seleccion')
+def detail_recruited_embed(request, pk):
+    """
+    Versión embebible del detalle de reclutado para mostrarse en modal (iframe).
+    """
+    return detail_recruited(request, pk)
 
 @login_required
-@validar_permisos('acceso_reclutador', 'acceso_admin')
-def crear_entrevistas_multiples(request, pk, vacante_id):
+@validar_permisos('acceso_reclutador', 'acceso_admin', 'acceso_cliente', 'acceso_analista_seleccion_ats', 'acceso_analista_seleccion')
+def detail_recruited_profile_modal(request, pk):
     """
-    Vista para crear múltiples entrevistas a la vez para varios candidatos seleccionados
+    Renderiza solo el bloque de Perfil Candidato para mostrarse en modal.
     """
-    # Verificar que la vacante esté asignada al reclutador actual
+    asignacion_vacante = get_object_or_404(Cli056AplicacionVacante, id=pk)
+
+    if request.session.get('grupo_id') not in (3, 5, 6):
+        if asignacion_vacante.vacante_id_052.asignacion_reclutador != request.user:
+            messages.error(request, 'No tiene permisos para acceder a este candidato.')
+            return redirect('reclutados:vacantes_asignadas_reclutador')
+
+    candidato = get_object_or_404(Can101Candidato, id=asignacion_vacante.candidato_101.id)
+    info_detalle_candidato = buscar_candidato(candidato.id)
+    context = {
+        "candidato": candidato,
+        "info_detalle_candidato": info_detalle_candidato,
+    }
+    return render(request, "admin/recruiter/client_recruiter/partials/profile_candidate_modal_content.html", context)
+
+
+def _nombre_candidato_aplicacion_para_msg(aplicacion):
+    """Cli056AplicacionVacante no tiene candidato_nombre (solo existe en consultas anotadas)."""
+    try:
+        cand = getattr(aplicacion, 'candidato_101', None)
+        if cand:
+            return cand.nombre_completo()
+    except Exception:
+        pass
+    return f'aplicación #{aplicacion.pk}'
+
+
+def _post_crear_entrevistas_reclutador(request, pk, vacante_id, redirect_name):
+    """
+    POST compartido: crea entrevistas para ids en aplicaciones_ids (separados por coma).
+    También acepta aplicacion_id (un solo id) por compatibilidad con el modal único.
+    """
     vacante = get_object_or_404(
         Cli052Vacante.objects.prefetch_related('habilidades'),
         id=vacante_id,
         asignacion_reclutador=request.user,
-        estado_id_001=1
+        estado_id_001=1,
     )
-    
-    # Obtener el cliente asignado
+
     cliente_id = None
     cliente = None
     if vacante.asignacion_cliente_id_064 and vacante.asignacion_cliente_id_064.id_cliente_asignado:
         cliente_id = vacante.asignacion_cliente_id_064.id_cliente_asignado.id
         cliente = vacante.asignacion_cliente_id_064.id_cliente_asignado
-    
-    if request.method == 'POST':
-        # Obtener IDs de aplicaciones desde el formulario
-        aplicaciones_ids_str = request.POST.get('aplicaciones_ids', '')
-        if not aplicaciones_ids_str:
-            messages.error(request, 'No se seleccionaron candidatos.')
-            return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
-        
-        aplicaciones_ids = [int(id.strip()) for id in aplicaciones_ids_str.split(',') if id.strip().isdigit()]
-        
-        if not aplicaciones_ids:
-            messages.error(request, 'No se seleccionaron candidatos válidos.')
-            return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
-        
-        # Validar que todas las aplicaciones pertenezcan a la vacante
-        aplicaciones = Cli056AplicacionVacante.objects.filter(
-            id__in=aplicaciones_ids,
-            vacante_id_052=vacante
-        )
-        
-        if aplicaciones.count() != len(aplicaciones_ids):
-            messages.error(request, 'Algunos candidatos seleccionados no pertenecen a esta vacante.')
-            return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
-        
-        # Procesar formulario de entrevista
-        grupo_id = request.session.get('grupo_id', 2)
-        form = EntrevistaCrearForm(request.POST, grupo_id=grupo_id, cliente_id=cliente_id, vacante=vacante)
-        
-        if form.is_valid():
-            fecha_entrevista = form.cleaned_data['fecha_entrevista']
-            hora_entrevista = form.cleaned_data['hora_entrevista']
-            entrevistador_id = form.cleaned_data['entrevistador']
-            tipo_entrevista = form.cleaned_data['tipo_entrevista']
-            lugar_enlace = form.cleaned_data['lugar_enlace']
-            
-            usuario_asignado = get_object_or_404(UsuarioBase, id=entrevistador_id)
-            usuario_asigno = request.user
-            estado_default = Cat001Estado.objects.get(id=1)
-            
-            url_actual = f"{request.scheme}://{request.get_host()}"
-            
-            # Crear entrevista para cada aplicación
-            entrevistas_creadas = []
-            errores = []
-            
-            for aplicacion in aplicaciones:
-                try:
-                    # Crear la asignación de entrevista
+
+    aplicaciones_ids_str = (
+        request.POST.get('aplicaciones_ids')
+        or request.POST.get('aplicacion_id')
+        or ''
+    ).strip()
+    if not aplicaciones_ids_str:
+        messages.error(request, 'No se seleccionaron candidatos.')
+        return redirect(redirect_name, pk=pk, vacante_id=vacante_id)
+
+    aplicaciones_ids = []
+    for part in aplicaciones_ids_str.replace(';', ',').split(','):
+        p = part.strip()
+        if p.isdigit():
+            aplicaciones_ids.append(int(p))
+    aplicaciones_ids = list(dict.fromkeys(aplicaciones_ids))
+
+    if not aplicaciones_ids:
+        messages.error(request, 'No se seleccionaron candidatos válidos.')
+        return redirect(redirect_name, pk=pk, vacante_id=vacante_id)
+
+    aplicaciones = Cli056AplicacionVacante.objects.filter(
+        id__in=aplicaciones_ids,
+        vacante_id_052=vacante,
+    ).select_related('candidato_101')
+
+    if aplicaciones.count() != len(aplicaciones_ids):
+        messages.error(request, 'Algunos candidatos seleccionados no pertenecen a esta vacante.')
+        return redirect(redirect_name, pk=pk, vacante_id=vacante_id)
+
+    uid_hist = getattr(request.user, 'pk', None) or request.session.get('_auth_user_id')
+    try:
+        uid_hist = int(uid_hist) if uid_hist is not None else None
+    except (TypeError, ValueError):
+        uid_hist = None
+    if uid_hist is None:
+        messages.error(request, 'No se pudo identificar su usuario para registrar el historial.')
+        return redirect(redirect_name, pk=pk, vacante_id=vacante_id)
+
+    grupo_id = request.session.get('grupo_id', 2)
+    form = EntrevistaCrearForm(request.POST, grupo_id=grupo_id, cliente_id=cliente_id, vacante=vacante)
+
+    if form.is_valid():
+        fecha_entrevista = form.cleaned_data['fecha_entrevista']
+        hora_entrevista = form.cleaned_data['hora_entrevista']
+        entrevistador_id = form.cleaned_data['entrevistador']
+        tipo_entrevista = form.cleaned_data['tipo_entrevista']
+        lugar_enlace = form.cleaned_data['lugar_enlace']
+
+        try:
+            entrevistador_id = int(entrevistador_id)
+        except (TypeError, ValueError):
+            messages.error(request, 'Entrevistador no válido.')
+            return redirect(redirect_name, pk=pk, vacante_id=vacante_id)
+
+        usuario_asignado = get_object_or_404(UsuarioBase, id=entrevistador_id)
+        usuario_asigno = request.user
+        estado_default = Cat001Estado.objects.get(id=1)
+
+        url_actual = f'{request.scheme}://{request.get_host()}'
+
+        entrevistas_creadas = []
+        errores = []
+
+        for aplicacion in aplicaciones:
+            try:
+                with transaction.atomic():
                     asignacion_entrevista = Cli057AsignacionEntrevista.objects.create(
                         asignacion_vacante=aplicacion,
                         usuario_asigno=usuario_asigno,
@@ -599,78 +773,103 @@ def crear_entrevistas_multiples(request, pk, vacante_id):
                         hora_entrevista=hora_entrevista,
                         tipo_entrevista=tipo_entrevista,
                         lugar_enlace=lugar_enlace,
-                        estado_asignacion=1,  # Pendiente por defecto
+                        estado_asignacion=1,
                         estado=estado_default,
                     )
-                    
-                    entrevistas_creadas.append(asignacion_entrevista)
-                    
-                    # Crear historial
                     crear_historial_aplicacion(
-                        aplicacion, 
-                        2, 
-                        request.session.get('_auth_user_id'), 
-                        'Entrevista Asignada'
+                        aplicacion,
+                        2,
+                        uid_hist,
+                        'Entrevista Asignada',
                     )
-                    
-                    # Generar token para el documento
-                    usuario_generador = request.user if request.user.is_authenticated else None
-                    token_documento = generar_token_documento(aplicacion, usuario_generador)
-                    
-                    # Obtener información del candidato
-                    candidato = aplicacion.candidato_101
-                    
-                    # Preparar contexto para el correo
-                    contexto_email = {
-                        'entrevistador': f'{usuario_asignado.primer_nombre} {usuario_asignado.segundo_nombre} {usuario_asignado.primer_apellido}',
-                        'nombre_candidato': candidato.nombre_completo(),
-                        'fecha_entrevista': fecha_entrevista,
-                        'hora_entrevista': hora_entrevista,
-                        'lugar_enlace': lugar_enlace,
-                        'vacante': vacante.titulo,
-                        'cliente': cliente.razon_social if cliente else 'N/A',
-                        'url': url_actual,
-                        'token_documento': token_documento,
-                        'email_candidato': candidato.email
-                    }
-                    
-                    # Lista de correos
-                    lista_correos = [
-                        usuario_asignado.email,
-                        candidato.email
-                    ]
-                    
-                    # Enviar correo
-                    try:
-                        enviar_correo(
-                            'asignacion_entrevista_entrevista', 
-                            contexto_email, 
-                            f'Asignación de Entrevista ID: {asignacion_entrevista.id}', 
-                            lista_correos, 
-                            correo_remitente=None
-                        )
-                    except Exception as e:
-                        # No fallar si el correo no se puede enviar
-                        print(f"Error al enviar correo: {e}")
-                    
+
+                entrevistas_creadas.append(asignacion_entrevista)
+
+                usuario_generador = request.user if request.user.is_authenticated else None
+                token_documento = generar_token_documento(aplicacion, usuario_generador)
+
+                candidato = aplicacion.candidato_101
+
+                contexto_email = {
+                    'entrevistador': f'{usuario_asignado.primer_nombre} {usuario_asignado.segundo_nombre} {usuario_asignado.primer_apellido}',
+                    'nombre_candidato': candidato.nombre_completo(),
+                    'fecha_entrevista': fecha_entrevista,
+                    'hora_entrevista': hora_entrevista,
+                    'lugar_enlace': lugar_enlace,
+                    'vacante': vacante.titulo,
+                    'cliente': cliente.razon_social if cliente else 'N/A',
+                    'url': url_actual,
+                    'token_documento': token_documento,
+                    'email_candidato': candidato.email,
+                }
+
+                lista_correos = [
+                    usuario_asignado.email,
+                    candidato.email,
+                ]
+
+                try:
+                    enviar_correo(
+                        'asignacion_entrevista_entrevista',
+                        contexto_email,
+                        f'Asignación de Entrevista ID: {asignacion_entrevista.id}',
+                        lista_correos,
+                        correo_remitente=None,
+                    )
                 except Exception as e:
-                    errores.append(f"Error al crear entrevista para {aplicacion.candidato_nombre}: {str(e)}")
-            
-            # Mensajes de resultado
-            if entrevistas_creadas:
-                messages.success(
-                    request, 
-                    f'Se han asignado {len(entrevistas_creadas)} entrevista(s) correctamente.'
+                    errores.append(f'Correo no enviado (ID entrevista {asignacion_entrevista.id}): {e}')
+
+            except Exception as e:
+                errores.append(
+                    f'Error al crear entrevista para {_nombre_candidato_aplicacion_para_msg(aplicacion)}: {str(e)}'
                 )
-            
-            if errores:
-                for error in errores:
-                    messages.warning(request, error)
-            
-            return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
-        else:
-            messages.error(request, 'Error en el formulario. Verifique los datos.')
-            return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
-    
-    # Si es GET, redirigir
-    return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
+
+        if entrevistas_creadas:
+            messages.success(
+                request,
+                f'Se han asignado {len(entrevistas_creadas)} entrevista(s) correctamente.',
+            )
+
+        if errores:
+            for error in errores:
+                messages.warning(request, error)
+
+        return redirect(redirect_name, pk=pk, vacante_id=vacante_id)
+
+    errores_form = []
+    for campo, msgs in form.errors.items():
+        for m in msgs:
+            errores_form.append(f'{campo}: {m}')
+    if errores_form:
+        messages.error(request, 'Revise los datos de la entrevista: ' + ' | '.join(errores_form))
+    else:
+        messages.error(request, 'Error en el formulario. Verifique los datos.')
+    return redirect(redirect_name, pk=pk, vacante_id=vacante_id)
+
+
+@login_required
+@validar_permisos('acceso_reclutador', 'acceso_admin')
+def crear_entrevistas_multiples(request, pk, vacante_id):
+    """Varios candidatos desde gestión de vacante (modal selección múltiple)."""
+    if request.method != 'POST':
+        return redirect('reclutados:vacantes_gestion_reclutador', pk=pk, vacante_id=vacante_id)
+    return _post_crear_entrevistas_reclutador(
+        request,
+        pk,
+        vacante_id,
+        'reclutados:vacantes_gestion_reclutador',
+    )
+
+
+@login_required
+@validar_permisos('acceso_reclutador', 'acceso_admin')
+def crear_entrevista_unica_reclutador(request, pk, vacante_id):
+    """Un solo candidato desde la lista de aspirantes (vacancies_assigned_recruiter_detail2)."""
+    if request.method != 'POST':
+        return redirect('reclutados:vacantes_gestion_reclutador_detail2', pk=pk, vacante_id=vacante_id)
+    return _post_crear_entrevistas_reclutador(
+        request,
+        pk,
+        vacante_id,
+        'reclutados:vacantes_gestion_reclutador_detail2',
+    )

@@ -34,8 +34,12 @@ urlpatterns = [
     path( url_principal+'vacantes_asignadas/', client_recruiter_views.vacancies_assigned_recruiter, name='vacantes_asignadas_reclutador'),
     path( url_principal+'vacantes_asignadas/gestionar/<int:pk>/<int:vacante_id>/', client_recruiter_views.vacancies_assigned_recruiter_detail, name='vacantes_gestion_reclutador'),
     path( url_principal+'vacantes_asignadas/personal/<int:pk>/<int:vacante_id>/', client_recruiter_views.vacancies_assigned_recruiter_detail2, name='vacantes_gestion_reclutador_detail2'),
+    path( url_principal+'vacantes_asignadas/personal/<int:pk>/<int:vacante_id>/cambiar-estado/', client_recruiter_views.cambiar_estado_personal_reclutador, name='vacantes_personal_cambiar_estado'),
     path( url_principal+'detalle/reclutado/<int:pk>/', client_recruiter_views.detail_recruited, name='reclutados_detalle_reclutador'),
+    path( url_principal+'detalle/reclutado/embed/<int:pk>/', client_recruiter_views.detail_recruited_embed, name='reclutados_detalle_reclutador_embed'),
+    path( url_principal+'detalle/reclutado/modal-perfil/<int:pk>/', client_recruiter_views.detail_recruited_profile_modal, name='reclutados_detalle_reclutador_modal_perfil'),
     path( url_principal+'crear_entrevistas_multiples/<int:pk>/<int:vacante_id>/', client_recruiter_views.crear_entrevistas_multiples, name='crear_entrevistas_multiples'),
+    path( url_principal+'crear_entrevista_unica/<int:pk>/<int:vacante_id>/', client_recruiter_views.crear_entrevista_unica_reclutador, name='crear_entrevista_unica_reclutador'),
 
     #admin_user
     path( url_principal+'resultado/<int:pk>/', admin_views.detail_aplicacion_vacante, name='reclutados_detalle_admin'),

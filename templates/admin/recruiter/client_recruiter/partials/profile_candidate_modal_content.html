@@ -1,0 +1,116 @@
+{% load static %}
+
+<div class="row">
+	<div class="col-md-4">
+		<div class="card bg-white border rounded-3 mb-4">
+			<div class="card-body p-4">
+				<div class="text-center mb-4">
+					{% if candidato.imagen_perfil %}
+						<img src="{{ candidato.imagen_perfil.url }}" class="rounded-circle border border-2" style="width: 120px; height: 120px; object-fit: cover; margin-bottom: 1rem;" alt="{{ candidato.nombre_completo }}">
+					{% else %}
+						<img src="{% static 'admin/images/blank.png' %}" class="rounded-circle border border-2" style="width: 120px; height: 120px; object-fit: cover; margin-bottom: 1rem;" alt="user">
+					{% endif %}
+					<h4 class="fs-18 mb-1 fw-semibold">{{ candidato.nombre_completo }}</h4>
+				</div>
+				<h5 class="fs-14 fw-semibold mb-3 text-primary">Información de Contacto</h5>
+				<ul class="list-unstyled mb-0">
+					<li class="d-flex align-items-center mb-3">
+						<span class="material-symbols-outlined text-primary me-2">badge</span>
+						<div>
+							<small class="text-muted d-block">Documento</small>
+							<span class="fw-medium">{{ info_detalle_candidato.numero_documento|default:"-" }}</span>
+						</div>
+					</li>
+					<li class="d-flex align-items-center mb-3">
+						<span class="material-symbols-outlined text-primary me-2">email</span>
+						<div>
+							<small class="text-muted d-block">Email</small>
+							<span class="fw-medium">{{ info_detalle_candidato.email|default:"-" }}</span>
+						</div>
+					</li>
+					<li class="d-flex align-items-center mb-3">
+						<span class="material-symbols-outlined text-primary me-2">phone</span>
+						<div>
+							<small class="text-muted d-block">Teléfono</small>
+							<span class="fw-medium">{{ info_detalle_candidato.telefono|default:"-" }}</span>
+						</div>
+					</li>
+					<li class="d-flex align-items-center mb-3">
+						<span class="material-symbols-outlined text-primary me-2">location_on</span>
+						<div>
+							<small class="text-muted d-block">Ubicación</small>
+							<span class="fw-medium">{{ info_detalle_candidato.ciudad|default:"-" }}</span>
+						</div>
+					</li>
+					<li class="d-flex align-items-center mb-3">
+						<span class="material-symbols-outlined text-primary me-2">wc</span>
+						<div>
+							<small class="text-muted d-block">Género</small>
+							<span class="fw-medium">{{ info_detalle_candidato.sexo|default:"-" }}</span>
+						</div>
+					</li>
+					<li class="d-flex align-items-center mb-3">
+						<span class="material-symbols-outlined text-primary me-2">calendar_month</span>
+						<div>
+							<small class="text-muted d-block">Fecha Nacimiento</small>
+							<span class="fw-medium">{{ info_detalle_candidato.fecha_nacimiento|date:"d/m/Y"|default:"-" }}</span>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8">
+		<div class="card bg-white border rounded-3 mb-4">
+			<div class="card-body p-4">
+				<h5 class="fs-16 fw-semibold mb-3 text-primary">
+					<span class="material-symbols-outlined text-primary me-2">school</span>
+					Formación Académica
+				</h5>
+				{% if info_detalle_candidato.educacion %}
+					{% for edu in info_detalle_candidato.educacion %}
+					<div class="position-relative ps-4 pb-4 mb-3">
+						<div class="position-absolute start-0 top-0 h-100" style="width: 2px; background-color: #dee2e6;"></div>
+						<div class="position-absolute start-0 top-0" style="width: 14px; height: 14px; background-color: #B10022; border-radius: 50%; transform: translateX(-6px); border: 2px solid #ffffff;"></div>
+						<p class="fw-semibold mb-1">{{ edu.institucion }}</p>
+						<p class="text-muted mb-1">{{ edu.titulo }} ({{ edu.tipo_estudio }})</p>
+						<p class="text-muted small mb-0">{{ edu.fecha_inicial|date:"Y" }} - {{ edu.fecha_final|date:"Y"|default:"Actual" }}</p>
+					</div>
+					{% endfor %}
+				{% else %}
+					<p class="text-muted">No se registran estudios.</p>
+				{% endif %}
+			</div>
+		</div>
+
+		<div class="card bg-white border rounded-3 mb-4">
+			<div class="card-body p-4">
+				<h5 class="fs-16 fw-semibold mb-3 text-primary">
+					<span class="material-symbols-outlined text-primary me-2">work</span>
+					Experiencia Laboral
+				</h5>
+				{% if info_detalle_candidato.experiencia %}
+					{% for exp in info_detalle_candidato.experiencia %}
+					<div class="position-relative ps-4 pb-4 mb-3">
+						<div class="position-absolute start-0 top-0 h-100" style="width: 2px; background-color: #dee2e6;"></div>
+						<div class="position-absolute start-0 top-0" style="width: 14px; height: 14px; background-color: #B10022; border-radius: 50%; transform: translateX(-6px); border: 2px solid #ffffff;"></div>
+						<p class="fw-semibold mb-1">{{ exp.entidad }} ({{ exp.sector }})</p>
+						<p class="text-muted mb-1">{{ exp.cargo }}</p>
+						<p class="text-muted small mb-2">{{ exp.fecha_inicial|date:"Y" }} - {{ exp.fecha_final|date:"Y"|default:"Actual" }}</p>
+						{% if exp.funciones_desempenadas %}
+						<p class="text-muted small fw-semibold mb-1">Funciones desempeñadas</p>
+						<ul class="list-unstyled mb-0 small text-muted">
+							{% for funcion in exp.funciones_desempenadas %}
+							<li class="mb-1 ps-1"><span class="text-primary me-1">•</span>{{ funcion }}</li>
+							{% endfor %}
+						</ul>
+						{% endif %}
+					</div>
+					{% endfor %}
+				{% else %}
+					<p class="text-muted">No se registra experiencia laboral.</p>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>

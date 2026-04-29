@@ -126,9 +126,10 @@ class EntrevistaCrearForm(forms.Form):
             ).order_by('primer_apellido')
             
             if analistas.exists():
-                usuario_choices.append(('', '--- ANALISTAS ASIGNADOS ---'))
                 for analista in analistas:
-                    usuario_choices.append((analista.id, f" {analista.primer_apellido} {analista.primer_nombre} (Analista)"))
+                    usuario_choices.append(
+                        (analista.id, f"{analista.primer_apellido} {analista.primer_nombre} (Analista)")
+                    )
         
         # Obtener entrevistadores del grupo 4
         entrevistadores = UsuarioBase.objects.filter(
@@ -138,9 +139,10 @@ class EntrevistaCrearForm(forms.Form):
         ).order_by('primer_apellido')
         
         if entrevistadores.exists():
-            usuario_choices.append(('', '--- ENTREVISTADORES ---'))
             for entrevistador in entrevistadores:
-                usuario_choices.append((entrevistador.id, f" {entrevistador.primer_apellido} {entrevistador.primer_nombre}"))
+                usuario_choices.append(
+                    (entrevistador.id, f"{entrevistador.primer_apellido} {entrevistador.primer_nombre} (Entrevistador)")
+                )
         
         # Añadir el campo entrevistador al formulario con las opciones obtenidas
         # Configurar dropdown-parent según el modal proporcionado o usar el default

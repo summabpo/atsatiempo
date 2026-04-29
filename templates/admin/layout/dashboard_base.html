@@ -74,19 +74,26 @@
 		{% if messages %}
 			{% for message in messages %}
 				<script>
-				Swal.fire({
-					text: "{{ message }}",
-					icon: "{{message.tags}}",
-					showConfirmButton: true,
-					confirmButtonText: "Ok",
-					customClass: {
-						confirmButton: "btn btn-primary"
-					},
-					willOpen: (toast) => {
-						toast.addEventListener('mouseenter', Swal.stopTimer);
-						toast.addEventListener('mouseleave', Swal.resumeTimer);
-					}
-				});
+				(function () {
+					var tags = "{{ message.tags|escapejs }}";
+					var icon = 'info';
+					if (tags.indexOf('success') !== -1) icon = 'success';
+					else if (tags.indexOf('error') !== -1) icon = 'error';
+					else if (tags.indexOf('warning') !== -1) icon = 'warning';
+					Swal.fire({
+						text: "{{ message|escapejs }}",
+						icon: icon,
+						showConfirmButton: true,
+						confirmButtonText: "Ok",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						},
+						willOpen: (toast) => {
+							toast.addEventListener('mouseenter', Swal.stopTimer);
+							toast.addEventListener('mouseleave', Swal.resumeTimer);
+						}
+					});
+				})();
 				</script>
 			{% endfor %}
 		{% endif %}
